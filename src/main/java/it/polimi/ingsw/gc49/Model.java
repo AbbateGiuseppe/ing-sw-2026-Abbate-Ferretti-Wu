@@ -3,9 +3,38 @@ package it.polimi.ingsw.gc49;
 public class Model {
     private final int numOfPlayers;
     private int numOfConnectedPlayers;
+    private final Player[] players;
 
-    public Model (int numOfPlayers) {
-        this.numOfPlayers = numOfPlayers;
+    //### Constructors, from 2 to 5 players
+    public Model (String firstPlayerNickname, String secondPlayerNickname) {
+        this.numOfPlayers = 2;
+        players = new Player[numOfPlayers];
+        players[0] = new Player(firstPlayerNickname, 0);
+        players[1] = new Player(secondPlayerNickname, 1);
+    }
+    public Model (String firstPlayerNickname, String secondPlayerNickname, String thirdPlayerNickname) {
+        this.numOfPlayers = 3;
+        players = new Player[numOfPlayers];
+        players[0] = new Player(firstPlayerNickname, 0);
+        players[1] = new Player(secondPlayerNickname, 1);
+        players[2] = new Player(thirdPlayerNickname, 2);
+    }
+    public Model (String firstPlayerNickname, String secondPlayerNickname, String thirdPlayerNickname, String fourthPlayerNickname) {
+        this.numOfPlayers = 4;
+        players = new Player[numOfPlayers];
+        players[0] = new Player(firstPlayerNickname, 0);
+        players[1] = new Player(secondPlayerNickname, 1);
+        players[2] = new Player(thirdPlayerNickname, 2);
+        players[3] = new Player(fourthPlayerNickname, 3);
+    }
+    public Model (String firstPlayerNickname, String secondPlayerNickname, String thirdPlayerNickname, String fourthPlayerNickname, String fifthPlayerNickname) {
+        this.numOfPlayers = 5;
+        players = new Player[numOfPlayers];
+        players[0] = new Player(firstPlayerNickname, 0);
+        players[1] = new Player(secondPlayerNickname, 1);
+        players[2] = new Player(thirdPlayerNickname, 2);
+        players[3] = new Player(fourthPlayerNickname, 3);
+        players[4] = new Player(fifthPlayerNickname, 4);
     }
 
     //### Game's execution
