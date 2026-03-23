@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc49;
 
-public class Player {
+import it.polimi.ingsw.gc49.Cards.CharacterType;
+
+public class Player implements PlayerDataInterface{
     private String nickname;
     private final int playerIndex;
     private boolean connected;
@@ -92,9 +94,26 @@ public class Player {
     }
 
     //### event's methods
-    public void setupToPay () {
+    public void setupToPay (int foodToPay, int pointsToPay) {
+        this.foodToPay = foodToPay;
+        this.pointsToPay = pointsToPay;
+    }
+
+    @Override
+    public int GetBuilderPP() {
+        return 0;
+    }
+
+    @Override
+    public int getReward() {
+        return 0;
+    }
+
+    @Override
+    public void addTempStars(int i) {
 
     }
+
     public void confirmToPay () {
 
     }
@@ -123,4 +142,32 @@ public class Player {
     public boolean hasChosenAnOffer () {
         return choseAnOffer;
     }
+
+    @Override
+    public int GetCharaCount(CharacterType type) {
+        //TODO
+        return 0;
+    }
+
+    @Override
+    public int GetBuildingDiscount() {
+        return 0;
+    }
+
+    @Override
+    public int getPPTopay() {
+        return pointsToPay;
+    }
+
+    @Override
+    public int getFoodsTopay() {
+        return foodToPay;
+    }
+
+    @Override
+    public boolean IsGettingBonusFood() {
+        return false;
+    }
 }
+
+
