@@ -22,8 +22,8 @@ public class CardBoard {
         this.discards = new ArrayList<>();
     }
 
-    public Card drawUpperCharacter(int index, int availableFood) {
-        Card drawn = line.drawUpperCharacter(index, availableFood);
+    public Card drawUpperCharacter(int index) {
+        Card drawn = line.drawUpperCharacter(index);
         // niente gestione scarti qui: la carta viene presa dal giocatore
         return drawn;
     }
@@ -34,8 +34,8 @@ public class CardBoard {
     }
 
 
-    public Card drawLowerCharacter(int index, int availableFood) {
-        Card drawn = line.drawLowerCharacter(index, availableFood);
+    public Card drawLowerCharacter(int index) {
+        Card drawn = line.drawLowerCharacter(index);
         return drawn;
     }
 
@@ -46,12 +46,6 @@ public class CardBoard {
     }
 
 
-    public void endGame() {
-        line.endGame();
-        // eventuale logica extra legata agli scarti o al deck
-    }
-
-    // --------- getter utili, opzionali ---------
 
     public Line getLine() {
         return line;
@@ -76,10 +70,6 @@ public class CardBoard {
     }
 
 
-    public void endRound(int numPlayers) {
-        line.endRound(numPlayers);
-    }
-
     public boolean hasEraChanged() {
         return line.hasEraChanged();
     }
@@ -88,9 +78,19 @@ public class CardBoard {
         return line.getNextEra();
     }
 
+
+    /// tutti gli end da implementare nel finite state
+    public void endGame() {
+        line.endGame();
+        // eventuale logica extra legata agli scarti o al deck
+    }
+    public void endRound(int numPlayers) {
+        line.endRound(numPlayers);
+    }
+
     public void endEra(Era newEra) {
         line.endEra(newEra);       // qui fai tutta la logica edifici/new era
-        line.clearEraChange();     
+        line.clearEraChange();
     }
 
 }

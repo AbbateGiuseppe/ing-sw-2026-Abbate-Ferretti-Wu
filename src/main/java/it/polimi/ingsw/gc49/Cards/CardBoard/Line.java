@@ -25,7 +25,6 @@ public class Line {
         this.lowerLine = new ArrayList<>();
         this.upperBuilding = new ArrayList<>();
         this.lowerBuilding = new ArrayList<>();
-        // qui poi userai dealTribeCard/dealBuildingCard per riempire le liste
         }
 
         public Card dealTribeCard() {
@@ -36,9 +35,8 @@ public class Line {
             return deck.dealBuildingCard();   // implementalo in Deck
         }
 
-        // --------- UPPER LINE ---------
 
-    public Card drawUpperCharacter(int index, int availableFood) {
+    public Card drawUpperCharacter(int index) {
         if (index < 0 || index >= upperLine.size()) {
             return null;
             }
@@ -73,9 +71,8 @@ public class Line {
         return building;
     }
 
-        // --------- LOWER LINE ---------
 
-    public Card drawLowerCharacter(int index, int availableFood) {
+    public Card drawLowerCharacter(int index) {
         if (index < 0 || index >= lowerLine.size()) {
             return null;
         }
@@ -106,10 +103,35 @@ public class Line {
         if (building.getFoodCost() > availableFood) {
             return null;
         }
+        /// chiedere di aggiungere cibo su carta edificio
 
         lowerBuilding.remove(index);
         return building;
     }
+
+
+
+    public boolean hasEraChanged() {
+        return eraChanged;
+    }
+
+
+    public Era getNextEra() {
+        return nextEra;
+    }
+
+
+
+    public void clearEraChange() {
+        eraChanged = false;
+        nextEra = null;
+    }
+
+    public Era getCurrentEra() {
+        return currentEra;
+    }
+
+/// tutti gli end
 
     public void endRound(int numPlayers) {
         resolveLowerLineEvents();
@@ -135,22 +157,6 @@ public class Line {
             upperLine.add(drawn);
         }
     }
-    public boolean hasEraChanged() {
-        return eraChanged;
-    }
-    public Era getNextEra() {
-        return nextEra;
-    }
-
-    public void clearEraChange() {
-        eraChanged = false;
-        nextEra = null;
-    }
-
-    public Era getCurrentEra() {
-        return currentEra;
-    }
-
 
     public void endEra(Era newEra) {
         // 1) Se si passa all’Era III: scarta eventuali edifici nella fila inferiore
@@ -167,7 +173,7 @@ public class Line {
         //    in numero dipendente da numPlayers (tabella del regolamento) [file:3]
         // ///capire come fare
 
-        for (int i = 0; i < buildingsToPlace; i++) {
+        for (int i = 0; i < buildingsToPlace; i++) {   /// chiedere come fare
             Card building = deck.dealBuildingCard();
             if (building == null) break;       // nessuna carta edificio rimasta
             upperBuilding.add(building);
@@ -177,6 +183,45 @@ public class Line {
         currentEra = newEra;
         eraChanged = false;
         nextEra = null;
+    }
+
+    public void endGame() {
+        // 1) Risolvi prima gli eventi nella fila inferiore
+        resolveEvents(lowerLine);
+
+        // 2) Poi risolvi quelli eventualmente nella fila superiore
+        resolveEvents(upperLine);
+
+        // 3) Se vuoi, svuoti tutto il board (opzionale)
+        lowerLine.clear();
+        upperLine.clear();
+        lowerBuilding.clear();
+        upperBuilding.clear();
+    }
+
+    private void resolveEvents(List<Card> line) {
+        List<EventCard> events = new ArrayList<>();
+
+        for (Card c : line) {
+            if (c instanceof EventCard) {
+                events.add((EventCard) c);
+            }
+        }
+
+        // Ordina: stessi tipi per Era crescente, Sostentamento per ultimo
+        events.sort((e1, e2) -> {
+            boolean s1 = e1.getType() == EventType.SUSTENTAMENTO;
+            boolean s2 = e2.getType() == EventType.SUSTENTAMENTO;
+            if (s1 && !s2) return 1;   // e1 dopo e2
+            if (!s1 && s2) return -1;  // e1 prima di e2
+            return Integer.compare(e1.getEraIndex(), e2.getEraIndex());
+        });
+
+
+        for (EventCard e : events) {
+            e.resolve(/* game state / lista giocatori */);
+        }
+
     }
 
 
