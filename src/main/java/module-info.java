@@ -5,4 +5,6 @@ module it.polimi.ingsw.gc49 {
 
     opens it.polimi.ingsw.gc49 to javafx.fxml;
     exports it.polimi.ingsw.gc49;
+    exports it.polimi.ingsw.gc49.States;
+    opens it.polimi.ingsw.gc49.States to javafx.fxml;
 }

@@ -6,6 +6,7 @@ public class Player implements PlayerDataInterface{
     private String nickname;
     private final int playerIndex;
     private boolean connected;
+    /** status for a disconnection event where the player has been indefinitely removed from the board and won't be given the chance to be chosen for the following turns, until he comes back*/
     private boolean removedFromTrack;
     private Totem totem;
     private int food;
@@ -22,6 +23,11 @@ public class Player implements PlayerDataInterface{
     private int drawableLower;
     private boolean choseAnOffer;
 
+    /**
+     *
+     * @param nickname
+     * @param playerIndex this player index in the model's array of players;
+     */
     public Player ( String nickname, int playerIndex ) {
         this.nickname = nickname;
         this.playerIndex = playerIndex;
@@ -130,15 +136,28 @@ public class Player implements PlayerDataInterface{
     }
 
     //### actions' management and checks
+
+    /**
+     * Tells the caller if this player has some actions remaining.
+     * @return true if the player has still actions left to do.
+     */
     public boolean hasActionsLeft () {
         boolean hasNoActionsLeft = (drawableUpper==0 && drawableLower==0);
         return !hasNoActionsLeft;
     }
+
+    /**
+     * Cleans the remaining actions of the player.
+     */
     public void cleanRemainingActions () {
         drawableUpper = 0;
         drawableLower = 0;
     }
 
+    /**
+     * Tells the caller if this player has chosen an offer yet.
+     * @return true if the player has chosen an offer.
+     */
     public boolean hasChosenAnOffer () {
         return choseAnOffer;
     }

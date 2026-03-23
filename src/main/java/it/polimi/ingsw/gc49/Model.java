@@ -1,52 +1,52 @@
 package it.polimi.ingsw.gc49;
 
+import it.polimi.ingsw.gc49.States.InitialSetup;
+import it.polimi.ingsw.gc49.States.State;
+
 public class Model {
     private final int numOfPlayers;
     private int numOfConnectedPlayers;
-    private final Player[] players;
-    private final Track track;
+    private Player[] players;
+    private String[] playersNicknames;
+    private Track track;
+    private State currentState = new InitialSetup(this);
 
 
-    //### Constructors, from 2 to 5 players
-    public Model ( String firstPlayerNickname, String secondPlayerNickname ) {
-        this.numOfPlayers = 2;
-        players = new Player[numOfPlayers];
-        players[0] = new Player(firstPlayerNickname, 0);
-        players[1] = new Player(secondPlayerNickname, 1);
-        track = new Track(numOfPlayers);
+    //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
+    public Model ( int numOfPlayers, String[] playersNicknames ) {
+        this.numOfPlayers = numOfPlayers;
+        this.playersNicknames = playersNicknames;
+        executeCurrentState();
     }
-    public Model ( String firstPlayerNickname, String secondPlayerNickname, String thirdPlayerNickname ) {
-        this.numOfPlayers = 3;
-        players = new Player[numOfPlayers];
-        players[0] = new Player(firstPlayerNickname, 0);
-        players[1] = new Player(secondPlayerNickname, 1);
-        players[2] = new Player(thirdPlayerNickname, 2);
-        track = new Track(numOfPlayers);
-    }
-    public Model ( String firstPlayerNickname, String secondPlayerNickname, String thirdPlayerNickname, String fourthPlayerNickname ) {
-        this.numOfPlayers = 4;
-        players = new Player[numOfPlayers];
-        players[0] = new Player(firstPlayerNickname, 0);
-        players[1] = new Player(secondPlayerNickname, 1);
-        players[2] = new Player(thirdPlayerNickname, 2);
-        players[3] = new Player(fourthPlayerNickname, 3);
-        track = new Track(numOfPlayers);
-    }
-    public Model ( String firstPlayerNickname, String secondPlayerNickname, String thirdPlayerNickname, String fourthPlayerNickname, String fifthPlayerNickname ) {
-        this.numOfPlayers = 5;
-        players = new Player[numOfPlayers];
-        players[0] = new Player(firstPlayerNickname, 0);
-        players[1] = new Player(secondPlayerNickname, 1);
-        players[2] = new Player(thirdPlayerNickname, 2);
-        players[3] = new Player(fourthPlayerNickname, 3);
-        players[4] = new Player(fifthPlayerNickname, 4);
-        track = new Track(numOfPlayers);
 
+    //### getters
+    public int getNumOfPlayers () {
+        return numOfPlayers;
+    }
+    public int getNumOfConnectedPlayers () {
+        return numOfConnectedPlayers;
+    }
+    public Player[] getPlayers () {
+        return players;
+    }
+    public String[] getPlayersNicknames () {
+        return playersNicknames;
+    }
+    public Track getTrack () {
+        return track;
+    }
+
+    //### setters
+    public void setPlayers ( Player[] players ) {
+        this.players = players;
+    }
+    public void setTrack ( Track track ){
+        this.track = track;
     }
 
     //### Game's execution
     public void executeCurrentState () {
-
+        currentState = currentState.executeState();
     }
 
     //### Players' actions
