@@ -34,8 +34,9 @@ public class Model {
         players[1] = new Player(secondPlayerNickname, 1);
         players[2] = new Player(thirdPlayerNickname, 2);
         players[3] = new Player(fourthPlayerNickname, 3);
-        players[4] = new Player(fifthPlayerNickname, 4);
         
+        players[4] = new Player(fifthPlayerNickname, 4);
+
     }
 
     //### Game's execution
