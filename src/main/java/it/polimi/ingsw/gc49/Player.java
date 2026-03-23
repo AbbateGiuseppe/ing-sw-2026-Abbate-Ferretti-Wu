@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49;
 
-import it.polimi.ingsw.gc49.Cards.CharacterType;
+import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterType;
 
 public class Player implements PlayerDataInterface{
     private String nickname;

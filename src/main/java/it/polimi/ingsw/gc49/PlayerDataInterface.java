@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49;
 
-import it.polimi.ingsw.gc49.Cards.CharacterType;
+import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterType;
 
 //All I need to safely get data
 public interface PlayerDataInterface {
