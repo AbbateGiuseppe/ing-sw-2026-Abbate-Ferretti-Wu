@@ -22,7 +22,7 @@ public class Player implements PlayerDataInterface{
     private int drawableLower;
     private boolean choseAnOffer;
 
-    public Player (String nickname, int playerIndex) {
+    public Player ( String nickname, int playerIndex ) {
         this.nickname = nickname;
         this.playerIndex = playerIndex;
 
@@ -94,7 +94,7 @@ public class Player implements PlayerDataInterface{
     }
 
     //### event's methods
-    public void setupToPay (int foodToPay, int pointsToPay) {
+    public void setupToPay ( int foodToPay, int pointsToPay ) {
         this.foodToPay = foodToPay;
         this.pointsToPay = pointsToPay;
     }
