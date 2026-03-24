@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.States;
 
+import it.polimi.ingsw.gc49.CardBoard.CardBoard;
 import it.polimi.ingsw.gc49.Locks;
 import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
@@ -43,6 +44,7 @@ public class InitialSetup extends State {
         }
 
         model.setTrack(new Track(numOfPlayers));
+        model.setCardBoard(new CardBoard(numOfPlayers));
 
         while (model.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
             try {
@@ -51,6 +53,8 @@ public class InitialSetup extends State {
                 Thread.currentThread().interrupt();
             }
         }
+
+        model.getTrack().randomizeStartingOrder(model.getPlayers(), numOfPlayers); //randomizes the starting order.
 
         return new OfferChoosing(model); //goes to the offer choosing state as the next state.
     }

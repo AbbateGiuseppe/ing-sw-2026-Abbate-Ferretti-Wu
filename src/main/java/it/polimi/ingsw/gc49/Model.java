@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49;
 
+import it.polimi.ingsw.gc49.CardBoard.CardBoard;
 import it.polimi.ingsw.gc49.States.InitialSetup;
 import it.polimi.ingsw.gc49.States.State;
 
@@ -8,9 +9,12 @@ import java.util.EnumSet;
 public class Model {
     private final int numOfPlayers;
     private int numOfConnectedPlayers;
+    private Player currentPlayer;
+    private int currentPlayerIndex;
     private Player[] players;
     private String[] playersNicknames;
     private Track track;
+    private CardBoard cardBoard;
     private State currentState;
     private EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
 
@@ -52,6 +56,9 @@ public class Model {
     public void setTrack ( Track track ){
         this.track = track;
     }
+    public void setCardBoard ( CardBoard cardBoard ) {
+        this.cardBoard = cardBoard;
+    }
 
     //### Game's execution
     public void executeCurrentState () {
@@ -64,45 +71,63 @@ public class Model {
             if (players[playerIndex].getTotem() != null && !usedTotems.contains(chosenTotem)) {
                 usedTotems.add(chosenTotem);
                 players[playerIndex].setTotem(chosenTotem);
-
+                notify();
             }
-            notify();
         }
     }
 
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
-
+            if(playerIndex == currentPlayerIndex) {
+                if(players[playerIndex].getDrawableUpper() > 0){
+                    players[playerIndex].setDrawableUpper(players[playerIndex].getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                    players[playerIndex].addCharacterCard(cardBoard.drawUpperCharacter(cardIndex)); //adds the drawn card to the player.
+                    notify();
+                }
+            }
         }
-        notify();
     }
 
     public void drawLowerCharacter ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
-
+            if(playerIndex == currentPlayerIndex) {
+                if(players[playerIndex].getDrawableLower() > 0){
+                    players[playerIndex].setDrawableLower(players[playerIndex].getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                    players[playerIndex].addCharacterCard(cardBoard.drawLowerCharacter(cardIndex)); //adds the drawn card to the player.
+                    notify();
+                }
+            }
         }
-        notify();
     }
 
     public void drawUpperBuilding ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
-
+            if(playerIndex == currentPlayerIndex) {
+                if(players[playerIndex].getDrawableUpper() > 0){
+                    players[playerIndex].setDrawableUpper(players[playerIndex].getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                    players[playerIndex].addBuildingCard(cardBoard.drawUpperBuilding(cardIndex, players[playerIndex].getFood())); //adds the drawn card to the player, if he has enough food.
+                    notify();
+                }
+            }
         }
-        notify();
     }
 
     public void drawLowerBuilding ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
-
+            if(playerIndex == currentPlayerIndex) {
+                if(players[playerIndex].getDrawableLower() > 0){
+                    players[playerIndex].setDrawableLower(players[playerIndex].getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                    players[playerIndex].addBuildingCard(cardBoard.drawLowerBuilding(cardIndex, players[playerIndex].getFood())); //adds the drawn card to the player, if he has enough food.
+                    notify();
+                }
+            }
         }
-        notify();
     }
 
     public void chooseOffer ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
-
+            notify();
         }
-        notify();
     }
 
     //### Connection methods
