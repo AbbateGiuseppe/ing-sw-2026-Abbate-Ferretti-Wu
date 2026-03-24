@@ -12,7 +12,7 @@ public class BonusFoodEndTurnStrategy extends AbsBuildingStrategy {
 
     @Override
     public void effect(PlayerDataInterface player) {
-        ;
+        player.addFood(1);
     }
 
     @Override

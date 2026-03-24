@@ -12,11 +12,11 @@ public class DoubleShamanPointsStrategy extends AbsBuildingStrategy {
 
     @Override
     public void effect(PlayerDataInterface player) {
-        player.addPoints(player.getReward());
+        // player.setPointsToPay(2 * player.getPointsToPay());
     }
 
     @Override
     protected boolean condition(PlayerDataInterface player) {
-        return player.getReward()>0;
+        // return player.getUniqueWinner() && player.getPointsToPay() < 0;
     }
 }

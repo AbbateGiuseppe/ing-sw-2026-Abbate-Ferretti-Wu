@@ -17,6 +17,8 @@ public class Player implements PlayerDataInterface{
 
     private int foodToPay;
     private int pointsToPay;
+    private int tempStars;
+    private boolean uniqueWinner;
 
     private int drawableUpper;
     private int drawableLower;
@@ -93,7 +95,23 @@ public class Player implements PlayerDataInterface{
         return drawableLower;
     }
 
-    //### event's methods
+    public int getFoodToPay() {
+        return foodToPay;
+    }
+
+    public int getPointsToPay() {
+        return pointsToPay;
+    }
+
+    public void setFoodToPay(int foodToPay) {
+        this.foodToPay = foodToPay;
+    }
+
+    public void setPointsToPay(int pointsToPay) {
+        this.pointsToPay = pointsToPay;
+    }
+
+    // event's methods
     public void setupToPay ( int foodToPay, int pointsToPay ) {
         this.foodToPay = foodToPay;
         this.pointsToPay = pointsToPay;
@@ -109,9 +127,8 @@ public class Player implements PlayerDataInterface{
         return 0;
     }
 
-    @Override
-    public void addTempStars(int i) {
-
+    public void addTempStars() {
+        tempStars += 3;
     }
 
     public void confirmToPay () {
@@ -152,16 +169,6 @@ public class Player implements PlayerDataInterface{
     @Override
     public int GetBuildingDiscount() {
         return 0;
-    }
-
-    @Override
-    public int getPPTopay() {
-        return pointsToPay;
-    }
-
-    @Override
-    public int getFoodsTopay() {
-        return foodToPay;
     }
 
     @Override

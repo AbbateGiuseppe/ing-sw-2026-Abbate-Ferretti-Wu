@@ -16,10 +16,14 @@ public class SustenanceEvent extends EventCard {
     public void resolveEvent(List<Player> players) {
         for(Player player : players) {
             /*
-            *  player.foodToPay = databank.numCharacters - databank.numSustenanceDiscount;
-            *  eventManager.invokeEvent(BuildingEvent.SUSTENANCE_EVENT,player.getTotem()); // It modifies player.foodToPay
-            *   if(player.foodToPay > 0 && player.food >= player.foodToPay) player.food -= player.foodToPay;
-            *   else if (player.food < foodToPay) {player.points -= (player.foodToPay - player.food) * minusPoints;player.food = 0;}
+            *  player.setFoodToPay(Math.max(0,databank.numCharacters - databank.numSustenanceDiscount));
+            *  player.setPointsToPay(0);
+            *  eventManager.invokeEvent(BuildingEvent.SUSTENANCE_EVENT,player.getTotem());
+            *  if(player.getFood() < player.getFoodToPay()) {
+            *       player.setPointsToPay((player.getFoodToPay() - player.getFood()) * minusPoints);
+            *       player.setFoodToPay(player.getFood())
+            * }
+            * player.confirmToPay();
             * */
         }
     }

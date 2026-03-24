@@ -19,15 +19,16 @@ public class PaintingEvent extends EventCard {
     @Override
     public void resolveEvent(List<Player> players) {
         for(Player player : players) {
-            eventManager.invokeEvent(BuildingEvent.PAINTING_EVENT,player.getTotem());
             /*
+            * player.setFoodToPay(0);
             * if(databank.numArtists < threshold) {
-            *   player.points -= minusPoints;
+            *   player.setPointsToPay(minusPoints);
             * } else {
-            *   player.points += plusPoints * databank.numArtists ;
+            *   player.setPointsToPay(plusPoints * databank.numArtists);
             * }
-            *
             * */
+            eventManager.invokeEvent(BuildingEvent.PAINTING_EVENT,player.getTotem());
+            player.confirmToPay();
         }
     }
 }

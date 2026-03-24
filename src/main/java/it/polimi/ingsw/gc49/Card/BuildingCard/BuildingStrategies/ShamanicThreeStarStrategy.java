@@ -5,14 +5,14 @@ import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.PlayerDataInterface;
 
-public class ShamanicStarStrategy extends AbsBuildingStrategy {
-    public ShamanicStarStrategy(BuildingEvent event, EventManager manager) {
+public class ShamanicThreeStarStrategy extends AbsBuildingStrategy {
+    public ShamanicThreeStarStrategy(BuildingEvent event, EventManager manager) {
         super(event, manager);
     }
 
     @Override
     public void effect(PlayerDataInterface player) {
-        player.addTempStars(3);
+        // player.addTempStars();
     }
 
     @Override

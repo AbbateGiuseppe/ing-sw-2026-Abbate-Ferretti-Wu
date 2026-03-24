@@ -10,14 +10,9 @@ public class DoubleBuilderCardStrategy extends AbsBuildingStrategy {
         super(event, manager);
     }
 
-    /***\
-     *
-     * @param player doubles builderCard's point at end game
-     */
     @Override
     public void effect(PlayerDataInterface player) {
-        int reward = player.GetBuilderPP();
-        player.addPoints(reward);
+        // databank.numBuilderPoints *= 2;
     }
 
     @Override

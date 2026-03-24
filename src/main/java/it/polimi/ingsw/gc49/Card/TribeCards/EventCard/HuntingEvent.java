@@ -15,9 +15,12 @@ public class HuntingEvent extends EventCard {
     @Override
     public void resolveEvent(List<Player> players) {
         for(Player player : players) {
-            // player.food += databank.numHunters;
-            // player.points += databank.numHunters*pointsPerHunter;
-            eventManager.invokeEvent(BuildingEvent.HUNTING_EVENT,player.getTotem()); // It updates player.food and player.points
+            /*
+            * player.setFoodToPay(-databank.numHunters);
+            * player.setPointsToPay(-databank.numHunters*pointsPerHunter);
+            * */
+            eventManager.invokeEvent(BuildingEvent.HUNTING_EVENT,player.getTotem());
+            player.confirmToPay();
         }
     }
 }

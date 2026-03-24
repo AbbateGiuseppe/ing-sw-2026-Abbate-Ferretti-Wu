@@ -13,14 +13,14 @@ public abstract class AbsBuildingStrategy implements BuildingStrategyInterface {
         this.manager = manager;
     }
 
-    protected abstract void effect(PlayerDataInterface player);
-
     @Override
     public void activateEffect(PlayerDataInterface playerDataInterface){
         if(condition(playerDataInterface)){
             effect(playerDataInterface);
         }
     }
+
+    protected abstract void effect(PlayerDataInterface player);
 
     protected abstract boolean condition(PlayerDataInterface playerDataInterface);
 }

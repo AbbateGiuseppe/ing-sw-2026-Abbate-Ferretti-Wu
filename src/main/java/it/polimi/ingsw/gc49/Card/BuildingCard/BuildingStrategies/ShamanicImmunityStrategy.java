@@ -12,10 +12,10 @@ public class ShamanicImmunityStrategy extends AbsBuildingStrategy {
 
     @Override
     public void effect(PlayerDataInterface player) {
-            player.setupToPay(0,0);
+        // player.setPointsToPay(0);
     }
 
     protected boolean condition(PlayerDataInterface player){
-        return player.getPPTopay()>0;
+        // return player.getPointTopay() > 0;
     }
 }

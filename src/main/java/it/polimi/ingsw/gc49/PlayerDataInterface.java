@@ -14,10 +14,6 @@ public interface PlayerDataInterface {
 
     public int GetBuildingDiscount();
 
-    public int getPPTopay();
-
-    public int getFoodsTopay();
-
     boolean IsGettingBonusFood();
 
     void addFood(int i);
@@ -30,5 +26,4 @@ public interface PlayerDataInterface {
 
     int getReward();
 
-    void addTempStars(int i);
 }

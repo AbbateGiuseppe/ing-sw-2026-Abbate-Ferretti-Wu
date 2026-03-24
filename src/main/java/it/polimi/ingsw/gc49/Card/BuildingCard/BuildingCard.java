@@ -11,15 +11,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BuildingCard extends Card implements BuildingEventListener{
-    BuildingStrategyInterface strategy;
-    Player owner;
-    int PPReward;
-    int foodPrice;
+    public static List<BuildingCard> getAllBuildingCards(EventManager manager){
+        List<BuildingCard> list = new ArrayList<>();
+        //TODO all initialization,the following is one example
+        BonusFoodAndPPStrategy strategy = new BonusFoodAndPPStrategy(BuildingEvent.HUNTING_EVENT,manager);
+        strategy.setByUnit(CharacterType.Hunter,1,1);
 
+        BuildingCard card = new BuildingCard(strategy,0,0);
+        list.add(card);
+        return list;
+    }
+
+    private final BuildingStrategyInterface strategy;
+    private final int PPReward;
+    private final int foodPrice;
+    private Player owner;
+
+    public BuildingCard(BuildingStrategyInterface strategy, int PPReward, int foodPrice) {
+        this.strategy = strategy;
+        this.PPReward = PPReward;
+        this.foodPrice = foodPrice;
+    }
 
     @Override
     public boolean canGet(Player player) {
         return (player.getFood()-player.GetBuildingDiscount()) >= foodPrice;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
     }
 
     public Player getOwner() {
@@ -38,27 +58,6 @@ public class BuildingCard extends Card implements BuildingEventListener{
         return foodPrice;
     }
 
-    public void setOwner(Player owner) {
-        this.owner = owner;
-    }
-
-    public BuildingCard(BuildingStrategyInterface strategy, int PPReward, int foodPrice) {
-        this.strategy = strategy;
-        this.PPReward = PPReward;
-        this.foodPrice = foodPrice;
-    }
-
-    public static List<BuildingCard> getAllBuildingCards(EventManager manager){
-        List<BuildingCard> list = new ArrayList<>();
-        //TODO all initialization
-        BonusFoodAndPPStrategy strategy = new BonusFoodAndPPStrategy(BuildingEvent.HUNTING_EVENT,manager);
-        strategy.setByUnit(CharacterType.Hunter,1,1);
-
-        BuildingCard card = new BuildingCard(strategy,0,0);
-        list.add(card);
-        return list;
-    }
-
     @Override
     public void onEventEffect(Totem totem) {
         if(isOwner((totem))){
@@ -67,7 +66,6 @@ public class BuildingCard extends Card implements BuildingEventListener{
     }
 
     private boolean isOwner(Totem totem){
-        //TODO add event for all player case
         return owner.getTotem() == totem;
     }
 }

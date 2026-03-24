@@ -12,13 +12,9 @@ public class SustainDiscountByClassStrategy extends AbsBuildingStrategy {
     }
 
     CharacterType unit;
-    int discountPerUnit;
     @Override
     public void effect(PlayerDataInterface player) {
-        int tot = player.getFoodsTopay();
-        int discount = player.GetCharaCount(unit)*discountPerUnit;
-        tot-=discount;
-        player.setupToPay(tot,0);
+        // player.setFoodToPay(player.getFoodsTopay() - player.GetCharaCount(unit));
     }
 
     @Override
