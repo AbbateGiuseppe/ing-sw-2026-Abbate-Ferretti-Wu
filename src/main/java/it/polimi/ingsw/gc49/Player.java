@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49;
 
+import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterType;
 
 public class Player implements PlayerDataInterface{
@@ -52,10 +53,10 @@ public class Player implements PlayerDataInterface{
     public void addPoints (int addedPoints) {
         points = points + addedPoints;
     }
-    public void addCharacterCard () {
+    public void addCharacterCard ( Card card ) {
 
     }
-    public void addBuildingCard () {
+    public void addBuildingCard ( Card card ) {
 
     }
 
