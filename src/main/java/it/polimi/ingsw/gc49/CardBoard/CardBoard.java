@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.CardBoard;
 import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Era;
+import it.polimi.ingsw.gc49.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,26 +22,26 @@ public class CardBoard {
         this.discards = new ArrayList<>();
     }
 
-    public Card drawUpperCharacter(int index) {
-        Card drawn = line.drawUpperCharacter(index);
+    public Card drawUpperCharacter(int cardIndex) {
+        Card drawn = line.drawUpperCharacter(cardIndex);
         // niente gestione scarti qui: la carta viene presa dal giocatore
         return drawn;
     }
 
-    public Card drawUpperBuilding(int index, int availableFood) {
-        Card drawn = line.drawUpperBuilding(index, availableFood);
+    public Card drawUpperBuilding(int cardIndex, Player drawingPlayer) {
+        Card drawn = line.drawUpperBuilding(cardIndex, drawingPlayer);
         return drawn;
     }
 
 
-    public Card drawLowerCharacter(int index) {
-        Card drawn = line.drawLowerCharacter(index);
+    public Card drawLowerCharacter(int cardIndex) {
+        Card drawn = line.drawLowerCharacter(cardIndex);
         return drawn;
     }
 
 
-    public Card drawLowerBuilding(int index, int availableFood) {
-        Card drawn = line.drawLowerBuilding(index, availableFood);
+    public Card drawLowerBuilding(int cardIndex, Player drawingPlayer) {
+        Card drawn = line.drawLowerBuilding(cardIndex, drawingPlayer);
         return drawn;
     }
 
