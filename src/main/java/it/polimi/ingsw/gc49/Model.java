@@ -3,19 +3,23 @@ package it.polimi.ingsw.gc49;
 import it.polimi.ingsw.gc49.States.InitialSetup;
 import it.polimi.ingsw.gc49.States.State;
 
+import java.util.EnumSet;
+
 public class Model {
     private final int numOfPlayers;
     private int numOfConnectedPlayers;
     private Player[] players;
     private String[] playersNicknames;
     private Track track;
-    private State currentState = new InitialSetup(this);
+    private State currentState;
+    private EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
 
 
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
     public Model ( int numOfPlayers, String[] playersNicknames ) {
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
+        currentState = new InitialSetup(this);
         executeCurrentState();
     }
 
@@ -50,8 +54,11 @@ public class Model {
     }
 
     //### Players' actions
-    public void chooseTotem() {
-
+    public void chooseTotem( int playerIndex, Totem chosenTotem ) {
+        if ( players[playerIndex].getTotem() != null && !usedTotems.contains(chosenTotem) ) {
+            usedTotems.add(chosenTotem);
+            players[playerIndex].setTotem(chosenTotem);
+        }
     }
 
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) {
