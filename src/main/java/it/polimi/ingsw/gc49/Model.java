@@ -105,7 +105,7 @@ public class Model {
             if(playerIndex == currentPlayerIndex) {
                 if(players[playerIndex].getDrawableUpper() > 0){
                     players[playerIndex].setDrawableUpper(players[playerIndex].getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
-                    players[playerIndex].addBuildingCard(cardBoard.drawUpperBuilding(cardIndex, players[playerIndex].getFood())); //adds the drawn card to the player, if he has enough food.
+                    players[playerIndex].addBuildingCard(cardBoard.drawUpperBuilding(cardIndex, players[playerIndex])); //adds the drawn card to the player, if it's drawable by him.
                     notify();
                 }
             }
@@ -117,7 +117,7 @@ public class Model {
             if(playerIndex == currentPlayerIndex) {
                 if(players[playerIndex].getDrawableLower() > 0){
                     players[playerIndex].setDrawableLower(players[playerIndex].getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
-                    players[playerIndex].addBuildingCard(cardBoard.drawLowerBuilding(cardIndex, players[playerIndex].getFood())); //adds the drawn card to the player, if he has enough food.
+                    players[playerIndex].addBuildingCard(cardBoard.drawLowerBuilding(cardIndex, players[playerIndex])); //adds the drawn card to the player, if it's drawable by him.
                     notify();
                 }
             }
