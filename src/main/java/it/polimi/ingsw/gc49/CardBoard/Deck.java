@@ -1,6 +1,6 @@
-package it.polimi.ingsw.gc49.Cards.CardBoard;
+package it.polimi.ingsw.gc49.CardBoard;
 
-import it.polimi.ingsw.gc49.Cards.Card;
+import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Era;
 
 import java.util.ArrayDeque;

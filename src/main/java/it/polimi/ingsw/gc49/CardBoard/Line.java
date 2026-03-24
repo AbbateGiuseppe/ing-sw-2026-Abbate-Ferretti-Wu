@@ -1,7 +1,9 @@
-package it.polimi.ingsw.gc49.Cards.CardBoard;
+package it.polimi.ingsw.gc49.CardBoard;
 
-import it.polimi.ingsw.gc49.Cards.BuildingCard.BuildingCard;
-import it.polimi.ingsw.gc49.Cards.Card;
+import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingCard;
+import it.polimi.ingsw.gc49.Card.Card;
+import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterCard;
+import it.polimi.ingsw.gc49.Card.TribeCards.EventCard.EventCard;
 import it.polimi.ingsw.gc49.Era;
 
 import java.util.ArrayList;
