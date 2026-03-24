@@ -5,21 +5,28 @@ import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterCard;
 import it.polimi.ingsw.gc49.Card.TribeCards.EventCard.EventCard;
 import it.polimi.ingsw.gc49.Era;
+import it.polimi.ingsw.gc49.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Line {
+    /// Per la macchina a stati finiti
     private Era currentEra = ?; //chiedi
     private boolean eraChanged = false;
     private Era nextEra = null;
+
+
+    /// file sopra e sotto
     private final ArrayList<Card> upperLine;
     private final ArrayList<Card> lowerLine;
     private final ArrayList<Card> upperBuilding;
     private final ArrayList<Card> lowerBuilding;
     private final Deck deck;
 
+
+    /// Costruttore
     public Line(int numPlayers) {
 
         this.deck = new Deck(numPlayers);
@@ -28,6 +35,7 @@ public class Line {
         this.upperBuilding = new ArrayList<>();
         this.lowerBuilding = new ArrayList<>();
         }
+
 
         public Card dealTribeCard() {
             return deck.dealTribeCard();      // implementalo in Deck
@@ -38,26 +46,26 @@ public class Line {
         }
 
 
-    public Card drawUpperCharacter(int index) {
-        if (index < 0 || index >= upperLine.size()) {
+    public Card drawUpperCharacter(int cardIndex) {
+        if (cardIndex < 0 || cardIndex >= upperLine.size()) {
             return null;
             }
 
-        Card picked = upperLine.get(index);
+        Card picked = upperLine.get(cardIndex);
         if (!(picked instanceof CharacterCard)) {
             return null;                        // sicurezza, nel caso ci finisca altro
         }
 
-        upperLine.remove(index);               // rimuovo DAVVERO dall'ArrayList
+        upperLine.remove(cardIndex);               // rimuovo DAVVERO dall'ArrayList
         return picked;
     }
 
-    public Card drawUpperBuilding(int index, int availableFood) {
-        if (index < 0 || index >= upperBuilding.size()) {
+    public Card drawUpperBuilding(int cardIndex, Player drawingPlayer) {
+        if (cardIndex < 0 || cardIndex>= upperBuilding.size()) {
             return null;
         }
 
-        Card picked = upperBuilding.get(index);
+        Card picked = upperBuilding.get(cardIndex);
         if (!(picked instanceof BuildingCard)) {
             return null;
         }
@@ -65,36 +73,36 @@ public class Line {
         BuildingCard building = (BuildingCard) picked;
 
         // check sul cibo: se non ne ho abbastanza, non posso prenderla
-        if (building.getFoodCost() > availableFood) {  //chiedi ezcheng
+        if (!building.canGet(drawingPlayer)) {  //chiedi ezcheng
             return null;                       // NON rimuovo dalla lista
         }
 
-        upperBuilding.remove(index);           // ora la tolgo dalla board
+        upperBuilding.remove(cardIndex);           // ora la tolgo dalla board
         return building;
     }
 
 
-    public Card drawLowerCharacter(int index) {
-        if (index < 0 || index >= lowerLine.size()) {
+    public Card drawLowerCharacter(int cardIndex) {
+        if (cardIndex < 0 || cardIndex >= lowerLine.size()) {
             return null;
         }
 
-        Card picked = lowerLine.get(index);
+        Card picked = lowerLine.get(cardIndex);
         if (!(picked instanceof CharacterCard)) {
             return null;
         }
 
-        lowerLine.remove(index);
+        lowerLine.remove(cardIndex);
 
         return picked;
     }
 
-    public Card drawLowerBuilding(int index, int availableFood) {
-        if (index < 0 || index >= lowerBuilding.size()) {
+    public Card drawLowerBuilding(int cardIndex, Player drawingPlayer) {
+        if (cardIndex < 0 || cardIndex >= lowerBuilding.size()) {
             return null;
         }
 
-        Card picked = lowerBuilding.get(index);
+        Card picked = lowerBuilding.get(cardIndex);
         if (!(picked instanceof BuildingCard)) {
             return null;
         }
@@ -102,33 +110,26 @@ public class Line {
         BuildingCard building = (BuildingCard) picked;
 
 
-        if (building.getFoodCost() > availableFood) {
+        if (!building.canGet(drawingPlayer)) {
             return null;
         }
-        /// chiedere di aggiungere cibo su carta edificio
 
-        lowerBuilding.remove(index);
+        lowerBuilding.remove(cardIndex);
         return building;
     }
 
 
-
+/// metodi per gli stati finiti
     public boolean hasEraChanged() {
         return eraChanged;
     }
-
-
     public Era getNextEra() {
         return nextEra;
     }
-
-
-
     public void clearEraChange() {
         eraChanged = false;
         nextEra = null;
     }
-
     public Era getCurrentEra() {
         return currentEra;
     }
@@ -136,7 +137,7 @@ public class Line {
 /// tutti gli end
 
     public void endRound(int numPlayers) {
-        resolveLowerLineEvents();
+        resolveEvents(lowerLine);
         lowerLine.clear();
         lowerLine.addAll(upperLine);
         upperLine.clear();
@@ -190,7 +191,6 @@ public class Line {
     public void endGame() {
         // 1) Risolvi prima gli eventi nella fila inferiore
         resolveEvents(lowerLine);
-
         // 2) Poi risolvi quelli eventualmente nella fila superiore
         resolveEvents(upperLine);
 
@@ -210,24 +210,18 @@ public class Line {
             }
         }
 
-        // Ordina: stessi tipi per Era crescente, Sostentamento per ultimo
+        // ordina: stesso tipo per Era crescente, Sostentamento per ultimo [file:3]
         events.sort((e1, e2) -> {
             boolean s1 = e1.getType() == EventType.SUSTENTAMENTO;
             boolean s2 = e2.getType() == EventType.SUSTENTAMENTO;
-            if (s1 && !s2) return 1;   // e1 dopo e2
-            if (!s1 && s2) return -1;  // e1 prima di e2
+            if (s1 && !s2) return 1;
+            if (!s1 && s2) return -1;
             return Integer.compare(e1.getEraIndex(), e2.getEraIndex());
         });
 
-
         for (EventCard e : events) {
-            e.resolve(/* game state / lista giocatori */);
+            e.resolve(/* Model o lista giocatori */);
         }
-
     }
-
-
-
-
 
 }
