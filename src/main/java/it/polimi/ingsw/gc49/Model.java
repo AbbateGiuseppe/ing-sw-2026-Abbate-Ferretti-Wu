@@ -20,7 +20,9 @@ public class Model {
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
         currentState = new InitialSetup(this);
-        executeCurrentState();
+        synchronized (Locks.playerInput) {
+            executeCurrentState();
+        }
     }
 
     //### getters
@@ -39,6 +41,9 @@ public class Model {
     public Track getTrack () {
         return track;
     }
+    public EnumSet<Totem> getUsedTotems () {
+        return usedTotems;
+    }
 
     //### setters
     public void setPlayers ( Player[] players ) {
@@ -54,30 +59,50 @@ public class Model {
     }
 
     //### Players' actions
-    public void chooseTotem( int playerIndex, Totem chosenTotem ) {
-        if ( players[playerIndex].getTotem() != null && !usedTotems.contains(chosenTotem) ) {
-            usedTotems.add(chosenTotem);
-            players[playerIndex].setTotem(chosenTotem);
+    public void chooseTotem ( int playerIndex, Totem chosenTotem ) {
+        synchronized (Locks.playerInput) {
+            if (players[playerIndex].getTotem() != null && !usedTotems.contains(chosenTotem)) {
+                usedTotems.add(chosenTotem);
+                players[playerIndex].setTotem(chosenTotem);
+
+            }
+            notify();
         }
     }
 
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) {
+        synchronized (Locks.playerInput) {
+
+        }
+        notify();
     }
 
     public void drawLowerCharacter ( int playerIndex, int cardIndex ) {
+        synchronized (Locks.playerInput) {
 
+        }
+        notify();
     }
 
     public void drawUpperBuilding ( int playerIndex, int cardIndex ) {
+        synchronized (Locks.playerInput) {
 
+        }
+        notify();
     }
 
     public void drawLowerBuilding ( int playerIndex, int cardIndex ) {
+        synchronized (Locks.playerInput) {
 
+        }
+        notify();
     }
 
     public void chooseOffer ( int playerIndex, int cardIndex ) {
+        synchronized (Locks.playerInput) {
 
+        }
+        notify();
     }
 
     //### Connection methods
