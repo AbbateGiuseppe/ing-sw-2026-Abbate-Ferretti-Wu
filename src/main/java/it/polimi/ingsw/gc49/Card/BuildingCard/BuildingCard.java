@@ -51,7 +51,7 @@ public class BuildingCard extends Card implements BuildingEventListener{
     public static List<BuildingCard> getAllBuildingCards(EventManager manager){
         List<BuildingCard> list = new ArrayList<>();
         //TODO all initialization
-        BonusFoodAndPPStrategy strategy = new BonusFoodAndPPStrategy(BuildingEvent.Hunting,manager);
+        BonusFoodAndPPStrategy strategy = new BonusFoodAndPPStrategy(BuildingEvent.HUNTING_EVENT,manager);
         strategy.setByUnit(CharacterType.Hunter,1,1);
 
         BuildingCard card = new BuildingCard(strategy,0,0);
