@@ -1,6 +1,4 @@
-package it.polimi.ingsw.gc49.Card.BuildingCard;
-
-import it.polimi.ingsw.gc49.Totem;
+package it.polimi.ingsw.gc49;
 
 import java.util.EventListener;
 

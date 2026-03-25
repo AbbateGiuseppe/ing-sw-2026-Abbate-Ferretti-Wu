@@ -1,8 +1,6 @@
 package it.polimi.ingsw.gc49;
 
-import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterType;
-
-public class Player implements PlayerDataInterface{
+public class Player {
     private String nickname;
     private final int playerIndex;
     private boolean connected;
@@ -15,6 +13,7 @@ public class Player implements PlayerDataInterface{
 
     public final DataBank data;
 
+    // Event Management
     private int foodToPay;
     private int pointsToPay;
     private int tempStars;
@@ -95,45 +94,33 @@ public class Player implements PlayerDataInterface{
         return drawableLower;
     }
 
+    // Event Management
     public int getFoodToPay() {
         return foodToPay;
     }
-
-    public int getPointsToPay() {
-        return pointsToPay;
-    }
-
     public void setFoodToPay(int foodToPay) {
         this.foodToPay = foodToPay;
     }
-
+    public int getPointsToPay() {
+        return pointsToPay;
+    }
     public void setPointsToPay(int pointsToPay) {
         this.pointsToPay = pointsToPay;
     }
-
-    // event's methods
-    public void setupToPay ( int foodToPay, int pointsToPay ) {
-        this.foodToPay = foodToPay;
-        this.pointsToPay = pointsToPay;
+    public boolean isUniqueWinner() {return uniqueWinner;}
+    public void setUniqueWinner(boolean uniqueWinner) {this.uniqueWinner = uniqueWinner;}
+    public int getTempStars() {return tempStars;}
+    public void setTempStars(int tempStars) {this.tempStars = tempStars;}
+    public void confirmToPay () {food -= foodToPay;points -= pointsToPay;reset();}
+    private void reset() {foodToPay = 0; pointsToPay = 0; uniqueWinner = false; tempStars = 0;}
+    // TODO:return true if the totem of the player gets some food on the orderslot at the end of the his turn
+    public boolean IsGettingBonusFood() {
+        return false;
     }
 
-    @Override
-    public int GetBuilderPP() {
-        return 0;
-    }
 
-    @Override
-    public int getReward() {
-        return 0;
-    }
 
-    public void addTempStars() {
-        tempStars += 3;
-    }
 
-    public void confirmToPay () {
-
-    }
 
     //### connective and exceptional states
     public boolean isConnected () {
@@ -158,22 +145,6 @@ public class Player implements PlayerDataInterface{
 
     public boolean hasChosenAnOffer () {
         return choseAnOffer;
-    }
-
-    @Override
-    public int GetCharaCount(CharacterType type) {
-        //TODO
-        return 0;
-    }
-
-    @Override
-    public int GetBuildingDiscount() {
-        return 0;
-    }
-
-    @Override
-    public boolean IsGettingBonusFood() {
-        return false;
     }
 }
 

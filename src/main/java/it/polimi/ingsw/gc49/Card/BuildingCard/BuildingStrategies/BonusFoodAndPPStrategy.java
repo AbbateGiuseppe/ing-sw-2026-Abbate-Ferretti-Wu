@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard.BuildingStrategies;
 
 import it.polimi.ingsw.gc49.Card.BuildingCard.AbsBuildingStrategy;
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEvent;
-import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterType;
+import it.polimi.ingsw.gc49.BuildingEvent;
+import it.polimi.ingsw.gc49.CharacterType;
 import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.PlayerDataInterface;
+import it.polimi.ingsw.gc49.Player;
 
 public class BonusFoodAndPPStrategy extends AbsBuildingStrategy {
     CharacterType unit;
@@ -18,15 +18,15 @@ public class BonusFoodAndPPStrategy extends AbsBuildingStrategy {
     }
 
     @Override
-    public void effect(PlayerDataInterface player) {
-        int unitCount = player.GetCharaCount(unit);
+    public void effect(Player player) {
+        int unitCount = player.data.getCharacterCount(unit);
 
         player.addFood(foodPerUnit*unitCount+constFood);
         player.addPoints(ppPerUnit*unitCount+constPP);
     }
 
     @Override
-    protected boolean condition(PlayerDataInterface playerDataInterface) {
+    protected boolean condition(Player player) {
         return true;
     }
 

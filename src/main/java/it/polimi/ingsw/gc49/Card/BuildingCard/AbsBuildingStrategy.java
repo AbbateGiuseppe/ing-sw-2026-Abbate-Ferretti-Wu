@@ -1,7 +1,8 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard;
 
+import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.PlayerDataInterface;
+import it.polimi.ingsw.gc49.Player;
 
 public abstract class AbsBuildingStrategy implements BuildingStrategyInterface {
 
@@ -14,13 +15,13 @@ public abstract class AbsBuildingStrategy implements BuildingStrategyInterface {
     }
 
     @Override
-    public void activateEffect(PlayerDataInterface playerDataInterface){
-        if(condition(playerDataInterface)){
-            effect(playerDataInterface);
+    public void activateEffect(Player player){
+        if(condition(player)){
+            effect(player);
         }
     }
 
-    protected abstract void effect(PlayerDataInterface player);
+    protected abstract void effect(Player player);
 
-    protected abstract boolean condition(PlayerDataInterface playerDataInterface);
+    protected abstract boolean condition(Player player);
 }

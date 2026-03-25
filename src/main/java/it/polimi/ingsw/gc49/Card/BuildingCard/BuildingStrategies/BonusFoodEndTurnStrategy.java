@@ -1,9 +1,9 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard.BuildingStrategies;
 
 import it.polimi.ingsw.gc49.Card.BuildingCard.AbsBuildingStrategy;
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEvent;
+import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.PlayerDataInterface;
+import it.polimi.ingsw.gc49.Player;
 
 public class BonusFoodEndTurnStrategy extends AbsBuildingStrategy {
     public BonusFoodEndTurnStrategy(BuildingEvent event, EventManager manager) {
@@ -11,12 +11,12 @@ public class BonusFoodEndTurnStrategy extends AbsBuildingStrategy {
     }
 
     @Override
-    public void effect(PlayerDataInterface player) {
+    public void effect(Player player) {
         player.addFood(1);
     }
 
     @Override
-    protected boolean condition(PlayerDataInterface player) {
+    protected boolean condition(Player player) {
         return player.IsGettingBonusFood();
     }
 

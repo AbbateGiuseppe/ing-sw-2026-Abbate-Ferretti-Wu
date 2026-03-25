@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEvent;
+import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.List;
@@ -20,24 +20,19 @@ public class RitualEvent extends EventCard {
             eventManager.invokeEvent(BuildingEvent.RITUAL_PRIOR_EVENT,player.getTotem());
         }
 
-        Player[] winners = determineWinners(players);
         Player[] losers = determineLosers(players);
-
         for(Player player : losers) {
-            /*
-            * player.setPointsToPay(minusPoints);
-            * player.setFoodToPay(0);
-            * */
+            player.setPointsToPay(minusPoints);
+            player.setFoodToPay(0);
         }
 
+        Player[] winners = determineWinners(players);
         for(Player player : winners) {
-            /*
-             * player.setPointsToPay(-plusPoints);
-             * player.setFoodToPay(0);
-             * */
+             player.setPointsToPay(-plusPoints);
+             player.setFoodToPay(0);
         }
         if(winners.length == 1) {
-            // winners[0].setUniqueWinner(true);
+             winners[0].setUniqueWinner(true);
         }
 
         for(Player player : players) {
@@ -46,12 +41,12 @@ public class RitualEvent extends EventCard {
         }
     }
 
-    // Return the players who have the most stars(using also player.tempStars)
+    // TODO:Return the players who have the most stars(using also player.tempStars)
     private Player[] determineWinners(List<Player> players) {
         return null;
     }
 
-    // Return the players who have the least stars(using also player.tempStars)
+    // TODO:Return the players who have the least stars(using also player.tempStars)
     private Player[] determineLosers(List<Player> players) {
         return null;
     }

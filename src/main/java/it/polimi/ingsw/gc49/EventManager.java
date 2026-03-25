@@ -1,8 +1,5 @@
 package it.polimi.ingsw.gc49;
 
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEvent;
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEventListener;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.Card.BuildingCard;
+package it.polimi.ingsw.gc49;
 
 public enum BuildingEvent {
     HUNTING_EVENT,

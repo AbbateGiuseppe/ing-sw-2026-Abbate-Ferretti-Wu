@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEvent;
+import it.polimi.ingsw.gc49.BuildingEvent;
+import it.polimi.ingsw.gc49.CharacterType;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.List;
@@ -19,14 +20,12 @@ public class PaintingEvent extends EventCard {
     @Override
     public void resolveEvent(List<Player> players) {
         for(Player player : players) {
-            /*
-            * player.setFoodToPay(0);
-            * if(databank.numArtists < threshold) {
-            *   player.setPointsToPay(minusPoints);
-            * } else {
-            *   player.setPointsToPay(plusPoints * databank.numArtists);
-            * }
-            * */
+            player.setFoodToPay(0);
+            if(player.data.getCharacterCount(CharacterType.Artist) < threshold) {
+               player.setPointsToPay(minusPoints);
+            } else {
+               player.setPointsToPay(plusPoints * player.data.getCharacterCount(CharacterType.Artist));
+            }
             eventManager.invokeEvent(BuildingEvent.PAINTING_EVENT,player.getTotem());
             player.confirmToPay();
         }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard;
 
+import it.polimi.ingsw.gc49.CharacterType;
 import it.polimi.ingsw.gc49.Player;
 
 public class Builder extends CharacterCard {
@@ -13,8 +14,8 @@ public class Builder extends CharacterCard {
 
     @Override
     public void updateDataBank(Player player) {
-        // databank.numBuilders += 1;
-        // databank.numBuildingDiscount += buildingDiscount;
-        // databank.numBuilderPoints += numPoints;
+        player.data.addCharacterCount(CharacterType.Builder,1);
+        player.data.addNumBuildingDiscount(buildingDiscount);
+        player.data.addNumBuilderPoints(numPoints);
     }
 }
