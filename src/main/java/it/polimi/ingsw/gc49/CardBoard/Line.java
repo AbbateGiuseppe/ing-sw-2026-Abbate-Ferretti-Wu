@@ -163,7 +163,7 @@ public class Line {
                 // segna che c'è stato un cambio era, ma NON fai ancora endEra
                 currentEra = cardEra;
                 eraChanged = true;
-                nextEra = cardEra;
+                newEra = cardEra;
                 previousEra = cardEra;
             }
 
@@ -195,7 +195,6 @@ public class Line {
         // aggiorna stato interno e resetta il flag di cambio era
         currentEra = newEra;
         eraChanged = false;
-        newEra = Era.THIRD;
     }
 
     public void endGame() {
