@@ -76,7 +76,7 @@ public class Line {
         if (!building.canGet(drawingPlayer)) {  //chiedi ezcheng
             return null;                       // NON rimuovo dalla lista
         }
-
+i
         upperBuilding.remove(cardIndex);           // ora la tolgo dalla board
         return building;
     }
