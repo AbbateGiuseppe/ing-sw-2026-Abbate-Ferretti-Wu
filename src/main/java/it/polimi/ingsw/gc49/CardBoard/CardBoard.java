@@ -15,6 +15,9 @@ public class CardBoard {
     private final Line line;
     private final ArrayList<Card> discards;
     private final Deck deck;
+/// chiedere come mettere playerlist
+
+
 
     public CardBoard(int numPlayers) {
         this.deck = new Deck(numPlayers);   // costruisci il mazzo completo

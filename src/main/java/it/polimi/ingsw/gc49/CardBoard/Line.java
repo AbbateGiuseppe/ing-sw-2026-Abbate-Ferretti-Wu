@@ -10,12 +10,16 @@ import it.polimi.ingsw.gc49.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.sort;
+
 
 public class Line {
     /// Per la macchina a stati finiti
     private Era currentEra = ?; //chiedi
     private boolean eraChanged = false;
     private Era nextEra = null;
+
+
 
 
     /// file sopra e sotto
@@ -137,7 +141,7 @@ public class Line {
 /// tutti gli end
 
     public void endRound(int numPlayers) {
-        resolveEvents(lowerLine);
+        resolveEvent(lowerLine);
         lowerLine.clear();
         lowerLine.addAll(upperLine);
         upperLine.clear();
@@ -190,9 +194,9 @@ public class Line {
 
     public void endGame() {
         // 1) Risolvi prima gli eventi nella fila inferiore
-        resolveEvents(lowerLine);
+        resolveEvent(lowerLine);
         // 2) Poi risolvi quelli eventualmente nella fila superiore
-        resolveEvents(upperLine);
+        resolveEvent(upperLine);
 
         // 3) Se vuoi, svuoti tutto il board (opzionale)
         lowerLine.clear();
@@ -201,7 +205,7 @@ public class Line {
         upperBuilding.clear();
     }
 
-    private void resolveEvents(List<Card> line) {
+    private void resolveEvent(List<Card> line, List<Player> playerList) {
         List<EventCard> events = new ArrayList<>();
 
         for (Card c : line) {
@@ -209,18 +213,11 @@ public class Line {
                 events.add((EventCard) c);
             }
         }
-
         // ordina: stesso tipo per Era crescente, Sostentamento per ultimo [file:3]
-        events.sort((e1, e2) -> {
-            boolean s1 = e1.getType() == EventType.SUSTENTAMENTO;
-            boolean s2 = e2.getType() == EventType.SUSTENTAMENTO;
-            if (s1 && !s2) return 1;
-            if (!s1 && s2) return -1;
-            return Integer.compare(e1.getEraIndex(), e2.getEraIndex());
-        });
+        sort(events);
 
         for (EventCard e : events) {
-            e.resolve(/* Model o lista giocatori */);
+            e.resolveEvent(playerList);
         }
     }
 
