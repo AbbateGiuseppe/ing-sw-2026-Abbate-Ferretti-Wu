@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterCard;
 import it.polimi.ingsw.gc49.Card.TribeCards.EventCard.EventCard;
 import it.polimi.ingsw.gc49.Era;
+import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class Line {
     private Era currentEra = ?; //chiedi
     private boolean eraChanged = false;
     private Era nextEra = null;
+    private Model model;
+    private int numPlayers;
 
 
 
@@ -30,9 +33,12 @@ public class Line {
     private final Deck deck;
 
 
-    /// Costruttore
-    public Line(int numPlayers) {
 
+
+    /// Costruttore
+    public Line(Model model) {
+        this.model = model;
+        this.numPlayers = model.getNumOfPlayers();
         this.deck = new Deck(numPlayers);
         this.upperLine = new ArrayList<>();
         this.lowerLine = new ArrayList<>();
@@ -141,7 +147,7 @@ public class Line {
 /// tutti gli end
 
     public void endRound(int numPlayers) {
-        resolveEvent(lowerLine);
+        resolveEvent(lowerLine, model.getPlayers());   ///parlare a Max
         lowerLine.clear();
         lowerLine.addAll(upperLine);
         upperLine.clear();
@@ -194,9 +200,9 @@ public class Line {
 
     public void endGame() {
         // 1) Risolvi prima gli eventi nella fila inferiore
-        resolveEvent(lowerLine);
+        resolveEvent(lowerLine, model.getPlayers());
         // 2) Poi risolvi quelli eventualmente nella fila superiore
-        resolveEvent(upperLine);
+        resolveEvent(upperLine, model.getPlayers());
 
         // 3) Se vuoi, svuoti tutto il board (opzionale)
         lowerLine.clear();
