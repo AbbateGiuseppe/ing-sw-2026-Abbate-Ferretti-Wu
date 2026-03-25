@@ -16,9 +16,9 @@ import static java.util.Collections.sort;
 
 public class Line {
     /// Per la macchina a stati finiti
-    private Era currentEra = ?; //chiedi
+    private Era currentEra = Era.FIRST; //chiedi
     private boolean eraChanged = false;
-    private Era nextEra = null;
+    private Era newEra = Era.SECOND;
     private Model model;
     private int numPlayers;
 
@@ -171,7 +171,7 @@ public class Line {
         }
     }
 
-    public void endEra(Era newEra) {
+    public void endEra() {
         // 1) Se si passa all’Era III: scarta eventuali edifici nella fila inferiore
         if (newEra == Era.THIRD) {
             lowerBuilding.clear();
@@ -195,7 +195,7 @@ public class Line {
         // aggiorna stato interno e resetta il flag di cambio era
         currentEra = newEra;
         eraChanged = false;
-        nextEra = null;
+        newEra = Era.THIRD;
     }
 
     public void endGame() {
