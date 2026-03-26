@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49;
 
+import it.polimi.ingsw.gc49.Card.Card;
+
 import java.util.EnumSet;
 
 public class DataBank {
@@ -22,8 +24,8 @@ public class DataBank {
     }
 
     //### update done by considering just the new card being added to the previously saved data
-    public void partialUpdate () {
-
+    public void partialUpdate ( Card addedCard ) {
+        addedCard.updateDataBank(this);
     }
 
     //### update done by going through every card the player has
