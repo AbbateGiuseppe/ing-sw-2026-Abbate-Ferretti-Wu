@@ -22,14 +22,14 @@ public class DataBank {
     }
 
     //### update done by considering just the new card being added to the previously saved data
-    public void partialUpdate () {
-
-    }
+//    public void partialUpdate (Card addedCard) {
+//        addedCard.updateDataBank(this);
+//    }
 
     //### update done by going through every card the player has
-    public void fullUpdate () {
-
-    }
+//    public void fullUpdate () {
+//
+//    }
 
 
     public int getCharacterCount(CharacterType type) {

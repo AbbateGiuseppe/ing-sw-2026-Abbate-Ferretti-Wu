@@ -1,76 +1,133 @@
 package it.polimi.ingsw.gc49;
 
+import it.polimi.ingsw.gc49.CardBoard.CardBoard;
+import it.polimi.ingsw.gc49.States.InitialSetup;
+import it.polimi.ingsw.gc49.States.State;
+
+import java.util.EnumSet;
+
 public class Model {
     private final int numOfPlayers;
     private int numOfConnectedPlayers;
-    private final Player[] players;
-    private final Track track;
+    private Player currentPlayer;
+    private int currentPlayerIndex;
+    private Player[] players;
+    private String[] playersNicknames;
+    private Track track;
+    private CardBoard cardBoard;
+    private State currentState;
+    private EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
 
 
-    //### Constructors, from 2 to 5 players
-    public Model ( String firstPlayerNickname, String secondPlayerNickname ) {
-        this.numOfPlayers = 2;
-        players = new Player[numOfPlayers];
-        players[0] = new Player(firstPlayerNickname, 0);
-        players[1] = new Player(secondPlayerNickname, 1);
-        track = new Track(numOfPlayers);
+    //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
+    public Model ( int numOfPlayers, String[] playersNicknames ) {
+        this.numOfPlayers = numOfPlayers;
+        this.playersNicknames = playersNicknames;
+        currentState = new InitialSetup(this);
+        synchronized (Locks.playerInput) {
+            executeCurrentState();
+        }
     }
-    public Model ( String firstPlayerNickname, String secondPlayerNickname, String thirdPlayerNickname ) {
-        this.numOfPlayers = 3;
-        players = new Player[numOfPlayers];
-        players[0] = new Player(firstPlayerNickname, 0);
-        players[1] = new Player(secondPlayerNickname, 1);
-        players[2] = new Player(thirdPlayerNickname, 2);
-        track = new Track(numOfPlayers);
-    }
-    public Model ( String firstPlayerNickname, String secondPlayerNickname, String thirdPlayerNickname, String fourthPlayerNickname ) {
-        this.numOfPlayers = 4;
-        players = new Player[numOfPlayers];
-        players[0] = new Player(firstPlayerNickname, 0);
-        players[1] = new Player(secondPlayerNickname, 1);
-        players[2] = new Player(thirdPlayerNickname, 2);
-        players[3] = new Player(fourthPlayerNickname, 3);
-        track = new Track(numOfPlayers);
-    }
-    public Model ( String firstPlayerNickname, String secondPlayerNickname, String thirdPlayerNickname, String fourthPlayerNickname, String fifthPlayerNickname ) {
-        this.numOfPlayers = 5;
-        players = new Player[numOfPlayers];
-        players[0] = new Player(firstPlayerNickname, 0);
-        players[1] = new Player(secondPlayerNickname, 1);
-        players[2] = new Player(thirdPlayerNickname, 2);
-        players[3] = new Player(fourthPlayerNickname, 3);
-        players[4] = new Player(fifthPlayerNickname, 4);
-        track = new Track(numOfPlayers);
 
+    //### getters
+    public int getNumOfPlayers () {
+        return numOfPlayers;
+    }
+    public int getNumOfConnectedPlayers () {
+        return numOfConnectedPlayers;
+    }
+    public Player[] getPlayers () {
+        return players;
+    }
+    public String[] getPlayersNicknames () {
+        return playersNicknames;
+    }
+    public Track getTrack () {
+        return track;
+    }
+    public EnumSet<Totem> getUsedTotems () {
+        return usedTotems;
+    }
+
+    //### setters
+    public void setPlayers ( Player[] players ) {
+        this.players = players;
+    }
+    public void setTrack ( Track track ){
+        this.track = track;
+    }
+    public void setCardBoard ( CardBoard cardBoard ) {
+        this.cardBoard = cardBoard;
     }
 
     //### Game's execution
     public void executeCurrentState () {
-
+        currentState = currentState.executeState();
     }
 
     //### Players' actions
-    public void chooseTotem() {
-
+    public void chooseTotem ( int playerIndex, Totem chosenTotem ) {
+        synchronized (Locks.playerInput) {
+            if (players[playerIndex].getTotem() != null && !usedTotems.contains(chosenTotem)) {
+                usedTotems.add(chosenTotem);
+                players[playerIndex].setTotem(chosenTotem);
+                notify();
+            }
+        }
     }
 
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) {
+        synchronized (Locks.playerInput) {
+            if(playerIndex == currentPlayerIndex) {
+                if(players[playerIndex].getDrawableUpper() > 0){
+                    players[playerIndex].setDrawableUpper(players[playerIndex].getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                    players[playerIndex].addCharacterCard(cardBoard.drawUpperCharacter(cardIndex)); //adds the drawn card to the player.
+                    notify();
+                }
+            }
+        }
     }
 
     public void drawLowerCharacter ( int playerIndex, int cardIndex ) {
-
+        synchronized (Locks.playerInput) {
+            if(playerIndex == currentPlayerIndex) {
+                if(players[playerIndex].getDrawableLower() > 0){
+                    players[playerIndex].setDrawableLower(players[playerIndex].getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                    players[playerIndex].addCharacterCard(cardBoard.drawLowerCharacter(cardIndex)); //adds the drawn card to the player.
+                    notify();
+                }
+            }
+        }
     }
 
     public void drawUpperBuilding ( int playerIndex, int cardIndex ) {
-
+        synchronized (Locks.playerInput) {
+            if(playerIndex == currentPlayerIndex) {
+                if(players[playerIndex].getDrawableUpper() > 0){
+                    players[playerIndex].setDrawableUpper(players[playerIndex].getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                    players[playerIndex].addBuildingCard(cardBoard.drawUpperBuilding(cardIndex, players[playerIndex])); //adds the drawn card to the player, if it's drawable by him.
+                    notify();
+                }
+            }
+        }
     }
 
     public void drawLowerBuilding ( int playerIndex, int cardIndex ) {
-
+        synchronized (Locks.playerInput) {
+            if(playerIndex == currentPlayerIndex) {
+                if(players[playerIndex].getDrawableLower() > 0){
+                    players[playerIndex].setDrawableLower(players[playerIndex].getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                    players[playerIndex].addBuildingCard(cardBoard.drawLowerBuilding(cardIndex, players[playerIndex])); //adds the drawn card to the player, if it's drawable by him.
+                    notify();
+                }
+            }
+        }
     }
 
     public void chooseOffer ( int playerIndex, int cardIndex ) {
-
+        synchronized (Locks.playerInput) {
+            notify();
+        }
     }
 
     //### Connection methods
