@@ -7,8 +7,8 @@ import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
 public class SustainDiscountByClassStrategy extends AbsBuildingStrategy {
-    public SustainDiscountByClassStrategy(BuildingEvent event, EventManager manager) {
-        super(event, manager);
+    public SustainDiscountByClassStrategy(BuildingEvent event) {
+        super(event);
     }
 
     CharacterType unit;

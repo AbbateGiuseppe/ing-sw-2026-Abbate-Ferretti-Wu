@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard;
 
+import it.polimi.ingsw.gc49.BuildingEvent;
+import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
 public interface BuildingStrategyInterface {

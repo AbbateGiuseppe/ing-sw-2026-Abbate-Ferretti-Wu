@@ -7,8 +7,8 @@ import it.polimi.ingsw.gc49.Player;
 
 
 public class DoubleShamanPointsStrategy extends AbsBuildingStrategy {
-    public DoubleShamanPointsStrategy(BuildingEvent event, EventManager manager) {
-        super(event, manager);
+    public DoubleShamanPointsStrategy(BuildingEvent event) {
+        super(event);
     }
 
     @Override

@@ -6,8 +6,8 @@ import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
 public class OneMoreCardStrategy extends AbsBuildingStrategy {
-    public OneMoreCardStrategy(BuildingEvent event, EventManager manager) {
-        super(event, manager);
+    public OneMoreCardStrategy(BuildingEvent event) {
+        super(event);
     }
 
     @Override

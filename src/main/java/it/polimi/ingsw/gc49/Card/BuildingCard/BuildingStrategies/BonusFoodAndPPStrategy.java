@@ -12,15 +12,20 @@ public class BonusFoodAndPPStrategy extends AbsBuildingStrategy {
     int ppPerUnit;
     int constFood;
     int constPP;
+    private  boolean initialized = false;
 
-    public BonusFoodAndPPStrategy(BuildingEvent event, EventManager manager) {
-        super(event, manager);
+
+    public BonusFoodAndPPStrategy(BuildingEvent event) {
+        super(event);
     }
 
     @Override
     public void effect(Player player) {
         int unitCount = player.data.getCharacterCount(unit);
-
+        if(event == BuildingEvent.DRAW_EVENT) {
+            if(unit == CharacterType.Set) {unitCount -= player.data.getCurrentNumCompleteCharacterSets();}
+            else {unitCount -= player.data.getCurrentNumSameInventions();}
+        }
         player.addFood(foodPerUnit*unitCount+constFood);
         player.addPoints(ppPerUnit*unitCount+constPP);
     }
@@ -29,8 +34,6 @@ public class BonusFoodAndPPStrategy extends AbsBuildingStrategy {
     protected boolean condition(Player player) {
         return true;
     }
-
-    private  boolean initialized = false;
 
     public void setConst(int pp,int food){
         if(initialized)return;

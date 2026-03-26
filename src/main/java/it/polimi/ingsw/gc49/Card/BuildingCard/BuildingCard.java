@@ -9,11 +9,15 @@ import java.util.List;
 
 public class BuildingCard extends Card implements BuildingEventListener{
     private final BuildingStrategyInterface strategy;
+    private final BuildingEvent buildingEvent;
+    private final EventManager manager;
     private final int PPReward;
     private final int foodPrice;
     private Player owner;
 
-    public BuildingCard(BuildingStrategyInterface strategy, int PPReward, int foodPrice) {
+    public BuildingCard(BuildingStrategyInterface strategy, BuildingEvent buildingEvent, EventManager manager, int PPReward, int foodPrice) {
+        this.buildingEvent = buildingEvent;
+        this.manager = manager;
         this.strategy = strategy;
         this.PPReward = PPReward;
         this.foodPrice = foodPrice;
@@ -23,9 +27,9 @@ public class BuildingCard extends Card implements BuildingEventListener{
     public static List<BuildingCard> getAllBuildingCards(EventManager manager){
         List<BuildingCard> list = new ArrayList<>();
         // One example
-        BonusFoodAndPPStrategy strategy = new BonusFoodAndPPStrategy(BuildingEvent.HUNTING_EVENT,manager);
+        BonusFoodAndPPStrategy strategy = new BonusFoodAndPPStrategy(BuildingEvent.HUNTING_EVENT);
         strategy.setByUnit(CharacterType.Hunter,1,1);
-        BuildingCard card = new BuildingCard(strategy,0,0);
+        BuildingCard card = new BuildingCard(strategy,BuildingEvent.HUNTING_EVENT,manager,0,0);
         list.add(card);
 
         return list;
@@ -43,7 +47,10 @@ public class BuildingCard extends Card implements BuildingEventListener{
     private void setOwner(Player owner) {
         this.owner = owner;
         owner.data.addNumBuildingPoints(PPReward);
-        // TODO:add the listener to the eventmanager
+        if (buildingEvent == BuildingEvent.DRAW_EVENT) {
+             owner.data.recordCurrentStatus();
+        }
+        manager.addEventListener(buildingEvent,this);
     }
 
     public Player getOwner() {

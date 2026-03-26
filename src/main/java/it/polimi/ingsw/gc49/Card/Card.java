@@ -8,5 +8,7 @@ public abstract class Card {
     private int era;
     private int minNumPlayers;
 
+    public int getEra() {return era;}
+    public int getMinNumPlayers() {return minNumPlayers;}
     public abstract boolean canGet(Player player);
 }

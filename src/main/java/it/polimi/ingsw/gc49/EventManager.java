@@ -9,7 +9,7 @@ public class EventManager {
     private final Map<BuildingEvent, List<BuildingEventListener>> listenersByEvent;
 
     public EventManager() {
-        listenersByEvent = new HashMap<BuildingEvent, List<BuildingEventListener>>();
+        listenersByEvent = new HashMap<>();
     }
 
     public void addEventListener(BuildingEvent event, BuildingEventListener listener) {

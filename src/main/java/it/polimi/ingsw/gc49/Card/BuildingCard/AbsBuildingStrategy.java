@@ -6,12 +6,10 @@ import it.polimi.ingsw.gc49.Player;
 
 public abstract class AbsBuildingStrategy implements BuildingStrategyInterface {
 
-    BuildingEvent event;
-    EventManager manager;
+    protected BuildingEvent event;
 
-    public AbsBuildingStrategy(BuildingEvent event, EventManager manager) {
+    public AbsBuildingStrategy(BuildingEvent event) {
         this.event = event;
-        this.manager = manager;
     }
 
     @Override
@@ -22,6 +20,5 @@ public abstract class AbsBuildingStrategy implements BuildingStrategyInterface {
     }
 
     protected abstract void effect(Player player);
-
     protected abstract boolean condition(Player player);
 }

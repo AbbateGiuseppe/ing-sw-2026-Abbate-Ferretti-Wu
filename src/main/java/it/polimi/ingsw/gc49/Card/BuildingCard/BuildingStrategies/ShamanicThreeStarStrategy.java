@@ -6,8 +6,8 @@ import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
 public class ShamanicThreeStarStrategy extends AbsBuildingStrategy {
-    public ShamanicThreeStarStrategy(BuildingEvent event, EventManager manager) {
-        super(event, manager);
+    public ShamanicThreeStarStrategy(BuildingEvent event) {
+        super(event);
     }
 
     @Override

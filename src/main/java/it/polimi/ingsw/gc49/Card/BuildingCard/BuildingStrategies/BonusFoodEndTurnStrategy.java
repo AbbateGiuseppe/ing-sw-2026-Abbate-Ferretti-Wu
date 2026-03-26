@@ -6,8 +6,8 @@ import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
 public class BonusFoodEndTurnStrategy extends AbsBuildingStrategy {
-    public BonusFoodEndTurnStrategy(BuildingEvent event, EventManager manager) {
-        super(event, manager);
+    public BonusFoodEndTurnStrategy(BuildingEvent event) {
+        super(event);
     }
 
     @Override
