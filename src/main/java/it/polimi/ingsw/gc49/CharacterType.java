@@ -1,10 +1,13 @@
-package it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard;
+package it.polimi.ingsw.gc49;
 
 public enum CharacterType {
     None,
     Set,
+    SameInventions,
     Hunter,
     Shaman,
     Inventor,
-    Gatherer
+    Gatherer,
+    Builder,
+    Artist
 }

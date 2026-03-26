@@ -1,26 +1,24 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard;
 
+import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.PlayerDataInterface;
+import it.polimi.ingsw.gc49.Player;
 
 public abstract class AbsBuildingStrategy implements BuildingStrategyInterface {
 
-    BuildingEvent event;
-    EventManager manager;
+    protected BuildingEvent event;
 
-    public AbsBuildingStrategy(BuildingEvent event, EventManager manager) {
+    public AbsBuildingStrategy(BuildingEvent event) {
         this.event = event;
-        this.manager = manager;
     }
 
-    protected abstract void effect(PlayerDataInterface player);
-
     @Override
-    public void activateEffect(PlayerDataInterface playerDataInterface){
-        if(condition(playerDataInterface)){
-            effect(playerDataInterface);
+    public void activateEffect(Player player){
+        if(condition(player)){
+            effect(player);
         }
     }
 
-    protected abstract boolean condition(PlayerDataInterface playerDataInterface);
+    protected abstract void effect(Player player);
+    protected abstract boolean condition(Player player);
 }

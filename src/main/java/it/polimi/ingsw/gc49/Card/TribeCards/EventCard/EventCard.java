@@ -6,26 +6,21 @@ import it.polimi.ingsw.gc49.Player;
 
 import java.util.List;
 
-public abstract class EventCard extends TribeCard {
-    private EventManager eventManager;
-
+public abstract class EventCard extends TribeCard implements Comparable<EventCard> {
+    protected EventManager eventManager;
 
     @Override
     public boolean canGet(Player player) {
         return false;
     }
-
-    public void resolveEvent(List<Player> players) {
-        for(Player player : players) {
-            if(eventSuccess(player)) {
-                reward(player);
-            } else {
-                penalty(player);
-            }
+    @Override
+    public int compareTo(EventCard other) {
+        if (this.getEra().compareTo(other.getEra()) != 0) {
+            return this.getEra().compareTo(other.getEra());
+        } else {
+            return this instanceof SustenanceEvent ?  1 : -1;
         }
-    }
 
-    public abstract boolean eventSuccess(Player player);
-    public abstract void reward(Player player);
-    public abstract void penalty(Player player);
+    }
+    public abstract void resolveEvent(List<Player> players);
 }

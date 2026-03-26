@@ -1,22 +1,23 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard.BuildingStrategies;
 
 import it.polimi.ingsw.gc49.Card.BuildingCard.AbsBuildingStrategy;
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEvent;
+import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.PlayerDataInterface;
+import it.polimi.ingsw.gc49.Player;
+
 
 public class DoubleShamanPointsStrategy extends AbsBuildingStrategy {
-    public DoubleShamanPointsStrategy(BuildingEvent event, EventManager manager) {
-        super(event, manager);
+    public DoubleShamanPointsStrategy(BuildingEvent event) {
+        super(event);
     }
 
     @Override
-    public void effect(PlayerDataInterface player) {
-        player.addPoints(player.getReward());
+    public void effect(Player player) {
+        player.setPointsToPay(2 * player.getPointsToPay());
     }
 
     @Override
-    protected boolean condition(PlayerDataInterface player) {
-        return player.getReward()>0;
+    protected boolean condition(Player player) {
+        return player.isUniqueWinner() && player.getPointsToPay() < 0;
     }
 }

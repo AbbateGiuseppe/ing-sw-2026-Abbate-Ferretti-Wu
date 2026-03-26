@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard;
 
+import it.polimi.ingsw.gc49.CharacterType;
+import it.polimi.ingsw.gc49.Invention;
 import it.polimi.ingsw.gc49.Player;
 
 public class Inventor extends CharacterCard {
@@ -11,7 +13,7 @@ public class Inventor extends CharacterCard {
 
     @Override
     public void updateDataBank(Player player) {
-        // databank.numInventors += 1;
-        // databank.inventions.add(invention)
+         player.data.addCharacterCount(CharacterType.Inventor,1);
+         player.data.addInvention(invention);
     }
 }

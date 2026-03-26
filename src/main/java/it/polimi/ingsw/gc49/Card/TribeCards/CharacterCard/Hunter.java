@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard;
 
+import it.polimi.ingsw.gc49.CharacterType;
 import it.polimi.ingsw.gc49.Player;
 
 public class Hunter extends CharacterCard {
@@ -11,9 +12,9 @@ public class Hunter extends CharacterCard {
 
     @Override
     public void updateDataBank(Player player) {
-        // databank.numHunters += 1;
+        player.data.addCharacterCount(CharacterType.Hunter,1);
         if (drumstick) {
-            // player.food += databank.numHunters;
+             player.addFood(player.data.getCharacterCount(CharacterType.Hunter));
         }
     }
 }
