@@ -6,13 +6,13 @@ public class DataBank {
     public final Player assignedPlayer;
     private Map<CharacterType,Integer> numCharacterMap;
     private int currentNumCompleteCharacterSets;
-    private int currentNumSameInventions;
+    private int[] numInventions;
+    private int sameInvention;
     private int numStars;
     private int numBuildingDiscount;
     private int numBuilderPoints;
     private int numSustenanceDiscount;
     private EnumSet<Invention> inventions;
-    private int numSameInventions;
     private int numBuildingPoints;
 
     public DataBank(Player assignedPlayer) {
@@ -35,7 +35,10 @@ public class DataBank {
     public int getCharacterCount(CharacterType type) {
         if (!numCharacterMap.containsKey(type)) return 0;
         if (type == CharacterType.Set) {return Collections.min(numCharacterMap.values());}
-        if (type == CharacterType.SameInventions) {return numSameInventions;}
+        if (type == CharacterType.SameInventions) {
+            if (sameInvention == 1){sameInvention = 0;return 1;}
+            return 0;
+        }
         return numCharacterMap.get(type);
     }
     public void addCharacterCount(CharacterType type,int increment) {
@@ -52,12 +55,20 @@ public class DataBank {
     public void addNumSustenanceDiscount(int n) { numSustenanceDiscount += n; }
     public void addNumStar(int n) {numStars += n;}
     public void addInvention(Invention invention) {
-        if (inventions.contains(invention)) {numSameInventions++;}
-        else {inventions.add(invention);}}
-    public void recordCurrentStatus() {
-        currentNumSameInventions = numSameInventions;
-        currentNumCompleteCharacterSets = getCharacterCount(CharacterType.Set);
-    }
+        if (numInventions != null) {
+            if (numInventions[invention.ordinal()] == 1) {
+                sameInvention = 1;
+                numInventions[invention.ordinal()] = 0;
+            } else {
+                numInventions[invention.ordinal()] += 1;
+            }
+        }
+        inventions.add(invention);}
+    public void recordCharaSet() {currentNumCompleteCharacterSets = getCharacterCount(CharacterType.Set);}
+    public void recordInventions() {numInventions = new int[10];}
     public int getCurrentNumCompleteCharacterSets() {return currentNumCompleteCharacterSets;}
-    public int getCurrentNumSameInventions() {return currentNumSameInventions;}
+    public void addCurrentNumCompleteCharacterSets(int n) {currentNumCompleteCharacterSets +=n;}
+    public int getNumStars() {
+        return numStars;
+    }
 }

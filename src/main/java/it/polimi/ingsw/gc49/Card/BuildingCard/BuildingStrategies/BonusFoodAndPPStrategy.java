@@ -22,9 +22,9 @@ public class BonusFoodAndPPStrategy extends AbsBuildingStrategy {
     @Override
     public void effect(Player player) {
         int unitCount = player.data.getCharacterCount(unit);
-        if(event == BuildingEvent.DRAW_EVENT) {
-            if(unit == CharacterType.Set) {unitCount -= player.data.getCurrentNumCompleteCharacterSets();}
-            else {unitCount -= player.data.getCurrentNumSameInventions();}
+        if(event == BuildingEvent.SETCOMPLETE_EVENT) {
+            unitCount -= player.data.getCurrentNumCompleteCharacterSets();
+            player.data.addCurrentNumCompleteCharacterSets(unitCount);
         }
         player.addFood(foodPerUnit*unitCount+constFood);
         player.addPoints(ppPerUnit*unitCount+constPP);

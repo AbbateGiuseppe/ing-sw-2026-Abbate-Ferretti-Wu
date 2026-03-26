@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RitualEvent extends EventCard {
     private final int plusPoints;
@@ -20,19 +21,19 @@ public class RitualEvent extends EventCard {
             eventManager.invokeEvent(BuildingEvent.RITUAL_PRIOR_EVENT,player.getTotem());
         }
 
-        Player[] losers = determineLosers(players);
+        List<Player> losers = determineLosers(players);
         for(Player player : losers) {
             player.setPointsToPay(minusPoints);
             player.setFoodToPay(0);
         }
 
-        Player[] winners = determineWinners(players);
+        List<Player> winners = determineWinners(players);
         for(Player player : winners) {
              player.setPointsToPay(-plusPoints);
              player.setFoodToPay(0);
         }
-        if(winners.length == 1) {
-             winners[0].setUniqueWinner(true);
+        if(winners.size() == 1) {
+             winners.getFirst().setUniqueWinner(true);
         }
 
         for(Player player : players) {
@@ -41,13 +42,23 @@ public class RitualEvent extends EventCard {
         }
     }
 
-    // TODO:Return the players who have the most stars(using also player.tempStars)
-    private Player[] determineWinners(List<Player> players) {
-        return null;
+    private List<Player> determineWinners(List<Player> players) {
+        int maxScore = players.stream()
+                .mapToInt(p -> p.data.getNumStars() + p.getTempStars())
+                .max()
+                .getAsInt();
+        return players.stream()
+                .filter(p -> p.data.getNumStars() + p.getTempStars() == maxScore)
+                .collect(Collectors.toList());
     }
 
-    // TODO:Return the players who have the least stars(using also player.tempStars)
-    private Player[] determineLosers(List<Player> players) {
-        return null;
+    private List<Player> determineLosers(List<Player> players) {
+        int minScore = players.stream()
+                .mapToInt(p -> p.data.getNumStars() + p.getTempStars())
+                .min()
+                .getAsInt();
+        return players.stream()
+                .filter(p -> p.data.getNumStars() + p.getTempStars() == minScore)
+                .collect(Collectors.toList());
     }
 }

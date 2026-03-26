@@ -15,12 +15,10 @@ public abstract class EventCard extends TribeCard implements Comparable<EventCar
     }
     @Override
     public int compareTo(EventCard other) {
-        if (this.getEra() > other.getEra()) {
-            return 1;
-        } else if (this.getEra() < other.getEra()) {
-            return -1;
+        if (this.getEra().compareTo(other.getEra()) != 0) {
+            return this.getEra().compareTo(other.getEra());
         } else {
-            return this instanceof SustenanceEvent ?  1 : 0;
+            return this instanceof SustenanceEvent ?  1 : -1;
         }
 
     }

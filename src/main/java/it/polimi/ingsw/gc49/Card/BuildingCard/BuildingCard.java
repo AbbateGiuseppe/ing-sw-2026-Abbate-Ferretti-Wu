@@ -47,8 +47,10 @@ public class BuildingCard extends Card implements BuildingEventListener{
     private void setOwner(Player owner) {
         this.owner = owner;
         owner.data.addNumBuildingPoints(PPReward);
-        if (buildingEvent == BuildingEvent.DRAW_EVENT) {
-             owner.data.recordCurrentStatus();
+        if (buildingEvent == BuildingEvent.SETCOMPLETE_EVENT) {
+             owner.data.recordCharaSet();
+        } else if (buildingEvent == BuildingEvent.SAMEINVENTION_EVENT) {
+            owner.data.recordInventions();
         }
         manager.addEventListener(buildingEvent,this);
     }

@@ -18,6 +18,8 @@ public class Player {
     private int pointsToPay;
     private int tempStars;
     private boolean uniqueWinner;
+    // TODO:the orderslot sets it to true if the player gets some food on the orderslot at the end of the his turn
+    private boolean foodFromOrderSlot;
 
     private int drawableUpper;
     private int drawableLower;
@@ -113,9 +115,8 @@ public class Player {
     public void setTempStars(int tempStars) {this.tempStars = tempStars;}
     public void confirmToPay () {food -= foodToPay;points -= pointsToPay;reset();}
     private void reset() {foodToPay = 0; pointsToPay = 0; uniqueWinner = false; tempStars = 0;}
-    // TODO:return true if the totem of the player gets some food on the orderslot at the end of the his turn
     public boolean IsGettingBonusFood() {
-        return false;
+        return foodFromOrderSlot;
     }
 
 
