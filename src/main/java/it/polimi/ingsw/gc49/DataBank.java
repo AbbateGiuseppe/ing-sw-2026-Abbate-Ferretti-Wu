@@ -23,7 +23,7 @@ public class DataBank {
         this.assignedPlayer = assignedPlayer;
     }
 
-    //### update done by considering just the new card being added to the previously saved data
+    //### update donegit checkout experimenting by considering just the new card being added to the previously saved data
     public void partialUpdate ( Card addedCard ) {
         addedCard.updateDataBank(this);
     }
