@@ -8,7 +8,4 @@ public abstract class CharacterCard extends TribeCard {
     public boolean canGet(Player player) {
         return true;
     }
-
-    // When the card is picked, it updates the databank of the player
-    public abstract void updateDataBank(Player player);
 }

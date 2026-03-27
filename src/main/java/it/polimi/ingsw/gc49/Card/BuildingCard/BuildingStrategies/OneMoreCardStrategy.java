@@ -5,7 +5,9 @@ import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
+// Effect 13
 public class OneMoreCardStrategy extends AbsBuildingStrategy {
+    // BuildingEvent:ROUND_END
     public OneMoreCardStrategy(BuildingEvent event) {
         super(event);
     }

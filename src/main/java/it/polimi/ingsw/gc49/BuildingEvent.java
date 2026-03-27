@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49;
 
+// The moments in which the listeners are triggered
 public enum BuildingEvent {
     HUNTING_EVENT,
     PAINTING_EVENT,

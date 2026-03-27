@@ -11,9 +11,18 @@ public abstract class Card {
 
     public Era getEra() {return era;}
     public int getMinNumPlayers() {return minNumPlayers;}
+
+    /**
+     *
+     * When the player picks a card,this method is called to check whether he can get it
+     * it returns always true for charactercards and always false for eventcards,whereas for buildingcards
+     * it compares the food and the building discount of the player with the foodprice of the card
+     * if it returns true,the player calls updateDataBank() of the card
+      */
     public abstract boolean canGet(Player player);
 
     public void updateDataBank( DataBank dataBank ) {
         // will be overridden by the subclass card when it has to actually modify the player's databank.
+        return;
     }
 }

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard;
 
 import it.polimi.ingsw.gc49.CharacterType;
+import it.polimi.ingsw.gc49.DataBank;
 import it.polimi.ingsw.gc49.Player;
 
 public class Hunter extends CharacterCard {
@@ -11,10 +12,11 @@ public class Hunter extends CharacterCard {
     }
 
     @Override
-    public void updateDataBank(Player player) {
-        player.data.addCharacterCount(CharacterType.Hunter,1);
+    public void updateDataBank(DataBank dataBank) {
+        dataBank.addCharacterCount(CharacterType.Hunter,1);
+        // if the card has drumstick symbol,then give the player an amount of food equal to the number of Hunter cards that he has
         if (drumstick) {
-             player.addFood(player.data.getCharacterCount(CharacterType.Hunter));
+             dataBank.assignedPlayer.addFood(dataBank.getCharacterCount(CharacterType.Hunter));
         }
     }
 }
