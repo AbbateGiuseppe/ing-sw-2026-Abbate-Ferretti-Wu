@@ -61,6 +61,8 @@ public class Model {
     public void setCardBoard ( CardBoard cardBoard ) {
         this.cardBoard = cardBoard;
     }
+    public void setCurrentPlayer ( Player currentPlayer ) { this.currentPlayer = currentPlayer; }
+    public void setCurrentPlayerIndex ( int currentPlayerIndex ) { this.currentPlayerIndex = currentPlayerIndex; }
 
     //### Game's execution
     public void executeCurrentState () {
@@ -130,9 +132,12 @@ public class Model {
         }
     }
 
-    public void chooseOffer ( int playerIndex, int cardIndex ) {
+    public void chooseOffer ( int playerIndex, int offerIndex ) {
         synchronized (Locks.playerInput) {
-            notify();
+            if(playerIndex == currentPlayerIndex) {
+                track.assignOffer(players.get(playerIndex), offerIndex); //TODO: implement not valid offerIndex exception.
+                notify();
+            }
         }
     }
 

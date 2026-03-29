@@ -3,7 +3,9 @@ package it.polimi.ingsw.gc49.Track;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Track {
     private final ArrayList<Offer> offerBoard = new ArrayList<>();
@@ -84,9 +86,17 @@ public class Track {
         }
     }
 
-    //### TO IMPLEMENT!! RANDOMIZES THE PLAYERS TO AN ORDER SLOT.
-    public void randomizeStartingOrder ( List<Player> players, int numOfPlayers ) {
-
+    public void randomizeStartingOrder ( List<Player> players ) {
+        List<Player> randomizedPlayers = players.stream()
+                .collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
+                    Collections.shuffle(collected);
+                    return collected;
+                }));
+        int orderSlotIterator = 0;
+        for(Player player : randomizedPlayers) {
+            orderBoard.get(orderSlotIterator).assignPlayer(player);
+            orderSlotIterator++;
+        }
     }
 
     public void assignOffer ( Player player, int offerIndex ) {

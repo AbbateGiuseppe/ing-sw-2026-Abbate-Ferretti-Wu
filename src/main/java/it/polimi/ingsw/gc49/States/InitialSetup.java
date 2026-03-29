@@ -56,7 +56,7 @@ public class InitialSetup extends State {
             }
         }
 
-        model.getTrack().randomizeStartingOrder(model.getPlayers(), numOfPlayers); //randomizes the starting order.
+        model.getTrack().randomizeStartingOrder(model.getPlayers()); //randomizes the starting order.
 
         return new OfferChoosing(model); //goes to the offer choosing state as the next state.
     }
