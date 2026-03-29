@@ -1,4 +1,6 @@
-package it.polimi.ingsw.gc49;
+package it.polimi.ingsw.gc49.Track;
+
+import it.polimi.ingsw.gc49.Player;
 
 import java.util.ArrayList;
 import java.util.List;

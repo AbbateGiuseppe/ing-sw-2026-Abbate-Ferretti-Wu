@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49;
 
 import it.polimi.ingsw.gc49.Card.Card;
+import it.polimi.ingsw.gc49.Track.OrderSlot;
 
 public class Player {
     private String nickname;

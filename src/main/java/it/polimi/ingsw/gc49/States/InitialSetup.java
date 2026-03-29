@@ -1,10 +1,9 @@
 package it.polimi.ingsw.gc49.States;
 
 import it.polimi.ingsw.gc49.CardBoard.CardBoard;
-import it.polimi.ingsw.gc49.Locks;
 import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
-import it.polimi.ingsw.gc49.Track;
+import it.polimi.ingsw.gc49.Track.Track;
 
 import java.util.ArrayList;
 import java.util.List;

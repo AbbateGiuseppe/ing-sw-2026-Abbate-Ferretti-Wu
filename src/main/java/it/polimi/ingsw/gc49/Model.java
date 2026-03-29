@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49;
 import it.polimi.ingsw.gc49.CardBoard.CardBoard;
 import it.polimi.ingsw.gc49.States.InitialSetup;
 import it.polimi.ingsw.gc49.States.State;
+import it.polimi.ingsw.gc49.Track.Track;
 
 import java.util.EnumSet;
 import java.util.List;

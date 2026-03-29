@@ -1,4 +1,6 @@
-package it.polimi.ingsw.gc49;
+package it.polimi.ingsw.gc49.Track;
+
+import it.polimi.ingsw.gc49.Player;
 
 public class Offer {
     /** The player currently assigned to the offer.*/
