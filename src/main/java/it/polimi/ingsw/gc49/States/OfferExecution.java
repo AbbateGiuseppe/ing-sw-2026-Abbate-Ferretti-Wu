@@ -21,7 +21,10 @@ public class OfferExecution extends State{
             currentPlayer = model.getTrack().getNextPlayerOfferAndActivate();
         }
 
-        //TODO: implement switch to GameEnd if it's the last round.
-        return new RoundEnd(model); //goes to RoundEnd.
+        if(model.isLastRound()){
+            return new GameEnd(model); //goes to GameEnd.
+        }else {
+            return new RoundEnd(model); //goes to RoundEnd.
+        }
     }
 }

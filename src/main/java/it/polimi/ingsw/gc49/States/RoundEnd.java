@@ -9,8 +9,8 @@ public class RoundEnd extends State {
         try {
             model.getCardBoard().endRound(model.getNumOfPlayers());
         } catch (EraEndedException e) {
-            return new EraEnd(model);
+            return new EraEnd(model); //goes to EraEnd.
         }
-        return new OfferChoosing(model);
+        return new OfferChoosing(model); //goes to OfferChoosing.
     }
 }

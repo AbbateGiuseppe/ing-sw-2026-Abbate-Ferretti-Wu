@@ -19,6 +19,7 @@ public class Model {
     private CardBoard cardBoard;
     private State currentState;
     private EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
+    private boolean lastRound;
 
 
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
@@ -51,6 +52,7 @@ public class Model {
     public EnumSet<Totem> getUsedTotems () {
         return usedTotems;
     }
+    public boolean isLastRound () { return lastRound; } //TODO: implement check of last round.
 
     //### setters
     public void setPlayers ( List<Player> players ) {
@@ -64,6 +66,7 @@ public class Model {
     }
     public void setCurrentPlayer ( Player currentPlayer ) { this.currentPlayer = currentPlayer; }
     public void setCurrentPlayerIndex ( int currentPlayerIndex ) { this.currentPlayerIndex = currentPlayerIndex; }
+    public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }
 
     //### Game's execution
     public void executeCurrentState () {

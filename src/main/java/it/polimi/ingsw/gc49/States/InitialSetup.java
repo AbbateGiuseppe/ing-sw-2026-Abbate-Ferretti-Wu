@@ -44,6 +44,7 @@ public class InitialSetup extends State {
                 break;
         }
 
+        model.setLastRound(false);
         model.setTrack(new Track(numOfPlayers));
         model.setCardBoard(new CardBoard(numOfPlayers));
 
