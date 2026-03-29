@@ -69,6 +69,7 @@ public class Model {
         currentState = currentState.executeState();
     }
 
+    //TODO: implement a check to know if the current player is choosing the admissable actions of this phase.
     //### Players' actions
     public void chooseTotem ( int playerIndex, Totem chosenTotem ) {
         synchronized (Locks.playerInput) {
@@ -136,6 +137,15 @@ public class Model {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
                 track.assignOffer(players.get(playerIndex), offerIndex); //TODO: implement not valid offerIndex exception.
+                notify();
+            }
+        }
+    }
+
+    public void passYourTurn ( int playerIndex ) {
+        synchronized (Locks.playerInput) {
+            if(playerIndex == currentPlayerIndex) {
+                players.get(playerIndex).cleanRemainingActions();
                 notify();
             }
         }

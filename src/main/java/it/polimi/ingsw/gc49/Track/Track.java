@@ -108,7 +108,7 @@ public class Track {
     }
 
     /**
-     * Gives the next player reference that is stored in the offer board.
+     * Gives the next player reference that is stored in the offer board and activates the offer's effects.
      * If it's about to index out of the array it's going to reset the index and return a null.
      * @return next player reference or a null if there is no next player.
      */
