@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InitialSetup extends State {
-
     public InitialSetup ( Model model ) {
         super(model);
     }

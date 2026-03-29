@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
 public class OfferChoosing extends State {
-
     public OfferChoosing ( Model model ) { super(model); }
 
     public State executeState () {
