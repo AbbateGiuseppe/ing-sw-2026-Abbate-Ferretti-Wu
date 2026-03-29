@@ -13,7 +13,7 @@ import java.util.List;
 public class CardBoard {
 
     private final Line line;
-    private final ArrayList<Card> discards;
+    private final List<Card> discards;
     private final Deck deck;
 
     public CardBoard(int numPlayers) {
@@ -22,23 +22,22 @@ public class CardBoard {
         this.discards = new ArrayList<>();
     }
 
-    public Card drawUpperCharacter(int cardIndex) {
-        Card drawn = line.drawUpperCharacter(cardIndex);
+    public Card drawUpperCharacter(int cardIndex, Player drawingPlayer) {
+        Card drawn = line.drawUpperCharacter(cardIndex, drawingPlayer);
         // niente gestione scarti qui: la carta viene presa dal giocatore
         return drawn;
     }
+
+    public Card drawLowerCharacter(int cardIndex, Player drawingPlayer) {
+        Card drawn = line.drawLowerCharacter(cardIndex, drawingPlayer);
+        return drawn;
+    }
+
 
     public Card drawUpperBuilding(int cardIndex, Player drawingPlayer) {
         Card drawn = line.drawUpperBuilding(cardIndex, drawingPlayer);
         return drawn;
     }
-
-
-    public Card drawLowerCharacter(int cardIndex) {
-        Card drawn = line.drawLowerCharacter(cardIndex);
-        return drawn;
-    }
-
 
     public Card drawLowerBuilding(int cardIndex, Player drawingPlayer) {
         Card drawn = line.drawLowerBuilding(cardIndex, drawingPlayer);

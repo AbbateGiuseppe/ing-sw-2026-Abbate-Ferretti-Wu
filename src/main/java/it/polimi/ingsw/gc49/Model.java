@@ -5,13 +5,14 @@ import it.polimi.ingsw.gc49.States.InitialSetup;
 import it.polimi.ingsw.gc49.States.State;
 
 import java.util.EnumSet;
+import java.util.List;
 
 public class Model {
     private final int numOfPlayers;
     private int numOfConnectedPlayers;
     private Player currentPlayer;
     private int currentPlayerIndex;
-    private Player[] players;
+    private List<Player> players;
     private String[] playersNicknames;
     private Track track;
     private CardBoard cardBoard;
@@ -36,7 +37,7 @@ public class Model {
     public int getNumOfConnectedPlayers () {
         return numOfConnectedPlayers;
     }
-    public Player[] getPlayers () {
+    public List<Player> getPlayers () {
         return players;
     }
     public String[] getPlayersNicknames () {
@@ -50,7 +51,7 @@ public class Model {
     }
 
     //### setters
-    public void setPlayers ( Player[] players ) {
+    public void setPlayers ( List<Player> players ) {
         this.players = players;
     }
     public void setTrack ( Track track ){
@@ -68,9 +69,9 @@ public class Model {
     //### Players' actions
     public void chooseTotem ( int playerIndex, Totem chosenTotem ) {
         synchronized (Locks.playerInput) {
-            if (players[playerIndex].getTotem() != null && !usedTotems.contains(chosenTotem)) {
+            if (players.get(playerIndex).getTotem() != null && !usedTotems.contains(chosenTotem)) {
                 usedTotems.add(chosenTotem);
-                players[playerIndex].setTotem(chosenTotem);
+                players.get(playerIndex).setTotem(chosenTotem);
                 notify();
             }
         }
@@ -79,9 +80,10 @@ public class Model {
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
-                if(players[playerIndex].getDrawableUpper() > 0){
-                    players[playerIndex].setDrawableUpper(players[playerIndex].getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
-                    players[playerIndex].addCharacterCard(cardBoard.drawUpperCharacter(cardIndex)); //adds the drawn card to the player.
+                Player drawingPlayer = players.get(playerIndex);
+                if(drawingPlayer.getDrawableUpper() > 0){
+                    drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                    drawingPlayer.addCharacterCard(cardBoard.drawUpperCharacter(cardIndex, drawingPlayer)); //adds the drawn card to the player, if it's drawable by him.
                     notify();
                 }
             }
@@ -91,9 +93,10 @@ public class Model {
     public void drawLowerCharacter ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
-                if(players[playerIndex].getDrawableLower() > 0){
-                    players[playerIndex].setDrawableLower(players[playerIndex].getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
-                    players[playerIndex].addCharacterCard(cardBoard.drawLowerCharacter(cardIndex)); //adds the drawn card to the player.
+                Player drawingPlayer = players.get(playerIndex);
+                if(drawingPlayer.getDrawableLower() > 0){
+                    drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                    drawingPlayer.addCharacterCard(cardBoard.drawLowerCharacter(cardIndex, drawingPlayer)); //adds the drawn card to the player, if it's drawable by him.
                     notify();
                 }
             }
@@ -103,9 +106,10 @@ public class Model {
     public void drawUpperBuilding ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
-                if(players[playerIndex].getDrawableUpper() > 0){
-                    players[playerIndex].setDrawableUpper(players[playerIndex].getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
-                    players[playerIndex].addBuildingCard(cardBoard.drawUpperBuilding(cardIndex, players[playerIndex])); //adds the drawn card to the player, if it's drawable by him.
+                Player drawingPlayer = players.get(playerIndex);
+                if(drawingPlayer.getDrawableUpper() > 0){
+                    drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                    drawingPlayer.addBuildingCard(cardBoard.drawUpperBuilding(cardIndex, drawingPlayer)); //adds the drawn card to the player, if it's drawable by him.
                     notify();
                 }
             }
@@ -115,9 +119,10 @@ public class Model {
     public void drawLowerBuilding ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
-                if(players[playerIndex].getDrawableLower() > 0){
-                    players[playerIndex].setDrawableLower(players[playerIndex].getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
-                    players[playerIndex].addBuildingCard(cardBoard.drawLowerBuilding(cardIndex, players[playerIndex])); //adds the drawn card to the player, if it's drawable by him.
+                Player drawingPlayer = players.get(playerIndex);
+                if(drawingPlayer.getDrawableLower() > 0){
+                    drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                    drawingPlayer.addBuildingCard(cardBoard.drawLowerBuilding(cardIndex, drawingPlayer)); //adds the drawn card to the player, if it's drawable by him.
                     notify();
                 }
             }

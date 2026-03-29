@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Track {
     private final ArrayList<Offer> offerBoard = new ArrayList<>();
@@ -82,7 +83,7 @@ public class Track {
     }
 
     //### TO IMPLEMENT!! RANDOMIZES THE PLAYERS TO AN ORDER SLOT.
-    public void randomizeStartingOrder ( Player players[], int numOfPlayers ) {
+    public void randomizeStartingOrder ( List<Player> players, int numOfPlayers ) {
 
     }
 

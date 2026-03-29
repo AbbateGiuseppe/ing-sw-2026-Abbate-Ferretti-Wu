@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49;
 
+import it.polimi.ingsw.gc49.Card.Card;
+
 public class Player {
     private String nickname;
     private final int playerIndex;
