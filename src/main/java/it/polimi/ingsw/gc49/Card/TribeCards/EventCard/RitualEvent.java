@@ -18,30 +18,33 @@ public class RitualEvent extends EventCard {
     @Override
     public void resolveEvent(List<Player> players) {
         for(Player player : players) {
+            player.setFoodToPay(0);
+            //Effect num 6
             eventManager.invokeEvent(BuildingEvent.RITUAL_PRIOR_EVENT,player.getTotem());
         }
 
         List<Player> losers = determineLosers(players);
         for(Player player : losers) {
             player.setPointsToPay(minusPoints);
-            player.setFoodToPay(0);
         }
 
         List<Player> winners = determineWinners(players);
         for(Player player : winners) {
              player.setPointsToPay(-plusPoints);
-             player.setFoodToPay(0);
         }
+        // If there is only one winner then set the flag to true for effect num 7
         if(winners.size() == 1) {
              winners.getFirst().setUniqueWinner(true);
         }
 
         for(Player player : players) {
+            // Effect num 3 and 7
             eventManager.invokeEvent(BuildingEvent.RITUAL_POSTERIOR_EVENT,player.getTotem());
             player.confirmToPay();
         }
     }
 
+    // Returns the players with the most number of stars
     private List<Player> determineWinners(List<Player> players) {
         int maxScore = players.stream()
                 .mapToInt(p -> p.data.getNumStars() + p.getTempStars())
@@ -52,6 +55,7 @@ public class RitualEvent extends EventCard {
                 .collect(Collectors.toList());
     }
 
+    // Returns the players with the fewest number of stars
     private List<Player> determineLosers(List<Player> players) {
         int minScore = players.stream()
                 .mapToInt(p -> p.data.getNumStars() + p.getTempStars())

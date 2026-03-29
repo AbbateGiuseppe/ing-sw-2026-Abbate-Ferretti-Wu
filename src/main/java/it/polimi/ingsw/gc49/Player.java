@@ -107,6 +107,7 @@ public class Player {
     public int getDrawableLower () {
         return drawableLower;
     }
+
     // Event Management
     public int getFoodToPay() {
         return foodToPay;

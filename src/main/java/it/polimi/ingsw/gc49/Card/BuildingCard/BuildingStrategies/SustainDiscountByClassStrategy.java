@@ -6,7 +6,9 @@ import it.polimi.ingsw.gc49.CharacterType;
 import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
+// Effect num 2
 public class SustainDiscountByClassStrategy extends AbsBuildingStrategy {
+    // BuildingEvent:SUSTENANCE_EVENT
     public SustainDiscountByClassStrategy(BuildingEvent event) {
         super(event);
     }
@@ -18,7 +20,7 @@ public class SustainDiscountByClassStrategy extends AbsBuildingStrategy {
     }
 
     @Override
-    protected boolean condition(Player playerDataInterface) {
+    protected boolean condition(Player player) {
         return true;
     }
 }

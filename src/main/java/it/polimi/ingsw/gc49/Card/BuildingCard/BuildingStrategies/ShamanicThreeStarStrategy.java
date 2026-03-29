@@ -5,7 +5,9 @@ import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
+// Effect 6
 public class ShamanicThreeStarStrategy extends AbsBuildingStrategy {
+    // BuildingEvent:RITUAL_PRIOR_EVENT
     public ShamanicThreeStarStrategy(BuildingEvent event) {
         super(event);
     }

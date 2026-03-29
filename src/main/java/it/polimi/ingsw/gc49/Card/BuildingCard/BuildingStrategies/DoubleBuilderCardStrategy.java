@@ -5,7 +5,9 @@ import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
+// Effect 9
 public class DoubleBuilderCardStrategy extends AbsBuildingStrategy {
+    // BuildingEvent:GAMA_END
     public DoubleBuilderCardStrategy(BuildingEvent event) {
         super(event);
     }

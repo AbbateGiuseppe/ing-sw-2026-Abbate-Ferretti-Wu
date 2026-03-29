@@ -20,5 +20,6 @@ public abstract class AbsBuildingStrategy implements BuildingStrategyInterface {
     }
 
     protected abstract void effect(Player player);
+    // Some effects are only activated on condition,e.g.effect num 3 is triggered only if the player is the loser
     protected abstract boolean condition(Player player);
 }
