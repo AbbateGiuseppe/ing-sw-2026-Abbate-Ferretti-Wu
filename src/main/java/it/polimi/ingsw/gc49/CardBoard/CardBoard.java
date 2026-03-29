@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Era;
 import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
+import it.polimi.ingsw.gc49.States.EraEndedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,8 +92,11 @@ public class CardBoard {
         line.endGame();
         // eventuale logica extra legata agli scarti o al deck
     }
-    public void endRound(int numPlayers) {
+    public void endRound (int numPlayers) throws EraEndedException {
         line.endRound(numPlayers);
+        if(line.hasEraChanged()) {
+            throw new EraEndedException("We have changed the era.");
+        }
     }
 
     public void endEra(Era newEra) {

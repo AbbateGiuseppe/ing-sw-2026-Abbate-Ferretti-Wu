@@ -47,6 +47,7 @@ public class Model {
     public Track getTrack () {
         return track;
     }
+    public CardBoard getCardBoard () { return cardBoard; }
     public EnumSet<Totem> getUsedTotems () {
         return usedTotems;
     }

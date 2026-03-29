@@ -6,9 +6,11 @@ public class RoundEnd extends State {
     public RoundEnd ( Model model ) { super(model);}
 
     public State executeState () {
-        //TODO: implement RoundEnd state.
-
-
-        return this;
+        try {
+            model.getCardBoard().endRound(model.getNumOfPlayers());
+        } catch (EraEndedException e) {
+            return new EraEnd(model);
+        }
+        return new OfferChoosing(model);
     }
 }
