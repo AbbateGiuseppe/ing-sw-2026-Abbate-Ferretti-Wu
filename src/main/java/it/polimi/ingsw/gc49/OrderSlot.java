@@ -43,6 +43,7 @@ public class OrderSlot {
         this.removedPointsOnStarvation = removedPointsOnStarvation;
     }
 
+    //### assignment and effect on an assignment ###
     /**
      * Assigns the player to the order slot,
      * can also deassign the currently assigned player by passing a null.
@@ -50,6 +51,9 @@ public class OrderSlot {
      */
     public void assignPlayer ( Player assignedPlayer ) {
         this.assignedPlayer = assignedPlayer;
+        if(assignedPlayer != null) {
+            assignedPlayer.setAssignedOrderSlot(this);
+        }
     }
 
     /**
@@ -67,7 +71,9 @@ public class OrderSlot {
         }
     }
 
+    //### getters
     public Player getAssignedPlayer() {
         return assignedPlayer;
     }
+    public int getFoodGain() { return foodGain; }
 }

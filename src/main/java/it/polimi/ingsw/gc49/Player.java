@@ -8,6 +8,7 @@ public class Player {
     private boolean connected;
     /** status for a disconnection event where the player has been indefinitely removed from the board and won't be given the chance to be chosen for the following turns, until he comes back*/
     private boolean removedFromTrack;
+    private OrderSlot assignedOrderSlot;
     private Totem totem;
     private int food;
     private int points;
@@ -80,6 +81,7 @@ public class Player {
     public void setTotem (Totem totem) {
         this.totem = totem;
     }
+    public void setAssignedOrderSlot (OrderSlot assignedOrderSlot) {this.assignedOrderSlot = assignedOrderSlot;}
 
     //### getters
     public String getNickname () {
@@ -91,6 +93,7 @@ public class Player {
     public Totem getTotem() {
         return totem;
     }
+    public OrderSlot getAssignedOrderSlot() { return assignedOrderSlot; }
     public int getFood () {
         return food;
     }
