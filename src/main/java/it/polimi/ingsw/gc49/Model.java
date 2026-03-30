@@ -27,32 +27,23 @@ public class Model {
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
         currentState = new InitialSetup(this);
-        synchronized (Locks.playerInput) {
-            executeCurrentState();
+        while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
+            synchronized (Locks.playerInput) {
+                executeCurrentState();
+            }
         }
     }
 
     //### getters
-    public int getNumOfPlayers () {
-        return numOfPlayers;
-    }
-    public int getNumOfConnectedPlayers () {
-        return numOfConnectedPlayers;
-    }
-    public List<Player> getPlayers () {
-        return players;
-    }
-    public String[] getPlayersNicknames () {
-        return playersNicknames;
-    }
-    public Track getTrack () {
-        return track;
-    }
+    public int getNumOfPlayers () { return numOfPlayers; }
+    public int getNumOfConnectedPlayers () { return numOfConnectedPlayers; }
+    public List<Player> getPlayers () { return players; }
+    public String[] getPlayersNicknames () { return playersNicknames; }
+    public Track getTrack () { return track; }
     public CardBoard getCardBoard () { return cardBoard; }
-    public EnumSet<Totem> getUsedTotems () {
-        return usedTotems;
-    }
-    public boolean isLastRound () { return lastRound; } //TODO: implement check of last round.
+    public EnumSet<Totem> getUsedTotems () { return usedTotems; }
+
+    public boolean isLastRound () { return lastRound; }
 
     //### setters
     public void setPlayers ( List<Player> players ) {

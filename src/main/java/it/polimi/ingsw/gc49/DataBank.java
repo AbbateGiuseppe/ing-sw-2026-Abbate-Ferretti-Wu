@@ -56,19 +56,23 @@ public class DataBank {
         else {numCharacterMap.put(type,increment);}
     }
 
-    // Returns the total number of character cards
-    public int getNumCharacters() { return numCharacterMap.values().stream().mapToInt(Integer::intValue).sum();}
-    public int getNumBuildingDiscount() { return numBuildingDiscount; }
+    //### adders + getters
+    public int getNumCharacters() { return numCharacterMap.values().stream().mapToInt(Integer::intValue).sum(); } // Returns the total number of character cards
+    public void addNumStar(int n) { numStars += n; }
+    public int getNumStars() { return numStars; }
     public void addNumBuildingDiscount(int n) { numBuildingDiscount += n; }
+    public int getNumBuildingDiscount() { return numBuildingDiscount; }
     public void addNumBuilderPoints(int n) { numBuilderPoints += n; }
-    public void addNumBuildingPoints(int n) { numBuildingPoints += n; }
-    public void doubleNumBuilderPoints() { numBuilderPoints *= 2; }
-    public int getNumSustenanceDiscount() { return numSustenanceDiscount; }
+    public int getNumBuilderPoints() { return numBuilderPoints; }
     public void addNumSustenanceDiscount(int n) { numSustenanceDiscount += n; }
-    public void addNumStar(int n) {numStars += n;}
-    public int getNumStars() {return numStars;}
+    public int getNumSustenanceDiscount() { return numSustenanceDiscount; }
+    public void addInventionEnumSet(Invention invention) { inventions.add(invention); }
+    public int getDifferentInventionCount() { return inventions.size(); }
+    public void addNumBuildingPoints(int n) { numBuildingPoints += n; }
+    public int getNumBuildingPoints() { return numBuildingPoints; }
 
     // Event Management
+    public void doubleNumBuilderPoints() { numBuilderPoints *= 2; }
     public void addInvention(Invention invention) {
         if (numInventions != null) {
             if (numInventions[invention.ordinal()] == 1) {
