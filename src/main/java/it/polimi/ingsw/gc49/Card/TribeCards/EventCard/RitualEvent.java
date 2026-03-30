@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
 import it.polimi.ingsw.gc49.BuildingEvent;
+import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.List;
@@ -16,30 +17,30 @@ public class RitualEvent extends EventCard {
     }
 
     @Override
-    public void resolveEvent(List<Player> players) {
-        for(Player player : players) {
-            player.setFoodToPay(0);
-            //Effect num 6
-            eventManager.invokeEvent(BuildingEvent.RITUAL_PRIOR_EVENT,player.getTotem());
-        }
+    public void resolveEvent(Model model) {
+        List<Player> players = model.getPlayers();
 
         List<Player> losers = determineLosers(players);
         for(Player player : losers) {
+            player.setFoodToPay(0);
             player.setPointsToPay(minusPoints);
         }
 
         List<Player> winners = determineWinners(players);
         for(Player player : winners) {
+            player.setFoodToPay(0);
              player.setPointsToPay(-plusPoints);
         }
+
         // If there is only one winner then set the flag to true for effect num 7
         if(winners.size() == 1) {
              winners.getFirst().setUniqueWinner(true);
         }
 
+        // Effect num 3 and 7
+        eventManager.invokeEvent(BuildingEvent.RITUAL_EVENT,null);
+
         for(Player player : players) {
-            // Effect num 3 and 7
-            eventManager.invokeEvent(BuildingEvent.RITUAL_POSTERIOR_EVENT,player.getTotem());
             player.confirmToPay();
         }
     }

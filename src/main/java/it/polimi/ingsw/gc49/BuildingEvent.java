@@ -4,8 +4,7 @@ package it.polimi.ingsw.gc49;
 public enum BuildingEvent {
     HUNTING_EVENT,
     PAINTING_EVENT,
-    RITUAL_PRIOR_EVENT,
-    RITUAL_POSTERIOR_EVENT,
+    RITUAL_EVENT,
     SUSTENANCE_EVENT,
     SETCOMPLETE_EVENT,
     SAMEINVENTION_EVENT,

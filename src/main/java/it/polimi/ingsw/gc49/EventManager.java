@@ -1,14 +1,15 @@
 package it.polimi.ingsw.gc49;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterCard;
+
+import java.util.*;
 
 public class EventManager {
     private final Map<BuildingEvent, List<BuildingEventListener>> listenersByEvent;
+    private final Model model;
 
-    public EventManager() {
+    public EventManager(Model model) {
+        this.model = model;
         listenersByEvent = new HashMap<>();
     }
 
@@ -23,10 +24,9 @@ public class EventManager {
         }
     }
 
-    public void invokeEvent(BuildingEvent event, Totem totem) {
+    public void invokeEvent(BuildingEvent event, Optional<CharacterCard> drawnCard) {
         for(BuildingEventListener listener : listenersByEvent.get(event)) {
-            listener.onEventEffect(totem);
+            listener.onEventEffect(model,drawnCard);
         }
     }
-
 }
