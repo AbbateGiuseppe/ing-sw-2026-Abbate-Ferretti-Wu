@@ -4,8 +4,6 @@ import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
-import java.util.List;
-
 public class SustenanceEvent extends EventCard {
     private final int minusPoints;
 
@@ -22,7 +20,7 @@ public class SustenanceEvent extends EventCard {
             player.setPointsToPay(0);
         }
         // Effect num 2
-        eventManager.invokeEvent(BuildingEvent.SUSTENANCE_EVENT,null);
+        eventManager.invokeEvent(BuildingEvent.SUSTENANCE_EVENT);
 
         for(Player player : model.getPlayers()) {
             // if the player doesn't have enough food,subtract from his points

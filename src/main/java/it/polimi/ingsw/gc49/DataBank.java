@@ -40,9 +40,9 @@ public class DataBank {
     public int getCharacterCount(CharacterType type) {
         if (!numCharacterMap.containsKey(type)) return 0;
         // Returns the number of complete sets of character cards
-        if (type == CharacterType.Set) {return Collections.min(numCharacterMap.values());}
+        if (type == CharacterType.CompleteSet) {return Collections.min(numCharacterMap.values());}
         // Returns the number of same pair inventions(used for effect 5)
-        if (type == CharacterType.SameInventions) {
+        if (type == CharacterType.SamePairInventions) {
             if (sameInvention == 1){sameInvention = 0;return 1;}
             return 0;
         }
@@ -79,7 +79,7 @@ public class DataBank {
             }
         }
         inventions.add(invention);}
-    public void recordCharaSet() {currentNumCompleteCharacterSets = getCharacterCount(CharacterType.Set);}
+    public void recordCharaSet() {currentNumCompleteCharacterSets = getCharacterCount(CharacterType.CompleteSet);}
     public void recordInventions() {numInventions = new int[10];}
     public int getCurrentNumCompleteCharacterSets() {return currentNumCompleteCharacterSets;}
     public void addCurrentNumCompleteCharacterSets(int n) {currentNumCompleteCharacterSets +=n;}

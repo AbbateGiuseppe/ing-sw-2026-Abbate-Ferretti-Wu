@@ -1,11 +1,6 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard;
 
-import it.polimi.ingsw.gc49.BuildingEvent;
-import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterCard;
-import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.Model;
-
-import java.util.Optional;
+import it.polimi.ingsw.gc49.*;
 
 public class CharacterSetCompleteFoodCard extends BuildingCard {
     public CharacterSetCompleteFoodCard(BuildingEvent buildingEvent, EventManager manager, int PPReward, int foodPrice) {
@@ -13,7 +8,17 @@ public class CharacterSetCompleteFoodCard extends BuildingCard {
     }
 
     @Override
-    public void onEventEffect(Model model, Optional<CharacterCard> drawnCard) {
+    public void onEventEffect() {
+        int unitCount = owner.data.getCharacterCount(CharacterType.CompleteSet);
+        unitCount -= owner.data.getCurrentNumCompleteCharacterSets();
+        owner.data.addCurrentNumCompleteCharacterSets(unitCount);
+        owner.addFood(5 * unitCount);
+    }
 
+    @Override
+    public void setOwner(Player owner) {
+        super.setOwner(owner);
+        // Record the current number of complete character card sets for future comparision
+        owner.data.recordCharaSet();
     }
 }

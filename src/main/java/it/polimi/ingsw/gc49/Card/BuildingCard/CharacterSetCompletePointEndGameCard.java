@@ -1,12 +1,8 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.BuildingEvent;
-import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterCard;
 import it.polimi.ingsw.gc49.CharacterType;
 import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.Model;
-
-import java.util.Optional;
 
 public class CharacterSetCompletePointEndGameCard extends BuildingCard {
     public CharacterSetCompletePointEndGameCard(BuildingEvent buildingEvent, EventManager manager, int PPReward, int foodPrice) {
@@ -14,7 +10,7 @@ public class CharacterSetCompletePointEndGameCard extends BuildingCard {
     }
 
     @Override
-    public void onEventEffect(Model model, Optional<CharacterCard> drawnCard) {
-         owner.addFood(6 * owner.data.getCharacterCount(CharacterType.Set));
+    public void onEventEffect() {
+         owner.addFood(6 * owner.data.getCharacterCount(CharacterType.CompleteSet));
     }
 }

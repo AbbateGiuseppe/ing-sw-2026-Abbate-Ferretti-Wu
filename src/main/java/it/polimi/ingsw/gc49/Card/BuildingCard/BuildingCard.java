@@ -48,15 +48,8 @@ public abstract class BuildingCard extends Card implements BuildingEventListener
         setOwner(player);
     }
 
-    private void setOwner(Player owner) {
+    public void setOwner(Player owner) {
         this.owner = owner;
-        if (buildingEvent == BuildingEvent.SETCOMPLETE_EVENT) {
-            // Record the current number of complete character card sets for future comparision
-            owner.data.recordCharaSet();
-        } else if (buildingEvent == BuildingEvent.SAMEINVENTION_EVENT) {
-            // Record the current number of the same pair inventions for future comparision
-            owner.data.recordInventions();
-        }
         // Put the card to listen for its buildingEvent
         manager.addEventListener(buildingEvent,this);
     }

@@ -5,8 +5,6 @@ import it.polimi.ingsw.gc49.CharacterType;
 import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
-import java.util.List;
-
 public class HuntingEvent extends EventCard {
     private final int pointsPerHunter;
 
@@ -23,7 +21,7 @@ public class HuntingEvent extends EventCard {
         }
         // Trigger the effect(effect number 8) of the building card,
         // the building card modifies foodToPay and pointsToPay of the player
-        eventManager.invokeEvent(BuildingEvent.HUNTING_EVENT,null);
+        eventManager.invokeEvent(BuildingEvent.HUNTING_EVENT);
         // Finalize the change on food and points of the player
         for(Player player : model.getPlayers()) {
             player.confirmToPay();

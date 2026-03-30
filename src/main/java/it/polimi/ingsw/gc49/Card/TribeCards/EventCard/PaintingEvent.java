@@ -5,8 +5,6 @@ import it.polimi.ingsw.gc49.CharacterType;
 import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
-import java.util.List;
-
 public class PaintingEvent extends EventCard {
     // threshold is the minimum number of the Artist cards in order to get plusPoints,otherwise the player gets minusPooints
     private final int threshold;
@@ -30,7 +28,7 @@ public class PaintingEvent extends EventCard {
             }
         }
         // Effect num 10
-        eventManager.invokeEvent(BuildingEvent.PAINTING_EVENT,null);
+        eventManager.invokeEvent(BuildingEvent.PAINTING_EVENT);
 
         for(Player player : model.getPlayers()) {
             player.confirmToPay();

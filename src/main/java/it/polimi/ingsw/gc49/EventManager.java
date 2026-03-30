@@ -1,7 +1,5 @@
 package it.polimi.ingsw.gc49;
 
-import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterCard;
-
 import java.util.*;
 
 public class EventManager {
@@ -24,9 +22,9 @@ public class EventManager {
         }
     }
 
-    public void invokeEvent(BuildingEvent event, Optional<CharacterCard> drawnCard) {
+    public void invokeEvent(BuildingEvent event) {
         for(BuildingEventListener listener : listenersByEvent.get(event)) {
-            listener.onEventEffect(model,drawnCard);
+            listener.onEventEffect();
         }
     }
 }

@@ -38,7 +38,7 @@ public class RitualEvent extends EventCard {
         }
 
         // Effect num 3 and 7
-        eventManager.invokeEvent(BuildingEvent.RITUAL_EVENT,null);
+        eventManager.invokeEvent(BuildingEvent.RITUAL_EVENT);
 
         for(Player player : players) {
             player.confirmToPay();
