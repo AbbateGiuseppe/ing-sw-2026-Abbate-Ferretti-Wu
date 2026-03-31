@@ -1,6 +1,7 @@
 module it.polimi.ingsw.gc49 {
     requires javafx.controls;
     requires javafx.fxml;
+    requires com.google.gson;
 
 
     opens it.polimi.ingsw.gc49 to javafx.fxml;

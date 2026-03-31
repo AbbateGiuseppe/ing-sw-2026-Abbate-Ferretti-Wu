@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.*;
 import it.polimi.ingsw.gc49.Card.TribeCards.EventCard.*;
 import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.Era;
+import it.polimi.ingsw.gc49.Model;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,16 +23,14 @@ public class Deck {
     private final ArrayList<Card> tribeDeck;
     private final ArrayList<Card> buildingDeck;
 
-    public Deck(int numPlayers) {
+    public Deck(Model model) {
         this.tribeDeck = new ArrayList<>();
         this.buildingDeck = new ArrayList<>();
 
         // qui costruisci fisicamente i mazzi in base al numero di giocatori
-        TribeDeck(numPlayers);
-        BuildingDeck(numPlayers);
+        TribeDeck(model.getNumOfPlayers());
+        BuildingDeck(model.getNumOfPlayers());
 
-        flush(tribeDeck);
-        flush(buildingDeck);
     }
 
     // pesca la prossima carta Tribù (Personaggio/Eventi) dal mazzo
@@ -40,7 +39,7 @@ public class Deck {
             return null;
         }
         // top of deck = last element
-        return tribeDeck.remove(tribeDeck.size() - 1);
+        return tribeDeck.removeFirst();
     }
 
     // pesca la prossima carta Edificio dal mazzo
@@ -50,16 +49,68 @@ public class Deck {
         if (buildingDeck.isEmpty()) {
             return null;
         }
-        return buildingDeck.remove(buildingDeck.size() - 1);
+        return buildingDeck.removeFirst();
     }
 
-    // mescola una lista di carte e la restituisce
-    private ArrayList<Card> flush(ArrayList<Card> deck) {
-        Collections.shuffle(deck);
-        return deck;
-    }
 
     // --------- metodi di inizializzazione interni ---------
+    /**
+     * Inizializza il mazzo delle carte Tribù leggendo i dati da un file JSON.
+
+     * Il metodo usa questi passaggi:
+     * - getClass().getResourceAsStream("/cards/tribe_cards.json"):
+     *   cerca il file dentro la cartella resources del progetto e restituisce uno stream
+     *   di lettura; se il file non esiste, il risultato è null.
+
+     * - InputStream:
+     *   rapprsenta il flusso di byte del file letto da resources.
+
+     * - new InputStreamReader(inputStream):
+     *   converte lo stream di byte in stream di caratteri, così il JSON può essere letto
+     *   come testo.
+
+     * - Gson:
+     *   libreria usata per convertire il testo JSON in oggetti Java.
+
+     * - gson.fromJson(..., JsonObject.class):
+     *   legge tutto il file JSON e lo trasforma in un oggetto JsonObject, che rappresenta
+     *   il JSON principale.
+
+     * - root.getAsJsonArray("cards"):
+     *   estrae dall'oggetto principale l'array chiamato "cards", cioè la lista di tutte
+     *   le carte definite nel file.
+
+     * - era1Cards, era2Cards, era3Cards, finalEventCards:
+     *   quattro liste separate in cui le carte vengono divise in base all'Era.
+
+     * - for (JsonElement cardElement : cards):
+     *   scorre tutte le carte presenti nel JSON una per una.
+
+     * - cardElement.getAsJsonObject():
+     *   converte ogni elemento dell'array in un JsonObject singolo, cioè la descrizione
+     *   di una carta.
+
+     * - cardJson.get("minPlayers").getAsInt():
+     *   legge il numero minimo di giocatori richiesto per usare quella carta.
+
+     * - if (numPlayers < minPlayers):
+     *   scarta la carta se non è compatibile con il numero di giocatori della partita.
+
+     * - createTribeCardFromJson(cardJson):
+     *   metodo helper che costruisce la carta Java corretta leggendo il tipo e gli altri
+     *   campi dal JSON.
+
+     * - card.getEra():
+     *   restituisce l'Era della carta appena creata.
+
+     * - switch (era):
+     *   inserisce la carta nella lista corrispondente alla sua Era.
+
+     * In questo modo ogni gruppo di carte viene poi mescolato e usato separatamente
+     * durante la partita.
+     *
+     * @param numPlayers numero di giocatori della partita corrente
+     */
 
     private void TribeDeck(int numPlayers) {
         // STEP 1: Carica il file JSON delle carte tribù
@@ -96,7 +147,7 @@ public class Deck {
             // STEP 5: Verifica compatibilità con il numero di giocatori
             // Ogni carta nel JSON ha un campo "minPlayers" che indica il numero minimo di giocatori
             // Esempio: se minPlayers = 3, la carta è usata solo in partite con 3+ giocatori
-            int minPlayers = cardJson.get("minPlayers").getAsInt();
+            int minPlayers = cardJson.get("minNumPlayers").getAsInt();
             if (numPlayers < minPlayers) {
                 continue; // Salta questa carta perché non compatibile con la partita corrente
             }
@@ -167,7 +218,7 @@ public class Deck {
 
             // STEP 5: Verifica compatibilità con numero di giocatori
             // Stesso controllo di TribeDeck: salta le carte che richiedono più giocatori
-            int minPlayers = cardJson.get("minPlayers").getAsInt();
+            int minPlayers = cardJson.get("minNumPlayers").getAsInt();
             if (numPlayers < minPlayers) {
                 continue; // Salta questa carta
             }

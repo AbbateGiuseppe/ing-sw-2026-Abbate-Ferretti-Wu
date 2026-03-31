@@ -25,8 +25,8 @@ public class CardBoard {
     public CardBoard(Model model) {
         this.model = model;
         this.numPlayers = model.getNumOfPlayers();
-        this.deck = new Deck(numPlayers);   // costruisci il mazzo completo
-        this.line = new Line(numPlayers);   // se vuoi, puoi passare deck nel costruttore
+        this.deck = new Deck(model);   // costruisci il mazzo completo
+        this.line = new Line(model, deck);   // se vuoi, puoi passare deck nel costruttore
         this.discards = new ArrayList<>();
     }
 
@@ -82,7 +82,7 @@ public class CardBoard {
     }
 
     public Era getNextEra() {
-        return line.getNextEra();
+        return line.getNewEra();
     }
 
 
@@ -96,7 +96,7 @@ public class CardBoard {
     }
 
     public void endEra(Era newEra) {
-        line.endEra(newEra);       // qui fai tutta la logica edifici/new era
+        line.endEra();       // qui fai tutta la logica edifici/new era
         line.clearEraChange();
     }
 

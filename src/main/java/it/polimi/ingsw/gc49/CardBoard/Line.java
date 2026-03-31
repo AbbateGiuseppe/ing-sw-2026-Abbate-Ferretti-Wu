@@ -24,8 +24,6 @@ public class Line {
     private List<Player> playerList;
 
 
-
-
     /// file sopra e sotto
     private final ArrayList<Card> upperLine;
     private final ArrayList<Card> lowerLine;
@@ -37,10 +35,10 @@ public class Line {
 
 
     /// Costruttore
-    public Line(Model model) {
+    public Line(Model model, Deck deck) {
         this.model = model;
         this.numPlayers = model.getNumOfPlayers();
-        this.deck = new Deck(numPlayers);
+        this.deck = deck;
         this.upperLine = new ArrayList<>();
         this.lowerLine = new ArrayList<>();
         this.upperBuilding = new ArrayList<>();
