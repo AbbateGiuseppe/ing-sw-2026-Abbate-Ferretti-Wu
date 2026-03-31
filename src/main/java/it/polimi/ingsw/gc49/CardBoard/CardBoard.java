@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Era;
 import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
+import it.polimi.ingsw.gc49.States.DeckEmptiedException;
 import it.polimi.ingsw.gc49.States.EraEndedException;
 
 import java.util.ArrayList;
@@ -99,9 +100,12 @@ public class CardBoard {
         }
     }
 
-    public void endEra(Era newEra) {
+    public void endEra(Era newEra) throws DeckEmptiedException {
         line.endEra();       // qui fai tutta la logica edifici/new era
         line.clearEraChange();
+        if(newEra.isFinal()){
+            throw new DeckEmptiedException("We have emptied the deck.");
+        }
     }
 
 }
