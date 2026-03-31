@@ -21,6 +21,7 @@ public class Line {
     private Era newEra = Era.SECOND;
     private Model model;
     private int numPlayers;
+    private List<Player> playerList;
 
 
 
@@ -133,12 +134,12 @@ public class Line {
     public boolean hasEraChanged() {
         return eraChanged;
     }
-    public Era getNextEra() {
-        return nextEra;
+    public Era getNewEra() {
+        return newEra;
     }
     public void clearEraChange() {
         eraChanged = false;
-        nextEra = null;
+        newEra = null;
     }
     public Era getCurrentEra() {
         return currentEra;
@@ -147,7 +148,7 @@ public class Line {
 /// tutti gli end
 
     public void endRound(int numPlayers) {
-        resolveEvent(lowerLine, model.getPlayers());   ///parlare a Max
+        resolveEvent(lowerLine, playerList);   ///parlare a Max
         lowerLine.clear();
         lowerLine.addAll(upperLine);
         upperLine.clear();
@@ -164,7 +165,6 @@ public class Line {
                 currentEra = cardEra;
                 eraChanged = true;
                 newEra = cardEra;
-                previousEra = cardEra;
             }
 
             upperLine.add(drawn);
@@ -172,7 +172,7 @@ public class Line {
     }
 
     public void endEra() {
-        // 1) Se si passa all’Era III: scarta eventuali edifici nella fila inferiore
+        // 1) Se si passa all'Era III: scarta eventuali edifici nella fila inferiore
         if (newEra == Era.THIRD) {
             lowerBuilding.clear();
         }
@@ -182,11 +182,11 @@ public class Line {
         lowerBuilding.addAll(upperBuilding);
         upperBuilding.clear();
 
-        // 3) Aggiungi nella fila superiore gli edifici dell’Era appena iniziata,
+        // 3) Aggiungi nella fila superiore gli edifici dell'Era appena iniziata,
         //    in numero dipendente da numPlayers (tabella del regolamento) [file:3]
-        // ///capire come fare
 
-        for (int i = 0; i < buildingsToPlace; i++) {   /// chiedere come fare
+        int buildingsToPlace = deck.getBuildingsToPlace(numPlayers, newEra);
+        for (int i = 0; i < buildingsToPlace; i++) {
             Card building = deck.dealBuildingCard();
             if (building == null) break;       // nessuna carta edificio rimasta
             upperBuilding.add(building);
@@ -199,9 +199,9 @@ public class Line {
 
     public void endGame() {
         // 1) Risolvi prima gli eventi nella fila inferiore
-        resolveEvent(lowerLine, model.getPlayers());
+        resolveEvent(lowerLine, playerList);
         // 2) Poi risolvi quelli eventualmente nella fila superiore
-        resolveEvent(upperLine, model.getPlayers());
+        resolveEvent(upperLine, playerList);
 
         // 3) Se vuoi, svuoti tutto il board (opzionale)
         lowerLine.clear();
