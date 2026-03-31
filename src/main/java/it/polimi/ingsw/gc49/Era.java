@@ -8,6 +8,24 @@ public enum Era {
 
     /**
      *
+     * @return the value of the first ENUM.
+     */
+    public Era first(){
+        Era[] eras = Era.values();
+        return eras[0];
+    }
+
+    /**
+     *
+     * @return the value of the last ENUM.
+     */
+    public Era last(){
+        Era[] eras = Era.values();
+        return eras[eras.length - 1];
+    }
+
+    /**
+     *
      * @return the value of the next ENUM. return null if it reached the end of the ENUMS.
      */
     public Era next() {
