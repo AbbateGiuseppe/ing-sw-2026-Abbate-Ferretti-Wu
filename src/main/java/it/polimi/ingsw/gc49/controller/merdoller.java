@@ -6,5 +6,5 @@ public class merdoller {
     //:'(
     //Gli antichi romani dicevano che lavorare è una poverata ed avevano ragione
     //O_O OoO O_O
-    //oh oh!!!!!!!!!!!
+    //oh oh!(!!!!!!!!!!)
 }
