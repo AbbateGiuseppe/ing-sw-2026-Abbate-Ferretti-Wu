@@ -5,4 +5,5 @@ public class merdoller {
     //Se Dio è morto, io sono risorto
     //:'(
     //Gli antichi romani dicevano che lavorare è una poverata ed avevano ragione
+    //O_O
 }
