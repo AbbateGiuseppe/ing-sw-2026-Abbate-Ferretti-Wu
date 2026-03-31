@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.CardBoard;
 import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Era;
+import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.ArrayList;
@@ -15,8 +16,15 @@ public class CardBoard {
     private final Line line;
     private final List<Card> discards;
     private final Deck deck;
+    private Model model;
+    private int numPlayers;
+/// chiedere come mettere playerlist
 
-    public CardBoard(int numPlayers) {
+
+
+    public CardBoard(Model model) {
+        this.model = model;
+        this.numPlayers = model.getNumOfPlayers();
         this.deck = new Deck(numPlayers);   // costruisci il mazzo completo
         this.line = new Line(numPlayers);   // se vuoi, puoi passare deck nel costruttore
         this.discards = new ArrayList<>();

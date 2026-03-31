@@ -5,17 +5,25 @@ import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterCard;
 import it.polimi.ingsw.gc49.Card.TribeCards.EventCard.EventCard;
 import it.polimi.ingsw.gc49.Era;
+import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Collections.sort;
 
 
 public class Line {
     /// Per la macchina a stati finiti
     private Era currentEra = Era.FIRST; //chiedi
     private boolean eraChanged = false;
-    private Era nextEra = null;
+    private Era newEra = Era.SECOND;
+    private Model model;
+    private int numPlayers;
+    private List<Player> playerList;
+
+
 
 
     /// file sopra e sotto
@@ -26,9 +34,12 @@ public class Line {
     private final Deck deck;
 
 
-    /// Costruttore
-    public Line(int numPlayers) {
 
+
+    /// Costruttore
+    public Line(Model model) {
+        this.model = model;
+        this.numPlayers = model.getNumOfPlayers();
         this.deck = new Deck(numPlayers);
         this.upperLine = new ArrayList<>();
         this.lowerLine = new ArrayList<>();
@@ -105,12 +116,12 @@ public class Line {
     public boolean hasEraChanged() {
         return eraChanged;
     }
-    public Era getNextEra() {
-        return nextEra;
+    public Era getNewEra() {
+        return newEra;
     }
     public void clearEraChange() {
         eraChanged = false;
-        nextEra = null;
+        newEra = null;
     }
     public Era getCurrentEra() {
         return currentEra;
@@ -119,7 +130,7 @@ public class Line {
 /// tutti gli end
 
     public void endRound(int numPlayers) {
-        resolveEvents(lowerLine);
+        resolveEvent(lowerLine, playerList);   ///parlare a Max
         lowerLine.clear();
         lowerLine.addAll(upperLine);
         upperLine.clear();
@@ -135,16 +146,15 @@ public class Line {
                 // segna che c'è stato un cambio era, ma NON fai ancora endEra
                 currentEra = cardEra;
                 eraChanged = true;
-                nextEra = cardEra;
-                previousEra = cardEra;
+                newEra = cardEra;
             }
 
             upperLine.add(drawn);
         }
     }
 
-    public void endEra(Era newEra) {
-        // 1) Se si passa all’Era III: scarta eventuali edifici nella fila inferiore
+    public void endEra() {
+        // 1) Se si passa all'Era III: scarta eventuali edifici nella fila inferiore
         if (newEra == Era.THIRD) {
             lowerBuilding.clear();
         }
@@ -154,11 +164,11 @@ public class Line {
         lowerBuilding.addAll(upperBuilding);
         upperBuilding.clear();
 
-        // 3) Aggiungi nella fila superiore gli edifici dell’Era appena iniziata,
+        // 3) Aggiungi nella fila superiore gli edifici dell'Era appena iniziata,
         //    in numero dipendente da numPlayers (tabella del regolamento) [file:3]
-        // ///capire come fare
 
-        /*for (int i = 0; i < buildingsToPlace; i++) {   /// chiedere come fare
+        int buildingsToPlace = deck.getBuildingsToPlace(numPlayers, newEra);
+        for (int i = 0; i < buildingsToPlace; i++) {
             Card building = deck.dealBuildingCard();
             if (building == null) break;       // nessuna carta edificio rimasta
             upperBuilding.add(building);
@@ -167,14 +177,13 @@ public class Line {
         // aggiorna stato interno e resetta il flag di cambio era
         currentEra = newEra;
         eraChanged = false;
-        nextEra = null;
     }
 
     public void endGame() {
         // 1) Risolvi prima gli eventi nella fila inferiore
-        resolveEvents(lowerLine);
+        resolveEvent(lowerLine, playerList);
         // 2) Poi risolvi quelli eventualmente nella fila superiore
-        resolveEvents(upperLine);
+        resolveEvent(upperLine, playerList);
 
         // 3) Se vuoi, svuoti tutto il board (opzionale)
         lowerLine.clear();
@@ -183,7 +192,7 @@ public class Line {
         upperBuilding.clear();
     }
 
-    private void resolveEvents(List<Card> line) {
+    private void resolveEvent(List<Card> line, List<Player> playerList) {
         List<EventCard> events = new ArrayList<>();
 
         for (Card c : line) {
@@ -191,19 +200,12 @@ public class Line {
                 events.add((EventCard) c);
             }
         }
-
-        /*// ordina: stesso tipo per Era crescente, Sostentamento per ultimo [file:3]
-        events.sort((e1, e2) -> {
-            boolean s1 = e1.getType() == EventType.SUSTENTAMENTO;
-            boolean s2 = e2.getType() == EventType.SUSTENTAMENTO;
-            if (s1 && !s2) return 1;
-            if (!s1 && s2) return -1;
-            return Integer.compare(e1.getEraIndex(), e2.getEraIndex());
-        });
+        // ordina: stesso tipo per Era crescente, Sostentamento per ultimo [file:3]
+        sort(events);
 
         for (EventCard e : events) {
-            e.resolve(// Model o lista giocatori );
-        }*/
+            e.resolveEvent(playerList);
+        }
     }
 
 }
