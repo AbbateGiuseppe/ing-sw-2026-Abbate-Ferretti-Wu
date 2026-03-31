@@ -1,6 +1,11 @@
-package it.polimi.ingsw.gc49;
+package it.polimi.ingsw.gc49.Track;
+
+import it.polimi.ingsw.gc49.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Track {
     private final ArrayList<Offer> offerBoard = new ArrayList<>();
@@ -81,9 +86,17 @@ public class Track {
         }
     }
 
-    //### TO IMPLEMENT!! RANDOMIZES THE PLAYERS TO AN ORDER SLOT.
-    public void randomizeStartingOrder ( Player players[], int numOfPlayers ) {
-
+    public void randomizeStartingOrder ( List<Player> players ) {
+        List<Player> randomizedPlayers = players.stream()
+                .collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {
+                    Collections.shuffle(collected);
+                    return collected;
+                }));
+        int orderSlotIterator = 0;
+        for(Player player : randomizedPlayers) {
+            orderBoard.get(orderSlotIterator).assignPlayer(player);
+            orderSlotIterator++;
+        }
     }
 
     public void assignOffer ( Player player, int offerIndex ) {
@@ -95,7 +108,7 @@ public class Track {
     }
 
     /**
-     * Gives the next player reference that is stored in the offer board.
+     * Gives the next player reference that is stored in the offer board and activates the offer's effects.
      * If it's about to index out of the array it's going to reset the index and return a null.
      * @return next player reference or a null if there is no next player.
      */

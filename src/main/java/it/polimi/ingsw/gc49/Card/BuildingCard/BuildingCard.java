@@ -1,25 +1,67 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard;
 
+import it.polimi.ingsw.gc49.*;
 import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingStrategies.BonusFoodAndPPStrategy;
 import it.polimi.ingsw.gc49.Card.Card;
-import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterType;
-import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.Player;
-import it.polimi.ingsw.gc49.Totem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BuildingCard extends Card implements BuildingEventListener{
-    BuildingStrategyInterface strategy;
-    Player owner;
-    int PPReward;
-    int foodPrice;
+    private final BuildingStrategyInterface strategy;
+    private final BuildingEvent buildingEvent;
+    private final EventManager manager;
+    private final int PPReward;
+    private final int foodPrice;
+    private Player owner;
 
+    public BuildingCard(BuildingStrategyInterface strategy, BuildingEvent buildingEvent, EventManager manager, int PPReward, int foodPrice) {
+        this.buildingEvent = buildingEvent;
+        this.manager = manager;
+        this.strategy = strategy;
+        this.PPReward = PPReward;
+        this.foodPrice = foodPrice;
+    }
+
+    // TODO:create the building cards with their strategies
+    public static List<BuildingCard> getAllBuildingCards(EventManager manager){
+        List<BuildingCard> list = new ArrayList<>();
+        // Setup the strategy of the card
+        BonusFoodAndPPStrategy strategy = new BonusFoodAndPPStrategy(BuildingEvent.HUNTING_EVENT);
+        strategy.setByUnit(CharacterType.Hunter,1,1);
+        // Create the card
+        BuildingCard card = new BuildingCard(strategy,BuildingEvent.HUNTING_EVENT,manager,0,0);
+        list.add(card);
+
+        return list;
+    }
 
     @Override
     public boolean canGet(Player player) {
-        return (player.getFood()-player.GetBuildingDiscount()) >= foodPrice;
+        if (player.getFood() >= foodPrice - player.data.getNumBuildingDiscount()) {
+            // Subtract the food price from the food of the player
+            player.addFood(Math.min(0,- foodPrice + player.data.getNumBuildingDiscount()));
+            return true;
+        } else {return false;}
+    }
+
+    @Override
+    public void updateDataBank(DataBank dataBank) {
+        dataBank.addNumBuildingPoints(PPReward);
+        setOwner(dataBank.assignedPlayer);
+    }
+
+    private void setOwner(Player owner) {
+        this.owner = owner;
+        if (buildingEvent == BuildingEvent.SETCOMPLETE_EVENT) {
+            // Record the current number of complete character card sets for future comparision
+            owner.data.recordCharaSet();
+        } else if (buildingEvent == BuildingEvent.SAMEINVENTION_EVENT) {
+            // Record the current number of the same pair inventions for future comparision
+            owner.data.recordInventions();
+        }
+        // Put the card to listen for its buildingEvent
+        manager.addEventListener(buildingEvent,this);
     }
 
     public Player getOwner() {
@@ -38,27 +80,6 @@ public class BuildingCard extends Card implements BuildingEventListener{
         return foodPrice;
     }
 
-    public void setOwner(Player owner) {
-        this.owner = owner;
-    }
-
-    public BuildingCard(BuildingStrategyInterface strategy, int PPReward, int foodPrice) {
-        this.strategy = strategy;
-        this.PPReward = PPReward;
-        this.foodPrice = foodPrice;
-    }
-
-    public static List<BuildingCard> getAllBuildingCards(EventManager manager){
-        List<BuildingCard> list = new ArrayList<>();
-        //TODO all initialization
-        BonusFoodAndPPStrategy strategy = new BonusFoodAndPPStrategy(BuildingEvent.Hunting,manager);
-        strategy.setByUnit(CharacterType.Hunter,1,1);
-
-        BuildingCard card = new BuildingCard(strategy,0,0);
-        list.add(card);
-        return list;
-    }
-
     @Override
     public void onEventEffect(Totem totem) {
         if(isOwner((totem))){
@@ -67,7 +88,6 @@ public class BuildingCard extends Card implements BuildingEventListener{
     }
 
     private boolean isOwner(Totem totem){
-        //TODO add event for all player case
         return owner.getTotem() == totem;
     }
 }

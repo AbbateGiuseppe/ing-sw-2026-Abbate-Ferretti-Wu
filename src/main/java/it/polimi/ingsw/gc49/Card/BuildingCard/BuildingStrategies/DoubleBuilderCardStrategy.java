@@ -1,27 +1,24 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard.BuildingStrategies;
 
 import it.polimi.ingsw.gc49.Card.BuildingCard.AbsBuildingStrategy;
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEvent;
+import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.PlayerDataInterface;
+import it.polimi.ingsw.gc49.Player;
 
+// Effect 9
 public class DoubleBuilderCardStrategy extends AbsBuildingStrategy {
-    public DoubleBuilderCardStrategy(BuildingEvent event, EventManager manager) {
-        super(event, manager);
-    }
-
-    /***\
-     *
-     * @param player doubles builderCard's point at end game
-     */
-    @Override
-    public void effect(PlayerDataInterface player) {
-        int reward = player.GetBuilderPP();
-        player.addPoints(reward);
+    // BuildingEvent:GAMA_END
+    public DoubleBuilderCardStrategy(BuildingEvent event) {
+        super(event);
     }
 
     @Override
-    protected boolean condition(PlayerDataInterface playerDataInterface) {
+    public void effect(Player player) {
+        player.data.doubleNumBuilderPoints();;
+    }
+
+    @Override
+    protected boolean condition(Player player) {
         return true;
     }
 }

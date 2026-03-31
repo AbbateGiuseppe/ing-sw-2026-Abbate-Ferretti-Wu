@@ -10,8 +10,4 @@ public abstract class State {
     }
 
     public abstract State executeState();
-
-    public Model getModel() {
-        return model;
-    }
 }

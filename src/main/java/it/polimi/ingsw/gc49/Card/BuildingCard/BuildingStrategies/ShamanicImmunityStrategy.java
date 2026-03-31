@@ -1,21 +1,25 @@
 package it.polimi.ingsw.gc49.Card.BuildingCard.BuildingStrategies;
 
 import it.polimi.ingsw.gc49.Card.BuildingCard.AbsBuildingStrategy;
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingEvent;
+import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.PlayerDataInterface;
+import it.polimi.ingsw.gc49.Player;
 
+// Effect 3
 public class ShamanicImmunityStrategy extends AbsBuildingStrategy {
-    public ShamanicImmunityStrategy(BuildingEvent event, EventManager manager) {
-        super(event, manager);
+    // BuildingEvent:RITUAL_POSTERIOR_EVENT
+    public ShamanicImmunityStrategy(BuildingEvent event) {
+        super(event);
     }
 
     @Override
-    public void effect(PlayerDataInterface player) {
-            player.setupToPay(0,0);
+    public void effect(Player player) {
+         player.setPointsToPay(0);
     }
 
-    protected boolean condition(PlayerDataInterface player){
-        return player.getPPTopay()>0;
+    // if the player is the loser,i.e. he has to pay some points
+    @Override
+    protected boolean condition(Player player){
+        return player.getPointsToPay() > 0;
     }
 }

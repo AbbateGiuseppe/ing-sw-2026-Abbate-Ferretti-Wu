@@ -5,16 +5,16 @@ import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
-// Effect 13
-public class OneMoreCardStrategy extends AbsBuildingStrategy {
-    // BuildingEvent:ROUND_END
-    public OneMoreCardStrategy(BuildingEvent event) {
+// Effect 6
+public class ShamanicThreeStarStrategy extends AbsBuildingStrategy {
+    // BuildingEvent:RITUAL_PRIOR_EVENT
+    public ShamanicThreeStarStrategy(BuildingEvent event) {
         super(event);
     }
 
     @Override
     public void effect(Player player) {
-        //TODO:to be decided and waiting for states
+        player.setTempStars(3);
     }
 
     @Override

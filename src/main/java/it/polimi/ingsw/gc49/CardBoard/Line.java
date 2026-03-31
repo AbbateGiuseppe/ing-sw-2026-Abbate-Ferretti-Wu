@@ -57,18 +57,31 @@ public class Line {
         }
 
 
-    public Card drawUpperCharacter(int cardIndex) {
+    public Card drawUpperCharacter(int cardIndex, Player drawingPlayer) {
         if (cardIndex < 0 || cardIndex >= upperLine.size()) {
             return null;
-            }
-
-        Card picked = upperLine.get(cardIndex);
-        if (!(picked instanceof CharacterCard)) {
-            return null;                        // sicurezza, nel caso ci finisca altro
         }
 
-        upperLine.remove(cardIndex);               // rimuovo DAVVERO dall'ArrayList
-        return picked;
+        Card picked = upperLine.get(cardIndex);
+        if (!picked.canGet(drawingPlayer)) {
+            return null;
+        }else{
+            upperLine.remove(cardIndex); //actually removing the card from the line
+            return picked;
+        }
+    }
+    public Card drawLowerCharacter(int cardIndex, Player drawingPlayer) {
+        if (cardIndex < 0 || cardIndex >= lowerLine.size()) {
+            return null;
+        }
+
+        Card picked = lowerLine.get(cardIndex);
+        if (!picked.canGet(drawingPlayer)) {
+            return null;
+        }else {
+            lowerLine.remove(cardIndex); //actually removing the card from the line
+            return picked;
+        }
     }
 
     public Card drawUpperBuilding(int cardIndex, Player drawingPlayer) {
@@ -76,57 +89,26 @@ public class Line {
             return null;
         }
 
-        Card picked = upperBuilding.get(cardIndex);
-        if (!(picked instanceof BuildingCard)) {
+        Card pickedBuilding = upperBuilding.get(cardIndex);
+        if (!pickedBuilding.canGet(drawingPlayer)) {
             return null;
+        }else{
+            upperBuilding.remove(cardIndex); //actually removing the card from the line
+            return pickedBuilding;
         }
-
-        BuildingCard building = (BuildingCard) picked;
-
-        // check sul cibo: se non ne ho abbastanza, non posso prenderla
-        if (!building.canGet(drawingPlayer)) {  //chiedi ezcheng
-            return null;                       // NON rimuovo dalla lista
-        }
-
-        upperBuilding.remove(cardIndex);           // ora la tolgo dalla board
-        return building;
     }
-
-
-    public Card drawLowerCharacter(int cardIndex) {
-        if (cardIndex < 0 || cardIndex >= lowerLine.size()) {
-            return null;
-        }
-
-        Card picked = lowerLine.get(cardIndex);
-        if (!(picked instanceof CharacterCard)) {
-            return null;
-        }
-
-        lowerLine.remove(cardIndex);
-
-        return picked;
-    }
-
     public Card drawLowerBuilding(int cardIndex, Player drawingPlayer) {
         if (cardIndex < 0 || cardIndex >= lowerBuilding.size()) {
             return null;
         }
 
-        Card picked = lowerBuilding.get(cardIndex);
-        if (!(picked instanceof BuildingCard)) {
+        Card pickedBuilding = lowerBuilding.get(cardIndex);
+        if (!pickedBuilding.canGet(drawingPlayer)) {
             return null;
+        }else {
+            lowerBuilding.remove(cardIndex); //actually removing the card from the line
+            return pickedBuilding;
         }
-
-        BuildingCard building = (BuildingCard) picked;
-
-
-        if (!building.canGet(drawingPlayer)) {
-            return null;
-        }
-
-        lowerBuilding.remove(cardIndex);
-        return building;
     }
 
 
@@ -190,7 +172,7 @@ public class Line {
             Card building = deck.dealBuildingCard();
             if (building == null) break;       // nessuna carta edificio rimasta
             upperBuilding.add(building);
-        }
+        }*/
 
         // aggiorna stato interno e resetta il flag di cambio era
         currentEra = newEra;
