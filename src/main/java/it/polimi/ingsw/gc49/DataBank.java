@@ -66,6 +66,7 @@ public class DataBank {
     public void addNumBuilderPoints(int n) { numBuilderPoints += n; }
     public void addNumBuildingPoints(int n) { numBuildingPoints += n; }
     public void doubleNumBuilderPoints() { numBuilderPoints *= 2; }
+    public int getNumBuildingPoints() {return numBuildingPoints;}
     public int getNumSustenanceDiscount() { return numSustenanceDiscount; }
     public void addNumSustenanceDiscount(int n) { numSustenanceDiscount += n; }
     public void addNumStar(int n) {numStars += n;}

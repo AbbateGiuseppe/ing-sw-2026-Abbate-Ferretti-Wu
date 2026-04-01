@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingStrategyInterface;
 import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.*;
 import it.polimi.ingsw.gc49.Card.TribeCards.EventCard.*;
@@ -376,13 +375,14 @@ public class Deck {
         //     default -> null;
         // };
 
-        BuildingStrategyInterface strategy = null; // Per ora null, da implementare
+//        BuildingStrategyInterface strategy = null; // Per ora null, da implementare
 
         // Crea la carta con i parametri letti
-        BuildingCard card = new BuildingCard(strategy, ppReward, foodPrice);
-        card.setEra(era);
+//        BuildingCard card = new BuildingCard(strategy, ppReward, foodPrice);
+//        card.setEra(era);
 
-        return card;
+//        return card;
+        return null;
     }
 
     /**
