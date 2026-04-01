@@ -46,7 +46,7 @@ public class InitialSetup extends State {
 
         model.setLastRound(false);
         model.setTrack(new Track(numOfPlayers));
-        model.setCardBoard(new CardBoard(numOfPlayers));
+        model.setCardBoard(new CardBoard(model));
 
         while (model.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
             try {
