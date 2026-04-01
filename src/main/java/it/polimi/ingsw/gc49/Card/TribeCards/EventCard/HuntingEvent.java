@@ -2,8 +2,9 @@ package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
 import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.CharacterType;
-import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
+
+import java.util.List;
 
 public class HuntingEvent extends EventCard {
     private final int pointsPerHunter;
@@ -13,9 +14,9 @@ public class HuntingEvent extends EventCard {
     }
 
     @Override
-    public void resolveEvent(Model model) {
+    public void resolveEvent(List<Player> players) {
         // Setup the initial amount of food and points each player gets during the event
-        for(Player player : model.getPlayers()) {
+        for(Player player : players) {
             player.setFoodToPay(-player.data.getCharacterCount(CharacterType.Hunter));
             player.setPointsToPay(-player.data.getCharacterCount(CharacterType.Hunter) * pointsPerHunter);
         }
@@ -23,7 +24,7 @@ public class HuntingEvent extends EventCard {
         // the building card modifies foodToPay and pointsToPay of the player
         eventManager.invokeEvent(BuildingEvent.HUNTING_EVENT);
         // Finalize the change on food and points of the player
-        for(Player player : model.getPlayers()) {
+        for(Player player : players) {
             player.confirmToPay();
         }
     }

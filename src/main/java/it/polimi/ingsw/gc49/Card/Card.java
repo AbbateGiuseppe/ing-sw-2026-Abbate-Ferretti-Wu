@@ -24,7 +24,6 @@ public abstract class Card {
     /**updates the values of the drawing player's databank during a draw.*/
     public void updateDataBank( DataBank dataBank ) {
         // will be overridden by the subclass card when it has to actually modify the player's databank.
-        return;
     }
 
     /**

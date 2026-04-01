@@ -9,10 +9,10 @@ public class CharacterSetCompleteFoodCard extends BuildingCard {
 
     @Override
     public void onEventEffect() {
-        int unitCount = owner.data.getCharacterCount(CharacterType.CompleteSet);
-        unitCount -= owner.data.getCurrentNumCompleteCharacterSets();
-        owner.data.addCurrentNumCompleteCharacterSets(unitCount);
-        owner.addFood(5 * unitCount);
+        if (owner.data.getCharacterCount(CharacterType.CompleteSet) > owner.data.getCurrentNumCompleteCharacterSets()) {
+            owner.addFood(5);
+            owner.data.incrementCurrentNumCompleteCharacterSets();
+        }
     }
 
     @Override

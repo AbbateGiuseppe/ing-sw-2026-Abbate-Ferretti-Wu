@@ -1,8 +1,9 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
 import it.polimi.ingsw.gc49.BuildingEvent;
-import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
+
+import java.util.List;
 
 public class SustenanceEvent extends EventCard {
     private final int minusPoints;
@@ -12,8 +13,8 @@ public class SustenanceEvent extends EventCard {
     }
 
     @Override
-    public void resolveEvent(Model model) {
-        for(Player player : model.getPlayers()) {
+    public void resolveEvent(List<Player> players) {
+        for(Player player : players) {
             // the player has to pay food equal to the number of the charactercards he has
             // and subtract it by the discount of the gatherers
             player.setFoodToPay(Math.max(0, player.data.getNumCharacters() - player.data.getNumSustenanceDiscount()));
@@ -22,7 +23,7 @@ public class SustenanceEvent extends EventCard {
         // Effect num 2
         eventManager.invokeEvent(BuildingEvent.SUSTENANCE_EVENT);
 
-        for(Player player : model.getPlayers()) {
+        for(Player player : players) {
             // if the player doesn't have enough food,subtract from his points
             if(player.getFood() < player.getFoodToPay()) {
                   player.setPointsToPay((player.getFoodToPay() - player.getFood()) * minusPoints);

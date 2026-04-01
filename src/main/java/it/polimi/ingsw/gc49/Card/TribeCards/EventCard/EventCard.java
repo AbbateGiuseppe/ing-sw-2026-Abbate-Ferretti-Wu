@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
 import it.polimi.ingsw.gc49.Card.TribeCards.TribeCard;
 import it.polimi.ingsw.gc49.EventManager;
-import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.List;
@@ -23,5 +22,5 @@ public abstract class EventCard extends TribeCard implements Comparable<EventCar
         }
 
     }
-    public abstract void resolveEvent(Model model);
+    public abstract void resolveEvent(List<Player> players);
 }

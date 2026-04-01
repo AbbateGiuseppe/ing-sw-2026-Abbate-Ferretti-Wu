@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
 import it.polimi.ingsw.gc49.BuildingEvent;
-import it.polimi.ingsw.gc49.Model;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.List;
@@ -17,9 +16,7 @@ public class RitualEvent extends EventCard {
     }
 
     @Override
-    public void resolveEvent(Model model) {
-        List<Player> players = model.getPlayers();
-
+    public void resolveEvent(List<Player> players) {
         List<Player> losers = determineLosers(players);
         for(Player player : losers) {
             player.setFoodToPay(0);
@@ -48,22 +45,22 @@ public class RitualEvent extends EventCard {
     // Returns the players with the most number of stars
     private List<Player> determineWinners(List<Player> players) {
         int maxScore = players.stream()
-                .mapToInt(p -> p.data.getNumStars() + p.getTempStars())
+                .mapToInt(p -> p.data.getNumStars())
                 .max()
                 .getAsInt();
         return players.stream()
-                .filter(p -> p.data.getNumStars() + p.getTempStars() == maxScore)
+                .filter(p -> p.data.getNumStars() == maxScore)
                 .collect(Collectors.toList());
     }
 
     // Returns the players with the fewest number of stars
     private List<Player> determineLosers(List<Player> players) {
         int minScore = players.stream()
-                .mapToInt(p -> p.data.getNumStars() + p.getTempStars())
+                .mapToInt(p -> p.data.getNumStars())
                 .min()
                 .getAsInt();
         return players.stream()
-                .filter(p -> p.data.getNumStars() + p.getTempStars() == minScore)
+                .filter(p -> p.data.getNumStars()  == minScore)
                 .collect(Collectors.toList());
     }
 }

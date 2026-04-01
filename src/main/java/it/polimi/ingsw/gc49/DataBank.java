@@ -17,7 +17,7 @@ public class DataBank {
     private int currentNumCompleteCharacterSets;
     private int[] numInventions;
     // the number of same pair inventions(used for effect 3)
-    private int sameInvention;
+    private boolean sameInvention;
 
     public DataBank(Player assignedPlayer) {
         this.assignedPlayer = assignedPlayer;
@@ -38,14 +38,17 @@ public class DataBank {
 
     // Returns the number of character cards of the given type
     public int getCharacterCount(CharacterType type) {
-        if (!numCharacterMap.containsKey(type)) return 0;
         // Returns the number of complete sets of character cards
-        if (type == CharacterType.CompleteSet) {return Collections.min(numCharacterMap.values());}
+        if (type == CharacterType.CompleteSet) {
+            if (numCharacterMap.isEmpty()) {return 0;}
+            return Collections.min(numCharacterMap.values());
+        }
         // Returns the number of same pair inventions(used for effect 5)
         if (type == CharacterType.SamePairInventions) {
-            if (sameInvention == 1){sameInvention = 0;return 1;}
+            if (sameInvention){sameInvention = false;return 1;}
             return 0;
         }
+        if (!numCharacterMap.containsKey(type)) return 0;
         return numCharacterMap.get(type);
     }
 
@@ -67,12 +70,14 @@ public class DataBank {
     public void addNumSustenanceDiscount(int n) { numSustenanceDiscount += n; }
     public void addNumStar(int n) {numStars += n;}
     public int getNumStars() {return numStars;}
+    public int getNumBuilderPoints() {return numBuilderPoints;}
+    public EnumSet<Invention> getInventions() {return inventions;}
 
     // Event Management
     public void addInvention(Invention invention) {
         if (numInventions != null) {
             if (numInventions[invention.ordinal()] == 1) {
-                sameInvention = 1;
+                sameInvention = true;
                 numInventions[invention.ordinal()] = 0;
             } else {
                 numInventions[invention.ordinal()] += 1;
@@ -82,5 +87,5 @@ public class DataBank {
     public void recordCharaSet() {currentNumCompleteCharacterSets = getCharacterCount(CharacterType.CompleteSet);}
     public void recordInventions() {numInventions = new int[10];}
     public int getCurrentNumCompleteCharacterSets() {return currentNumCompleteCharacterSets;}
-    public void addCurrentNumCompleteCharacterSets(int n) {currentNumCompleteCharacterSets +=n;}
+    public void incrementCurrentNumCompleteCharacterSets() {currentNumCompleteCharacterSets++;}
 }

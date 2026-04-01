@@ -9,8 +9,7 @@ public class SamePairInventionsCard extends BuildingCard {
 
     @Override
     public void onEventEffect() {
-        int unitCount = owner.data.getCharacterCount(CharacterType.SamePairInventions);
-        owner.addFood(3 * unitCount);
+        owner.addFood(3 * owner.data.getCharacterCount(CharacterType.SamePairInventions));
     }
 
     @Override
