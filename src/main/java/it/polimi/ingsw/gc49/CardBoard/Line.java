@@ -170,7 +170,7 @@ public class Line {
             Card building = deck.dealBuildingCard();
             if (building == null) break;       // nessuna carta edificio rimasta
             upperBuilding.add(building);
-        }*/
+        }
 
         // aggiorna stato interno e resetta il flag di cambio era
         currentEra = newEra;

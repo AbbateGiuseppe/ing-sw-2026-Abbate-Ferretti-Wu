@@ -20,9 +20,7 @@ public abstract class Card {
       */
     public abstract boolean canGet(Player player);
 
-    public Era getEra() {
-        return era;
-    }
+
 
     public void setEra(Era era) {
         this.era = era;
