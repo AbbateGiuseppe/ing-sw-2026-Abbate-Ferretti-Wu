@@ -22,13 +22,16 @@ public class PaintingEvent extends EventCard {
     public void resolveEvent(List<Player> players) {
         for(Player player : players) {
             player.setFoodToPay(0);
-            if(player.data.getCharacterCount(CharacterType.Artist) < threshold) {
-               player.setPointsToPay(minusPoints);
+            if (player.data.getCharacterCount(CharacterType.Artist) < threshold) {
+                player.setPointsToPay(minusPoints);
             } else {
-               player.setPointsToPay(plusPoints * player.data.getCharacterCount(CharacterType.Artist));
+                player.setPointsToPay(-plusPoints * player.data.getCharacterCount(CharacterType.Artist));
             }
-            // Effect num 10
-            eventManager.invokeEvent(BuildingEvent.PAINTING_EVENT,player.getTotem());
+        }
+        // Effect num 10
+        eventManager.invokeEvent(BuildingEvent.PAINTING_EVENT);
+
+        for(Player player : players) {
             player.confirmToPay();
         }
     }

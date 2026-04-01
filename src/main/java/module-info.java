@@ -3,7 +3,6 @@ module it.polimi.ingsw.gc49 {
     requires javafx.fxml;
     requires com.google.gson;
 
-
     opens it.polimi.ingsw.gc49 to javafx.fxml;
     exports it.polimi.ingsw.gc49;
     exports it.polimi.ingsw.gc49.States;

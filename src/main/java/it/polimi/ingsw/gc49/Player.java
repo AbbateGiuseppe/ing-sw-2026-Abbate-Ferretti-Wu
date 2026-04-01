@@ -21,10 +21,7 @@ public class Player {
     // Event Management
     private int foodToPay;
     private int pointsToPay;
-    private int tempStars;
     private boolean uniqueWinner;
-    // TODO:the orderslot sets it to true if the player gets some food on the orderslot at the end of the his turn
-    private boolean foodFromOrderSlot;
 
     private int drawableUpper;
     private int drawableLower;
@@ -123,13 +120,8 @@ public class Player {
     }
     public boolean isUniqueWinner() {return uniqueWinner;}
     public void setUniqueWinner(boolean uniqueWinner) {this.uniqueWinner = uniqueWinner;}
-    public int getTempStars() {return tempStars;}
-    public void setTempStars(int tempStars) {this.tempStars = tempStars;}
     public void confirmToPay () {food -= foodToPay;points -= pointsToPay;reset();}
-    private void reset() {foodToPay = 0; pointsToPay = 0; uniqueWinner = false; tempStars = 0;}
-    public boolean IsGettingBonusFood() {
-        return foodFromOrderSlot;
-    }
+    private void reset() {foodToPay = 0; pointsToPay = 0; uniqueWinner = false;}
 
 
 

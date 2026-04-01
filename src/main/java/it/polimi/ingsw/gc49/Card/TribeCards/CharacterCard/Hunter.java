@@ -14,9 +14,14 @@ public class Hunter extends CharacterCard {
     @Override
     public void updateDataBank(DataBank dataBank) {
         dataBank.addCharacterCount(CharacterType.Hunter,1);
+    }
+
+    @Override
+    public void onDraw( Player player ) {
         // if the card has drumstick symbol,then give the player an amount of food equal to the number of Hunter cards that he has
         if (drumstick) {
-             dataBank.assignedPlayer.addFood(dataBank.getCharacterCount(CharacterType.Hunter));
+            player.addFood(player.data.getCharacterCount(CharacterType.Hunter));
         }
     }
+
 }

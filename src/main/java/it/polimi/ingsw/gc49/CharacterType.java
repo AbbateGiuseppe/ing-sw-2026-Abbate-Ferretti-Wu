@@ -7,7 +7,6 @@ public enum CharacterType {
     Gatherer,
     Builder,
     Artist,
-    None,
-    Set,
-    SameInventions,
+    CompleteSet,
+    SamePairInventions,
 }
