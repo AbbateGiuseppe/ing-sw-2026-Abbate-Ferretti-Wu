@@ -1,16 +1,16 @@
 package it.polimi.ingsw.gc49.States;
 
-import it.polimi.ingsw.gc49.Model;
+import it.polimi.ingsw.gc49.Game;
 
 public class RoundEnd extends State {
-    public RoundEnd ( Model model ) { super(model);}
+    public RoundEnd ( Game game ) { super(game);}
 
     public State executeState () {
         try {
-            model.getCardBoard().endRound(model.getNumOfPlayers());
+            game.getCardBoard().endRound(game.getNumOfPlayers());
         } catch (EraEndedException e) {
-            return new EraEnd(model); //goes to EraEnd.
+            return new EraEnd(game); //goes to EraEnd.
         }
-        return new OfferChoosing(model); //goes to OfferChoosing.
+        return new OfferChoosing(game); //goes to OfferChoosing.
     }
 }

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc49.States;
 
 import it.polimi.ingsw.gc49.CardBoard.CardBoard;
-import it.polimi.ingsw.gc49.Model;
+import it.polimi.ingsw.gc49.Game;
 import it.polimi.ingsw.gc49.Player;
 import it.polimi.ingsw.gc49.Track.Track;
 
@@ -9,16 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InitialSetup extends State {
-    public InitialSetup ( Model model ) {
-        super(model);
+    public InitialSetup ( Game game ) {
+        super(game);
     }
 
     public State executeState () {
-        int numOfPlayers = model.getNumOfPlayers();
+        int numOfPlayers = game.getNumOfPlayers();
         List<Player> players = new ArrayList<Player>(numOfPlayers);
-        model.setPlayers(players);
+        game.setPlayers(players);
 
-        String[] playersNicknames = model.getPlayersNicknames();
+        String[] playersNicknames = game.getPlayersNicknames();
         switch(numOfPlayers){
             case 2:
                 players.set(0, new Player(playersNicknames[0], 0));
@@ -44,11 +44,11 @@ public class InitialSetup extends State {
                 break;
         }
 
-        model.setLastRound(false);
-        model.setTrack(new Track(numOfPlayers));
-        model.setCardBoard(new CardBoard(model));
+        game.setLastRound(false);
+        game.setTrack(new Track(numOfPlayers));
+        game.setCardBoard(new CardBoard(game));
 
-        while (model.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
+        while (game.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -56,8 +56,8 @@ public class InitialSetup extends State {
             }
         }
 
-        model.getTrack().randomizeStartingOrder(model.getPlayers()); //randomizes the starting order.
+        game.getTrack().randomizeStartingOrder(game.getPlayers()); //randomizes the starting order.
 
-        return new OfferChoosing(model); //goes to the offer choosing state as the next state.
+        return new OfferChoosing(game); //goes to the offer choosing state as the next state.
     }
 }

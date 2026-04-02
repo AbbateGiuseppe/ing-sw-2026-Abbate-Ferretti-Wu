@@ -9,26 +9,25 @@ import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.*;
 import it.polimi.ingsw.gc49.Card.TribeCards.EventCard.*;
 import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.Era;
-import it.polimi.ingsw.gc49.Model;
+import it.polimi.ingsw.gc49.Game;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class Deck {
 
     private final ArrayList<Card> tribeDeck;
     private final ArrayList<Card> buildingDeck;
 
-    public Deck(Model model) {
+    public Deck( Game game ) {
         this.tribeDeck = new ArrayList<>();
         this.buildingDeck = new ArrayList<>();
 
         // qui costruisci fisicamente i mazzi in base al numero di giocatori
-        TribeDeck(model.getNumOfPlayers());
-        BuildingDeck(model.getNumOfPlayers());
+        TribeDeck(game.getNumOfPlayers());
+        BuildingDeck(game.getNumOfPlayers());
 
     }
 

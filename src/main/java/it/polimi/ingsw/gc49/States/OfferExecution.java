@@ -1,16 +1,16 @@
 package it.polimi.ingsw.gc49.States;
 
-import it.polimi.ingsw.gc49.Model;
+import it.polimi.ingsw.gc49.Game;
 import it.polimi.ingsw.gc49.Player;
 
 public class OfferExecution extends State{
-    public OfferExecution ( Model model ) { super(model);}
+    public OfferExecution ( Game game ) { super(game);}
 
     public State executeState () {
-        Player currentPlayer = model.getTrack().getNextPlayerOfferAndActivate();
+        Player currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
         while ( currentPlayer != null) { //loops until there's no player remaining to choose his actions.
-            model.setCurrentPlayer(currentPlayer);
-            model.setCurrentPlayerIndex(currentPlayer.getPlayerIndex());
+            game.setCurrentPlayer(currentPlayer);
+            game.setCurrentPlayerIndex(currentPlayer.getPlayerIndex());
             while (!currentPlayer.hasActionsLeft()){ //waits until the current player has no actions left.
                 try {
                     wait();
@@ -18,13 +18,13 @@ public class OfferExecution extends State{
                     Thread.currentThread().interrupt();
                 }
             }
-            currentPlayer = model.getTrack().getNextPlayerOfferAndActivate();
+            currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
         }
 
-        if(model.isLastRound()){
-            return new GameEnd(model); //goes to GameEnd.
+        if(game.isLastRound()){
+            return new GameEnd(game); //goes to GameEnd.
         }else {
-            return new RoundEnd(model); //goes to RoundEnd.
+            return new RoundEnd(game); //goes to RoundEnd.
         }
     }
 }

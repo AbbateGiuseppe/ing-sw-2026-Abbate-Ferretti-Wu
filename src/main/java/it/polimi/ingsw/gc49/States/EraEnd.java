@@ -1,18 +1,18 @@
 package it.polimi.ingsw.gc49.States;
 
 import it.polimi.ingsw.gc49.Era;
-import it.polimi.ingsw.gc49.Model;
+import it.polimi.ingsw.gc49.Game;
 
 public class EraEnd extends State {
-    public EraEnd ( Model model ) { super(model);}
+    public EraEnd ( Game game ) { super(game);}
 
     public State executeState () {
         try {
-            model.getCardBoard().endEra(Era.FIRST); //TODO: implement era storing.
+            game.getCardBoard().endEra(Era.FIRST); //TODO: implement era storing.
         } catch (DeckEmptiedException e) {
-            model.setLastRound(true); //sets the cycle as last round.
+            game.setLastRound(true); //sets the cycle as last round.
         }
 
-        return new OfferChoosing(model); //goes to OfferChoosing.
+        return new OfferChoosing(game); //goes to OfferChoosing.
     }
 }

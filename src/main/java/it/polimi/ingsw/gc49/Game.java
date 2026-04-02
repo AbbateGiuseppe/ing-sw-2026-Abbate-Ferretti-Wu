@@ -8,7 +8,7 @@ import it.polimi.ingsw.gc49.Track.Track;
 import java.util.EnumSet;
 import java.util.List;
 
-public class Model {
+public class Game {
     private final int numOfPlayers;
     private int numOfConnectedPlayers;
     private Player currentPlayer;
@@ -23,7 +23,7 @@ public class Model {
 
 
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
-    public Model ( int numOfPlayers, String[] playersNicknames ) {
+    public Game ( int numOfPlayers, String[] playersNicknames ) {
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
         currentState = new InitialSetup(this);
@@ -68,7 +68,7 @@ public class Model {
         currentState = currentState.executeState();
     }
 
-    //TODO: implement a check to know if the current player is choosing the admissable actions of this phase.
+    //TODO: implement a check to know if the current player is choosing the admissible actions of this phase.
     //### Players' actions
     public void chooseTotem ( int playerIndex, Totem chosenTotem ) {
         synchronized (Locks.playerInput) {

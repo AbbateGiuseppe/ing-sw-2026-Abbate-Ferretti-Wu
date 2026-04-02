@@ -1,10 +1,9 @@
 package it.polimi.ingsw.gc49.States;
 
 import it.polimi.ingsw.gc49.CharacterType;
-import it.polimi.ingsw.gc49.Model;
+import it.polimi.ingsw.gc49.Game;
 import it.polimi.ingsw.gc49.Player;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,14 +12,14 @@ public class GameEnd extends State {
     private static final int NUMBER_OF_ARTISTS_FOR_POINTS = 2;
     private static final int POINTS_PER_NUMBER_OF_ARTISTS = 10;
 
-    public GameEnd ( Model model ) { super(model);}
+    public GameEnd ( Game game ) { super(game);}
 
     public State executeState () {
         //solving the last events
-        model.getCardBoard().endGame();
+        game.getCardBoard().endGame();
 
         //calculating the end game points
-        List<Player> players = model.getPlayers();
+        List<Player> players = game.getPlayers();
         for(Player player : players){
             player.addPoints( player.data.getNumBuilderPoints() ); //adds the points of the player's builder cards.
             player.addPoints( player.data.getCharacterCount(CharacterType.Inventor) * player.data.getDifferentInventionCount() ); //adds the result of the multiplication between the number of inventors and the number of different inventions to the player's points.

@@ -1,12 +1,12 @@
 package it.polimi.ingsw.gc49.States;
 
-import it.polimi.ingsw.gc49.Model;
+import it.polimi.ingsw.gc49.Game;
 
 public abstract class State {
-    public final Model model;
+    public final Game game;
 
-    public State ( Model model ) {
-        this.model = model;
+    public State ( Game game ) {
+        this.game = game;
     }
 
     public abstract State executeState();

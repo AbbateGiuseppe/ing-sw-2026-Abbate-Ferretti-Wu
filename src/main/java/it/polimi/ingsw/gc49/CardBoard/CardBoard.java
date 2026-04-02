@@ -1,9 +1,8 @@
 package it.polimi.ingsw.gc49.CardBoard;
 
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Era;
-import it.polimi.ingsw.gc49.Model;
+import it.polimi.ingsw.gc49.Game;
 import it.polimi.ingsw.gc49.Player;
 import it.polimi.ingsw.gc49.States.DeckEmptiedException;
 import it.polimi.ingsw.gc49.States.EraEndedException;
@@ -18,17 +17,17 @@ public class CardBoard {
     private final Line line;
     private final List<Card> discards;
     private final Deck deck;
-    private Model model;
+    private Game game;
     private int numPlayers;
 /// chiedere come mettere playerlist
 
 
 
-    public CardBoard(Model model) {
-        this.model = model;
-        this.numPlayers = model.getNumOfPlayers();
-        this.deck = new Deck(model);   // costruisci il mazzo completo
-        this.line = new Line(model, deck);   // se vuoi, puoi passare deck nel costruttore
+    public CardBoard( Game game ) {
+        this.game = game;
+        this.numPlayers = game.getNumOfPlayers();
+        this.deck = new Deck(game);   // costruisci il mazzo completo
+        this.line = new Line(game, deck);   // se vuoi, puoi passare deck nel costruttore
         this.discards = new ArrayList<>();
     }
 

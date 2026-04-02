@@ -1,11 +1,9 @@
 package it.polimi.ingsw.gc49.CardBoard;
 
-import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.Card.Card;
-import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.CharacterCard;
 import it.polimi.ingsw.gc49.Card.TribeCards.EventCard.EventCard;
 import it.polimi.ingsw.gc49.Era;
-import it.polimi.ingsw.gc49.Model;
+import it.polimi.ingsw.gc49.Game;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ public class Line {
     private Era currentEra = Era.FIRST; //chiedi
     private boolean eraChanged = false;
     private Era newEra = Era.SECOND;
-    private Model model;
+    private Game game;
     private int numPlayers;
     private List<Player> playerList;
 
@@ -35,9 +33,9 @@ public class Line {
 
 
     /// Costruttore
-    public Line(Model model, Deck deck) {
-        this.model = model;
-        this.numPlayers = model.getNumOfPlayers();
+    public Line( Game game, Deck deck) {
+        this.game = game;
+        this.numPlayers = game.getNumOfPlayers();
         this.deck = deck;
         this.upperLine = new ArrayList<>();
         this.lowerLine = new ArrayList<>();

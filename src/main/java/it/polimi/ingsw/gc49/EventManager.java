@@ -4,10 +4,10 @@ import java.util.*;
 
 public class EventManager {
     private final Map<BuildingEvent, List<BuildingEventListener>> listenersByEvent;
-    private final Model model;
+    private final Game game;
 
-    public EventManager(Model model) {
-        this.model = model;
+    public EventManager( Game game ) {
+        this.game = game;
         listenersByEvent = new HashMap<>();
     }
 
