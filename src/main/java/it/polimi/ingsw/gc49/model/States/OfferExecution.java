@@ -8,7 +8,7 @@ public class OfferExecution extends State{
 
     public State executeState () {
         Player currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
-        while ( currentPlayer != null) { //loops until there's no player remaining to choose his actions.
+        while (currentPlayer != null) { //loops until there's no player remaining to choose his actions.
             game.setCurrentPlayer(currentPlayer);
             game.setCurrentPlayerIndex(currentPlayer.getPlayerIndex());
             while (!currentPlayer.hasActionsLeft()){ //waits until the current player has no actions left.
@@ -18,8 +18,10 @@ public class OfferExecution extends State{
                     Thread.currentThread().interrupt();
                 }
             }
+            game.callTurnEndEvent(); //calls all the buildings that activate at a turn's end.
             currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
         }
+        game.callRoundEndEvent(); //calls all the buildings that activate at the end of a round.
 
         if(game.isLastRound()){
             return new GameEnd(game); //goes to GameEnd.

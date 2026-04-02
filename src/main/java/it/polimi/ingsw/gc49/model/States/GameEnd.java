@@ -18,6 +18,9 @@ public class GameEnd extends State {
         //solving the last events
         game.getCardBoard().endGame();
 
+        //calling all the buildings that activate at the end of the game.
+        game.callGameEndEvent();
+
         //calculating the end game points
         List<Player> players = game.getPlayers();
         for(Player player : players){

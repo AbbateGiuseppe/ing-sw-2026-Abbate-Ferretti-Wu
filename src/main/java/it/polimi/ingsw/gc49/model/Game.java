@@ -81,6 +81,20 @@ public class Game {
         }
     }
 
+    //### Event calls
+    public void callDrawEvent() {
+        eventManager.invokeEvent(BuildingEvent.DRAW_EVENT);
+    }
+    public void callTurnEndEvent() {
+        eventManager.invokeEvent(BuildingEvent.TURN_END);
+    }
+    public void callRoundEndEvent() {
+        eventManager.invokeEvent(BuildingEvent.ROUND_END);
+    }
+    public void callGameEndEvent() {
+        eventManager.invokeEvent(BuildingEvent.GAME_END);
+    }
+
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
@@ -90,6 +104,7 @@ public class Game {
                     if (drawnCard != null) {
                         drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
                         drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
+                        callDrawEvent();
                     }
                     notify();
                 }
@@ -106,6 +121,7 @@ public class Game {
                     if (drawnCard != null) {
                         drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
                         drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
+                        callDrawEvent();
                     }
                     notify();
                 }
@@ -123,6 +139,7 @@ public class Game {
                         drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
                         drawnBuildingCard.addBuildingToManager(eventManager); //adds the building as a listener.
                         drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
+                        callDrawEvent();
                     }
                     notify();
                 }
@@ -140,6 +157,7 @@ public class Game {
                         drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
                         drawnBuildingCard.addBuildingToManager(eventManager);
                         drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
+                        callDrawEvent();
                     }
                     notify();
                 }

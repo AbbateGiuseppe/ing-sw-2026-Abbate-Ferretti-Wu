@@ -8,7 +8,7 @@ public class BonusFoodEndTurnCard extends BuildingCard {
         super(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
     }
 
-    @Override
+    @Override //TODO: how can it know it's the player's end turn?!
     public void onEventEffect() {
         if (owner.getAssignedOrderSlot().getFoodGain() > 0) {
             owner.addFood(1);
