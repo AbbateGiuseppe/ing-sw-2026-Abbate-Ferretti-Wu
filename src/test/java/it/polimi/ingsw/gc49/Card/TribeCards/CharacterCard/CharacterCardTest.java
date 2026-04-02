@@ -1,9 +1,6 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard;
 
-import it.polimi.ingsw.gc49.CharacterType;
-import it.polimi.ingsw.gc49.DataBank;
-import it.polimi.ingsw.gc49.Invention;
-import it.polimi.ingsw.gc49.Player;
+import it.polimi.ingsw.gc49.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +16,7 @@ class CharacterCardTest {
 
     @Test
     public void testArtist() {
-        CharacterCard card = new Artist();
+        CharacterCard card = new Artist(Era.FIRST, 2);
         int oldCount = player.data.getCharacterCount(CharacterType.Artist);
         card.updateDataBank(player.data);
         int newCount = player.data.getCharacterCount(CharacterType.Artist);
@@ -30,7 +27,7 @@ class CharacterCardTest {
     public void testBuilder() {
         int buildingDiscount = 2;
         int numPoints = 3;
-        CharacterCard card = new Builder(buildingDiscount,numPoints);
+        CharacterCard card = new Builder(buildingDiscount,numPoints, Era.FIRST, 2);
         int oldCount = player.data.getCharacterCount(CharacterType.Builder);
         int oldBuildingDiscount = player.data.getNumBuildingDiscount();
         int oldBuilderPoints = player.data.getNumBuilderPoints();
@@ -45,7 +42,7 @@ class CharacterCardTest {
 
     @Test
     public void testGatherer() {
-        CharacterCard card = new Gatherer();
+        CharacterCard card = new Gatherer(Era.FIRST, 2);
         int oldCount = player.data.getCharacterCount(CharacterType.Gatherer);
         int oldSustenanceDiscount = player.data.getNumSustenanceDiscount();
         card.updateDataBank(player.data);
@@ -57,7 +54,7 @@ class CharacterCardTest {
 
     @Test
     public void testHunterWithoutDrumstick() {
-        CharacterCard card = new Hunter(false);
+        CharacterCard card = new Hunter(false, Era.FIRST, 2);
         int oldCount = player.data.getCharacterCount(CharacterType.Hunter);
         card.updateDataBank(player.data);
         int newCount = player.data.getCharacterCount(CharacterType.Hunter);
@@ -68,7 +65,7 @@ class CharacterCardTest {
     public void testHunterWithDrumstick() {
         int initialCount = 9;
         player.data.addCharacterCount(CharacterType.Hunter,initialCount);
-        CharacterCard card = new Hunter(true);
+        CharacterCard card = new Hunter(true, Era.FIRST, 2);
         int oldCount = player.data.getCharacterCount(CharacterType.Hunter);
         int oldFood = player.getFood();
         card.updateDataBank(player.data);
@@ -81,7 +78,7 @@ class CharacterCardTest {
 
     @Test
     public void testInventor() {
-        CharacterCard card = new Inventor(Invention.ARROWHEAD);
+        CharacterCard card = new Inventor(Invention.ARROWHEAD, Era.FIRST, 2);
         int oldCount = player.data.getCharacterCount(CharacterType.Inventor);
         assertFalse(player.data.getInventions().contains(Invention.ARROWHEAD));
         card.updateDataBank(player.data);
@@ -93,7 +90,7 @@ class CharacterCardTest {
     @Test
     public void testShaman() {
         int numStars = 3;
-        CharacterCard card = new Shaman(numStars);
+        CharacterCard card = new Shaman(numStars, Era.FIRST, 2);
         int oldCount = player.data.getCharacterCount(CharacterType.Shaman);
         int oldNumStars = player.data.getNumStars();
         card.updateDataBank(player.data);

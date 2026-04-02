@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.States;
 
 import it.polimi.ingsw.gc49.CardBoard.CardBoard;
+import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Game;
 import it.polimi.ingsw.gc49.Player;
 import it.polimi.ingsw.gc49.Track.Track;
@@ -45,6 +46,7 @@ public class InitialSetup extends State {
         }
 
         game.setLastRound(false);
+        game.setEventManager(new EventManager(game));
         game.setTrack(new Track(numOfPlayers));
         game.setCardBoard(new CardBoard(game));
 

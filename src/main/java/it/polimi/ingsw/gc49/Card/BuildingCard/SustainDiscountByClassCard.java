@@ -8,8 +8,8 @@ import it.polimi.ingsw.gc49.EventManager;
 public class SustainDiscountByClassCard extends BuildingCard {
     private final CharacterType unit;
 
-    public SustainDiscountByClassCard ( CharacterType unit, BuildingEvent buildingEvent, EventManager manager, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
-        super(buildingEvent, manager, pointsEndgame, foodPrice, era, minNumPlayers);
+    public SustainDiscountByClassCard ( CharacterType unit, BuildingEvent buildingEvent, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
+        super(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
         this.unit = unit;
     }
 

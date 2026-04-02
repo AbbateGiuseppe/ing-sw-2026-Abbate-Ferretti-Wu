@@ -6,8 +6,8 @@ import it.polimi.ingsw.gc49.Era;
 import it.polimi.ingsw.gc49.EventManager;
 
 public class BonusPaintingCard extends BuildingCard {
-    public BonusPaintingCard ( BuildingEvent buildingEvent, EventManager manager, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
-        super(buildingEvent, manager, pointsEndgame, foodPrice, era, minNumPlayers);
+    public BonusPaintingCard ( BuildingEvent buildingEvent, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
+        super(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
     }
 
     @Override

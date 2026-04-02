@@ -5,15 +5,13 @@ import it.polimi.ingsw.gc49.Card.Card;
 
 public abstract class BuildingCard extends Card implements BuildingEventListener{
     private final BuildingEvent buildingEvent;
-    private final EventManager manager;
     private final int pointsEndgame;
     private final int foodPrice;
     protected Player owner;
 
-    public BuildingCard (BuildingEvent buildingEvent, EventManager manager, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
+    public BuildingCard (BuildingEvent buildingEvent, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
         super(era, minNumPlayers);
         this.buildingEvent = buildingEvent;
-        this.manager = manager;
         this.pointsEndgame = pointsEndgame;
         this.foodPrice = foodPrice;
     }
@@ -49,9 +47,12 @@ public abstract class BuildingCard extends Card implements BuildingEventListener
         setOwner(player);
     }
 
-    public void setOwner(Player owner) {
+    protected void setOwner(Player owner) {
         this.owner = owner;
         // Put the card to listen for its buildingEvent
+    }
+
+    public void addBuildingToManager (EventManager manager) {
         manager.addEventListener(buildingEvent,this);
     }
 

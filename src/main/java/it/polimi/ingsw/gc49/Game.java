@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49;
 
+import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingCard;
+import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.CardBoard.CardBoard;
 import it.polimi.ingsw.gc49.States.InitialSetup;
 import it.polimi.ingsw.gc49.States.State;
@@ -15,6 +17,7 @@ public class Game {
     private int currentPlayerIndex;
     private List<Player> players;
     private final String[] playersNicknames;
+    private EventManager eventManager;
     private Track track;
     private CardBoard cardBoard;
     private State currentState;
@@ -42,6 +45,7 @@ public class Game {
     public int getNumOfConnectedPlayers () { return numOfConnectedPlayers; }
     public List<Player> getPlayers () { return players; }
     public String[] getPlayersNicknames () { return playersNicknames; }
+    public EventManager getEventManager () { return eventManager; }
     public Track getTrack () { return track; }
     public CardBoard getCardBoard () { return cardBoard; }
     public EnumSet<Totem> getUsedTotems () { return usedTotems; }
@@ -49,15 +53,12 @@ public class Game {
     public boolean isLastRound () { return lastRound; }
 
     //### setters
-    public void setPlayers ( List<Player> players ) {
-        this.players = players;
-    }
+    public void setPlayers ( List<Player> players ) { this.players = players; }
+    public void setEventManager ( EventManager eventManager ) { this.eventManager = eventManager; }
     public void setTrack ( Track track ){
         this.track = track;
     }
-    public void setCardBoard ( CardBoard cardBoard ) {
-        this.cardBoard = cardBoard;
-    }
+    public void setCardBoard ( CardBoard cardBoard ) { this.cardBoard = cardBoard; }
     public void setNumOfConnectedPlayers ( int numOfConnectedPlayers ) { this.numOfConnectedPlayers = numOfConnectedPlayers; }
     public void setCurrentPlayer ( Player currentPlayer ) { this.currentPlayer = currentPlayer; }
     public void setCurrentPlayerIndex ( int currentPlayerIndex ) { this.currentPlayerIndex = currentPlayerIndex; }
@@ -85,8 +86,11 @@ public class Game {
             if(playerIndex == currentPlayerIndex) {
                 Player drawingPlayer = players.get(playerIndex);
                 if(drawingPlayer.getDrawableUpper() > 0){
-                    drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
-                    drawingPlayer.addCharacterCard(cardBoard.drawUpperCharacter(cardIndex, drawingPlayer)); //adds the drawn card to the player, if it's drawable by him.
+                    Card drawnCard = cardBoard.drawUpperCharacter(cardIndex, drawingPlayer);
+                    if (drawnCard != null) {
+                        drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                        drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
+                    }
                     notify();
                 }
             }
@@ -97,9 +101,12 @@ public class Game {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
                 Player drawingPlayer = players.get(playerIndex);
-                if(drawingPlayer.getDrawableLower() > 0){
-                    drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
-                    drawingPlayer.addCharacterCard(cardBoard.drawLowerCharacter(cardIndex, drawingPlayer)); //adds the drawn card to the player, if it's drawable by him.
+                if(drawingPlayer.getDrawableLower() > 0) {
+                    Card drawnCard = cardBoard.drawLowerCharacter(cardIndex, drawingPlayer);
+                    if (drawnCard != null) {
+                        drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                        drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
+                    }
                     notify();
                 }
             }
@@ -110,9 +117,13 @@ public class Game {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
                 Player drawingPlayer = players.get(playerIndex);
-                if(drawingPlayer.getDrawableUpper() > 0){
-                    drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
-                    drawingPlayer.addBuildingCard(cardBoard.drawUpperBuilding(cardIndex, drawingPlayer)); //adds the drawn card to the player, if it's drawable by him.
+                if(drawingPlayer.getDrawableUpper() > 0) {
+                    BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawUpperBuilding(cardIndex, drawingPlayer);
+                    if (drawnBuildingCard != null) {
+                        drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                        drawnBuildingCard.addBuildingToManager(eventManager); //adds the building as a listener.
+                        drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
+                    }
                     notify();
                 }
             }
@@ -124,8 +135,12 @@ public class Game {
             if(playerIndex == currentPlayerIndex) {
                 Player drawingPlayer = players.get(playerIndex);
                 if(drawingPlayer.getDrawableLower() > 0){
-                    drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
-                    drawingPlayer.addBuildingCard(cardBoard.drawLowerBuilding(cardIndex, drawingPlayer)); //adds the drawn card to the player, if it's drawable by him.
+                    BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawLowerBuilding(cardIndex, drawingPlayer);
+                    if (drawnBuildingCard != null) {
+                        drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                        drawnBuildingCard.addBuildingToManager(eventManager);
+                        drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
+                    }
                     notify();
                 }
             }

@@ -9,6 +9,7 @@ import it.polimi.ingsw.gc49.Card.TribeCards.CharacterCard.*;
 import it.polimi.ingsw.gc49.Card.TribeCards.EventCard.*;
 import it.polimi.ingsw.gc49.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.Era;
+import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Game;
 
 import java.io.InputStream;
@@ -20,10 +21,12 @@ public class Deck {
 
     private final ArrayList<Card> tribeDeck;
     private final ArrayList<Card> buildingDeck;
+    private final EventManager gameEventManager;
 
     public Deck( Game game ) {
         this.tribeDeck = new ArrayList<>();
         this.buildingDeck = new ArrayList<>();
+        this.gameEventManager = game.getEventManager();
 
         // qui costruisci fisicamente i mazzi in base al numero di giocatori
         TribeDeck(game.getNumOfPlayers());
@@ -287,7 +290,7 @@ public class Deck {
             case "Hunter" -> {
                 // Esempio completo: legge il parametro "drumstick" e crea un Hunter
                 boolean drumstick = cardJson.get("drumstick").getAsBoolean();
-                card = new Hunter(drumstick);
+                card = new Hunter(drumstick, era, 2);
             }
             case "Gatherer" -> {
                 // TODO: Aggiungi qui la logica per creare un Gatherer
@@ -310,7 +313,7 @@ public class Deck {
             case "HuntingEvent" -> {
                 // Esempio di evento: legge quanti punti per hunter e crea l'evento
                 int pointsPerHunter = cardJson.get("pointsPerHunter").getAsInt();
-                card = new HuntingEvent(pointsPerHunter);
+                card = new HuntingEvent(pointsPerHunter, gameEventManager, era, 2);
             }
             case "SustenanceEvent" -> {
                 // TODO: Aggiungi qui la logica per creare un SustenanceEvent
@@ -322,10 +325,6 @@ public class Deck {
             }
         }
 
-        // Imposta l'era sulla carta creata
-        if (card != null) {
-            card.setEra(era);
-        }
         return card;
     }
 
