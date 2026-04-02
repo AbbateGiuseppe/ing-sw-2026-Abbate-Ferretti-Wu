@@ -6,12 +6,16 @@ import it.polimi.ingsw.gc49.DataBank;
 import it.polimi.ingsw.gc49.Player;
 
 public abstract class Card {
-    private Era era;
-    private int minNumPlayers;
+    private final Era era;
+    private final int minNumPlayers;
+
+    public Card(Era era, int minNumPlayers) {
+        this.era = era;
+        this.minNumPlayers = minNumPlayers;
+    }
 
     public Era getEra() {return era;}
     public int getMinNumPlayers() {return minNumPlayers;}
-    public void setEra(Era era) {this.era = era;}
     /**
      *
      * When the player picks a card,this method is called to check whether he can get it

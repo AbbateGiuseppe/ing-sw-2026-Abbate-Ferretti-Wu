@@ -1,13 +1,19 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
 import it.polimi.ingsw.gc49.Card.TribeCards.TribeCard;
+import it.polimi.ingsw.gc49.Era;
 import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.List;
 
 public abstract class EventCard extends TribeCard implements Comparable<EventCard> {
-    protected EventManager eventManager;
+    protected final EventManager eventManager;
+
+    public EventCard ( EventManager eventManager, Era era, int minNumPlayers ) {
+        super(era, minNumPlayers);
+        this.eventManager = eventManager;
+    }
 
     @Override
     public boolean canGet(Player player) {

@@ -1,15 +1,14 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
-import it.polimi.ingsw.gc49.BuildingEvent;
-import it.polimi.ingsw.gc49.CharacterType;
-import it.polimi.ingsw.gc49.Player;
+import it.polimi.ingsw.gc49.*;
 
 import java.util.List;
 
 public class HuntingEvent extends EventCard {
     private final int pointsPerHunter;
 
-    public HuntingEvent(int pointsPerHunter) {
+    public HuntingEvent(int pointsPerHunter, EventManager eventManager, Era era, int minNumPlayers ) {
+        super(eventManager, era, minNumPlayers);
         this.pointsPerHunter = pointsPerHunter;
     }
 

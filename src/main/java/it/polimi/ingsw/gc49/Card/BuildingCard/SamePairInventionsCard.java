@@ -3,8 +3,8 @@ package it.polimi.ingsw.gc49.Card.BuildingCard;
 import it.polimi.ingsw.gc49.*;
 
 public class SamePairInventionsCard extends BuildingCard {
-    public SamePairInventionsCard(BuildingEvent buildingEvent, EventManager manager, int PPReward, int foodPrice) {
-        super(buildingEvent, manager, PPReward, foodPrice);
+    public SamePairInventionsCard ( BuildingEvent buildingEvent, EventManager manager, int pointsReward, int foodPrice, Era era, int minNumPlayers ) {
+        super(buildingEvent, manager, pointsReward, foodPrice, era, minNumPlayers);
     }
 
     @Override

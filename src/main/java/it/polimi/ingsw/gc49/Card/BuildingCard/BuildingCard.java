@@ -10,10 +10,11 @@ public abstract class BuildingCard extends Card implements BuildingEventListener
     private final int foodPrice;
     protected Player owner;
 
-    public BuildingCard(BuildingEvent buildingEvent, EventManager manager, int PPReward, int foodPrice) {
+    public BuildingCard (BuildingEvent buildingEvent, EventManager manager, int pointsReward, int foodPrice, Era era, int minNumPlayers ) {
+        super(era, minNumPlayers);
         this.buildingEvent = buildingEvent;
         this.manager = manager;
-        this.PPReward = PPReward;
+        this.PPReward = pointsReward;
         this.foodPrice = foodPrice;
     }
 

@@ -2,18 +2,21 @@ package it.polimi.ingsw.gc49.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.CharacterType;
+import it.polimi.ingsw.gc49.Era;
 import it.polimi.ingsw.gc49.EventManager;
 
 public class BonusPointsByClassEndGameCard extends BuildingCard {
-    CharacterType unit;
-    int ppPerUnit;
+    private final CharacterType unit;
+    private final int pointsPerUnit;
 
-    public BonusPointsByClassEndGameCard(BuildingEvent buildingEvent, EventManager manager, int PPReward, int foodPrice) {
-        super(buildingEvent, manager, PPReward, foodPrice);
+    public BonusPointsByClassEndGameCard( CharacterType unit, int pointsPerUnit, BuildingEvent buildingEvent, EventManager manager, int pointsReward, int foodPrice, Era era, int minNumPlayers ) {
+        super(buildingEvent, manager, pointsReward, foodPrice, era, minNumPlayers);
+        this.unit = unit;
+        this.pointsPerUnit = pointsPerUnit;
     }
 
     @Override
     public void onEventEffect() {
-        owner.addPoints(ppPerUnit * owner.data.getCharacterCount(unit));
+        owner.addPoints(pointsPerUnit * owner.data.getCharacterCount(unit));
     }
 }

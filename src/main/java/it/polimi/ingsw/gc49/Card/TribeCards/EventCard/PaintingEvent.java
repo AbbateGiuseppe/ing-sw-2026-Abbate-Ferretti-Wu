@@ -1,8 +1,6 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
-import it.polimi.ingsw.gc49.BuildingEvent;
-import it.polimi.ingsw.gc49.CharacterType;
-import it.polimi.ingsw.gc49.Player;
+import it.polimi.ingsw.gc49.*;
 
 import java.util.List;
 
@@ -12,7 +10,8 @@ public class PaintingEvent extends EventCard {
     private final int plusPoints;
     private final int minusPoints;
 
-    public PaintingEvent(int threshold, int plusPoints, int minusPoints) {
+    public PaintingEvent( int threshold, int plusPoints, int minusPoints, EventManager eventManager, Era era, int minNumPlayers ) {
+        super(eventManager, era, minNumPlayers);
         this.threshold = threshold;
         this.plusPoints = plusPoints;
         this.minusPoints = minusPoints;

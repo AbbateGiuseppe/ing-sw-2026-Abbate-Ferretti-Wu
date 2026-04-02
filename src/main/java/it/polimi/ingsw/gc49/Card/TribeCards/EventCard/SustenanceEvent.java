@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc49.Card.TribeCards.EventCard;
 
 import it.polimi.ingsw.gc49.BuildingEvent;
+import it.polimi.ingsw.gc49.Era;
+import it.polimi.ingsw.gc49.EventManager;
 import it.polimi.ingsw.gc49.Player;
 
 import java.util.List;
@@ -8,7 +10,8 @@ import java.util.List;
 public class SustenanceEvent extends EventCard {
     private final int minusPoints;
 
-    public SustenanceEvent(int minusPoints) {
+    public SustenanceEvent( int minusPoints, EventManager eventManager, Era era, int minNumPlayers ) {
+        super(eventManager, era, minNumPlayers);
         this.minusPoints = minusPoints;
     }
 

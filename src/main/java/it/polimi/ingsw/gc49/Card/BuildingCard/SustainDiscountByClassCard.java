@@ -2,13 +2,15 @@ package it.polimi.ingsw.gc49.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.CharacterType;
+import it.polimi.ingsw.gc49.Era;
 import it.polimi.ingsw.gc49.EventManager;
 
 public class SustainDiscountByClassCard extends BuildingCard {
-    CharacterType unit;
+    private final CharacterType unit;
 
-    public SustainDiscountByClassCard(BuildingEvent buildingEvent, EventManager manager, int PPReward, int foodPrice) {
-        super(buildingEvent, manager, PPReward, foodPrice);
+    public SustainDiscountByClassCard ( CharacterType unit, BuildingEvent buildingEvent, EventManager manager, int pointsReward, int foodPrice, Era era, int minNumPlayers ) {
+        super(buildingEvent, manager, pointsReward, foodPrice, era, minNumPlayers);
+        this.unit = unit;
     }
 
     @Override

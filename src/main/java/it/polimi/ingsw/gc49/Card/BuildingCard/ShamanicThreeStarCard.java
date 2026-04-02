@@ -2,11 +2,12 @@ package it.polimi.ingsw.gc49.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.BuildingEvent;
 import it.polimi.ingsw.gc49.DataBank;
+import it.polimi.ingsw.gc49.Era;
 import it.polimi.ingsw.gc49.EventManager;
 
 public class ShamanicThreeStarCard extends BuildingCard {
-    public ShamanicThreeStarCard(BuildingEvent buildingEvent, EventManager manager, int PPReward, int foodPrice) {
-        super(buildingEvent, manager, PPReward, foodPrice);
+    public ShamanicThreeStarCard ( BuildingEvent buildingEvent, EventManager manager, int pointsReward, int foodPrice, Era era, int minNumPlayers ) {
+        super(buildingEvent, manager, pointsReward, foodPrice, era, minNumPlayers);
     }
 
     @Override
