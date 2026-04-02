@@ -27,6 +27,9 @@ public class Model {
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
         currentState = new InitialSetup(this);
+    }
+
+    public void gameLoop () {
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
             synchronized (Locks.playerInput) {
                 executeCurrentState();

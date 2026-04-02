@@ -3,6 +3,9 @@ package it.polimi.ingsw.gc49;
 import it.polimi.ingsw.gc49.Card.Card;
 import it.polimi.ingsw.gc49.Track.OrderSlot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Player {
     private String nickname;
     private final int playerIndex;
@@ -13,8 +16,8 @@ public class Player {
     private Totem totem;
     private int food;
     private int points;
-    //private ArrayList<Card> characterCards;
-    //private ArrayList<Card> buildingCards;
+    private List<Card> characterCards;
+    private List<Card> buildingCards;
 
     public final DataBank data;
 
@@ -38,6 +41,8 @@ public class Player {
 
         food = 0;
         points = 0;
+        characterCards = new ArrayList<>();
+        buildingCards = new ArrayList<>();
 
         connected = true;
         removedFromTrack = false;
@@ -57,10 +62,14 @@ public class Player {
         points = points + addedPoints;
     }
     public void addCharacterCard ( Card card ) {
-
+        characterCards.add(card);
+        card.updateDataBank(data);
+        card.onDraw(this);
     }
     public void addBuildingCard ( Card card ) {
-
+        buildingCards.add(card);
+        card.updateDataBank(data);
+        card.onDraw(this);
     }
 
     //### setters
