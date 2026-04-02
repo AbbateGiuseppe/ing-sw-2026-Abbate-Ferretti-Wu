@@ -14,7 +14,7 @@ public class SamePairInventionsCard extends BuildingCard {
     public void onEventEffect() {
         owner.addFood(3 * owner.data.getCharacterCount(CharacterType.SamePairInventions));
     }
-
+    //TODO: add recordInventios()?!!!
     @Override
     protected void setOwner( Player owner) {
         super.setOwner(owner);

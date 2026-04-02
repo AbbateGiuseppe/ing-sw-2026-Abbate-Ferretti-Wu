@@ -8,7 +8,7 @@ public class DoubleBuilderPointsCard extends BuildingCard {
         super(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
     }
 
-    @Override
+    @Override //TODO: just add the number of builder points to itself?
     public void onEventEffect() {
         owner.data.doubleNumBuilderPoints();
     }
