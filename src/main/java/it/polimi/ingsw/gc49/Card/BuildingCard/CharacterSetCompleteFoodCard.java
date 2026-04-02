@@ -3,8 +3,8 @@ package it.polimi.ingsw.gc49.Card.BuildingCard;
 import it.polimi.ingsw.gc49.*;
 
 public class CharacterSetCompleteFoodCard extends BuildingCard {
-    public CharacterSetCompleteFoodCard ( BuildingEvent buildingEvent, EventManager manager, int pointsReward, int foodPrice, Era era, int minNumPlayers ) {
-        super(buildingEvent, manager, pointsReward, foodPrice, era, minNumPlayers);
+    public CharacterSetCompleteFoodCard ( BuildingEvent buildingEvent, EventManager manager, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
+        super(buildingEvent, manager, pointsEndgame, foodPrice, era, minNumPlayers);
     }
 
     @Override

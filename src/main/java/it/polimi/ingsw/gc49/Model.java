@@ -14,11 +14,11 @@ public class Model {
     private Player currentPlayer;
     private int currentPlayerIndex;
     private List<Player> players;
-    private String[] playersNicknames;
+    private final String[] playersNicknames;
     private Track track;
     private CardBoard cardBoard;
     private State currentState;
-    private EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
+    private final EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
     private boolean lastRound;
 
 
@@ -58,6 +58,7 @@ public class Model {
     public void setCardBoard ( CardBoard cardBoard ) {
         this.cardBoard = cardBoard;
     }
+    public void setNumOfConnectedPlayers ( int numOfConnectedPlayers ) { this.numOfConnectedPlayers = numOfConnectedPlayers; }
     public void setCurrentPlayer ( Player currentPlayer ) { this.currentPlayer = currentPlayer; }
     public void setCurrentPlayerIndex ( int currentPlayerIndex ) { this.currentPlayerIndex = currentPlayerIndex; }
     public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }

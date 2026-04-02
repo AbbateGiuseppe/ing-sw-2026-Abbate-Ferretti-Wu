@@ -9,8 +9,8 @@ public class BonusPointsByClassEndGameCard extends BuildingCard {
     private final CharacterType unit;
     private final int pointsPerUnit;
 
-    public BonusPointsByClassEndGameCard( CharacterType unit, int pointsPerUnit, BuildingEvent buildingEvent, EventManager manager, int pointsReward, int foodPrice, Era era, int minNumPlayers ) {
-        super(buildingEvent, manager, pointsReward, foodPrice, era, minNumPlayers);
+    public BonusPointsByClassEndGameCard( CharacterType unit, int pointsPerUnit, BuildingEvent buildingEvent, EventManager manager, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
+        super(buildingEvent, manager, pointsEndgame, foodPrice, era, minNumPlayers);
         this.unit = unit;
         this.pointsPerUnit = pointsPerUnit;
     }

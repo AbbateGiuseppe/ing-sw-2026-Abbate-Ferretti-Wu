@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
-    private String nickname;
+    private final String nickname;
     private final int playerIndex;
     private boolean connected;
     /** status for a disconnection event where the player has been indefinitely removed from the board and won't be given the chance to be chosen for the following turns, until he comes back*/
@@ -16,8 +16,8 @@ public class Player {
     private Totem totem;
     private int food;
     private int points;
-    private List<Card> characterCards;
-    private List<Card> buildingCards;
+    private final List<Card> characterCards;
+    private final List<Card> buildingCards;
 
     public final DataBank data;
 
@@ -32,7 +32,7 @@ public class Player {
 
     /**
      *
-     * @param nickname
+     * @param nickname the player's nickname;
      * @param playerIndex this player index in the model's array of players;
      */
     public Player ( String nickname, int playerIndex ) {
@@ -89,6 +89,8 @@ public class Player {
         this.totem = totem;
     }
     public void setAssignedOrderSlot (OrderSlot assignedOrderSlot) {this.assignedOrderSlot = assignedOrderSlot;}
+    public void setRemovedFromTrack (boolean removedFromTrack) {this.removedFromTrack = removedFromTrack;}
+    public void setChoseAnOffer(boolean choseAnOffer) {this.choseAnOffer = choseAnOffer;}
 
     //### getters
     public String getNickname () {

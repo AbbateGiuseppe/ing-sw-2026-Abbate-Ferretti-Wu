@@ -5,8 +5,8 @@ import it.polimi.ingsw.gc49.Era;
 import it.polimi.ingsw.gc49.EventManager;
 
 public class ShamanicImmunityCard extends BuildingCard {
-    public ShamanicImmunityCard ( BuildingEvent buildingEvent, EventManager manager, int pointsReward, int foodPrice, Era era, int minNumPlayers ) {
-        super(buildingEvent, manager, pointsReward, foodPrice, era, minNumPlayers);
+    public ShamanicImmunityCard ( BuildingEvent buildingEvent, EventManager manager, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
+        super(buildingEvent, manager, pointsEndgame, foodPrice, era, minNumPlayers);
     }
 
     @Override
