@@ -83,10 +83,10 @@ public class Game {
 
     //### Event calls
     public void callDrawEvent() {
-        eventManager.invokeEvent(BuildingEvent.DRAW_EVENT);
+        eventManager.invokeEventByPlayer(currentPlayer, BuildingEvent.DRAW_EVENT);
     }
     public void callTurnEndEvent() {
-        eventManager.invokeEvent(BuildingEvent.TURN_END);
+        eventManager.invokeEventByPlayer(currentPlayer, BuildingEvent.TURN_END);
     }
     public void callRoundEndEvent() {
         eventManager.invokeEvent(BuildingEvent.ROUND_END);
@@ -137,7 +137,7 @@ public class Game {
                     BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawUpperBuilding(cardIndex, drawingPlayer);
                     if (drawnBuildingCard != null) {
                         drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
-                        drawnBuildingCard.addBuildingToManager(eventManager); //adds the building as a listener.
+                        drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager); //adds the building as a listener.
                         drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
                     }
@@ -155,7 +155,7 @@ public class Game {
                     BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawLowerBuilding(cardIndex, drawingPlayer);
                     if (drawnBuildingCard != null) {
                         drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
-                        drawnBuildingCard.addBuildingToManager(eventManager);
+                        drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager);
                         drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
                     }

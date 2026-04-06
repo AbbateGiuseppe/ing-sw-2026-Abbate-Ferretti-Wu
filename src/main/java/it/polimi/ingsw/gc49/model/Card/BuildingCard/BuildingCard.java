@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49.model.Card.BuildingCard;
 
+import javafx.util.Pair;
+
 import it.polimi.ingsw.gc49.model.*;
 import it.polimi.ingsw.gc49.model.Card.Card;
 
@@ -52,8 +54,8 @@ public abstract class BuildingCard extends Card implements BuildingEventListener
         // Put the card to listen for its buildingEvent
     }
 
-    public void addBuildingToManager ( EventManager manager) {
-        manager.addEventListener(buildingEvent,this);
+    public void addBuildingToManager ( Player owner, EventManager manager ) {
+        manager.addEventListener(buildingEvent, new Pair<Player, BuildingEventListener>(owner, this));
     }
 
     public Player getOwner() {
