@@ -257,15 +257,15 @@ public class Deck {
     /**
      * Crea una carta tribù (personaggio o evento) dal JSON.
      * Questo metodo è chiamato per ogni carta nel JSON e crea l'oggetto Java corrispondente.
-     *
+
      * @param cardJson oggetto JSON con i dati della carta
      * @return la carta creata o null se il tipo non è riconosciuto
-     *
+
      * COME USARE QUESTO METODO:
      * 1. Per ogni tipo di carta che aggiungi al JSON, devi aggiungere un case nello switch
      * 2. Leggi i parametri specifici della carta dal JSON usando cardJson.get("nomeCampo")
      * 3. Crea l'oggetto della carta con i parametri letti
-     *
+
      * ESEMPIO JSON per una carta Hunter:
      * {
      *   "type": "Hunter",
@@ -334,12 +334,12 @@ public class Deck {
      *
      * @param cardJson oggetto JSON con i dati della carta
      * @return la carta edificio creata o null in caso di errore
-     *
+
      * COME USARE QUESTO METODO:
      * 1. Ogni BuildingCard ha parametri base: era, ppReward (punti vittoria), foodPrice (costo in cibo)
      * 2. Ogni carta ha anche una strategia che definisce il suo effetto speciale
      * 3. Dovrai leggere dal JSON quale strategia usare e i suoi parametri
-     *
+
      * ESEMPIO JSON per una carta edificio:
      * {
      *   "era": "FIRST",

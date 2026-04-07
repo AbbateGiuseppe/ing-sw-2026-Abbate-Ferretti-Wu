@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc49.Card;
 
 
-import it.polimi.ingsw.gc49.Era;
-import it.polimi.ingsw.gc49.Player;
+import it.polimi.ingsw.gc49.model.Era;
+import it.polimi.ingsw.gc49.model.Player;
 
 public abstract class Card {
     private Era era;

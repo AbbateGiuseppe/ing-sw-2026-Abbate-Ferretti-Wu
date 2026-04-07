@@ -46,7 +46,7 @@ public class InitialSetup extends State {
         }
 
         game.setLastRound(false);
-        game.setEventManager(new EventManager(game));
+        game.setEventManager(new EventManager()); ///chiedui a max
         game.setTrack(new Track(numOfPlayers));
         game.setCardBoard(new CardBoard(game));
 
