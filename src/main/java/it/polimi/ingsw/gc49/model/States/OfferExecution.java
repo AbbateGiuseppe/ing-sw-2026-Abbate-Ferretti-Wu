@@ -18,9 +18,11 @@ public class OfferExecution extends State{
                     Thread.currentThread().interrupt();
                 }
             }
+            game.getTrack().deassignCurrentOffer(); //deassigning the player from the offer and placing him in the order slots.
             game.callTurnEndEvent(); //calls all the buildings that activate at a turn's end.
             currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
         }
+        game.getTrack().zeroCurrentOrderSlot(); //resets the orderBoard's index.
         game.callRoundEndEvent(); //calls all the buildings that activate at the end of a round.
 
         if(game.isLastRound()){

@@ -103,8 +103,16 @@ public class Track {
         offerBoard.get(offerIndex).assignPlayer(player);
     }
 
+    /**
+     * deassigns the current player from the offer, assigns him to the next order slot and activates the order slot's effect.
+     */
     public void deassignCurrentOffer () {
+        Player currentPlayer = offerBoard.get(currentOffer).getAssignedPlayer();
         offerBoard.get(currentOffer).assignPlayer(null);
+        //assigns the current player to the next order slot and activates the order slot's effect.
+        orderBoard.get(currentOrderSlot).assignPlayer(currentPlayer);
+        orderBoard.get(currentOrderSlot).effectOnOccupation();
+        currentOrderSlot++;
     }
 
     /**
@@ -124,7 +132,7 @@ public class Track {
             currentOffer = 0;
             nextOffer = 0;
             return null;
-        }else{
+        }else{ //found a player and gives him the offer effects.
             currentOfferObject.activate();
             return currentOfferObject.getAssignedPlayer();
         }
@@ -150,4 +158,6 @@ public class Track {
             return null;
         }
     }
+
+    public void zeroCurrentOrderSlot () { currentOrderSlot = 0; }
 }
