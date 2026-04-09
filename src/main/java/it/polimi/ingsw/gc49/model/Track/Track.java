@@ -10,9 +10,12 @@ import java.util.stream.Collectors;
 public class Track {
     private final ArrayList<Offer> offerBoard = new ArrayList<>();
     private final ArrayList<OrderSlot> orderBoard = new ArrayList<>();
-    private int currentOffer;
-    private int nextOffer;
-    private int currentOrderSlot;
+    private int selectedOffer;
+    private int incomingOffer;
+    /** Stores the index of the order slot that is currently in use*/
+    private int selectedOrderSlot;
+    /** Stores the index of the following order slot to assign or deassign*/
+    private int incomingOrderSlot;
 
     /**
      * Constructor which adapts creation to the number of players.
@@ -20,9 +23,10 @@ public class Track {
      */
     public Track ( int numOfPlayers ) {
         //### setting the "current" indexes at the beginning
-        currentOffer = 0;
-        nextOffer = 0;
-        currentOrderSlot = 0;
+        selectedOffer = 0;
+        incomingOffer = 0;
+        selectedOrderSlot = 0;
+        incomingOrderSlot = 0;
         //### Creation of offerBoard
         switch (numOfPlayers){
             case 2:
@@ -107,12 +111,15 @@ public class Track {
      * deassigns the current player from the offer, assigns him to the next order slot and activates the order slot's effect.
      */
     public void deassignCurrentOffer () {
-        Player currentPlayer = offerBoard.get(currentOffer).getAssignedPlayer();
-        offerBoard.get(currentOffer).assignPlayer(null);
+        Player currentPlayer = offerBoard.get(selectedOffer).getAssignedPlayer();
+        offerBoard.get(selectedOffer).assignPlayer(null); //deassigns.
+
         //assigns the current player to the next order slot and activates the order slot's effect.
-        orderBoard.get(currentOrderSlot).assignPlayer(currentPlayer);
-        orderBoard.get(currentOrderSlot).effectOnOccupation();
-        currentOrderSlot++;
+        orderBoard.get(selectedOrderSlot).assignPlayer(currentPlayer);
+        orderBoard.get(selectedOrderSlot).effectOnOccupation();
+
+        //increases the order slot iterator, it should automatically become overwritten at the first call of getNextPlayerOrderSlot().
+        selectedOrderSlot++;
     }
 
     /**
@@ -121,16 +128,16 @@ public class Track {
      * @return next player reference or a null if there is no next player.
      */
     public Player getNextPlayerOfferAndActivate () {
-        while(offerBoard.get(nextOffer).getAssignedPlayer() == null && nextOffer < offerBoard.size()-1) { //cycles out all the empty offers
-            nextOffer++;
+        while(offerBoard.get(incomingOffer).getAssignedPlayer() == null && incomingOffer < offerBoard.size()-1) { //cycles out all the empty offers
+            incomingOffer++;
         }
-        currentOffer = nextOffer;
-        nextOffer++;
-        Offer currentOfferObject = offerBoard.get(currentOffer);
+        selectedOffer = incomingOffer;
+        incomingOffer++;
+        Offer currentOfferObject = offerBoard.get(selectedOffer);
 
         if (currentOfferObject.getAssignedPlayer() == null) { //reached the end and there is no player
-            currentOffer = 0;
-            nextOffer = 0;
+            selectedOffer = 0;
+            incomingOffer = 0;
             return null;
         }else{ //found a player and gives him the offer effects.
             currentOfferObject.activate();
@@ -144,20 +151,26 @@ public class Track {
      * @return next player reference or a null if there is no next player.
      */
     public Player getNextPlayerOrderSlot () {
-        if(currentOrderSlot <= orderBoard.size()-1) {
-            OrderSlot currentOrderSlotObject = orderBoard.get(currentOrderSlot);
-            currentOrderSlot++;
+        if(incomingOrderSlot <= orderBoard.size()-1) {
+            selectedOrderSlot = incomingOrderSlot; //selects the incoming order slot as the order slot to be used.
+            incomingOrderSlot++;
+            OrderSlot currentOrderSlotObject = orderBoard.get(selectedOrderSlot);
             if (currentOrderSlotObject.getAssignedPlayer() == null){ //logical exception used during disconnections
-                currentOrderSlot = 0;
+                selectedOffer = 0;
+                incomingOrderSlot = 0;
                 return null;
             }else{
-                return currentOrderSlotObject.getAssignedPlayer();
+                Player selectedPlayer = currentOrderSlotObject.getAssignedPlayer();
+
+                //clears the references
+                selectedPlayer.setAssignedOrderSlot(null);
+                currentOrderSlotObject.assignPlayer(null);
+
+                return selectedPlayer;
             }
         }else{ //surpassed the end of the order board
-            currentOrderSlot = 0;
+            incomingOrderSlot = 0;
             return null;
         }
     }
-
-    public void zeroCurrentOrderSlot () { currentOrderSlot = 0; }
 }

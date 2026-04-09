@@ -22,7 +22,6 @@ public class OfferExecution extends State{
             game.callTurnEndEvent(); //calls all the buildings that activate at a turn's end.
             currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
         }
-        game.getTrack().zeroCurrentOrderSlot(); //resets the orderBoard's index.
         game.callRoundEndEvent(); //calls all the buildings that activate at the end of a round.
 
         if(game.isLastRound()){

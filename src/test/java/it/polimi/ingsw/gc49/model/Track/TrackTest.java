@@ -40,7 +40,6 @@ class TrackTest {
         assertEquals(testPlayerTwo.getDrawableUpper(), 1);
         track.deassignCurrentOffer();
         //did the order board fill up?
-        track.zeroCurrentOrderSlot();
         assertNotNull(track.getNextPlayerOrderSlot());
         assertNotNull(track.getNextPlayerOrderSlot());
         assertNull(track.getNextPlayerOrderSlot());
