@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Track {
-    private final ArrayList<Offer> offerBoard = new ArrayList<>();
-    private final ArrayList<OrderSlot> orderBoard = new ArrayList<>();
+    private final List<Offer> offerBoard = new ArrayList<>();
+    private final List<OrderSlot> orderBoard = new ArrayList<>();
     private int selectedOffer;
     private int incomingOffer;
     /** Stores the index of the order slot that is currently in use*/
