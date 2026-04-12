@@ -36,6 +36,7 @@ public class Line {
     public Line( Game game, Deck deck) {
         this.game = game;
         this.numPlayers = game.getNumOfPlayers();
+        this.playerList = game.getPlayers();
         this.deck = deck;
         this.upperLine = new ArrayList<>();
         this.lowerLine = new ArrayList<>();
