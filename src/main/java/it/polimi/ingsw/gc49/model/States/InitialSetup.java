@@ -10,38 +10,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InitialSetup extends State {
-    public InitialSetup ( Game game ) {
+    private final int numOfPlayers;
+    private final String[] playersNicknames;
+
+    public InitialSetup ( Game game, int numOfPlayers, String[] playersNicknames ) {
         super(game);
+        this.numOfPlayers = numOfPlayers;
+        this.playersNicknames = playersNicknames;
     }
 
     public State executeState () {
-        int numOfPlayers = game.getNumOfPlayers();
         List<Player> players = new ArrayList<>(numOfPlayers);
         game.setPlayers(players);
 
-        String[] playersNicknames = game.getPlayersNicknames();
         switch(numOfPlayers){
             case 2:
-                players.set(0, new Player(playersNicknames[0], 0));
-                players.set(1, new Player(playersNicknames[1], 1));
+                players.add(0, new Player(playersNicknames[0], 0));
+                players.add(1, new Player(playersNicknames[1], 1));
                 break;
             case 3:
-                players.set(0, new Player(playersNicknames[0], 0));
-                players.set(1, new Player(playersNicknames[1], 1));
-                players.set(2, new Player(playersNicknames[2], 2));
+                players.add(0, new Player(playersNicknames[0], 0));
+                players.add(1, new Player(playersNicknames[1], 1));
+                players.add(2, new Player(playersNicknames[2], 2));
                 break;
             case 4:
-                players.set(0, new Player(playersNicknames[0], 0));
-                players.set(1, new Player(playersNicknames[1], 1));
-                players.set(2, new Player(playersNicknames[2], 2));
-                players.set(3, new Player(playersNicknames[3], 3));
+                players.add(0, new Player(playersNicknames[0], 0));
+                players.add(1, new Player(playersNicknames[1], 1));
+                players.add(2, new Player(playersNicknames[2], 2));
+                players.add(3, new Player(playersNicknames[3], 3));
                 break;
             case 5:
-                players.set(0, new Player(playersNicknames[0], 0));
-                players.set(1, new Player(playersNicknames[1], 1));
-                players.set(2, new Player(playersNicknames[2], 2));
-                players.set(3, new Player(playersNicknames[3], 3));
-                players.set(4, new Player(playersNicknames[4], 4));
+                players.add(0, new Player(playersNicknames[0], 0));
+                players.add(1, new Player(playersNicknames[1], 1));
+                players.add(2, new Player(playersNicknames[2], 2));
+                players.add(3, new Player(playersNicknames[3], 3));
+                players.add(4, new Player(playersNicknames[4], 4));
                 break;
         }
 

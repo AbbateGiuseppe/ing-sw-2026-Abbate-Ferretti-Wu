@@ -29,7 +29,7 @@ public class Game {
     public Game ( int numOfPlayers, String[] playersNicknames ) {
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
-        currentState = new InitialSetup(this);
+        currentState = new InitialSetup(this, numOfPlayers, playersNicknames);
         executeCurrentState();
     }
 
