@@ -46,20 +46,10 @@ public class InitialSetup extends State {
         }
 
         game.setLastRound(false);
-        game.setEventManager(new EventManager()); ///chiedui a max
+        game.setEventManager(new EventManager());
         game.setTrack(new Track(numOfPlayers));
         game.setCardBoard(new CardBoard(game));
 
-        while (game.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        game.getTrack().randomizeStartingOrder(game.getPlayers()); //randomizes the starting order.
-
-        return new OfferChoosing(game); //goes to the offer choosing state as the next state.
+        return new TotemChoosing(game); //goes to the totem choosing state as the next state.
     }
 }

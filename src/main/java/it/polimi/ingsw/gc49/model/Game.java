@@ -30,6 +30,7 @@ public class Game {
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
         currentState = new InitialSetup(this);
+        executeCurrentState();
     }
 
     public void gameLoop () {
