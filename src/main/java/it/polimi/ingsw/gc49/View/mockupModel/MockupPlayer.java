@@ -3,10 +3,11 @@ package it.polimi.ingsw.gc49.View.mockupModel;
 import it.polimi.ingsw.gc49.model.Card.Card;
 import it.polimi.ingsw.gc49.model.Totem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MockupPlayer {
+public class MockupPlayer implements Serializable {
     private final String nickname;
     private final int playerIndex;
     private boolean connected;

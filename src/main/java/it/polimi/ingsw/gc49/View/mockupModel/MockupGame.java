@@ -3,13 +3,13 @@ package it.polimi.ingsw.gc49.View.mockupModel;
 import it.polimi.ingsw.gc49.model.Card.Card;
 import it.polimi.ingsw.gc49.model.Era;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MockupGame {
-    private MockupPlayer currentPlayer;
+public class MockupGame implements Serializable {
     private int currentPlayerIndex;
-    private final List<MockupPlayer> players;
+    private List<MockupPlayer> players;
 
     /**List that keeps count of the discarded cards, adds new ones everytime.*/
     private final List<Card> discards;
@@ -42,11 +42,12 @@ public class MockupGame {
     }
 
     //### setters
-    public void setCurrentPlayer (MockupPlayer currentPlayer) {
-        this.currentPlayer = currentPlayer;
-    }
+    //Players
     public void setCurrentPlayerIndex (int currentPlayerIndex) {
         this.currentPlayerIndex = currentPlayerIndex;
+    }
+    public void setPlayers (List<MockupPlayer> players) {
+        this.players = players;
     }
     //Cardboard
     public List<Card> getDiscards() {
@@ -76,9 +77,7 @@ public class MockupGame {
     }
 
     //### getters
-    public MockupPlayer getCurrentPlayer () {
-        return currentPlayer;
-    }
+    //Players
     public int getCurrentPlayerIndex () {
         return currentPlayerIndex;
     }
