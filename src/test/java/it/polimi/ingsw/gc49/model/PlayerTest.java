@@ -57,8 +57,8 @@ class PlayerTest {
 
     @Test
     void testSetTotem() {
-        player.setTotem(Totem.EAGLE);
-        assertEquals(Totem.EAGLE, player.getTotem());
+        player.setTotem(Totem.YELLOW);
+        assertEquals(Totem.YELLOW, player.getTotem());
     }
 
     @Test

@@ -9,6 +9,9 @@ public class EventManager {
 
     public EventManager () {
         listenersByEvent = new HashMap<>();
+        for(BuildingEvent event : BuildingEvent.values()) {
+            listenersByEvent.put(event, new ArrayList<>());
+        }
     }
 
     public void addEventListener ( BuildingEvent event, Pair<Player, BuildingEventListener> listener ) {

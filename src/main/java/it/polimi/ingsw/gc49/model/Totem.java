@@ -6,5 +6,4 @@ public enum Totem {
     BLUE,
     BLACK,
     YELLOW,
-    EAGLE
 }

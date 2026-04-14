@@ -1,0 +1,187 @@
+{
+  "cards": [
+    {
+      "type": "BonusFoodEndTurnCard",
+      "era": "FIRST",
+      "minNumPlayers": 2,
+      "buildingEvent": "TURN_END",
+      "pointsEndgame": 3,
+      "foodPrice": 3
+    },
+    {
+      "type": "SustainDiscountByClassCard",
+      "era": "FIRST",
+      "minNumPlayers": 2,
+      "buildingEvent": "SUSTENANCE_EVENT",
+      "pointsEndgame": 3,
+      "foodPrice": 5,
+      "unit": "Artist"
+    },
+    {
+      "type": "SamePairInventionsCard",
+      "era": "FIRST",
+      "minNumPlayers": 2,
+      "buildingEvent": "DRAW_EVENT",
+      "pointsEndgame": 4,
+      "foodPrice": 3
+    },
+    {
+      "type": "SustainDiscountByClassCard",
+      "era": "FIRST",
+      "minNumPlayers": 2,
+      "buildingEvent": "SUSTENANCE_EVENT",
+      "pointsEndgame": 4,
+      "foodPrice": 4,
+      "unit": "Gatherer"
+    },
+    {
+      "type": "CharacterSetCompleteFoodCard",
+      "era": "FIRST",
+      "minNumPlayers": 2,
+      "buildingEvent": "DRAW_EVENT",
+      "pointsEndgame": 3,
+      "foodPrice": 4
+    },
+    {
+      "type": "ShamanicImmunityCard",
+      "era": "FIRST",
+      "minNumPlayers": 2,
+      "buildingEvent": "RITUAL_EVENT",
+      "pointsEndgame": 2,
+      "foodPrice": 5
+    },
+    {
+      "type": "DoubleShamanPointsCard",
+      "era": "SECOND",
+      "minNumPlayers": 2,
+      "buildingEvent": "RITUAL_EVENT",
+      "pointsEndgame": 0,
+      "foodPrice": 7
+    },
+    {
+      "type": "DoubleBuilderPointsCard",
+      "era": "SECOND",
+      "minNumPlayers": 2,
+      "buildingEvent": "GAME_END",
+      "pointsEndgame": 4,
+      "foodPrice": 6
+    },
+    {
+      "type": "ShamanicThreeStarCard",
+      "era": "SECOND",
+      "minNumPlayers": 2,
+      "buildingEvent": "RITUAL_EVENT",
+      "pointsEndgame": 4,
+      "foodPrice": 6
+    },
+    {
+      "type": "BonusHuntingCard",
+      "era": "SECOND",
+      "minNumPlayers": 2,
+      "buildingEvent": "HUNTING_EVENT",
+      "pointsEndgame": 2,
+      "foodPrice": 7
+    },
+    {
+      "type": "BonusPaintingCard",
+      "era": "SECOND",
+      "minNumPlayers": 2,
+      "buildingEvent": "PAINTING_EVENT",
+      "pointsEndgame": 6,
+      "foodPrice": 5
+    },
+    {
+      "type": "SustainDiscountByClassCard",
+      "era": "SECOND",
+      "minNumPlayers": 2,
+      "buildingEvent": "SUSTENANCE_EVENT",
+      "pointsEndgame": 4,
+      "foodPrice": 7,
+      "unit": "Inventor"
+    },
+    {
+      "type": "CharacterSetCompletePointEndGameCard",
+      "era": "SECOND",
+      "minNumPlayers": 2,
+      "buildingEvent": "GAME_END",
+      "pointsEndgame": 6,
+      "foodPrice": 5
+    },
+    {
+      "type": "BonusPointsByClassEndGameCard",
+      "era": "THIRD",
+      "minNumPlayers": 2,
+      "buildingEvent": "GAME_END",
+      "pointsEndgame": 8,
+      "foodPrice": 8,
+      "unit": "Hunter",
+      "pointsPerUnit": 3
+    },
+    {
+      "type": "TwentyFiveBonusPointsEndGame",
+      "era": "THIRD",
+      "minNumPlayers": 2,
+      "buildingEvent": "GAME_END",
+      "pointsEndgame": 25,
+      "foodPrice": 10
+    },
+    {
+      "type": "BonusPointsByClassEndGameCard",
+      "era": "THIRD",
+      "minNumPlayers": 2,
+      "buildingEvent": "GAME_END",
+      "pointsEndgame": 6,
+      "foodPrice": 6,
+      "unit": "Inventor",
+      "pointsPerUnit": 2
+    },
+    {
+      "type": "BonusPointsByClassEndGameCard",
+      "era": "THIRD",
+      "minNumPlayers": 2,
+      "buildingEvent": "GAME_END",
+      "pointsEndgame": 4,
+      "foodPrice": 7,
+      "unit": "Shaman",
+      "pointsPerUnit": 4
+    },
+    {
+      "type": "BonusPointsByClassEndGameCard",
+      "era": "THIRD",
+      "minNumPlayers": 2,
+      "buildingEvent": "GAME_END",
+      "pointsEndgame": 6,
+      "foodPrice": 7,
+      "unit": "Gatherer",
+      "pointsPerUnit": 4
+    },
+    {
+      "type": "BonusPointsByClassEndGameCard",
+      "era": "THIRD",
+      "minNumPlayers": 2,
+      "buildingEvent": "GAME_END",
+      "pointsEndgame": 4,
+      "foodPrice": 7,
+      "unit": "Artist",
+      "pointsPerUnit": 4
+    },
+    {
+      "type": "BonusPointsByClassEndGameCard",
+      "era": "THIRD",
+      "minNumPlayers": 2,
+      "buildingEvent": "GAME_END",
+      "pointsEndgame": 3,
+      "foodPrice": 6,
+      "unit": "Builder",
+      "pointsPerUnit": 4
+    },
+    {
+      "type": "OneMoreCardCard",
+      "era": "THIRD",
+      "minNumPlayers": 2,
+      "buildingEvent": "DRAW_EVENT",
+      "pointsEndgame": 3,
+      "foodPrice": 9
+    }
+  ]
+}

@@ -12,15 +12,15 @@ import java.util.List;
 
 public class Game {
     private final int numOfPlayers;
-    private int numOfConnectedPlayers;
-    private Player currentPlayer;
-    private int currentPlayerIndex;
-    private List<Player> players;
     private final String[] playersNicknames;
+    private List<Player> players;
     private EventManager eventManager;
     private Track track;
     private CardBoard cardBoard;
     private State currentState;
+    private int numOfConnectedPlayers;
+    private Player currentPlayer;
+    private int currentPlayerIndex;
     private final EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
     private boolean lastRound;
 
@@ -29,7 +29,8 @@ public class Game {
     public Game ( int numOfPlayers, String[] playersNicknames ) {
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
-        currentState = new InitialSetup(this);
+        currentState = new InitialSetup(this, numOfPlayers, playersNicknames);
+        executeCurrentState();
     }
 
     public void gameLoop () {
