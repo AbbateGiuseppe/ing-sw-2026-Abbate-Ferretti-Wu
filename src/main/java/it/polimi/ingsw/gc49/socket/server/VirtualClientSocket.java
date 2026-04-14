@@ -1,4 +1,7 @@
 package it.polimi.ingsw.gc49.socket.server;
 
-public interface VirtualClientSocket {
+import it.polimi.ingsw.gc49.VirtualClient;
+
+public interface VirtualClientSocket extends VirtualClient {
+
 }
