@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
 import it.polimi.ingsw.gc49.model.Game;
+import it.polimi.ingsw.gc49.rmi_socket.client.VirtualServerSocket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.VirtualClientSocket;
 
@@ -14,7 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-public class SocketConnectorServerSide extends ConnectorServerSide implements VirtualClientSocket {
+public class SocketConnectorServerSide extends ConnectorServerSide implements VirtualClientSocket, VirtualServerSocket {
     private final ObjectInputStream input;
     private final ObjectOutputStream output;
     private volatile boolean running;
@@ -76,5 +77,10 @@ public class SocketConnectorServerSide extends ConnectorServerSide implements Vi
     public void reportError(String details) throws Exception {
         output.writeObject(details);
         output.flush();
+    }
+
+    @Override
+    public void sendCommand ( Command command ) throws Exception {
+        //TODO
     }
 }

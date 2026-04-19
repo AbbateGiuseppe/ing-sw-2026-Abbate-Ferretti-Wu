@@ -83,8 +83,8 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     private void runSocketServer() throws IOException {
         Socket clientSocket;
         while ((clientSocket = this.serverSocket.accept()) != null) {
-            ObjectInputStream socketRx = new ObjectInputStream(clientSocket.getInputStream());
             ObjectOutputStream socketTx = new ObjectOutputStream(clientSocket.getOutputStream());
+            ObjectInputStream socketRx = new ObjectInputStream(clientSocket.getInputStream());
 
             synchronized (this.clients) {
                 SocketConnectorServerSide connector = new SocketConnectorServerSide(
