@@ -13,4 +13,5 @@ module it.polimi.ingsw.gc49 {
     exports it.polimi.ingsw.gc49.model;
     opens it.polimi.ingsw.gc49.model to javafx.fxml;
     exports it.polimi.ingsw.gc49.rmi_socket.server to java.rmi;
+    exports it.polimi.ingsw.gc49.rmi_socket.client to java.rmi;
 }

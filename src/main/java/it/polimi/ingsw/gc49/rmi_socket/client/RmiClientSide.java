@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
+import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
+import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.VirtualServerRmi;
@@ -12,6 +14,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Scanner;
 
 public class RmiClientSide extends UnicastRemoteObject implements VirtualClientRmi {
     private final String nickname;
@@ -31,6 +34,27 @@ public class RmiClientSide extends UnicastRemoteObject implements VirtualClientR
 
         String nickname = args[1];
         VirtualServerRmi server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname);
+
+        new RmiClientSide(nickname, server).run();
+    }
+
+    private void run() throws RemoteException {
+
+        this.runCli();//TODO: running.
+    }
+
+    private void runCli() throws RemoteException {
+        Scanner scan = new Scanner(System.in);
+        while (true) {
+            System.out.print("> ");
+            int command = scan.nextInt();
+
+            if (command != 0) {
+                server.sendCommand(new Command(MassiPlayerActionEnum.CHOOSE_OFFER, command));
+            } else {
+
+            }
+        }
     }
 
     @Override
