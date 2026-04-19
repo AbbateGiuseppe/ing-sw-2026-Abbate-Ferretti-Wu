@@ -1,8 +1,7 @@
-package it.polimi.ingsw.gc49.rmi.client;
+package it.polimi.ingsw.gc49.rmi_socket.client;
 
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.VirtualClient;
-import it.polimi.ingsw.gc49.VirtualServer;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
 
 import java.rmi.Remote;

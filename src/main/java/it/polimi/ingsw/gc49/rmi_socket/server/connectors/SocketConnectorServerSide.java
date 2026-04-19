@@ -1,11 +1,12 @@
-package it.polimi.ingsw.gc49.socket.server;
+package it.polimi.ingsw.gc49.rmi_socket.server.connectors;
 
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
+import it.polimi.ingsw.gc49.controller.massi.MassiController;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
-import it.polimi.ingsw.gc49.controller.massi.MassiController;
 import it.polimi.ingsw.gc49.model.Game;
+import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.VirtualClientSocket;
 
 import java.io.IOException;
@@ -13,18 +14,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-public class SocketHandlerServerside implements VirtualClientSocket {
-    private final int clientIndex;
-    private final MassiController controller;
-    private final SocketExecutorServerside server;
+public class SocketConnectorServerSide extends ConnectorServerSide implements VirtualClientSocket {
     private final ObjectInputStream input;
     private final ObjectOutputStream output;
     private volatile boolean running;
 
-    public SocketHandlerServerside ( int clientIndex, SocketExecutorServerside server, ObjectInputStream input, ObjectOutputStream output) {
-        this.clientIndex = clientIndex;
-        controller = new MassiController(clientIndex);
-        this.server = server;
+    public SocketConnectorServerSide ( int clientLocalIndex, MassiController controller,
+                                       ServerMultiplexer server, ObjectInputStream input,
+                                       ObjectOutputStream output ) {
+        super( clientLocalIndex, controller, server );
         this.input = input;
         this.output = output;
     }
@@ -33,8 +31,8 @@ public class SocketHandlerServerside implements VirtualClientSocket {
         controller.connectModel(game);
     }
 
-    //TODO: runVirtualView??!
-    public void runVirtualView() throws IOException, ClassNotFoundException {
+    //TODO: runVirtualClient??!
+    public void runVirtualClient() throws IOException, ClassNotFoundException {
         running = true;
 
         Datapacket datapacket;

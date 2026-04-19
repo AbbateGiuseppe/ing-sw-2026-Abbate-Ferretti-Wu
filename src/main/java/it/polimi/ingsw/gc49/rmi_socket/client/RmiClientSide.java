@@ -1,10 +1,10 @@
-package it.polimi.ingsw.gc49.rmi.client;
+package it.polimi.ingsw.gc49.rmi_socket.client;
 
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
-import it.polimi.ingsw.gc49.rmi.server.RmiServerSide;
-import it.polimi.ingsw.gc49.rmi_socket.client.VirtualClientRmi;
+import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.VirtualServerRmi;
+import it.polimi.ingsw.gc49.rmi_socket.server.FactoryServiceRmi;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -16,31 +16,22 @@ import java.util.List;
 public class RmiClientSide extends UnicastRemoteObject implements VirtualClientRmi {
     private final String nickname;
     private MockupGame mockupGame;
-    private final VirtualServerRmi server;
-    private static final String mainServer = RmiServerSide.mainServer;
+    VirtualServerRmi server;
+    private static final String mainServer = ServerMultiplexer.mainServer;
 
-    public RmiClientSide( VirtualServerRmi server, String nickname ) throws RemoteException {
+    public RmiClientSide( String nickname, VirtualServerRmi server ) throws RemoteException {
         super();
-        this.server = server;
         this.nickname = nickname;
+        this.server = server;
     }
 
-    public static void main(String[] args) throws RemoteException, NotBoundException {
-        String host = args[0];
-        int port = Integer.parseInt(args[1]);
-        Registry registry = LocateRegistry.getRegistry(host, port);
+    public static void main( String[] args ) throws RemoteException, NotBoundException {
+        int port = Integer.parseInt(args[0]);
+        Registry registry = LocateRegistry.getRegistry(null, port); //null means "localhost"
 
-        VirtualServerRmi server = (VirtualServerRmi) registry.lookup(mainServer);
-        String nickname = args[2];
-
-        new RmiClientSide(server, nickname).run();
+        String nickname = args[1];
+        VirtualServerRmi server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname);
     }
-
-    private void run() throws RemoteException {
-        this.server.connect(nickname, this);
-        //TODO: running.
-    }
-
 
     @Override
     public void initializeClientModel ( MockupGame mockupGame ) throws RemoteException {

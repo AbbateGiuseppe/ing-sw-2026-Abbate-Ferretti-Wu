@@ -12,4 +12,5 @@ module it.polimi.ingsw.gc49 {
     opens it.polimi.ingsw.gc49.model.Track to javafx.fxml;
     exports it.polimi.ingsw.gc49.model;
     opens it.polimi.ingsw.gc49.model to javafx.fxml;
+    exports it.polimi.ingsw.gc49.rmi_socket.server to java.rmi;
 }

@@ -2,12 +2,12 @@ package it.polimi.ingsw.gc49.rmi.server;
 
 import it.polimi.ingsw.gc49.controller.massi.MassiController;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
-import it.polimi.ingsw.gc49.rmi.client.VirtualClientRmi;
+import it.polimi.ingsw.gc49.rmi_socket.client.VirtualClientRmi;
+import it.polimi.ingsw.gc49.rmi_socket.server.VirtualServerRmi;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.RemoteServer;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 

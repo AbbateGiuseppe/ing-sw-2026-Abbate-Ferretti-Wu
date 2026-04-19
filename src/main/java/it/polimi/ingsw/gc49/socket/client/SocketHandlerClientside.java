@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc49.socket.client;
 
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
+import it.polimi.ingsw.gc49.rmi_socket.client.VirtualServerSocket;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -1,9 +1,8 @@
-package it.polimi.ingsw.gc49.rmi.server;
+package it.polimi.ingsw.gc49.rmi_socket.server;
 
-import it.polimi.ingsw.gc49.VirtualClient;
 import it.polimi.ingsw.gc49.VirtualServer;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
-import it.polimi.ingsw.gc49.rmi.client.VirtualClientRmi;
+import it.polimi.ingsw.gc49.rmi_socket.client.VirtualClientRmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
