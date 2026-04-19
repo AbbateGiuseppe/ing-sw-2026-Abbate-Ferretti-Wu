@@ -30,16 +30,27 @@ public class SocketClientSide implements VirtualClientSocket, VirtualServerSocke
     public static void main(String[] args) throws Exception {
         String host = null; //args[0];
         int port = Integer.parseInt(args[1]);
+        String nickname = args[2];
 
         Socket serverSocket = new Socket(host, port);
 
         ObjectInputStream socketRx = new ObjectInputStream(serverSocket.getInputStream());
         ObjectOutputStream socketTx = new ObjectOutputStream(serverSocket.getOutputStream());
+        //sends the nickname to authorise the connection
+        socketTx.writeObject(nickname);
+        socketTx.flush();
+        //waits for authorisation
+        Object authorisation = socketRx.readObject();
 
-        //TODO: add listeners
+        if(authorisation instanceof RuntimeException) {
+            System.err.println("Il Serviente ha restituito un'eccezione: " + authorisation);
+        } else {
+            System.out.println("Il Serviente ha restituito: " + authorisation);
 
-        String nickname = args[2];
-        new SocketClientSide(nickname, socketRx, socketTx).run();
+            //TODO: add listeners
+
+            new SocketClientSide(nickname, socketRx, socketTx).run();
+        }
     }
 
     private void run() throws Exception {
