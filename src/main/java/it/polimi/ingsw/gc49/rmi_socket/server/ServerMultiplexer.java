@@ -15,12 +15,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ServerMultiplexer extends UnicastRemoteObject implements FactoryServiceRmi {
     public static final String mainServer = "MesosMainServer";
     private ServerSocket serverSocket;
-    private final List<ConnectorServerSide> clients = new ArrayList<ConnectorServerSide>();
+    private final Map<String, ConnectorServerSide> clients = new HashMap<>();
     private final int port;
 
     /**
@@ -51,7 +53,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
             try {
                 ServerSocket serverSocket = new ServerSocket(portSocket);
                 new ServerMultiplexer(portSocket, serverSocket).runSocketServer();
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }).start();
@@ -73,37 +75,50 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     @Override
     public VirtualServerRmi connectPlayerRmi ( String nickname ) throws RemoteException {
         synchronized (this.clients) {
-            RmiConnectorServerSide connector = new RmiConnectorServerSide(clients.size(), new MassiController(clients.size()), this);
-            clients.add(connector);
+            if(!clients.containsKey(nickname)) {
+                RmiConnectorServerSide connector = new RmiConnectorServerSide(clients.size(), new MassiController(clients.size()), this);
+                clients.put(nickname, connector);
 
-            return (VirtualServerRmi) UnicastRemoteObject.exportObject(connector, port);
+                return (VirtualServerRmi) UnicastRemoteObject.exportObject(connector, port);
+            } else {
+                throw new RemoteException("Nomignolo già esistente e connesso. Prego, cambiarlo.");
+            }
         }
     }
 
-    private void runSocketServer() throws IOException {
+    private void runSocketServer() throws IOException, ClassNotFoundException {
         Socket clientSocket;
         while ((clientSocket = this.serverSocket.accept()) != null) {
             ObjectOutputStream socketTx = new ObjectOutputStream(clientSocket.getOutputStream());
             ObjectInputStream socketRx = new ObjectInputStream(clientSocket.getInputStream());
 
-            synchronized (this.clients) {
-                SocketConnectorServerSide connector = new SocketConnectorServerSide(
-                        clients.size(),
-                        new MassiController(clients.size()),
-                        this,
-                        socketRx,
-                        socketTx
-                );
+            String nickname = (String) socketRx.readObject();
+            if(!clients.containsKey(nickname)) {
+                synchronized (this.clients) {
+                    SocketConnectorServerSide connector = new SocketConnectorServerSide(
+                            clients.size(),
+                            new MassiController(clients.size()),
+                            this,
+                            socketRx,
+                            socketTx
+                    );
 
-                clients.add(connector);
+                    clients.put(nickname, connector);
 
-                new Thread(() -> {
-                    try {
-                        connector.runVirtualClient();
-                    } catch (IOException | ClassNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                }).start();
+                    new Thread(() -> {
+                        try {
+                            connector.runVirtualClient();
+                        } catch (IOException | ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).start();
+                }
+                socketTx.writeObject(new String("Connessione riuscita."));
+                socketTx.flush();
+
+            } else {
+                socketTx.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
+                socketTx.flush();
             }
         }
     }

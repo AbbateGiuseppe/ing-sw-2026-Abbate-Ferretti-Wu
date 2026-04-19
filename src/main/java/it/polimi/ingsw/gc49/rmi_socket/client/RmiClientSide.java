@@ -30,12 +30,17 @@ public class RmiClientSide extends UnicastRemoteObject implements VirtualClientR
 
     public static void main( String[] args ) throws RemoteException, NotBoundException {
         int port = Integer.parseInt(args[0]);
-        Registry registry = LocateRegistry.getRegistry(null, port); //null means "localhost"
-
         String nickname = args[1];
-        VirtualServerRmi server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname);
 
-        new RmiClientSide(nickname, server).run();
+        try {
+            Registry registry = LocateRegistry.getRegistry(null, port); //null means "localhost"
+            VirtualServerRmi server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname);
+            System.out.println("Connessione riuscita.");
+            new RmiClientSide(nickname, server).run();
+        } catch (RemoteException e) {
+            System.out.println("Connessione fallita.");
+            System.out.println("Il Serviente ha restituito un'eccezione: " + e);
+        }
     }
 
     private void run() throws RemoteException {
