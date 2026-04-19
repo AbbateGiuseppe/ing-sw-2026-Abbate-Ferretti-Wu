@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.model.Card.TribeCards.EventCard.EventCard;
 import it.polimi.ingsw.gc49.model.Era;
 import it.polimi.ingsw.gc49.model.Game;
 import it.polimi.ingsw.gc49.model.Player;
+import it.polimi.ingsw.gc49.model.States.EraEndedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +15,9 @@ import static java.util.Collections.sort;
 
 public class Line {
     /// Per la macchina a stati finiti
-    private Era currentEra = Era.FIRST; //chiedi
+    private Era currentEra = Era.first(); //chiedi
     private boolean eraChanged = false;
-    private Era newEra = Era.SECOND;
+    private Era newEra = currentEra.next();
     private Game game;
     private int numPlayers;
     private List<Player> playerList;
@@ -126,7 +127,7 @@ public class Line {
 
 /// tutti gli end
 
-    public void endRound(int numPlayers) {
+    public void endRound(int numPlayers) throws EraEndedException {
         resolveEvent(lowerLine, playerList);   ///parlare a Max
         lowerLine.clear();
         lowerLine.addAll(upperLine);
@@ -147,6 +148,10 @@ public class Line {
             }
 
             upperLine.add(drawn);
+        }
+
+        if(previousEra != currentEra){
+            throw new EraEndedException("finita era");
         }
     }
 

@@ -93,8 +93,9 @@ public class CardBoard {
         // eventuale logica extra legata agli scarti o al deck
     }
     public void endRound (int numPlayers) throws EraEndedException {
-        line.endRound(numPlayers);
-        if(line.hasEraChanged()) {
+        try {
+            line.endRound(numPlayers);
+        } catch ( EraEndedException e ) {
             throw new EraEndedException("We have changed the era.");
         }
     }

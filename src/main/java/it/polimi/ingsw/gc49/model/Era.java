@@ -10,7 +10,7 @@ public enum Era {
      *
      * @return the value of the first ENUM.
      */
-    public Era first(){
+    public static Era first(){
         Era[] eras = Era.values();
         return eras[0];
     }
@@ -19,7 +19,7 @@ public enum Era {
      *
      * @return the value of the last ENUM.
      */
-    public Era last(){
+    public static Era last(){
         Era[] eras = Era.values();
         return eras[eras.length - 1];
     }
