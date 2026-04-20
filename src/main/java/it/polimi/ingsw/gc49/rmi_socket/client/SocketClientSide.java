@@ -1,10 +1,11 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
-import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
-import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
-import it.polimi.ingsw.gc49.datapacket.Datapacket;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.client.stub.SocketStub;
+import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal;
+import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
 import it.polimi.ingsw.gc49.rmi_socket.server.VirtualClientSocket;
 
 import java.io.IOException;
@@ -14,17 +15,14 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Scanner;
 
-public class SocketClientSide implements VirtualClientSocket, VirtualServerSocket {
-    private final String nickname;
+public class SocketClientSide extends ClientSide implements VirtualClientSocket {
+    private final SocketStub server;
     private MockupGame mockupGame;
-    final ObjectInputStream input;
-    final ObjectOutputStream output;
     private volatile boolean running;
 
-    public SocketClientSide(String nickname, ObjectInputStream input, ObjectOutputStream output) {
-        this.nickname = nickname;
-        this.input = input;
-        this.output = output;
+    public SocketClientSide(String nickname, SocketStub server) {
+        super(nickname);
+        this.server = server;
     }
 
     public static void main(String[] args) throws Exception {
@@ -50,62 +48,40 @@ public class SocketClientSide implements VirtualClientSocket, VirtualServerSocke
 
             //TODO: add listeners
 
-            new SocketClientSide(nickname, socketRx, socketTx).run();
+            SocketStub server = new SocketStub(socketRx, socketTx);
+            new SocketClientSide(nickname, server).run();
         }
     }
 
     private void run() throws Exception {
         new Thread(() -> {
             try {
-                runVirtualServer();
+                server.runVirtualServer(this);
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }).start();
         //TODO: add input listening methods on clientside.
-        runCli();
-    }
 
-    public void runVirtualServer() throws IOException, ClassNotFoundException {
-        //TODO: runVirtualServer??!
-        running = true;
-
-        Datapacket datapacket;
-        try {
-            while (running) { //TODO: && !Thread.currentThread().isInterrupted()
-                try {
-                    datapacket = (Datapacket) input.readObject();
-
-                    switch(datapacket.getDatapacketType()){
-                        case UPDATE_MODEL -> stop(); //TODO: update local model
-                    }
-                }catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }finally {
-            stop();
-        }
-    }
-
-    private void runCli() throws Exception {
         Scanner scan = new Scanner(System.in);
-        while (true) {
-            System.out.print("> ");
-            int command = scan.nextInt();
+        System.out.println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
+        System.out.print("> ");
+        int interfaceChoice = scan.nextInt();
 
-            if (command != 0) {
-                this.sendCommand(new Command(MassiPlayerActionEnum.CHOOSE_OFFER, 40));
-            } else {
-
-            }
+        UserInputInterface inputInterface;
+        if(interfaceChoice == 1) {
+            System.out.println("Avvio dell'interfaccia testuale...");
+            inputInterface = new TextTerminal(server);
+        }else if(interfaceChoice == 2) {
+            System.out.println("Avvio dell'interfaccia grafica...");
+            System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
+            return;
+        }else{
+            System.out.println("Scelta non valida: chiusura imminente.");
+            return;
         }
-    }
 
-    public void stop() {
-        running = false;
+        inputInterface.runInput();
     }
 
     @Override
@@ -114,7 +90,7 @@ public class SocketClientSide implements VirtualClientSocket, VirtualServerSocke
     }
 
     @Override
-    public void updateClientModel ( List<MockupModelDatapacketable> updatesList ) throws Exception {
+    public void updateClientModel ( UpdateModel updateModel ) throws Exception {
 
     }
 
@@ -123,9 +99,4 @@ public class SocketClientSide implements VirtualClientSocket, VirtualServerSocke
 
     }
 
-    @Override
-    public void sendCommand ( Command command ) throws Exception {
-        output.writeObject(command);
-        output.flush();
-    }
 }

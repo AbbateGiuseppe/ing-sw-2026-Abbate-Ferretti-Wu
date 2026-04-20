@@ -2,16 +2,15 @@ package it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL;
 
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
-import it.polimi.ingsw.gc49.datapacket.Datapacket;
 
 import java.util.List;
 
-public class OfferAndOrderboardDatapacket extends Datapacket implements MockupModelDatapacketable {
+public class OfferAndOrderboardDatapacket extends UpdateModelElement {
     private final List<MockupPlayer> offerBoard;
     private final List<MockupPlayer> orderBoard;
 
     public OfferAndOrderboardDatapacket ( List<MockupPlayer> offerBoard, List<MockupPlayer> orderBoard) {
-        super(DatapacketType.UPDATE_MODEL);
+        super();
         this.offerBoard = offerBoard;
         this.orderBoard = orderBoard;
     }

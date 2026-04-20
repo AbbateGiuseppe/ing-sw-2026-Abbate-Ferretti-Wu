@@ -1,26 +1,27 @@
-package it.polimi.ingsw.gc49.socket.client;
+package it.polimi.ingsw.gc49.rmi_socket.client.stub;
 
+import it.polimi.ingsw.gc49.VirtualClient;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
-import it.polimi.ingsw.gc49.rmi_socket.client.VirtualServerSocket;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class SocketHandlerClientside implements VirtualServerSocket {
-    final SocketExecutorClientside client;
+public class SocketStub implements VirtualServerSocket {
     final ObjectInputStream input;
     final ObjectOutputStream output;
     private volatile boolean running;
 
-    public SocketHandlerClientside ( final SocketExecutorClientside client, final ObjectInputStream input, final ObjectOutputStream output) {
-        this.client = client;
+    public SocketStub(ObjectInputStream input, ObjectOutputStream output) {
         this.input = input;
         this.output = output;
     }
 
-    public void runVirtualServer() throws IOException, ClassNotFoundException {
+
+    public void runVirtualServer(VirtualClient client) throws IOException, ClassNotFoundException {
         //TODO: runVirtualServer??!
         running = true;
 
@@ -31,15 +32,17 @@ public class SocketHandlerClientside implements VirtualServerSocket {
                     datapacket = (Datapacket) input.readObject();
 
                     switch(datapacket.getDatapacketType()){
-                        case UPDATE_MODEL -> stop(); //TODO: update local model
+                        case UPDATE_MODEL -> client.updateClientModel((UpdateModel) datapacket);
                     }
-                }catch (ClassNotFoundException e) {
+                } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        }finally {
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
             stop();
         }
     }

@@ -3,7 +3,8 @@ package it.polimi.ingsw.gc49.rmi_socket.client;
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.VirtualServerRmi;
 import it.polimi.ingsw.gc49.rmi_socket.server.FactoryServiceRmi;
@@ -12,19 +13,16 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Scanner;
 
-public class RmiClientSide extends UnicastRemoteObject implements VirtualClientRmi {
-    private final String nickname;
+public class RmiClientSide extends ClientSide implements VirtualClientRmi {
     private MockupGame mockupGame;
     VirtualServerRmi server;
     private static final String mainServer = ServerMultiplexer.mainServer;
 
     public RmiClientSide( String nickname, VirtualServerRmi server ) throws RemoteException {
-        super();
-        this.nickname = nickname;
+        super(nickname);
         this.server = server;
     }
 
@@ -68,7 +66,7 @@ public class RmiClientSide extends UnicastRemoteObject implements VirtualClientR
     }
 
     @Override
-    public void updateClientModel ( List<MockupModelDatapacketable> updatesList ) throws RemoteException {
+    public void updateClientModel ( UpdateModel updateModel ) throws RemoteException {
 
     }
 
