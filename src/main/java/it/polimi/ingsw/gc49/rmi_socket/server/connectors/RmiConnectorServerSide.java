@@ -20,6 +20,6 @@ public class RmiConnectorServerSide extends ConnectorServerSide implements Virtu
 
     @Override
     public void sendCommand ( Command command ) throws RemoteException {
-
+        controller.executeCommand(command);
     }
 }

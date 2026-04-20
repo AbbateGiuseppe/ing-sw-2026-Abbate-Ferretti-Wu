@@ -16,7 +16,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
-public class SocketConnectorServerSide extends ConnectorServerSide implements VirtualClientSocket, VirtualServerSocket {
+public class SocketConnectorServerSide extends ConnectorServerSide implements VirtualClientSocket {
     private final ObjectInputStream input;
     private final ObjectOutputStream output;
     private volatile boolean running;
@@ -78,10 +78,5 @@ public class SocketConnectorServerSide extends ConnectorServerSide implements Vi
     public void reportError(String details) throws Exception {
         output.writeObject(details);
         output.flush();
-    }
-
-    @Override
-    public void sendCommand ( Command command ) throws Exception {
-        //TODO
     }
 }
