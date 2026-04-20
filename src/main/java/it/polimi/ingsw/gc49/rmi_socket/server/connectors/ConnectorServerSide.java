@@ -7,10 +7,17 @@ public abstract class ConnectorServerSide {
     protected final int clientLocalIndex;
     protected final MassiController controller;
     protected final ServerMultiplexer server;
+    protected final String nickname;
 
-    public ConnectorServerSide ( int clientLocalIndex, MassiController controller, ServerMultiplexer server ) {
+    public ConnectorServerSide ( int clientLocalIndex, MassiController controller,
+                                 ServerMultiplexer server, String nickname ) {
         this.clientLocalIndex = clientLocalIndex;
         this.controller = controller;
         this.server = server;
+        this.nickname = nickname;
+    }
+
+    public String getNickname () {
+        return nickname;
     }
 }

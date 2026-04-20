@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.stub;
 
-import it.polimi.ingsw.gc49.VirtualClient;
+import it.polimi.ingsw.gc49.rmi_socket.VirtualClient;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;

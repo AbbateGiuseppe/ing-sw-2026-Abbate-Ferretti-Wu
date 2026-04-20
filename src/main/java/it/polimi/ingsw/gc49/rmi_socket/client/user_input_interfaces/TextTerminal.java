@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces;
 
-import it.polimi.ingsw.gc49.VirtualServer;
-import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
+import it.polimi.ingsw.gc49.rmi_socket.VirtualServer;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 

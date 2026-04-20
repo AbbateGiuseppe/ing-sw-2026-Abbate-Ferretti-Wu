@@ -9,8 +9,9 @@ import it.polimi.ingsw.gc49.rmi_socket.server.VirtualServerRmi;
 import java.rmi.RemoteException;
 
 public class RmiConnectorServerSide extends ConnectorServerSide implements VirtualServerRmi {
-    public RmiConnectorServerSide ( int clientLocalIndex, MassiController controller, ServerMultiplexer server ) {
-        super( clientLocalIndex, controller, server );
+    public RmiConnectorServerSide ( int clientLocalIndex, MassiController controller,
+                                    ServerMultiplexer server, String nickname ) {
+        super( clientLocalIndex, controller, server, nickname );
     }
 
     @Override

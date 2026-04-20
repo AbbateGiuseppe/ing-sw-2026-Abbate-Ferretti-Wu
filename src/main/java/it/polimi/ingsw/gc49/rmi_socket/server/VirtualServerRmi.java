@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
-import it.polimi.ingsw.gc49.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.VirtualServer;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.rmi_socket.client.VirtualClientRmi;
 

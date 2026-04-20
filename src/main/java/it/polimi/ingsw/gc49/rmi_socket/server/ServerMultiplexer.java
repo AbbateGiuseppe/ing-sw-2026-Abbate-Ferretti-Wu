@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -78,7 +79,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     public VirtualServerRmi connectPlayerRmi ( String nickname ) throws RemoteException {
         synchronized (this.clients) {
             if(!clients.containsKey(nickname)) {
-                RmiConnectorServerSide connector = new RmiConnectorServerSide(clients.size(), new MassiController(clients.size()), this);
+                RmiConnectorServerSide connector = new RmiConnectorServerSide(clients.size(), new MassiController(clients.size()), this, nickname);
                 clients.put(nickname, connector);
 
                 return (VirtualServerRmi) UnicastRemoteObject.exportObject(connector, port);
@@ -101,6 +102,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                             clients.size(),
                             new MassiController(clients.size()),
                             this,
+                            nickname,
                             socketRx,
                             socketTx
                     );
@@ -110,6 +112,8 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                     new Thread(() -> {
                         try {
                             connector.runVirtualClient();
+                        } catch (SocketException e) {
+                            System.out.println("Connessione con " + connector.getNickname() + " persa"); //TODO
                         } catch (IOException | ClassNotFoundException e) {
                             throw new RuntimeException(e);
                         }

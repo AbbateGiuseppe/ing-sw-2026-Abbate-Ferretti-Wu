@@ -53,15 +53,6 @@ public class SocketClientSide extends ClientSide implements VirtualClientSocket 
     }
 
     private void run() throws Exception {
-        new Thread(() -> {
-            try {
-                server.runVirtualServer(this);
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-        //TODO: add input listening methods on clientside.
-
         Scanner scan = new Scanner(System.in);
         System.out.println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
         System.out.print("> ");
@@ -81,6 +72,15 @@ public class SocketClientSide extends ClientSide implements VirtualClientSocket 
         }
 
         inputInterface.runInput();
+
+        new Thread(() -> {
+            try {
+                server.runVirtualServer(this);
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+        //TODO: add input listening methods on clientside.
     }
 
     @Override

@@ -14,6 +14,7 @@ import it.polimi.ingsw.gc49.rmi_socket.server.VirtualClientSocket;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.SocketException;
 import java.util.List;
 
 public class SocketConnectorServerSide extends ConnectorServerSide implements VirtualClientSocket {
@@ -22,9 +23,9 @@ public class SocketConnectorServerSide extends ConnectorServerSide implements Vi
     private volatile boolean running;
 
     public SocketConnectorServerSide ( int clientLocalIndex, MassiController controller,
-                                       ServerMultiplexer server, ObjectInputStream input,
-                                       ObjectOutputStream output ) {
-        super( clientLocalIndex, controller, server );
+                                       ServerMultiplexer server, String nickname,
+                                       ObjectInputStream input, ObjectOutputStream output ) {
+        super( clientLocalIndex, controller, server, nickname );
         this.input = input;
         this.output = output;
     }
@@ -51,8 +52,8 @@ public class SocketConnectorServerSide extends ConnectorServerSide implements Vi
                     throw new RuntimeException(e);
                 }
             }
-        }catch (IOException e) {
-            throw new RuntimeException(e);
+        }catch (SocketException e) {
+            throw new SocketException(e);
         }finally {
             stop();
         }
