@@ -5,6 +5,8 @@ import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal;
+import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.VirtualServerRmi;
 import it.polimi.ingsw.gc49.rmi_socket.server.FactoryServiceRmi;
@@ -17,7 +19,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class RmiClientSide extends ClientSide implements VirtualClientRmi {
-    private MockupGame mockupGame;
     VirtualServerRmi server;
     private static final String mainServer = ServerMultiplexer.mainServer;
 
@@ -27,37 +28,43 @@ public class RmiClientSide extends ClientSide implements VirtualClientRmi {
     }
 
     public static void main( String[] args ) throws RemoteException, NotBoundException {
-        int port = Integer.parseInt(args[0]);
-        String nickname = args[1];
+        int port = ServerMultiplexer.portRmi;
+        String nickname = args[0];
+        String host = null; //args[1];
 
         try {
-            Registry registry = LocateRegistry.getRegistry(null, port); //null means "localhost"
+            Registry registry = LocateRegistry.getRegistry(host, port); //null means "localhost"
             VirtualServerRmi server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname);
             System.out.println("Connessione riuscita.");
             new RmiClientSide(nickname, server).run();
         } catch (RemoteException e) {
             System.out.println("Connessione fallita.");
             System.out.println("Il Serviente ha restituito un'eccezione: " + e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    private void run() throws RemoteException {
-
-        this.runCli();//TODO: running.
-    }
-
-    private void runCli() throws RemoteException {
+    private void run() throws Exception {
         Scanner scan = new Scanner(System.in);
-        while (true) {
-            System.out.print("> ");
-            int command = scan.nextInt();
+        System.out.println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
+        System.out.print("> ");
+        int interfaceChoice = scan.nextInt();
 
-            if (command != 0) {
-                server.sendCommand(new Command(MassiPlayerActionEnum.CHOOSE_OFFER, command));
-            } else {
-
-            }
+        UserInputInterface inputInterface;
+        if(interfaceChoice == 1) {
+            System.out.println("Avvio dell'interfaccia testuale...");
+            inputInterface = new TextTerminal(server);
+        }else if(interfaceChoice == 2) {
+            System.out.println("Avvio dell'interfaccia grafica...");
+            System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
+            return;
+        }else{
+            System.out.println("Scelta non valida: chiusura imminente.");
+            return;
         }
+
+        inputInterface.runInput();
     }
 
     @Override

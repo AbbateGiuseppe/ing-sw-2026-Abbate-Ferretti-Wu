@@ -2,10 +2,10 @@ package it.polimi.ingsw.gc49.rmi_socket.client;
 
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.client.stub.SocketStub;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
+import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.VirtualClientSocket;
 
 import java.io.IOException;
@@ -17,7 +17,6 @@ import java.util.Scanner;
 
 public class SocketClientSide extends ClientSide implements VirtualClientSocket {
     private final SocketStub server;
-    private MockupGame mockupGame;
     private volatile boolean running;
 
     public SocketClientSide(String nickname, SocketStub server) {
@@ -26,9 +25,9 @@ public class SocketClientSide extends ClientSide implements VirtualClientSocket 
     }
 
     public static void main(String[] args) throws Exception {
-        String host = null; //args[0];
-        int port = Integer.parseInt(args[1]);
-        String nickname = args[2];
+        int port = ServerMultiplexer.portSocket;
+        String nickname = args[0];
+        String host = null; //args[1];
 
         Socket serverSocket = new Socket(host, port);
 

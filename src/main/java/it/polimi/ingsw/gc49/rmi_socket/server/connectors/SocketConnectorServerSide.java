@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.controller.massi.MassiController;
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;
 import it.polimi.ingsw.gc49.model.Game;
 import it.polimi.ingsw.gc49.rmi_socket.client.stub.VirtualServerSocket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
@@ -68,8 +69,8 @@ public class SocketConnectorServerSide extends ConnectorServerSide implements Vi
     }
 
     @Override
-    public void updateClientModel ( List<MockupModelDatapacketable> updatesList ) throws Exception {
-        output.writeObject(updatesList);
+    public void updateClientModel ( UpdateModel updateModel ) throws Exception {
+        output.writeObject(updateModel);
         output.flush();
     }
 

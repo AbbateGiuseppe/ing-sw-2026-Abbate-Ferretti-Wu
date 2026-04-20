@@ -21,6 +21,8 @@ import java.util.Map;
 
 public class ServerMultiplexer extends UnicastRemoteObject implements FactoryServiceRmi {
     public static final String mainServer = "MesosMainServer";
+    public static final int portSocket = 2001;
+    public static final int portRmi = 2004;
     private ServerSocket serverSocket;
     private final Map<String, ConnectorServerSide> clients = new HashMap<>();
     private final int port;
@@ -48,7 +50,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     public static void main ( String[] args ) throws IOException {
         String host = null; //args[0];
 
-        int portSocket = Integer.parseInt(args[1]);
+        //SOCKET
         new Thread(() -> {
             try {
                 ServerSocket serverSocket = new ServerSocket(portSocket);
@@ -58,7 +60,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
             }
         }).start();
 
-        int portRmi = Integer.parseInt(args[2]);
+        //RMI
         new Thread(() -> {
             try {
                 FactoryServiceRmi serverRmi = new ServerMultiplexer(portRmi);
