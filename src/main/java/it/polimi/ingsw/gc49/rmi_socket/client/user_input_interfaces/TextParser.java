@@ -5,9 +5,8 @@ import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 
 public class TextParser {
-    public TextParser () {}
 
-    public Datapacket parse(String text) {
+    public static Datapacket parse(String text) {
         Datapacket datapacket = new Command(MassiPlayerActionEnum.CHOOSE_OFFER, 2);
 
         return datapacket;

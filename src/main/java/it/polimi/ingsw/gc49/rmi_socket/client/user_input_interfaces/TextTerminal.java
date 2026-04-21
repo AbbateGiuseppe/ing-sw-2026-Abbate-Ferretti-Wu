@@ -7,11 +7,11 @@ import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import java.util.Scanner;
 
 public class TextTerminal extends UserInputInterface {
-    private final TextParser textParser;
+    //private final TextParser textParser;
 
     public TextTerminal ( VirtualServer virtualServer ) {
         super( virtualServer );
-        textParser = new TextParser();
+        //textParser = new TextParser();
     }
 
     @Override
@@ -21,7 +21,7 @@ public class TextTerminal extends UserInputInterface {
             System.out.print("> ");
             String inputLine = scan.nextLine();
 
-            Datapacket dataPacket = textParser.parse( inputLine );
+            Datapacket dataPacket = TextParser.parse( inputLine );
             switch (dataPacket.getDatapacketType()){
                 case COMMAND:
                     virtualServer.sendCommand((Command) dataPacket);
