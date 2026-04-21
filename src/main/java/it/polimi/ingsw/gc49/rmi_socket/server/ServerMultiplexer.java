@@ -23,9 +23,9 @@ import java.util.Map;
 public class ServerMultiplexer extends UnicastRemoteObject implements FactoryServiceRmi {
     public static final String mainServer = "MesosMainServer";
     public static final int portSocket = 2001;
-    public static final int portRmi = 2004;
+    public static final int portRmi = 2002;
     private ServerSocket serverSocket;
-    private final Map<String, ConnectorServerSide> clients = new HashMap<>();
+    private static final Map<String, ConnectorServerSide> clients = new HashMap<>();
     private final int port;
 
     /**
@@ -96,8 +96,8 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
             ObjectInputStream socketRx = new ObjectInputStream(clientSocket.getInputStream());
 
             String nickname = (String) socketRx.readObject();
-            if(!clients.containsKey(nickname)) {
-                synchronized (this.clients) {
+            synchronized (this.clients) {
+                if(!clients.containsKey(nickname)) {
                     SocketConnectorServerSide connector = new SocketConnectorServerSide(
                             clients.size(),
                             new MassiController(clients.size()),
@@ -118,13 +118,13 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                             throw new RuntimeException(e);
                         }
                     }).start();
-                }
-                socketTx.writeObject(new String("Connessione riuscita."));
-                socketTx.flush();
 
-            } else {
-                socketTx.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
-                socketTx.flush();
+                    socketTx.writeObject(new String("Connessione riuscita."));
+                    socketTx.flush();
+                } else {
+                    socketTx.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
+                    socketTx.flush();
+                }
             }
         }
     }
