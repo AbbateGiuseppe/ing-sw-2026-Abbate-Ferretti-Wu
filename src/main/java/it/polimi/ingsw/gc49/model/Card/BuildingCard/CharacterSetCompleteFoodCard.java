@@ -15,7 +15,6 @@ public class CharacterSetCompleteFoodCard extends BuildingCard {
         if (owner.data.getCharacterCount(CharacterType.CompleteSet) > owner.data.getCurrentNumCompleteCharacterSets()) {
             owner.addFood(5);
             owner.data.incrementCurrentNumCompleteCharacterSets();
-            //TODO: add recordCharaSet??!!
         }
     }
 

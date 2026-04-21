@@ -18,19 +18,6 @@ public abstract class BuildingCard extends Card implements BuildingEventListener
         this.foodPrice = foodPrice;
     }
 
-    // TODO:create the building cards with their strategies
-//    public static List<BuildingCard> getAllBuildingCards(EventManager manager){
-//        List<BuildingCard> list = new ArrayList<>();
-//        // Setup the strategy of the card
-//        BonusFoodAndPPStrategy strategy = new BonusFoodAndPPStrategy(BuildingEvent.HUNTING_EVENT);
-//        strategy.setByUnit(CharacterType.Hunter,1,1);
-//        // Create the card
-//        BuildingCard card = new BuildingCard(strategy,BuildingEvent.HUNTING_EVENT,manager,0,0);
-//        list.add(card);
-//
-//        return list;
-//    }
-
     @Override
     public boolean canGet(Player player) {
         if (player.getFood() >= foodPrice - player.data.getNumBuildingDiscount()) {return true;}

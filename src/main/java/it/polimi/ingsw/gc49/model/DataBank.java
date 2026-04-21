@@ -65,7 +65,6 @@ public class DataBank {
     public void addNumBuildingDiscount(int n) { numBuildingDiscount += n; }
     public void addNumBuilderPoints(int n) { numBuilderPoints += n; }
     public void addNumBuildingPoints(int n) { numBuildingPoints += n; }
-    public void doubleNumBuilderPoints() { numBuilderPoints *= 2; }
     public int getNumBuildingPoints() {return numBuildingPoints;}
     public int getNumSustenanceDiscount() { return numSustenanceDiscount; }
     public void addNumSustenanceDiscount(int n) { numSustenanceDiscount += n; }
@@ -74,6 +73,7 @@ public class DataBank {
     public int getNumBuilderPoints() {return numBuilderPoints;}
     public EnumSet<Invention> getInventions() {return inventions;}
     public int getDifferentInventionCount() { return inventions.size(); }
+    public void setNumBuilderPoints(int numBuilderPoints) {this.numBuilderPoints = numBuilderPoints;}
 
     // Event Management
     public void addInvention(Invention invention) {

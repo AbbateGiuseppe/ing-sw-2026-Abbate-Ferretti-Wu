@@ -9,8 +9,8 @@ public class CharacterSetCompletePointEndGameCard extends BuildingCard {
         super(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
     }
 
-    @Override //TODO: add points not food!!!
+    @Override
     public void onEventEffect() {
-         owner.addFood(6 * owner.data.getCharacterCount(CharacterType.CompleteSet));
+         owner.addPoints(6 * owner.data.getCharacterCount(CharacterType.CompleteSet));
     }
 }
