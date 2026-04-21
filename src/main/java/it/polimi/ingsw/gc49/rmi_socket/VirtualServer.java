@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49;
+package it.polimi.ingsw.gc49.rmi_socket;
 
 import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
 

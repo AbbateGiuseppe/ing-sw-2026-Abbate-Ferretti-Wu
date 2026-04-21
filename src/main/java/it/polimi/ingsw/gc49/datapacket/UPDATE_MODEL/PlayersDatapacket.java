@@ -2,16 +2,15 @@ package it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL;
 
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
-import it.polimi.ingsw.gc49.datapacket.Datapacket;
 
 import java.util.List;
 
-public class PlayersDatapacket extends Datapacket implements MockupModelDatapacketable {
+public class PlayersDatapacket extends UpdateModelElement {
     private final int currentPlayerIndex;
     private final List<MockupPlayer> players;
 
     public PlayersDatapacket ( int currentPlayerIndex, List<MockupPlayer> players ) {
-        super(DatapacketType.UPDATE_MODEL);
+        super();
         this.currentPlayerIndex = currentPlayerIndex;
         this.players = players;
     }
