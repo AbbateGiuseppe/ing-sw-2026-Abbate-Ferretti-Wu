@@ -1,9 +1,11 @@
 package it.polimi.ingsw.gc49.model.CardBoard;
 
 import it.polimi.ingsw.gc49.model.Card.Card;
+import it.polimi.ingsw.gc49.model.Card.TribeCards.CharacterCard.Artist;
 import it.polimi.ingsw.gc49.model.Era;
 import it.polimi.ingsw.gc49.model.Game;
 import it.polimi.ingsw.gc49.model.Player;
+import it.polimi.ingsw.gc49.model.States.EraEndedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +47,7 @@ class LineTest {
 
     @Test
     void testGetCurrentEra_initiallyFirst() {
-        assertEquals(Era.FIRST, line.getCurrentEra());
+        assertEquals(Era.first(), line.getCurrentEra());
     }
 
     @Test
@@ -115,7 +117,7 @@ class LineTest {
     }
 
     @Test
-    void testEndRound_shiftsCardsCorrectly() {
+    void testEndRound_shiftsCardsCorrectly() throws Exception {
         // Popola la upper line con alcune carte
         line.endRound(3);
 
@@ -125,7 +127,7 @@ class LineTest {
     }
 
     @Test
-    void testEndRound_detectsEraChange() {
+    void testEndRound_detectsEraChange() throws Exception {
         int maxRounds = 100; // Limite per evitare loop infiniti
         int roundCount = 0;
 
@@ -149,7 +151,7 @@ class LineTest {
     }
 
     @Test
-    void testEndEra_clearsLowerBuildingsOnThirdEra() {
+    void testEndEra_clearsLowerBuildingsOnThirdEra() throws Exception {
         // Forza l'era a THIRD
         line.endRound(3); // Passa alla seconda era se possibile
 
@@ -158,7 +160,7 @@ class LineTest {
     }
 
     @Test
-    void testEndGame_clearsAllLines() {
+    void testEndGame_clearsAllLines() throws Exception{
         // Popola le linee
         line.endRound(3);
 
@@ -210,7 +212,7 @@ class LineTest {
     }
 
     @Test
-    void testEndEra_updatesCurrentEra() {
+    void testEndEra_updatesCurrentEra() throws Exception {
         Era initialEra = line.getCurrentEra();
 
         // Forza un cambio d'era
@@ -224,4 +226,26 @@ class LineTest {
         // Dopo endEra, l'era corrente dovrebbe essere aggiornata
         assertFalse(line.hasEraChanged(), "Era change flag should be cleared after endEra");
     }
+
+    @Test
+    void testEraChangeException_setsEraChangedFlag() {
+        // Crea un deck personalizzato con carte di ere diverse
+        Deck customDeck = new Deck();
+        Card card1 = new Artist(Era.first(), 3);
+        Card card2 = new Artist(Era.first().next(), 3);
+        customDeck.addCard(card1);
+        customDeck.addCard(card2);
+
+        Line customLine = new Line(game, customDeck);
+
+        // Verifica che venga lanciata EraEndedException
+        assertThrows(EraEndedException.class, () -> {
+            customLine.endRound(3);
+        });
+        // Verifica che eraChanged sia true dopo l'eccezione
+        assertTrue(customLine.hasEraChanged(), "eraChanged should be true when era changes");
+        assertEquals(Era.SECOND, customLine.getNewEra(), "newEra should be SECOND");
+        assertEquals(Era.SECOND, customLine.getCurrentEra(), "currentEra should be updated to SECOND");
+    }
+
 }

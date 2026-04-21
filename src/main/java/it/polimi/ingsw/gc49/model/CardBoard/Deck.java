@@ -36,6 +36,11 @@ public class Deck {
         BuildingDeck(game.getNumOfPlayers());
 
     }
+    public Deck(){
+        this.tribeDeck = new ArrayList<>();
+        this.buildingDeck = new ArrayList<>();
+        this.gameEventManager = null;
+    }
 
     // pesca la prossima carta Tribù (Personaggio/Eventi) dal mazzo
     public Card dealTribeCard() {
@@ -486,6 +491,9 @@ public class Deck {
             };
             default -> throw new IllegalArgumentException("Numero giocatori non valido: " + numPlayers);
         };
+    }
+    public void addCard(Card card){
+        tribeDeck.add(card);
     }
 
 }

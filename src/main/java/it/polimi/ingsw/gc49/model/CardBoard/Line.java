@@ -145,13 +145,10 @@ public class Line {
                 currentEra = cardEra;
                 eraChanged = true;
                 newEra = cardEra;
+                throw new EraEndedException("Era ended");
             }
 
             upperLine.add(drawn);
-        }
-
-        if(previousEra != currentEra){
-            throw new EraEndedException("finita era");
         }
     }
 

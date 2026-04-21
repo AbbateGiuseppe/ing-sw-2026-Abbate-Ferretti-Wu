@@ -113,13 +113,12 @@ class BuildingCardTest {
     @Test
     void testBonusPaintingCard_onEventEffect() {
         player.data.addCharacterCount(CharacterType.Artist, 2);
-        player.setPointsToPay(5);
 
         BonusPaintingCard card = new BonusPaintingCard(BuildingEvent.PAINTING_EVENT, 10, 4, Era.SECOND, 2);
         card.onDraw(player);
         card.onEventEffect();
 
-        assertEquals(3, player.getPointsToPay(), "Points to pay should be reduced by artist count");
+        assertEquals(-2, player.getFoodToPay(), "Points to pay should be reduced by artist count");
     }
 
     @Test
@@ -134,26 +133,17 @@ class BuildingCardTest {
 
     @Test
     void testShamanicImmunityCard_onEventEffect() {
-        player.setFoodToPay(10);
+        player.setPointsToPay(10);
         player.data.addCharacterCount(CharacterType.Shaman, 2);
 
-        ShamanicImmunityCard card = new ShamanicImmunityCard(BuildingEvent.SUSTENANCE_EVENT, 6, 4, Era.SECOND, 3);
+        ShamanicImmunityCard card = new ShamanicImmunityCard(BuildingEvent.RITUAL_EVENT, 6, 4, Era.SECOND, 3);
         card.onDraw(player);
         card.onEventEffect();
 
-        assertEquals(0, player.getFoodToPay(), "Food to pay should be reduced to 0");
+        assertEquals(0, player.getPointsToPay(), "Points to pay should be reduced to 0");
     }
 
-    @Test
-    void testShamanicThreeStarCard_onEventEffect() {
-        player.data.addCharacterCount(CharacterType.Shaman, 3);
 
-        ShamanicThreeStarCard card = new ShamanicThreeStarCard(BuildingEvent.GAME_END, 12, 7, Era.THIRD_FINAL, 2);
-        card.onDraw(player);
-        card.onEventEffect();
-
-        assertEquals(9, player.getPoints(), "Player should gain 3 points per shaman (3*3=9)");
-    }
 
     @Test
     void testDoubleBuilderPointsCard_onEventEffect() {

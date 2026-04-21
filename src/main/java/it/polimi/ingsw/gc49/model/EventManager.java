@@ -15,13 +15,7 @@ public class EventManager {
     }
 
     public void addEventListener ( BuildingEvent event, Pair<Player, BuildingEventListener> listener ) {
-        if (listenersByEvent.containsKey(event)) {
-            listenersByEvent.get(event).add(listener);
-        } else {
-            List<Pair<Player, BuildingEventListener>> ls = new ArrayList<>();
-            ls.add(listener);
-            listenersByEvent.put(event, ls);
-        }
+        listenersByEvent.get(event).add(listener);
     }
 
     /**
