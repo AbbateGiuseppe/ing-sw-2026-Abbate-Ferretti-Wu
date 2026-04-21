@@ -54,7 +54,7 @@ public class RmiClientSide extends ClientSide implements VirtualClientRmi {
         UserInputInterface inputInterface;
         if(interfaceChoice == 1) {
             System.out.println("Avvio dell'interfaccia testuale...");
-            inputInterface = new TextTerminal(server);
+            inputInterface = new TextTerminal(server); //connect interface to server proxy
         }else if(interfaceChoice == 2) {
             System.out.println("Avvio dell'interfaccia grafica...");
             System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
@@ -64,7 +64,7 @@ public class RmiClientSide extends ClientSide implements VirtualClientRmi {
             return;
         }
 
-        inputInterface.runInput();
+        inputInterface.runInput(); //run interface
     }
 
     @Override

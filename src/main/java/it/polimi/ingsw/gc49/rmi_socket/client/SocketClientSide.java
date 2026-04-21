@@ -61,7 +61,7 @@ public class SocketClientSide extends ClientSide implements VirtualClientSocket 
         UserInputInterface inputInterface;
         if(interfaceChoice == 1) {
             System.out.println("Avvio dell'interfaccia testuale...");
-            inputInterface = new TextTerminal(server);
+            inputInterface = new TextTerminal(server); //connect interface to server proxy
         }else if(interfaceChoice == 2) {
             System.out.println("Avvio dell'interfaccia grafica...");
             System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
@@ -71,8 +71,7 @@ public class SocketClientSide extends ClientSide implements VirtualClientSocket 
             return;
         }
 
-        inputInterface.runInput();
-
+        //run server connection (input/output)
         new Thread(() -> {
             try {
                 server.runVirtualServer(this);
@@ -80,7 +79,10 @@ public class SocketClientSide extends ClientSide implements VirtualClientSocket 
                 throw new RuntimeException(e);
             }
         }).start();
+
         //TODO: add input listening methods on clientside.
+
+        inputInterface.runInput(); //run interface
     }
 
     @Override
