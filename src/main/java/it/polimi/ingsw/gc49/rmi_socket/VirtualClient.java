@@ -1,12 +1,15 @@
 package it.polimi.ingsw.gc49.rmi_socket;
 
-import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;
+import it.polimi.ingsw.gc49.datapacket.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelPacket;
 
-public interface VirtualClient {
-    void initializeClientModel ( MockupGame mockupGame ) throws Exception;
+import java.rmi.Remote;
 
-    void updateClientModel ( UpdateModel updateModel ) throws Exception;
+public interface VirtualClient extends Remote {
+    void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws Exception;
 
-    void reportError ( String details ) throws Exception;
+    void updateClientModel ( UpdateModelPacket updateModelPacket ) throws Exception;
+
+    void reportError ( ErrorPacket errorPacket ) throws Exception;
 }

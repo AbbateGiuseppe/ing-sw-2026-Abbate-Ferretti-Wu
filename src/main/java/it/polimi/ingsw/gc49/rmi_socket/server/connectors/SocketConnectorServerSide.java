@@ -1,23 +1,21 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.connectors;
 
-import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.controller.massi.MassiController;
-import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
+import it.polimi.ingsw.gc49.datapacket.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.MockupModelDatapacketable;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;
+import it.polimi.ingsw.gc49.datapacket.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.model.Game;
-import it.polimi.ingsw.gc49.rmi_socket.client.stub.VirtualServerSocket;
+import it.polimi.ingsw.gc49.rmi_socket.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
-import it.polimi.ingsw.gc49.rmi_socket.server.VirtualClientSocket;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
-import java.util.List;
 
-public class SocketConnectorServerSide extends ConnectorServerSide implements VirtualClientSocket {
+public class SocketConnectorServerSide extends ConnectorServerSide implements VirtualClient {
     private final ObjectInputStream input;
     private final ObjectOutputStream output;
     private volatile boolean running;
@@ -46,7 +44,7 @@ public class SocketConnectorServerSide extends ConnectorServerSide implements Vi
                     datapacket = (Datapacket) input.readObject();
 
                     switch(datapacket.getDatapacketType()){
-                        case COMMAND -> controller.executeCommand( (Command) datapacket );
+                        case COMMAND -> controller.executeCommand( (CommandPacket) datapacket );
                     }
                 }catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
@@ -64,20 +62,20 @@ public class SocketConnectorServerSide extends ConnectorServerSide implements Vi
     }
 
     @Override
-    public void initializeClientModel ( MockupGame mockupGame ) throws Exception {
-        output.writeObject(mockupGame);
+    public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws Exception {
+        output.writeObject(initializeModelPacket);
         output.flush();
     }
 
     @Override
-    public void updateClientModel ( UpdateModel updateModel ) throws Exception {
-        output.writeObject(updateModel);
+    public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws Exception {
+        output.writeObject(updateModelPacket);
         output.flush();
     }
 
     @Override
-    public void reportError(String details) throws Exception {
-        output.writeObject(details);
+    public void reportError ( ErrorPacket errorPacket ) throws Exception {
+        output.writeObject(errorPacket);
         output.flush();
     }
 }

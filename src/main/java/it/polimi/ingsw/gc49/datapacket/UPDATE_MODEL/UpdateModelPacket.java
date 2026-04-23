@@ -5,10 +5,10 @@ import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateModel extends Datapacket {
-    private List<UpdateModelElement> updatesList = new ArrayList<>();
+public class UpdateModelPacket extends Datapacket {
+    private final List<UpdateModelElement> updatesList = new ArrayList<>();
 
-    public UpdateModel () {
+    public UpdateModelPacket () {
         super(DatapacketType.UPDATE_MODEL);
     }
 

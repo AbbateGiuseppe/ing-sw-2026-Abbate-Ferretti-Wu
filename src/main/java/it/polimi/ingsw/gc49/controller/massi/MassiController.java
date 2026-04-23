@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.controller.massi;
 
-import it.polimi.ingsw.gc49.datapacket.COMMAND.Command;
+import it.polimi.ingsw.gc49.datapacket.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.model.Game;
 
 public class MassiController {
@@ -16,7 +16,7 @@ public class MassiController {
         this.game = game;
     }
 
-    public void executeCommand ( Command command ) {
+    public void executeCommand ( CommandPacket command ) {
         MassiPlayerActionEnum action = command.getAction();
         switch ( action ) {
             case CHOOSE_TOTEM:

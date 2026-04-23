@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
 import it.polimi.ingsw.gc49.controller.massi.MassiController;
+import it.polimi.ingsw.gc49.rmi_socket.VirtualServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ConnectorServerSide;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.RmiConnectorServerSide;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.SocketConnectorServerSide;
@@ -76,13 +77,13 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     }
 
     @Override
-    public VirtualServerRmi connectPlayerRmi ( String nickname ) throws RemoteException {
+    public VirtualServer connectPlayerRmi ( String nickname ) throws RemoteException {
         synchronized (this.clients) {
             if(!clients.containsKey(nickname)) {
                 RmiConnectorServerSide connector = new RmiConnectorServerSide(clients.size(), new MassiController(clients.size()), this, nickname);
                 clients.put(nickname, connector);
 
-                return (VirtualServerRmi) UnicastRemoteObject.exportObject(connector, port);
+                return (VirtualServer) UnicastRemoteObject.exportObject(connector, port);
             } else {
                 throw new RemoteException("Nomignolo già esistente e connesso. Prego, cambiarlo.");
             }

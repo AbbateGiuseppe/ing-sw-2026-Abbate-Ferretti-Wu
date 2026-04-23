@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.model.Totem;
 
-public class Command extends Datapacket {
+public class CommandPacket extends Datapacket {
     private final MassiPlayerActionEnum action;
     private int index;
     private Totem totem;
@@ -13,7 +13,7 @@ public class Command extends Datapacket {
      * Constructor for blank commands.
      * @param action, the player's action enum.
      */
-    public Command ( MassiPlayerActionEnum action ) {
+    public CommandPacket ( MassiPlayerActionEnum action ) {
         super(DatapacketType.COMMAND);
         this.action = action;
     }
@@ -23,7 +23,7 @@ public class Command extends Datapacket {
      * @param action, the player's action enum.
      * @param index, the action's chosen index.
      */
-    public Command ( MassiPlayerActionEnum action, int index ) {
+    public CommandPacket ( MassiPlayerActionEnum action, int index ) {
         super(DatapacketType.COMMAND);
         this.action = action;
         this.index = index;
@@ -34,7 +34,7 @@ public class Command extends Datapacket {
      * @param action, the player's action enum.
      * @param totem, the chosen totem's enum.
      */
-    public Command ( MassiPlayerActionEnum action, Totem totem ) {
+    public CommandPacket ( MassiPlayerActionEnum action, Totem totem ) {
         super(DatapacketType.COMMAND);
         this.action = action;
         this.totem = totem;

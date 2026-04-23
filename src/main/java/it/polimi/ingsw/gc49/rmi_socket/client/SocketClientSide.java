@@ -1,21 +1,21 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
-import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModel;
+import it.polimi.ingsw.gc49.datapacket.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.client.stub.SocketStub;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
-import it.polimi.ingsw.gc49.rmi_socket.server.VirtualClientSocket;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.List;
 import java.util.Scanner;
 
-public class SocketClientSide extends ClientSide implements VirtualClientSocket {
+public class SocketClientSide extends ClientSide implements VirtualClient {
     private final SocketStub server;
     private volatile boolean running;
 
@@ -61,7 +61,7 @@ public class SocketClientSide extends ClientSide implements VirtualClientSocket 
         UserInputInterface inputInterface;
         if(interfaceChoice == 1) {
             System.out.println("Avvio dell'interfaccia testuale...");
-            inputInterface = new TextTerminal(server); //connect interface to server proxy
+            inputInterface = new TextTerminal(server, nickname); //connect interface to server proxy
         }else if(interfaceChoice == 2) {
             System.out.println("Avvio dell'interfaccia grafica...");
             System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
@@ -86,17 +86,17 @@ public class SocketClientSide extends ClientSide implements VirtualClientSocket 
     }
 
     @Override
-    public void initializeClientModel ( MockupGame mockupGame ) throws Exception {
+    public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws Exception {
 
     }
 
     @Override
-    public void updateClientModel ( UpdateModel updateModel ) throws Exception {
+    public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws Exception {
 
     }
 
     @Override
-    public void reportError ( String details ) throws Exception {
+    public void reportError ( ErrorPacket errorPacket ) throws Exception {
 
     }
 
