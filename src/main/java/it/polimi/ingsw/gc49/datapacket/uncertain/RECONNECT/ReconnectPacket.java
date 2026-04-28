@@ -1,12 +1,13 @@
 package it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT;
 
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 
 public class ReconnectPacket extends Datapacket {
     public final String nickname;
 
     public ReconnectPacket ( String nickname ) {
-        super(DatapacketType.RECONNECT);
+        super(DatapacketType.RECONNECT, ApplicationPhase.ANY);
         this.nickname = nickname;
     }
 }

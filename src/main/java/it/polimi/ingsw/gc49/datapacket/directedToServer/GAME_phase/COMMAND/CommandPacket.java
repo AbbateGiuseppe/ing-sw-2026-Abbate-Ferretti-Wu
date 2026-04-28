@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND;
 import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.model.Totem;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 
 public class CommandPacket extends Datapacket {
     private final MassiPlayerActionEnum action;
@@ -14,7 +15,7 @@ public class CommandPacket extends Datapacket {
      * @param action, the player's action enum.
      */
     public CommandPacket ( MassiPlayerActionEnum action ) {
-        super(DatapacketType.COMMAND);
+        super(DatapacketType.COMMAND, ApplicationPhase.GAME);
         this.action = action;
     }
 
@@ -24,7 +25,7 @@ public class CommandPacket extends Datapacket {
      * @param index, the action's chosen index.
      */
     public CommandPacket ( MassiPlayerActionEnum action, int index ) {
-        super(DatapacketType.COMMAND);
+        super(DatapacketType.COMMAND, ApplicationPhase.GAME);
         this.action = action;
         this.index = index;
     }
@@ -35,7 +36,7 @@ public class CommandPacket extends Datapacket {
      * @param totem, the chosen totem's enum.
      */
     public CommandPacket ( MassiPlayerActionEnum action, Totem totem ) {
-        super(DatapacketType.COMMAND);
+        super(DatapacketType.COMMAND, ApplicationPhase.GAME);
         this.action = action;
         this.totem = totem;
     }
