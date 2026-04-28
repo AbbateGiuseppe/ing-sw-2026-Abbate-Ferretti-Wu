@@ -1,18 +1,18 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.stub;
 
-import it.polimi.ingsw.gc49.datapacket.DISCONNECT.DisconnectPacket;
-import it.polimi.ingsw.gc49.datapacket.RECONNECT.ReconnectPacket;
-import it.polimi.ingsw.gc49.rmi_socket.VirtualClient;
-import it.polimi.ingsw.gc49.datapacket.COMMAND.CommandPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromClient.DISCONNECT.DisconnectPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromClient.RECONNECT.ReconnectPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualGameClient;
+import it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.rmi_socket.VirtualServer;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-public class SocketStub implements VirtualServer {
+public class SocketStub implements VirtualGameServer {
     final ObjectInputStream input;
     final ObjectOutputStream output;
     private volatile boolean running;
@@ -23,7 +23,7 @@ public class SocketStub implements VirtualServer {
     }
 
 
-    public void runVirtualServer(VirtualClient client) throws IOException, ClassNotFoundException {
+    public void runVirtualServer( VirtualGameClient client) throws IOException, ClassNotFoundException {
         //TODO: runVirtualServer??!
         running = true;
 

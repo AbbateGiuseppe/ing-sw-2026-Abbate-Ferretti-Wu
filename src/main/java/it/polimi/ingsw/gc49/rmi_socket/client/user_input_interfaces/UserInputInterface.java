@@ -1,13 +1,13 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces;
 
-import it.polimi.ingsw.gc49.rmi_socket.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
 
 public abstract class UserInputInterface {
-    protected VirtualServer virtualServer;
+    protected VirtualGameServer virtualGameServer;
     protected final String nickname; //<-- Will need this to reestablish a fallen connection
 
-    public UserInputInterface ( VirtualServer virtualServer, String nickname ) {
-        this.virtualServer = virtualServer;
+    public UserInputInterface ( VirtualGameServer virtualGameServer, String nickname ) {
+        this.virtualGameServer = virtualGameServer;
         this.nickname = nickname;
     }
 

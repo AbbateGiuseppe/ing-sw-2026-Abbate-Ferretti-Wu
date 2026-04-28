@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
 import it.polimi.ingsw.gc49.controller.massi.MassiController;
-import it.polimi.ingsw.gc49.rmi_socket.VirtualServer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ConnectorServerSide;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.RmiConnectorServerSide;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.SocketConnectorServerSide;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.old.ConnectorServerSide;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.old.RmiConnectorServerSide;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.old.SocketConnectorServerSide;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,9 +16,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ServerMultiplexer extends UnicastRemoteObject implements FactoryServiceRmi {
@@ -27,6 +25,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     public static final int portRmi = 2002;
     private ServerSocket serverSocket;
     private static final Map<String, ConnectorServerSide> clients = new HashMap<>();
+    private static final Hall hall = new Hall();
     private final int port;
 
     /**
@@ -77,13 +76,13 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     }
 
     @Override
-    public VirtualServer connectPlayerRmi ( String nickname ) throws RemoteException {
+    public VirtualGameServer connectPlayerRmi ( String nickname ) throws RemoteException {
         synchronized (this.clients) {
             if(!clients.containsKey(nickname)) {
                 RmiConnectorServerSide connector = new RmiConnectorServerSide(clients.size(), new MassiController(clients.size()), this, nickname);
                 clients.put(nickname, connector);
 
-                return (VirtualServer) UnicastRemoteObject.exportObject(connector, port);
+                return (VirtualGameServer) UnicastRemoteObject.exportObject(connector, port);
             } else {
                 throw new RemoteException("Nomignolo già esistente e connesso. Prego, cambiarlo.");
             }

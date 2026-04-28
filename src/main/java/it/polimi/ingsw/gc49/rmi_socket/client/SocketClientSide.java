@@ -1,9 +1,9 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
-import it.polimi.ingsw.gc49.datapacket.ERROR.ErrorPacket;
-import it.polimi.ingsw.gc49.datapacket.INITIALIZE_MODEL.InitializeModelPacket;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.rmi_socket.VirtualClient;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualGameClient;
 import it.polimi.ingsw.gc49.rmi_socket.client.stub.SocketStub;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
@@ -15,7 +15,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class SocketClientSide extends ClientSide implements VirtualClient {
+public class SocketClientSide extends ClientSide implements VirtualGameClient {
     private final SocketStub server;
     private volatile boolean running;
 

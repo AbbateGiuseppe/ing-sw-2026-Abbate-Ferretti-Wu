@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
-import it.polimi.ingsw.gc49.datapacket.ERROR.ErrorPacket;
-import it.polimi.ingsw.gc49.datapacket.INITIALIZE_MODEL.InitializeModelPacket;
-import it.polimi.ingsw.gc49.datapacket.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.rmi_socket.VirtualClient;
-import it.polimi.ingsw.gc49.rmi_socket.VirtualServer;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualGameClient;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
@@ -16,11 +16,11 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
-public class RmiClientSide extends ClientSide implements VirtualClient {
-    VirtualServer server;
+public class RmiClientSide extends ClientSide implements VirtualGameClient {
+    VirtualGameServer server;
     private static final String mainServer = ServerMultiplexer.mainServer;
 
-    public RmiClientSide( String nickname, VirtualServer server ) throws RemoteException {
+    public RmiClientSide( String nickname, VirtualGameServer server ) throws RemoteException {
         super(nickname);
         this.server = server;
     }
@@ -32,7 +32,7 @@ public class RmiClientSide extends ClientSide implements VirtualClient {
 
         try {
             Registry registry = LocateRegistry.getRegistry(host, port); //null means "localhost"
-            VirtualServer server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname);
+            VirtualGameServer server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname);
             System.out.println("Connessione riuscita.");
             new RmiClientSide(nickname, server).run();
         } catch (RemoteException e) {

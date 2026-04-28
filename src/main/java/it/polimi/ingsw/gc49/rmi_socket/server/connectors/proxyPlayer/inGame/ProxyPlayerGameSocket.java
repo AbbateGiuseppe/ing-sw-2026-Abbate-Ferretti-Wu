@@ -1,0 +1,109 @@
+package it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inGame;
+
+import it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND.CommandPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromClient.DISCONNECT.DisconnectPacket;
+import it.polimi.ingsw.gc49.datapacket.Datapacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromClient.RECONNECT.ReconnectPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromServer.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.ProxyPlayerConstructor;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall.ProxyPlayerHallSocket;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inRoom.ProxyPlayerRoomSocket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.SocketException;
+
+public class ProxyPlayerGameSocket extends ProxyPlayerConstructor {
+    private final VirtualGameServer serverSide;
+    private final ObjectInputStream input;
+    private final ObjectOutputStream output;
+    private volatile boolean running;
+
+    public ProxyPlayerGameSocket ( ProxyPlayer proxyPlayer, VirtualServer serverSide,
+                                   ObjectInputStream input, ObjectOutputStream output ) {
+        super( proxyPlayer, SubclassType.GAME );
+        this.serverSide = serverSide;
+        this.input = input;
+        this.output = output;
+    }
+
+
+    //### socket-input reader
+    public void runVirtualClient() throws SocketException {
+        running = true;
+
+        Datapacket datapacket;
+
+        try {
+            while (running) {
+                datapacket = (Datapacket) input.readObject();
+
+                switch(datapacket.datapacketType){
+                    case COMMAND -> sendCommand( (CommandPacket) datapacket );
+                    case DISCONNECT -> disconnect( (DisconnectPacket) datapacket );
+                    case RECONNECT -> reconnect( (ReconnectPacket) datapacket );
+                    default -> throw new RuntimeException("Unsendable datapacket type: " + datapacket.getDatapacketType() + " from: " + nickname);
+                }
+            }
+        } catch (SocketException e) {
+            throw new SocketException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            stop();
+        }
+    }
+    public void stop() {
+        running = false;
+    }
+
+    //### from client to server commands
+    @Override
+    public void sendCommand ( CommandPacket commandPacket ) throws Exception {
+        addSenderNickname(commandPacket);
+        serverSide.sendCommand(commandPacket);
+    }
+    @Override
+    public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
+        addSenderNickname(disconnectPacket);
+        serverSide.disconnect(disconnectPacket);
+    }
+    @Override
+    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
+        addSenderNickname(reconnectPacket);
+        serverSide.reconnect(reconnectPacket);
+    }
+
+    //### from server to client commands
+    @Override
+    public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws Exception {
+        output.writeObject(initializeModelPacket);
+        output.flush();
+    }
+    @Override
+    public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws Exception {
+        output.writeObject(updateModelPacket);
+        output.flush();
+    }
+    @Override
+    public void reportError ( ErrorPacket errorPacket ) throws Exception {
+        output.writeObject(errorPacket);
+        output.flush();
+    }
+
+    //### utils
+    @Override
+    public ProxyPlayer changeSubclass ( SubclassType newSubclass, VirtualServer newServerSide ) {
+        switch(newSubclass){
+            case GAME -> { return this; }
+            case HALL -> { return new ProxyPlayerHallSocket(this, newServerSide, input, output); }
+            case ROOM -> { return new ProxyPlayerRoomSocket(this, newServerSide, input, output); }
+            default -> { return this; }
+        }
+    }
+}

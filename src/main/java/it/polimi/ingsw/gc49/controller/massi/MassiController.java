@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.controller.massi;
 
-import it.polimi.ingsw.gc49.datapacket.COMMAND.CommandPacket;
+import it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.model.Game;
 
 public class MassiController {
