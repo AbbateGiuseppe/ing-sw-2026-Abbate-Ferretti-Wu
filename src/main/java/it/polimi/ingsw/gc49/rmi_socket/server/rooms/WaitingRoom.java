@@ -1,12 +1,11 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.ROOM_COMMAND.RoomLeavePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.ROOM_RETURN.ClientRoomInitializePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
 import it.polimi.ingsw.gc49.rmi_socket.ConnectionProxy;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualRoomServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ReferencedProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
 
 public class WaitingRoom extends Room implements VirtualRoomServer {
 
@@ -22,7 +21,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
             newPlayer.changeSubclass(ConnectionProxy.SubclassType.ROOM, this);
             super.enterPlayer(newPlayer);
             try {
-                newPlayer.getProxy().initializeClientRoom( new ClientRoomInitializePacket() );
+                newPlayer.getProxy().initializeClientRoom( new RoomClientInitializePacket() );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

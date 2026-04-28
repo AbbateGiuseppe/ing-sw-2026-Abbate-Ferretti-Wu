@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallCreatePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallJoinPacket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ReferencedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.server.rooms.PlayingRoom;
 import it.polimi.ingsw.gc49.rmi_socket.server.rooms.Room;

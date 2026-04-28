@@ -1,12 +1,12 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.stub;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.DISCONNECT.DisconnectPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.RECONNECT.ReconnectPacket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualGameClient;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND.CommandPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
+import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

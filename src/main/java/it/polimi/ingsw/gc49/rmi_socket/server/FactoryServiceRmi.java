@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
-import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualClient;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

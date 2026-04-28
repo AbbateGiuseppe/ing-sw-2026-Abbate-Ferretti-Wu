@@ -1,19 +1,19 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.ERROR.ErrorPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.HALL_RETURN.ClientHallInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.HALL_RETURN.ClientHallUpdatePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.INITIALIZE_MODEL.InitializeModelPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.ROOM_RETURN.ClientRoomInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.ROOM_RETURN.ClientRoomUpdatePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualClient;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.INITIALIZE.HallClientInitializePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.UPDATE.HallClientUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.UPDATE.RoomClientUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.FactoryServiceRmi;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -97,21 +97,21 @@ public class RmiClientSide extends ClientSide implements VirtualClient {
 
     //### Hall called methods
     @Override
-    public void initializeClientHall ( ClientHallInitializePacket clientHallInitializePacket ) throws Exception {
+    public void initializeClientHall ( HallClientInitializePacket hallClientInitializePacket ) throws Exception {
 
     }
     @Override
-    public void updateClientHall ( ClientHallUpdatePacket clientHallUpdatePacket ) throws Exception {
+    public void updateClientHall ( HallClientUpdatePacket hallClientUpdatePacket ) throws Exception {
 
     }
 
     //### Room called methods
     @Override
-    public void initializeClientRoom ( ClientRoomInitializePacket clientRoomInitializePacket ) throws Exception {
+    public void initializeClientRoom ( RoomClientInitializePacket roomClientInitializePacket ) throws Exception {
 
     }
     @Override
-    public void updateClientRoom ( ClientRoomUpdatePacket clientRoomUpdatePacket ) throws Exception {
+    public void updateClientRoom ( RoomClientUpdatePacket roomClientUpdatePacket ) throws Exception {
 
     }
 }

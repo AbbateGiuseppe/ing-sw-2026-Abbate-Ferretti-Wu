@@ -1,9 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces;
 
 import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND.CommandPacket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
 import java.util.Scanner;
 

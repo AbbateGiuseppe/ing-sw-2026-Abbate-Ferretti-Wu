@@ -1,19 +1,19 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.HALL_RETURN.ClientHallInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.HALL_RETURN.ClientHallUpdatePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallCreatePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallJoinPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.INITIALIZE.HallClientInitializePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.UPDATE.HallClientUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inGame.ProxyPlayerGameRmi;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inRoom.ProxyPlayerRoomRmi;
-import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualClient;
-import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualHallClient;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualHallClient;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualRoomServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
 public class ProxyPlayerHallRmi extends ProxyPlayer {
     private final VirtualHallServer serverSide;
@@ -47,12 +47,12 @@ public class ProxyPlayerHallRmi extends ProxyPlayer {
 
     //### from server to client command
     @Override
-    public void initializeClientHall ( ClientHallInitializePacket clientHallInitializePacket ) throws Exception {
-        clientSide.initializeClientHall(clientHallInitializePacket);
+    public void initializeClientHall ( HallClientInitializePacket hallClientInitializePacket ) throws Exception {
+        clientSide.initializeClientHall(hallClientInitializePacket);
     }
     @Override
-    public void updateClientHall ( ClientHallUpdatePacket clientHallUpdatePacket ) throws Exception {
-        clientSide.updateClientHall(clientHallUpdatePacket);
+    public void updateClientHall ( HallClientUpdatePacket hallClientUpdatePacket ) throws Exception {
+        clientSide.updateClientHall(hallClientUpdatePacket);
     }
 
     //### utils

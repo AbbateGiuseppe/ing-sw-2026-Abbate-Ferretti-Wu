@@ -1,13 +1,12 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND.CommandPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.DISCONNECT.DisconnectPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.RECONNECT.ReconnectPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
+import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.ConnectionProxy;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ReferencedProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
 
 public class PlayingRoom extends Room implements VirtualGameServer {
 

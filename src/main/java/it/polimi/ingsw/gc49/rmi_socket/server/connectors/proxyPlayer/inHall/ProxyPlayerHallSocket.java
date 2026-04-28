@@ -1,19 +1,19 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.HALL_RETURN.ClientHallInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.HALL_RETURN.ClientHallUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.INITIALIZE.HallClientInitializePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.UPDATE.HallClientUpdatePacket;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallCommandPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallCreatePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallJoinPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.HallCommandPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inGame.ProxyPlayerGameSocket;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inRoom.ProxyPlayerRoomSocket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualRoomServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -91,13 +91,13 @@ public class ProxyPlayerHallSocket extends ProxyPlayer {
 
     //### from server to client commands
     @Override
-    public void initializeClientHall ( ClientHallInitializePacket clientHallInitializePacket ) throws Exception {
-        output.writeObject(clientHallInitializePacket);
+    public void initializeClientHall ( HallClientInitializePacket hallClientInitializePacket ) throws Exception {
+        output.writeObject(hallClientInitializePacket);
         output.flush();
     }
     @Override
-    public void updateClientHall ( ClientHallUpdatePacket clientHallUpdatePacket ) throws Exception {
-        output.writeObject(clientHallUpdatePacket);
+    public void updateClientHall ( HallClientUpdatePacket hallClientUpdatePacket ) throws Exception {
+        output.writeObject(hallClientUpdatePacket);
         output.flush();
     }
 

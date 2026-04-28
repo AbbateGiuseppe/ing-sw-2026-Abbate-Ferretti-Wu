@@ -1,18 +1,18 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inRoom;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.ROOM_RETURN.ClientRoomInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.ROOM_RETURN.ClientRoomUpdatePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.ROOM_COMMAND.RoomLeavePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.UPDATE.RoomClientUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inGame.ProxyPlayerGameRmi;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall.ProxyPlayerHallRmi;
-import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualClient;
-import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualRoomClient;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualRoomServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualRoomClient;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
 public class ProxyPlayerRoomRmi extends ProxyPlayer {
     private final VirtualRoomServer serverSide;
@@ -41,12 +41,12 @@ public class ProxyPlayerRoomRmi extends ProxyPlayer {
 
     //### from server to client command
     @Override
-    public void initializeClientRoom ( ClientRoomInitializePacket clientRoomInitializePacket ) throws Exception {
-        clientSide.initializeClientRoom(clientRoomInitializePacket);
+    public void initializeClientRoom ( RoomClientInitializePacket roomClientInitializePacket ) throws Exception {
+        clientSide.initializeClientRoom(roomClientInitializePacket);
     }
     @Override
-    public void updateClientRoom ( ClientRoomUpdatePacket clientRoomUpdatePacket ) throws Exception {
-        clientSide.updateClientRoom(clientRoomUpdatePacket);
+    public void updateClientRoom ( RoomClientUpdatePacket roomClientUpdatePacket ) throws Exception {
+        clientSide.updateClientRoom(roomClientUpdatePacket);
     }
 
     //### utils

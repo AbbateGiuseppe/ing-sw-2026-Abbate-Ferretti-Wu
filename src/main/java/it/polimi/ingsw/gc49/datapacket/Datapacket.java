@@ -1,17 +1,21 @@
 package it.polimi.ingsw.gc49.datapacket;
 
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
+
 import java.io.Serializable;
 
 public abstract class Datapacket implements Serializable {
     private String senderNickname;
 
     public enum DatapacketType { INITIALIZE_MODEL, UPDATE_MODEL, COMMAND, DISCONNECT, RECONNECT, ERROR,
-                                 HALL_RETURN, HALL_COMMAND, ROOM_RETURN, ROOM_COMMAND }
+                                 HALL_CLIENT, HALL_COMMAND, ROOM_CLIENT, ROOM_COMMAND }
 
     public final DatapacketType datapacketType;
-    //TODO: Maybe the datapacket should store the sender's name...
-    public Datapacket(final DatapacketType datapacketType) {
+    public final ApplicationPhase applicationPhase;
+
+    public Datapacket ( DatapacketType datapacketType, ApplicationPhase applicationPhase ) {
         this.datapacketType = datapacketType;
+        this.applicationPhase = applicationPhase;
     }
 
     public DatapacketType getDatapacketType() {

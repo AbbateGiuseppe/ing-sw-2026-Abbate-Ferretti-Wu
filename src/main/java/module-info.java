@@ -17,16 +17,16 @@ module it.polimi.ingsw.gc49 {
     exports it.polimi.ingsw.gc49.rmi_socket.client.stub to java.rmi;
     exports it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces to java.rmi;
     exports it.polimi.ingsw.gc49.rmi_socket;
-    exports it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND;
-    exports it.polimi.ingsw.gc49.datapacket.sentFromClient.DISCONNECT;
-    exports it.polimi.ingsw.gc49.datapacket.sentFromServer.ERROR;
-    exports it.polimi.ingsw.gc49.datapacket.sentFromServer.INITIALIZE_MODEL;
-    exports it.polimi.ingsw.gc49.datapacket.sentFromClient.RECONNECT;
-    exports it.polimi.ingsw.gc49.datapacket.sentFromServer.UPDATE_MODEL;
+    exports it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND;
+    exports it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT;
+    exports it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR;
+    exports it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MODEL;
+    exports it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT;
+    exports it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL;
     opens it.polimi.ingsw.gc49.rmi_socket to javafx.fxml;
     exports it.polimi.ingsw.gc49.rmi_socket.server.rooms to java.rmi;
-    exports it.polimi.ingsw.gc49.rmi_socket.virtualClients;
-    opens it.polimi.ingsw.gc49.rmi_socket.virtualClients to javafx.fxml;
-    exports it.polimi.ingsw.gc49.rmi_socket.virtualServers;
-    opens it.polimi.ingsw.gc49.rmi_socket.virtualServers to javafx.fxml;
+    exports it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients;
+    opens it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients to javafx.fxml;
+    exports it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers;
+    opens it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers to javafx.fxml;
 }

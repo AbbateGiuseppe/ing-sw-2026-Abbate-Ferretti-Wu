@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.connectors.old;
 
 import it.polimi.ingsw.gc49.controller.massi.MassiController;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND.CommandPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.DISCONNECT.DisconnectPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.RECONNECT.ReconnectPacket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
+import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 
 import java.rmi.RemoteException;

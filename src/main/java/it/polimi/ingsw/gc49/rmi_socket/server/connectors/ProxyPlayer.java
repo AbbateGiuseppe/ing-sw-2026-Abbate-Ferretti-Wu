@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc49.rmi_socket.server.connectors;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.rmi_socket.ConnectionProxy;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
 import java.net.SocketException;
 

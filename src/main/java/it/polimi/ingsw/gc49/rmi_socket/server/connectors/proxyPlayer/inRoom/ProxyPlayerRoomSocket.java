@@ -1,18 +1,18 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inRoom;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.ROOM_COMMAND.RoomCommandPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.ROOM_RETURN.ClientRoomInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.ROOM_RETURN.ClientRoomUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.RoomCommandPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.UPDATE.RoomClientUpdatePacket;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromClient.ROOM_COMMAND.RoomLeavePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inGame.ProxyPlayerGameSocket;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall.ProxyPlayerHallSocket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualRoomServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -84,13 +84,13 @@ public class ProxyPlayerRoomSocket extends ProxyPlayer {
 
     //### from server to client commands
     @Override
-    public void initializeClientRoom ( ClientRoomInitializePacket clientRoomInitializePacket ) throws Exception {
-        output.writeObject(clientRoomInitializePacket);
+    public void initializeClientRoom ( RoomClientInitializePacket roomClientInitializePacket ) throws Exception {
+        output.writeObject(roomClientInitializePacket);
         output.flush();
     }
     @Override
-    public void updateClientRoom ( ClientRoomUpdatePacket clientRoomUpdatePacket ) throws Exception {
-        output.writeObject(clientRoomUpdatePacket);
+    public void updateClientRoom ( RoomClientUpdatePacket roomClientUpdatePacket ) throws Exception {
+        output.writeObject(roomClientUpdatePacket);
         output.flush();
     }
 

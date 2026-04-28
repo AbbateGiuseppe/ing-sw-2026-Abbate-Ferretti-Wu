@@ -1,9 +1,9 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.ERROR.ErrorPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.INITIALIZE_MODEL.InitializeModelPacket;
-import it.polimi.ingsw.gc49.datapacket.sentFromServer.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualGameClient;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 import it.polimi.ingsw.gc49.rmi_socket.client.stub.SocketStub;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
