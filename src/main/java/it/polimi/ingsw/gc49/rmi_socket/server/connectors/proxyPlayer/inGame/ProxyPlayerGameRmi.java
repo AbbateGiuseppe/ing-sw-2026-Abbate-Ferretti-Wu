@@ -6,21 +6,30 @@ import it.polimi.ingsw.gc49.datapacket.sentFromServer.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.sentFromServer.INITIALIZE_MODEL.InitializeModelPacket;
 import it.polimi.ingsw.gc49.datapacket.sentFromClient.RECONNECT.ReconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.sentFromServer.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.ProxyPlayerConstructor;
+import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall.ProxyPlayerHallRmi;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inRoom.ProxyPlayerRoomRmi;
 import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualGameClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualRoomServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
 
-public class ProxyPlayerGameRmi extends ProxyPlayerConstructor {
+public class ProxyPlayerGameRmi extends ProxyPlayer {
     private final VirtualGameServer serverSide;
     private final VirtualGameClient clientSide;
 
-    public ProxyPlayerGameRmi ( ProxyPlayer proxyPlayer, VirtualServer serverSide, VirtualClient clientSide ) {
-        super( proxyPlayer, SubclassType.GAME );
+    public ProxyPlayerGameRmi ( ServerMultiplexer server, String nickname,
+                                VirtualGameServer serverSide, VirtualClient clientSide ) {
+        super( ConnectionType.RMI, SubclassType.GAME, server, nickname );
+        this.serverSide = serverSide;
+        this.clientSide = clientSide;
+    }
+    public ProxyPlayerGameRmi ( ProxyPlayer OldProxyPlayer,
+                                VirtualGameServer serverSide, VirtualClient clientSide ) {
+        super(ConnectionType.RMI, SubclassType.GAME, OldProxyPlayer.server, OldProxyPlayer.nickname);
         this.serverSide = serverSide;
         this.clientSide = clientSide;
     }
@@ -62,8 +71,8 @@ public class ProxyPlayerGameRmi extends ProxyPlayerConstructor {
     public ProxyPlayer changeSubclass ( SubclassType newSubclass, VirtualServer newServerSide ){
         switch(newSubclass){
             case GAME -> { return this; }
-            case HALL -> { return new ProxyPlayerHallRmi(this, newServerSide, (VirtualClient) this.clientSide); }
-            case ROOM -> { return new ProxyPlayerRoomRmi(this, newServerSide, (VirtualClient) this.clientSide); }
+            case HALL -> { return new ProxyPlayerHallRmi(this, (VirtualHallServer) newServerSide, (VirtualClient) this.clientSide); }
+            case ROOM -> { return new ProxyPlayerRoomRmi(this, (VirtualRoomServer) newServerSide, (VirtualClient) this.clientSide); }
             default -> { return this; }
         }
     }

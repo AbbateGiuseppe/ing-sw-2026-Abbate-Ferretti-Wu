@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.sentFromClient.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.sentFromClient.RECONNECT.ReconnectPacket;
 
-public interface VirtualGameServer {
+public interface VirtualGameServer extends VirtualServer {
     void sendCommand ( CommandPacket commandPacket ) throws Exception;
 
     void disconnect ( DisconnectPacket disconnectPacket ) throws Exception;

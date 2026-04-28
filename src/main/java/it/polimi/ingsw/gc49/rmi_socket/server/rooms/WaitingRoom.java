@@ -19,7 +19,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
     @Override
     public void enterPlayer ( ReferencedProxyPlayer newPlayer ) {
         if(canEnter()) {
-            newPlayer.changeSubclass(ConnectionProxy.SubclassType.ROOM, (VirtualServer) this);
+            newPlayer.changeSubclass(ConnectionProxy.SubclassType.ROOM, this);
             super.enterPlayer(newPlayer);
             try {
                 newPlayer.getProxy().initializeClientRoom( new ClientRoomInitializePacket() );
@@ -32,7 +32,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
     }
     @Override
     protected boolean canEnter() {
-        return maxNumOfPlayers > getNumConnectedPlayers() ? true : false;
+        return maxNumOfPlayers > getNumConnectedPlayers();
     }
 
 
@@ -41,7 +41,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
     public void leaveRoom ( RoomLeavePacket roomLeavePacket ) throws Exception {
         ReferencedProxyPlayer senderPlayer = getPlayerByString(roomLeavePacket.getSenderNickname());
         if( senderPlayer != null ){
-            senderPlayer.changeSubclass(ConnectionProxy.SubclassType.HALL, (VirtualServer) hall);
+            senderPlayer.changeSubclass(ConnectionProxy.SubclassType.HALL, hall);
             players.remove(senderPlayer);
             numConnectedPlayers--;
         }

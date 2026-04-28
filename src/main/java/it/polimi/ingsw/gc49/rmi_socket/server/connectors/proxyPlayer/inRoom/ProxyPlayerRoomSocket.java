@@ -5,9 +5,11 @@ import it.polimi.ingsw.gc49.datapacket.sentFromServer.ROOM_RETURN.ClientRoomInit
 import it.polimi.ingsw.gc49.datapacket.sentFromServer.ROOM_RETURN.ClientRoomUpdatePacket;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.sentFromClient.ROOM_COMMAND.RoomLeavePacket;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.ProxyPlayerConstructor;
+import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inGame.ProxyPlayerGameSocket;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall.ProxyPlayerHallSocket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualRoomServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
@@ -16,15 +18,24 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
 
-public class ProxyPlayerRoomSocket extends ProxyPlayerConstructor {
+public class ProxyPlayerRoomSocket extends ProxyPlayer {
     private final VirtualRoomServer serverSide;
     private final ObjectInputStream input;
     private final ObjectOutputStream output;
     private volatile boolean running;
 
-    public ProxyPlayerRoomSocket ( ProxyPlayer proxyPlayer, VirtualServer serverSide,
+    public ProxyPlayerRoomSocket ( ServerMultiplexer server, String nickname,
+                                   VirtualRoomServer serverSide,
                                    ObjectInputStream input, ObjectOutputStream output ) {
-        super( proxyPlayer, SubclassType.ROOM );
+        super( ConnectionType.SOCKET, SubclassType.ROOM, server, nickname );
+        this.serverSide = serverSide;
+        this.input = input;
+        this.output = output;
+    }
+    public ProxyPlayerRoomSocket ( ProxyPlayer OldProxyPlayer,
+                                   VirtualRoomServer serverSide,
+                                   ObjectInputStream input, ObjectOutputStream output ) {
+        super( ConnectionType.SOCKET, SubclassType.ROOM, OldProxyPlayer.server, OldProxyPlayer.nickname );
         this.serverSide = serverSide;
         this.input = input;
         this.output = output;
@@ -32,6 +43,7 @@ public class ProxyPlayerRoomSocket extends ProxyPlayerConstructor {
 
 
     //### socket-input reader
+    @Override
     public void runVirtualClient() throws SocketException {
         running = true;
 
@@ -86,8 +98,8 @@ public class ProxyPlayerRoomSocket extends ProxyPlayerConstructor {
     @Override
     public ProxyPlayer changeSubclass ( SubclassType newSubclass, VirtualServer newServerSide ) {
         switch(newSubclass){
-            case GAME -> { return new ProxyPlayerGameSocket(this, newServerSide, input, output); }
-            case HALL -> { return new ProxyPlayerHallSocket(this, newServerSide, input, output); }
+            case GAME -> { return new ProxyPlayerGameSocket(this, (VirtualGameServer) newServerSide, input, output); }
+            case HALL -> { return new ProxyPlayerHallSocket(this, (VirtualHallServer) newServerSide, input, output); }
             case ROOM -> { return this; }
             default -> { return this; }
         }

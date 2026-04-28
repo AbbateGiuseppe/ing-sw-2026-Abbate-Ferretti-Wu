@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces;
 import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.sentFromClient.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
 
 import java.util.Scanner;
 
@@ -10,8 +11,8 @@ public class TextTerminal extends UserInputInterface {
     //protected VirtualServer virtualServer; <---From parent class
     private static int commandIndex = 0;
 
-    public TextTerminal ( VirtualGameServer virtualGameServer, String nickname ) {
-        super(virtualGameServer, nickname );
+    public TextTerminal ( VirtualServer virtualServer, String nickname ) {
+        super(virtualServer, nickname );
     }
 
     /*@Override  //NOT IN USE ANYMORE
@@ -78,7 +79,7 @@ public class TextTerminal extends UserInputInterface {
                 }
 
                 //TODO: virtualServer.sendCommand();
-                virtualGameServer.sendCommand(new CommandPacket(currentAction, 2)); //Esempio
+                //virtualServer.sendCommand(new CommandPacket(currentAction, 2)); //Esempio
 
                 System.out.println("Sent " + currentAction + " to server");
             }

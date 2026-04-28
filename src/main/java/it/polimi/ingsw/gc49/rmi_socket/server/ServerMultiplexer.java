@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
-import it.polimi.ingsw.gc49.controller.massi.MassiController;
-import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.old.ConnectorServerSide;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.old.RmiConnectorServerSide;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.old.SocketConnectorServerSide;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ReferencedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall.ProxyPlayerHallRmi;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall.ProxyPlayerHallSocket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualClients.VirtualClient;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -24,7 +24,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     public static final int portSocket = 2001;
     public static final int portRmi = 2002;
     private ServerSocket serverSocket;
-    private static final Map<String, ConnectorServerSide> clients = new HashMap<>();
+    private static final Map<String, ReferencedProxyPlayer> clients = new HashMap<>();
     private static final Hall hall = new Hall();
     private final int port;
 
@@ -76,13 +76,14 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     }
 
     @Override
-    public VirtualGameServer connectPlayerRmi ( String nickname ) throws RemoteException {
-        synchronized (this.clients) {
+    public VirtualHallServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws RemoteException {
+        synchronized (clients) {
             if(!clients.containsKey(nickname)) {
-                RmiConnectorServerSide connector = new RmiConnectorServerSide(clients.size(), new MassiController(clients.size()), this, nickname);
-                clients.put(nickname, connector);
+                ReferencedProxyPlayer proxy = new ReferencedProxyPlayer(new ProxyPlayerHallRmi(this, nickname, hall, clientStub));
+                clients.put(nickname, proxy); //store the player in the clients-list.
+                hall.enterPlayer(proxy); //enter the player into the hall
 
-                return (VirtualGameServer) UnicastRemoteObject.exportObject(connector, port);
+                return (VirtualHallServer) UnicastRemoteObject.exportObject(proxy, port);
             } else {
                 throw new RemoteException("Nomignolo già esistente e connesso. Prego, cambiarlo.");
             }
@@ -92,38 +93,31 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     private void runSocketServer() throws IOException, ClassNotFoundException {
         Socket clientSocket;
         while ((clientSocket = this.serverSocket.accept()) != null) {
-            ObjectOutputStream socketTx = new ObjectOutputStream(clientSocket.getOutputStream());
-            ObjectInputStream socketRx = new ObjectInputStream(clientSocket.getInputStream());
+            ObjectInputStream socketInput = new ObjectInputStream(clientSocket.getInputStream());
+            ObjectOutputStream socketOutput = new ObjectOutputStream(clientSocket.getOutputStream());
 
-            String nickname = (String) socketRx.readObject();
-            synchronized (this.clients) {
+            String nickname = (String) socketInput.readObject();
+            synchronized (clients) {
                 if(!clients.containsKey(nickname)) {
-                    SocketConnectorServerSide connector = new SocketConnectorServerSide(
-                            clients.size(),
-                            new MassiController(clients.size()),
-                            this,
-                            nickname,
-                            socketRx,
-                            socketTx
+                    ReferencedProxyPlayer proxy = new ReferencedProxyPlayer(
+                            new ProxyPlayerHallSocket(this, nickname, hall, socketInput, socketOutput)
                     );
 
-                    clients.put(nickname, connector);
+                    clients.put(nickname, proxy);
 
                     new Thread(() -> {
                         try {
-                            connector.runVirtualClient();
+                            proxy.getProxy().runVirtualClient();
                         } catch (SocketException e) {
-                            System.out.println("Connessione con " + connector.getNickname() + " persa"); //TODO
-                        } catch (IOException | ClassNotFoundException e) {
-                            throw new RuntimeException(e);
+                            System.out.println("Connessione con " + proxy.getProxy().nickname + " persa");
                         }
                     }).start();
 
-                    socketTx.writeObject(new String("Connessione riuscita."));
-                    socketTx.flush();
+                    socketOutput.writeObject(new String("Connessione riuscita."));
+                    socketOutput.flush();
                 } else {
-                    socketTx.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
-                    socketTx.flush();
+                    socketOutput.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
+                    socketOutput.flush();
                 }
             }
         }

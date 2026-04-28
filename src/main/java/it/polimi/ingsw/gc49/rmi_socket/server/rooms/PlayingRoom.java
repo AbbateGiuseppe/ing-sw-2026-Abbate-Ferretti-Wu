@@ -21,7 +21,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     public void enterPlayer ( ReferencedProxyPlayer newPlayer ) {
         //Shouldn't be possible to enter a game that already started anyway.
         if(canEnter()) {
-            newPlayer.changeSubclass(ConnectionProxy.SubclassType.GAME, (VirtualServer) this);
+            newPlayer.changeSubclass(ConnectionProxy.SubclassType.GAME, this);
             super.enterPlayer(newPlayer);
         }else{
             throw new RuntimeException("La partita è già iniziata, non puoi entrare nella stanza " + roomId + "." );

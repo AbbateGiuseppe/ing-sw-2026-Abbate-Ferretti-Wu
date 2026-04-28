@@ -16,6 +16,10 @@ public class Hall implements VirtualHallServer {
     private static final List<Room> rooms = new ArrayList<>();
     private static final Map<String, ReferencedProxyPlayer> PlayersInHall = new HashMap<>();
 
+    public void enterPlayer ( ReferencedProxyPlayer enteringPlayer ) {
+        PlayersInHall.put(enteringPlayer.getProxy().nickname, enteringPlayer);
+    }
+
     @Override
     public void joinRoom ( HallJoinPacket hallJoinPacket ) throws Exception {
         Room joiningRoom = getRoomById(hallJoinPacket.roomId);

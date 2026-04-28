@@ -6,26 +6,37 @@ import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallCommandPacket;
 import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.sentFromClient.HALL_COMMAND.HallJoinPacket;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.ProxyPlayerConstructor;
+import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inGame.ProxyPlayerGameSocket;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inRoom.ProxyPlayerRoomSocket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualGameServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualHallServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualRoomServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualServers.VirtualServer;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
 
-public class ProxyPlayerHallSocket extends ProxyPlayerConstructor {
+public class ProxyPlayerHallSocket extends ProxyPlayer {
     private final VirtualHallServer serverSide;
     private final ObjectInputStream input;
     private final ObjectOutputStream output;
     private volatile boolean running;
 
-    public ProxyPlayerHallSocket ( ProxyPlayer proxyPlayer, VirtualServer serverSide,
+    public ProxyPlayerHallSocket ( ServerMultiplexer server, String nickname,
+                                   VirtualHallServer serverSide,
                                    ObjectInputStream input, ObjectOutputStream output ) {
-        super( proxyPlayer, SubclassType.HALL );
+        super( ConnectionType.SOCKET, SubclassType.HALL, server, nickname );
+        this.serverSide = serverSide;
+        this.input = input;
+        this.output = output;
+    }
+    public ProxyPlayerHallSocket ( ProxyPlayer OldProxyPlayer,
+                                   VirtualHallServer serverSide,
+                                   ObjectInputStream input, ObjectOutputStream output ){
+        super ( ConnectionType.SOCKET, SubclassType.HALL, OldProxyPlayer.server, OldProxyPlayer.nickname );
         this.serverSide = serverSide;
         this.input = input;
         this.output = output;
@@ -33,6 +44,7 @@ public class ProxyPlayerHallSocket extends ProxyPlayerConstructor {
 
 
     //### socket-input reader
+    @Override
     public void runVirtualClient() throws SocketException {
         running = true;
 
@@ -93,9 +105,9 @@ public class ProxyPlayerHallSocket extends ProxyPlayerConstructor {
     @Override
     public ProxyPlayer changeSubclass ( SubclassType newSubclass, VirtualServer newServerSide ) {
         switch(newSubclass){
-            case GAME -> { return new ProxyPlayerGameSocket(this, newServerSide, input, output); }
+            case GAME -> { return new ProxyPlayerGameSocket(this, (VirtualGameServer) newServerSide, input, output); }
             case HALL -> { return this; }
-            case ROOM -> { return new ProxyPlayerRoomSocket(this, newServerSide, input, output); }
+            case ROOM -> { return new ProxyPlayerRoomSocket(this, (VirtualRoomServer) newServerSide, input, output); }
             default -> { return this; }
         }
     }
