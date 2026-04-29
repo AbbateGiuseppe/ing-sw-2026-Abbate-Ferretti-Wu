@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inGame;
+package it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.proxyPlayer.inGame;
 
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
@@ -7,12 +7,12 @@ import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MO
 import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inHall.ProxyPlayerHallRmi;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.proxyPlayer.inRoom.ProxyPlayerRoomRmi;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.proxyPlayer.inHall.ProxyPlayerHallRmi;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.proxyPlayer.inRoom.ProxyPlayerRoomRmi;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.ProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;

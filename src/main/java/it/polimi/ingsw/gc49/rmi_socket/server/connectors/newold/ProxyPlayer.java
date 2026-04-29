@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.rmi_socket.server.connectors;
+package it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold;
 
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.rmi_socket.ConnectionProxy;

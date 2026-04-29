@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ReferencedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.ReferencedProxyPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ public abstract class Room {
     public final int roomId;
     public final int maxNumOfPlayers;
     protected int numConnectedPlayers;
-    protected final List<ReferencedProxyPlayer> players = new ArrayList<>();
+    protected final List<PhasedProxyPlayer> players = new ArrayList<>();
 
     public Room ( Hall hall, int roomId, int maxNumOfPlayers ) {
         this.hall = hall;
@@ -21,7 +21,7 @@ public abstract class Room {
         numConnectedPlayers = 0;
     }
 
-    public void enterPlayer ( ReferencedProxyPlayer newPlayer ) {
+    public void enterPlayer ( PhasedProxyPlayer newPlayer ) {
         numConnectedPlayers++;
         players.add(newPlayer);
     }
@@ -31,9 +31,9 @@ public abstract class Room {
         return numConnectedPlayers;
     }
 
-    protected ReferencedProxyPlayer getPlayerByString ( String nickname ) {
-        for( ReferencedProxyPlayer player : players ) {
-            if(nickname.equals(player.getProxy().nickname)){
+    protected PhasedProxyPlayer getPlayerByString ( String nickname ) {
+        for( PhasedProxyPlayer player : players ) {
+            if(nickname.equals(player.nickname)){
                 return player;
             }
         }

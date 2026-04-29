@@ -4,8 +4,10 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
 import it.polimi.ingsw.gc49.rmi_socket.ConnectionProxy;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ReferencedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.ReferencedProxyPlayer;
 
 public class WaitingRoom extends Room implements VirtualRoomServer {
 
@@ -16,12 +18,12 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
 
     //### Room's methods
     @Override
-    public void enterPlayer ( ReferencedProxyPlayer newPlayer ) {
+    public void enterPlayer ( PhasedProxyPlayer newPlayer ) {
         if(canEnter()) {
-            newPlayer.changeSubclass(ConnectionProxy.SubclassType.ROOM, this);
+            newPlayer.changeLocalPhase(ApplicationPhase.ROOM);
             super.enterPlayer(newPlayer);
             try {
-                newPlayer.getProxy().initializeClientRoom( new RoomClientInitializePacket() );
+                newPlayer.initializeClientRoom( new RoomClientInitializePacket() );
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -38,9 +40,10 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
     //### client's commands
     @Override
     public void leaveRoom ( RoomLeavePacket roomLeavePacket ) throws Exception {
-        ReferencedProxyPlayer senderPlayer = getPlayerByString(roomLeavePacket.getSenderNickname());
+        PhasedProxyPlayer senderPlayer = getPlayerByString(roomLeavePacket.getSenderNickname());
         if( senderPlayer != null ){
-            senderPlayer.changeSubclass(ConnectionProxy.SubclassType.HALL, hall);
+            senderPlayer.changeLocalPhase(ApplicationPhase.HALL);
+            //TODO!!
             players.remove(senderPlayer);
             numConnectedPlayers--;
         }

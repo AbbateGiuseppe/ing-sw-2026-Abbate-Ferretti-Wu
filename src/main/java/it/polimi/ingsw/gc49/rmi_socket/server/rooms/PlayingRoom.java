@@ -3,10 +3,10 @@ package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
-import it.polimi.ingsw.gc49.rmi_socket.ConnectionProxy;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
+import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ReferencedProxyPlayer;
 
 public class PlayingRoom extends Room implements VirtualGameServer {
 
@@ -17,10 +17,10 @@ public class PlayingRoom extends Room implements VirtualGameServer {
 
     //### Room's methods
     @Override
-    public void enterPlayer ( ReferencedProxyPlayer newPlayer ) {
+    public void enterPlayer ( PhasedProxyPlayer newPlayer ) {
         //Shouldn't be possible to enter a game that already started anyway.
         if(canEnter()) {
-            newPlayer.changeSubclass(ConnectionProxy.SubclassType.GAME, this);
+            newPlayer.changeLocalPhase(ApplicationPhase.GAME);
             super.enterPlayer(newPlayer);
         }else{
             throw new RuntimeException("La partita è già iniziata, non puoi entrare nella stanza " + roomId + "." );

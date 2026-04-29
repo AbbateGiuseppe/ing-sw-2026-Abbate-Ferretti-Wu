@@ -8,7 +8,7 @@ public abstract class Datapacket implements Serializable {
     private String senderNickname;
 
     public enum DatapacketType { INITIALIZE_MODEL, UPDATE_MODEL, COMMAND, DISCONNECT, RECONNECT, ERROR,
-                                 HALL_CLIENT, HALL_COMMAND, ROOM_CLIENT, ROOM_COMMAND }
+                                 HALL_CLIENT, HALL_COMMAND, ROOM_CLIENT, ROOM_COMMAND, CHANGE_PHASE }
 
     public final DatapacketType datapacketType;
     public final ApplicationPhase applicationPhase;
