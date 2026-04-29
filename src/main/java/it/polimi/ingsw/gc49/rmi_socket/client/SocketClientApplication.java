@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR.ErrorPac
 import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MODEL.InitializeModelPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
-import it.polimi.ingsw.gc49.rmi_socket.client.stub.SocketStub;
+import it.polimi.ingsw.gc49.rmi_socket.client.proxies.SocketStub;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal;
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
@@ -15,11 +15,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class SocketClientSide extends ClientSide implements VirtualGameClient {
+public class SocketClientApplication extends ClientApplication implements VirtualGameClient {
     private final SocketStub server;
     private volatile boolean running;
 
-    public SocketClientSide(String nickname, SocketStub server) {
+    public SocketClientApplication ( String nickname, SocketStub server) {
         super(nickname);
         this.server = server;
     }
@@ -48,7 +48,7 @@ public class SocketClientSide extends ClientSide implements VirtualGameClient {
             //TODO: add listeners
 
             SocketStub server = new SocketStub(socketRx, socketTx);
-            new SocketClientSide(nickname, server).run();
+            new SocketClientApplication(nickname, server).run();
         }
     }
 

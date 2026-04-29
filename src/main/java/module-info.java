@@ -14,7 +14,7 @@ module it.polimi.ingsw.gc49 {
     opens it.polimi.ingsw.gc49.model to javafx.fxml;
     exports it.polimi.ingsw.gc49.rmi_socket.server to java.rmi;
     exports it.polimi.ingsw.gc49.rmi_socket.client to java.rmi;
-    exports it.polimi.ingsw.gc49.rmi_socket.client.stub to java.rmi;
+    exports it.polimi.ingsw.gc49.rmi_socket.client.proxies to java.rmi;
     exports it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces to java.rmi;
     exports it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND;
     exports it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT;
