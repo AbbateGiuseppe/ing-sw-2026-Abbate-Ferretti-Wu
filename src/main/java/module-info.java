@@ -22,7 +22,6 @@ module it.polimi.ingsw.gc49 {
     exports it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MODEL;
     exports it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT;
     exports it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL;
-    opens it.polimi.ingsw.gc49.rmi_socket to javafx.fxml;
     exports it.polimi.ingsw.gc49.rmi_socket.server.rooms to java.rmi;
     exports it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients;
     opens it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients to javafx.fxml;

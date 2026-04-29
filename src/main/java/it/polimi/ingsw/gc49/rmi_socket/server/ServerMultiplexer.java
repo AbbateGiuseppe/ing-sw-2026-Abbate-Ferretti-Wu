@@ -98,8 +98,8 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     private void runSocketServer() throws IOException, ClassNotFoundException {
         Socket clientSocket;
         while ((clientSocket = this.serverSocket.accept()) != null) {
-            ObjectInputStream socketInput = new ObjectInputStream(clientSocket.getInputStream());
             ObjectOutputStream socketOutput = new ObjectOutputStream(clientSocket.getOutputStream());
+            ObjectInputStream socketInput = new ObjectInputStream(clientSocket.getInputStream());
 
             String nickname = (String) socketInput.readObject();
             synchronized (clients) {
