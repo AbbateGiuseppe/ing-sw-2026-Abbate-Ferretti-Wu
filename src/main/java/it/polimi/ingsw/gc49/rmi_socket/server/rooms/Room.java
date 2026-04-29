@@ -1,8 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest.PhasedProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.ReferencedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,14 +1,12 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest.PhasedProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest.RmiProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest.SocketProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.ReferencedProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.proxyPlayer.inHall.ProxyPlayerHallRmi;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.proxyPlayer.inHall.ProxyPlayerHallSocket;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.RmiProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.SocketProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
-import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -80,16 +78,17 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     }
 
     @Override
-    public VirtualHallServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws RemoteException {
+    public VirtualServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws RemoteException {
         synchronized (clients) {
             if(!clients.containsKey(nickname)) {
-                PhasedProxyPlayer proxy = new PhasedProxyPlayer(
-                        new RmiProxyPlayer(this, nickname, ApplicationPhase.HALL, hall, clientStub)
+                PhasedProxyPlayer proxy = new RmiProxyPlayer(
+                        this, nickname, ApplicationPhase.HALL, new VirtualHallServerAdapter(hall),
+                        clientStub
                 );
                 clients.put(nickname, proxy); //store the player in the clients-list.
                 hall.enterPlayer(proxy); //enter the player into the hall
 
-                return (VirtualHallServer) UnicastRemoteObject.exportObject(proxy, port);
+                return (VirtualServer) UnicastRemoteObject.exportObject(proxy, port);
             } else {
                 throw new RemoteException("Nomignolo già esistente e connesso. Prego, cambiarlo.");
             }
@@ -105,8 +104,9 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
             String nickname = (String) socketInput.readObject();
             synchronized (clients) {
                 if(!clients.containsKey(nickname)) {
-                    PhasedProxyPlayer proxy = new PhasedProxyPlayer(
-                            new SocketProxyPlayer(this, nickname, ApplicationPhase.HALL, hall, socketInput, socketOutput)
+                    PhasedProxyPlayer proxy = new SocketProxyPlayer(
+                            this, nickname, ApplicationPhase.HALL, new VirtualHallServerAdapter(hall),
+                            socketInput, socketOutput
                     );
 
                     clients.put(nickname, proxy);

@@ -4,9 +4,10 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.Comma
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualGameServerAdapter;
 
 public class PlayingRoom extends Room implements VirtualGameServer {
 
@@ -22,6 +23,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
         if(canEnter()) {
             newPlayer.changeLocalPhase(ApplicationPhase.GAME);
             super.enterPlayer(newPlayer);
+            newPlayer.setServerSideObject(new VirtualGameServerAdapter(this));
         }else{
             throw new RuntimeException("La partita è già iniziata, non puoi entrare nella stanza " + roomId + "." );
         }

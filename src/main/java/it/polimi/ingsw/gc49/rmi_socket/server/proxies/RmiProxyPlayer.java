@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest;
+package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR.ErrorPacket;
@@ -17,12 +17,12 @@ import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
-import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
 
 public class RmiProxyPlayer extends PhasedProxyPlayer {
     public RmiProxyPlayer ( ServerMultiplexer server, String nickname,
                             ApplicationPhase startingPhase,
-                            VirtualServer serverSide, VirtualClient clientSide ) {
+                            VirtualServerAdapter serverSide, VirtualClient clientSide ) {
         super(server, nickname, startingPhase, serverSide, clientSide, null, null);
     }
 

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest;
+package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.CHANGE_PHASE.ChangePhasePacket;
@@ -19,7 +19,7 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.
 import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
-import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,7 +29,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
 
     public SocketProxyPlayer ( ServerMultiplexer server, String nickname,
                                ApplicationPhase startingPhase,
-                               VirtualServer serverSide,
+                               VirtualServerAdapter serverSide,
                                ObjectInputStream input, ObjectOutputStream output) {
         super(server, nickname, startingPhase, serverSide, null, input, output);
     }

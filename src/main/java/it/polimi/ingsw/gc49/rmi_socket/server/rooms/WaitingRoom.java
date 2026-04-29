@@ -2,12 +2,12 @@ package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
-import it.polimi.ingsw.gc49.rmi_socket.ConnectionProxy;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newest.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.newold.ReferencedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualRoomServerAdapter;
 
 public class WaitingRoom extends Room implements VirtualRoomServer {
 
@@ -22,6 +22,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
         if(canEnter()) {
             newPlayer.changeLocalPhase(ApplicationPhase.ROOM);
             super.enterPlayer(newPlayer);
+            newPlayer.setServerSideObject(new VirtualRoomServerAdapter(this));
             try {
                 newPlayer.initializeClientRoom( new RoomClientInitializePacket() );
             } catch (Exception e) {
@@ -43,7 +44,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
         PhasedProxyPlayer senderPlayer = getPlayerByString(roomLeavePacket.getSenderNickname());
         if( senderPlayer != null ){
             senderPlayer.changeLocalPhase(ApplicationPhase.HALL);
-            //TODO!!
+            senderPlayer.setServerSideObject(new VirtualHallServerAdapter(hall));
             players.remove(senderPlayer);
             numConnectedPlayers--;
         }

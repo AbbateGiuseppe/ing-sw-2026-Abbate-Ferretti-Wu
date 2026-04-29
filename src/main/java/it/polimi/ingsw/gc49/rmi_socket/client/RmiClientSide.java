@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.INITIALIZE.HallClientInitializePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.UPDATE.HallClientUpdatePacket;
@@ -41,7 +42,7 @@ public class RmiClientSide extends ClientSide implements VirtualClient {
             RmiClientSide runnableClient = new RmiClientSide(nickname);
 
             VirtualClient clientStub = (VirtualClient) UnicastRemoteObject.exportObject( runnableClient, 0 ); //0 is a dynamic way to handle multiple client ports.
-            VirtualHallServer server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname, clientStub);
+            VirtualServer server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname, clientStub);
 
             System.out.println("Connessione riuscita.");
             runnableClient.setServer(server);
@@ -79,6 +80,12 @@ public class RmiClientSide extends ClientSide implements VirtualClient {
 
     public void setServer ( VirtualServer server ) {
         this.server = server;
+    }
+
+    //### Client general methods
+    @Override
+    public void changePhaseClient ( ChangePhasePacket changePhasePacket ) throws Exception {
+
     }
 
     //### Game called methods

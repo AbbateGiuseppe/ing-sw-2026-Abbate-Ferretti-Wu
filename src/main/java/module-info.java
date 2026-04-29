@@ -16,7 +16,6 @@ module it.polimi.ingsw.gc49 {
     exports it.polimi.ingsw.gc49.rmi_socket.client to java.rmi;
     exports it.polimi.ingsw.gc49.rmi_socket.client.stub to java.rmi;
     exports it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces to java.rmi;
-    exports it.polimi.ingsw.gc49.rmi_socket;
     exports it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND;
     exports it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT;
     exports it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR;
@@ -29,4 +28,6 @@ module it.polimi.ingsw.gc49 {
     opens it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients to javafx.fxml;
     exports it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers;
     opens it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers to javafx.fxml;
+    exports it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters;
+    opens it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters to javafx.fxml;
 }
