@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients;
 
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.UPDATE.RoomClientUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_ROOM.InitializeRoomPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_ROOM.UpdateRoomPacket;
 
 public interface VirtualRoomClient {
-    void initializeClientRoom ( RoomClientInitializePacket roomClientInitializePacket ) throws Exception;
+    void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) throws Exception;
 
-    void updateClientRoom ( RoomClientUpdatePacket roomClientUpdatePacket ) throws Exception;
+    void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) throws Exception;
 }

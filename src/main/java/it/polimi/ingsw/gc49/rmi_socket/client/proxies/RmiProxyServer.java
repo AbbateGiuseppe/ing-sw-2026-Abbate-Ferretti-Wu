@@ -1,20 +1,19 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.proxies;
 
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.CHANGE_PHASE.ChangePhasePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR.ErrorPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MODEL.InitializeModelPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.INITIALIZE.HallClientInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.UPDATE.HallClientUpdatePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.UPDATE.RoomClientUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_HALL.InitializeHallPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_HALL.UpdateHallPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_ROOM.InitializeRoomPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_ROOM.UpdateRoomPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
 import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
-import it.polimi.ingsw.gc49.rmi_socket.client.ClientApplication;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
@@ -66,12 +65,12 @@ public class RmiProxyServer extends PhasedProxyServer {
     }
     //### VirtualHallClient
     @Override
-    public void initializeClientHall ( HallClientInitializePacket hallClientInitializePacket ) throws Exception {
-        clientSide.initializeClientHall(hallClientInitializePacket);
+    public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
+        clientSide.initializeClientHall(initializeHallPacket);
     }
     @Override
-    public void updateClientHall ( HallClientUpdatePacket hallClientUpdatePacket ) throws Exception {
-        clientSide.updateClientHall(hallClientUpdatePacket);
+    public void updateClientHall ( UpdateHallPacket updateHallPacket ) throws Exception {
+        clientSide.updateClientHall(updateHallPacket);
     }
     //### VirtualHallServer
     @Override
@@ -84,12 +83,12 @@ public class RmiProxyServer extends PhasedProxyServer {
     }
     //### VirtualRoomClient
     @Override
-    public void initializeClientRoom ( RoomClientInitializePacket roomClientInitializePacket ) throws Exception {
-        clientSide.initializeClientRoom(roomClientInitializePacket);
+    public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) throws Exception {
+        clientSide.initializeClientRoom(initializeRoomPacket);
     }
     @Override
-    public void updateClientRoom ( RoomClientUpdatePacket roomClientUpdatePacket ) throws Exception {
-        clientSide.updateClientRoom(roomClientUpdatePacket);
+    public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) throws Exception {
+        clientSide.updateClientRoom(updateRoomPacket);
     }
     //### VirtualRoomServer
     @Override

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients;
 
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.CHANGE_PHASE.ChangePhasePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 
 import java.rmi.Remote;
 

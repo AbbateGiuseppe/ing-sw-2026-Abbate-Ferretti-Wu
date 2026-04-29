@@ -1,13 +1,13 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.CHANGE_PHASE.ChangePhasePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR.ErrorPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MODEL.InitializeModelPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.INITIALIZE.HallClientInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.UPDATE.HallClientUpdatePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.UPDATE.RoomClientUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_HALL.InitializeHallPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_HALL.UpdateHallPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_ROOM.InitializeRoomPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_ROOM.UpdateRoomPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
@@ -77,15 +77,15 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     }
     //### VirtualHallClient
     @Override
-    public void initializeClientHall ( HallClientInitializePacket hallClientInitializePacket ) throws Exception {
-        if(assureRightPhase(hallClientInitializePacket)){
-            clientSide.initializeClientHall(hallClientInitializePacket);
+    public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
+        if(assureRightPhase(initializeHallPacket)){
+            clientSide.initializeClientHall(initializeHallPacket);
         }
     }
     @Override
-    public void updateClientHall ( HallClientUpdatePacket hallClientUpdatePacket ) throws Exception {
-        if(assureRightPhase(hallClientUpdatePacket)){
-            clientSide.updateClientHall(hallClientUpdatePacket);
+    public void updateClientHall ( UpdateHallPacket updateHallPacket ) throws Exception {
+        if(assureRightPhase(updateHallPacket)){
+            clientSide.updateClientHall(updateHallPacket);
         }
     }
     //### VirtualHallServer
@@ -105,15 +105,15 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     }
     //### VirtualRoomClient
     @Override
-    public void initializeClientRoom ( RoomClientInitializePacket roomClientInitializePacket ) throws Exception {
-        if(assureRightPhase(roomClientInitializePacket)){
-            clientSide.initializeClientRoom(roomClientInitializePacket);
+    public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) throws Exception {
+        if(assureRightPhase(initializeRoomPacket)){
+            clientSide.initializeClientRoom(initializeRoomPacket);
         }
     }
     @Override
-    public void updateClientRoom ( RoomClientUpdatePacket roomClientUpdatePacket ) throws Exception {
-        if(assureRightPhase(roomClientUpdatePacket)){
-            clientSide.updateClientRoom(roomClientUpdatePacket);
+    public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) throws Exception {
+        if(assureRightPhase(updateRoomPacket)){
+            clientSide.updateClientRoom(updateRoomPacket);
         }
     }
     //### VirtualRoomServer

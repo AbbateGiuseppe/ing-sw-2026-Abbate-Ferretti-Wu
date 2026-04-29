@@ -1,5 +1,6 @@
-package it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL;
+package it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_MODEL;
 
+import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 
@@ -17,7 +18,9 @@ public class UpdateModelPacket extends Datapacket {
         updatesList.add(element);
     }
 
-    public List<UpdateModelElement> getUpdatesList() {
-        return updatesList;
+    public void updateTheMockupModel( MockupGame mockupGame ) {
+        for (UpdateModelElement element : updatesList) {
+            element.updateMockupModel(mockupGame);
+        }
     }
 }

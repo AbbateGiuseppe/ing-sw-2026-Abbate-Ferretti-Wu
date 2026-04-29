@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR;
+package it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR;
 
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;

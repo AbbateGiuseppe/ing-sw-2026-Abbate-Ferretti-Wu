@@ -7,8 +7,12 @@ import java.io.Serializable;
 public abstract class Datapacket implements Serializable {
     private String senderNickname;
 
-    public enum DatapacketType { INITIALIZE_MODEL, UPDATE_MODEL, COMMAND, DISCONNECT, RECONNECT, ERROR,
-                                 HALL_CLIENT, HALL_COMMAND, ROOM_CLIENT, ROOM_COMMAND, CHANGE_PHASE }
+    public enum DatapacketType { INITIALIZE_MODEL, UPDATE_MODEL, ERROR, CHANGE_PHASE,
+        COMMAND, DISCONNECT, RECONNECT,
+        INITIALIZE_HALL, UPDATE_HALL,
+        HALL_COMMAND,
+        INITIALIZE_ROOM, UPDATE_ROOM,
+        ROOM_COMMAND }
 
     public final DatapacketType datapacketType;
     public final ApplicationPhase applicationPhase;

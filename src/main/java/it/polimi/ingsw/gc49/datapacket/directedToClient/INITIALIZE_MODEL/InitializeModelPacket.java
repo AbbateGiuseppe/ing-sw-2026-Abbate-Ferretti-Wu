@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MODEL;
+package it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL;
 
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;

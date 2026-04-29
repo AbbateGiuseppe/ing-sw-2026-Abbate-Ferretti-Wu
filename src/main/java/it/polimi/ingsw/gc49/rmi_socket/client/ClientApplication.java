@@ -1,14 +1,16 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
+import it.polimi.ingsw.gc49.View.mockupHall.MockupHall;
+import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
 import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.CHANGE_PHASE.ChangePhasePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ANY_phase.ERROR.ErrorPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.INITIALIZE_MODEL.InitializeModelPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.GAME_phase.UPDATE_MODEL.UpdateModelPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.INITIALIZE.HallClientInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.HALL_phase.HALL_CLIENT.UPDATE.HallClientUpdatePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.INITIALIZE.RoomClientInitializePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ROOM_phase.ROOM_CLIENT.UPDATE.RoomClientUpdatePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_HALL.InitializeHallPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_HALL.UpdateHallPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_ROOM.InitializeRoomPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_ROOM.UpdateRoomPacket;
 import it.polimi.ingsw.gc49.rmi_socket.client.proxies.PhasedProxyServer;
 import it.polimi.ingsw.gc49.rmi_socket.client.proxies.RmiProxyServer;
 import it.polimi.ingsw.gc49.rmi_socket.client.proxies.SocketProxyServer;
@@ -16,6 +18,7 @@ import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.TextTerminal
 import it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces.UserInputInterface;
 import it.polimi.ingsw.gc49.rmi_socket.server.FactoryServiceRmi;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
@@ -23,7 +26,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -31,10 +33,13 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
 public class ClientApplication implements VirtualClient {
-    public PhasedProxyServer server;
-    protected final String nickname;
-    protected MockupGame mockupGame;
-    protected static final String mainServer = ServerMultiplexer.mainServer;
+    private PhasedProxyServer server;
+    private ApplicationPhase currentApplicationPhase;
+    public final String nickname;
+    private MockupGame mockupGame;
+    private MockupHall mockupHall;
+    private MockupRoom mockupRoom;
+    private static final String mainServer = ServerMultiplexer.mainServer;
     private volatile boolean running;
 
     public ClientApplication ( String nickname ) {
@@ -187,40 +192,42 @@ public class ClientApplication implements VirtualClient {
     //### Client general methods
     @Override
     public void changePhaseClient ( ChangePhasePacket changePhasePacket ) throws Exception {
-
+        currentApplicationPhase = changePhasePacket.newPhase;
     }
 
     //### Game called methods
     @Override
     public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws RemoteException {
-
+        mockupGame = initializeModelPacket.mockupModel;
     }
     @Override
     public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws RemoteException {
-
+        if(mockupGame != null) {
+            updateModelPacket.updateTheMockupModel(mockupGame);
+        }
     }
     @Override
     public void reportError ( ErrorPacket errorPacket ) throws RemoteException {
-
+        //TODO: implement error reporting on the client's interface.
     }
 
     //### Hall called methods
     @Override
-    public void initializeClientHall ( HallClientInitializePacket hallClientInitializePacket ) throws Exception {
-
+    public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
+        mockupHall = initializeHallPacket.mockupHall;
     }
     @Override
-    public void updateClientHall ( HallClientUpdatePacket hallClientUpdatePacket ) throws Exception {
-
+    public void updateClientHall ( UpdateHallPacket updateHallPacket ) throws Exception {
+        mockupHall = updateHallPacket.newMockupHall;
     }
 
     //### Room called methods
     @Override
-    public void initializeClientRoom ( RoomClientInitializePacket roomClientInitializePacket ) throws Exception {
-
+    public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) throws Exception {
+        mockupRoom = initializeRoomPacket.mockupRoom;
     }
     @Override
-    public void updateClientRoom ( RoomClientUpdatePacket roomClientUpdatePacket ) throws Exception {
-
+    public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) throws Exception {
+        mockupRoom = updateRoomPacket.newMockupRoom;
     }
 }
