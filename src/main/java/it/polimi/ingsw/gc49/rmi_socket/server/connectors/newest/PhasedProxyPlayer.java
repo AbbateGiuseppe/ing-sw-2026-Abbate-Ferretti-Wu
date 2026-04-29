@@ -48,6 +48,9 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
         datapacket.setSenderNickname(nickname);
     }
     protected boolean assureRightPhase ( Datapacket datapacket ) {
+        if(datapacket.applicationPhase == ApplicationPhase.ANY){
+            return true;
+        }
         return datapacket.applicationPhase == currentPhase;
     }
 }
