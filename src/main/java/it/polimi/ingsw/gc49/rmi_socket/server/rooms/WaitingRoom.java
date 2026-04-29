@@ -59,7 +59,6 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
             senderPlayer.changeLocalPhase(ApplicationPhase.HALL);
             senderPlayer.setServerSideObject(new VirtualHallServerAdapter(hall));
             players.remove(senderPlayer);
-            numConnectedPlayers--;
         }
     }
 }
