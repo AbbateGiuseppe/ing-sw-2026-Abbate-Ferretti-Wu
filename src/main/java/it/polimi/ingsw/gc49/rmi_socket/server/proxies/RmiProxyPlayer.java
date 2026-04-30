@@ -59,7 +59,9 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
         if(assureRightPhase(commandPacket)){
             addSenderNickname(commandPacket);
             //executes the command on the controller
-            controller.executeCommand(commandPacket);
+            if(controller != null) {
+                controller.executeCommand(commandPacket);
+            }
         }
     }
     @Override

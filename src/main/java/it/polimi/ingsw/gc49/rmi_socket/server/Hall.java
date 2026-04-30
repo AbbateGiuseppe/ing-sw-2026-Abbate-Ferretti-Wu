@@ -87,11 +87,16 @@ public class Hall implements VirtualHallServer {
      */
     public void changeRoomIntoPlaying (String WaitingRoomName) {
         WaitingRoom changingRoom = (WaitingRoom) rooms.get(WaitingRoomName); //gets the waitingRoom to change into a playing room
-        PlayingRoom changedRoom = changingRoom.convertIntoPlaying(); //gets its converted version.
+        PlayingRoom playingRoom = changingRoom.convertIntoPlaying(); //gets its converted version.
         rooms.remove(WaitingRoomName);
-        rooms.put(changedRoom.roomName, changedRoom);
+        rooms.put(playingRoom.roomName, playingRoom);
 
+        //creates,initializes the new game, even connects the controllers.
+        playingRoom.createGame();
 
-        //TODO: start the game.
+        //starts the new game with its own thread.
+        new Thread(() -> {
+            playingRoom.runGame();
+        }).start();
     }
 }

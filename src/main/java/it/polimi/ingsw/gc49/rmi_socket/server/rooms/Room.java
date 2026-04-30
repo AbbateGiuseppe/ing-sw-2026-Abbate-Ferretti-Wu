@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class Room {
     protected final Hall hall;
@@ -44,11 +45,9 @@ public abstract class Room {
     }
 
     protected List<String> getListPlayerNicknames () {
-        List<String> nicknames = new ArrayList<>();
-        for( PhasedProxyPlayer player : players ) {
-            nicknames.add(player.nickname);
-        }
-        return nicknames;
+        return players.stream()
+                .map(player -> player.nickname)
+                .collect(Collectors.toList());
     }
 
     public abstract MockupRoom giveMockupRoom ();
