@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
-import it.polimi.ingsw.gc49.rmi_socket.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -12,5 +13,5 @@ public interface FactoryServiceRmi extends Remote {
      * @return The server's skeleton
      * @throws RemoteException an identical name is probably already connected.
      */
-    VirtualServer connectPlayerRmi ( String nickname ) throws RemoteException;
+    VirtualServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws Exception;
 }

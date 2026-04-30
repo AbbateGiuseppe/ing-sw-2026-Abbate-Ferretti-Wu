@@ -1,10 +1,12 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
-import it.polimi.ingsw.gc49.controller.massi.MassiController;
-import it.polimi.ingsw.gc49.rmi_socket.VirtualServer;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.ConnectorServerSide;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.RmiConnectorServerSide;
-import it.polimi.ingsw.gc49.rmi_socket.server.connectors.SocketConnectorServerSide;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.RmiProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.SocketProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,9 +18,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ServerMultiplexer extends UnicastRemoteObject implements FactoryServiceRmi {
@@ -26,7 +26,8 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     public static final int portSocket = 2001;
     public static final int portRmi = 2002;
     private ServerSocket serverSocket;
-    private static final Map<String, ConnectorServerSide> clients = new HashMap<>();
+    private static final Map<String, PhasedProxyPlayer> clients = new HashMap<>();
+    private static final Hall hall = new Hall();
     private final int port;
 
     /**
@@ -77,13 +78,17 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     }
 
     @Override
-    public VirtualServer connectPlayerRmi ( String nickname ) throws RemoteException {
-        synchronized (this.clients) {
+    public VirtualServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws Exception {
+        synchronized (clients) {
             if(!clients.containsKey(nickname)) {
-                RmiConnectorServerSide connector = new RmiConnectorServerSide(clients.size(), new MassiController(clients.size()), this, nickname);
-                clients.put(nickname, connector);
+                PhasedProxyPlayer proxy = new RmiProxyPlayer(
+                        this, nickname, ApplicationPhase.HALL, new VirtualHallServerAdapter(hall),
+                        clientStub
+                );
+                clients.put(nickname, proxy); //store the player in the clients-list.
+                hall.enterPlayer(proxy); //enter the player into the hall
 
-                return (VirtualServer) UnicastRemoteObject.exportObject(connector, port);
+                return (VirtualServer) UnicastRemoteObject.exportObject(proxy, port);
             } else {
                 throw new RemoteException("Nomignolo già esistente e connesso. Prego, cambiarlo.");
             }
@@ -93,38 +98,32 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     private void runSocketServer() throws IOException, ClassNotFoundException {
         Socket clientSocket;
         while ((clientSocket = this.serverSocket.accept()) != null) {
-            ObjectOutputStream socketTx = new ObjectOutputStream(clientSocket.getOutputStream());
-            ObjectInputStream socketRx = new ObjectInputStream(clientSocket.getInputStream());
+            ObjectOutputStream socketOutput = new ObjectOutputStream(clientSocket.getOutputStream());
+            ObjectInputStream socketInput = new ObjectInputStream(clientSocket.getInputStream());
 
-            String nickname = (String) socketRx.readObject();
-            synchronized (this.clients) {
+            String nickname = (String) socketInput.readObject();
+            synchronized (clients) {
                 if(!clients.containsKey(nickname)) {
-                    SocketConnectorServerSide connector = new SocketConnectorServerSide(
-                            clients.size(),
-                            new MassiController(clients.size()),
-                            this,
-                            nickname,
-                            socketRx,
-                            socketTx
+                    PhasedProxyPlayer proxy = new SocketProxyPlayer(
+                            this, nickname, ApplicationPhase.HALL, new VirtualHallServerAdapter(hall),
+                            socketInput, socketOutput
                     );
 
-                    clients.put(nickname, connector);
+                    clients.put(nickname, proxy);
 
                     new Thread(() -> {
                         try {
-                            connector.runVirtualClient();
+                            proxy.runVirtualClient();
                         } catch (SocketException e) {
-                            System.out.println("Connessione con " + connector.getNickname() + " persa"); //TODO
-                        } catch (IOException | ClassNotFoundException e) {
-                            throw new RuntimeException(e);
+                            System.out.println("Connessione con " + proxy.nickname + " persa");
                         }
                     }).start();
 
-                    socketTx.writeObject(new String("Connessione riuscita."));
-                    socketTx.flush();
+                    socketOutput.writeObject(new String("Connessione riuscita."));
+                    socketOutput.flush();
                 } else {
-                    socketTx.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
-                    socketTx.flush();
+                    socketOutput.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
+                    socketOutput.flush();
                 }
             }
         }

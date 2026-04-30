@@ -11,9 +11,9 @@ import java.util.List;
 
 public class InitialSetup extends State {
     private final int numOfPlayers;
-    private final String[] playersNicknames;
+    private final List<String> playersNicknames;
 
-    public InitialSetup ( Game game, int numOfPlayers, String[] playersNicknames ) {
+    public InitialSetup ( Game game, int numOfPlayers, List<String> playersNicknames ) {
         super(game);
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
@@ -25,26 +25,26 @@ public class InitialSetup extends State {
 
         switch(numOfPlayers){
             case 2:
-                players.add(0, new Player(playersNicknames[0], 0));
-                players.add(1, new Player(playersNicknames[1], 1));
+                players.add(0, new Player(playersNicknames.get(0), 0));
+                players.add(1, new Player(playersNicknames.get(1), 1));
                 break;
             case 3:
-                players.add(0, new Player(playersNicknames[0], 0));
-                players.add(1, new Player(playersNicknames[1], 1));
-                players.add(2, new Player(playersNicknames[2], 2));
+                players.add(0, new Player(playersNicknames.get(0), 0));
+                players.add(1, new Player(playersNicknames.get(1), 1));
+                players.add(2, new Player(playersNicknames.get(2), 2));
                 break;
             case 4:
-                players.add(0, new Player(playersNicknames[0], 0));
-                players.add(1, new Player(playersNicknames[1], 1));
-                players.add(2, new Player(playersNicknames[2], 2));
-                players.add(3, new Player(playersNicknames[3], 3));
+                players.add(0, new Player(playersNicknames.get(0), 0));
+                players.add(1, new Player(playersNicknames.get(1), 1));
+                players.add(2, new Player(playersNicknames.get(2), 2));
+                players.add(3, new Player(playersNicknames.get(3), 3));
                 break;
             case 5:
-                players.add(0, new Player(playersNicknames[0], 0));
-                players.add(1, new Player(playersNicknames[1], 1));
-                players.add(2, new Player(playersNicknames[2], 2));
-                players.add(3, new Player(playersNicknames[3], 3));
-                players.add(4, new Player(playersNicknames[4], 4));
+                players.add(0, new Player(playersNicknames.get(0), 0));
+                players.add(1, new Player(playersNicknames.get(1), 1));
+                players.add(2, new Player(playersNicknames.get(2), 2));
+                players.add(3, new Player(playersNicknames.get(3), 3));
+                players.add(4, new Player(playersNicknames.get(4), 4));
                 break;
         }
 
