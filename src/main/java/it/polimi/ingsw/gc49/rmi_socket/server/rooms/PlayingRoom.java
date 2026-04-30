@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhase
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
+import it.polimi.ingsw.gc49.model.Game;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
@@ -17,6 +18,10 @@ public class PlayingRoom extends Room implements VirtualGameServer {
         super(hall, roomId, maxNumOfPlayers);
     }
 
+
+    public void runGame ( Game game ) {
+        game.gameLoop();
+    }
 
     //### Room's methods
     @Override

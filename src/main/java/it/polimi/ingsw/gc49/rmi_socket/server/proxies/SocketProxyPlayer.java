@@ -108,7 +108,8 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     }
     //### VirtualGameServer
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
-        serverSide.sendCommand(commandPacket);
+        //executes the command on the controller
+        controller.executeCommand(commandPacket);
     }
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         serverSide.disconnect(disconnectPacket);

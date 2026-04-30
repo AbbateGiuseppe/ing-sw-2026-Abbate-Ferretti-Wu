@@ -87,4 +87,13 @@ public class Hall implements VirtualHallServer {
         }
         return null;
     }
+
+    public void changeRoomIntoPlaying (int roomId) {
+        for( Room room : rooms ) {
+            if( room.roomId == roomId ) {
+                room = new PlayingRoom( this, roomId, room.maxNumOfPlayers );
+                //TODO: actually change the reference in the list.
+            }
+        }
+    }
 }

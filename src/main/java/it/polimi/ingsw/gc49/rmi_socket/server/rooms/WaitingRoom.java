@@ -12,15 +12,29 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoom
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualRoomServerAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class WaitingRoom extends Room implements VirtualRoomServer {
+    private static final int TIME_BEFORE_GAME_START = 10;
+
+    private ScheduledExecutorService startingGameScheduler = Executors.newSingleThreadScheduledExecutor();
 
     public WaitingRoom ( Hall hall, int roomId, int maxNumOfPlayers ) {
         super(hall, roomId, maxNumOfPlayers);
     }
 
+
+    private void scheduleGameStart() {
+        startingGameScheduler.schedule(this::startGame, TIME_BEFORE_GAME_START, TimeUnit.SECONDS);
+    }
+    private void startGame() {
+        if(maxNumOfPlayers == getNumConnectedPlayers()){
+            //TODO: create game.
+            hall.changeRoomIntoPlaying(roomId);
+        }
+    }
 
     //### Room's methods
     @Override
@@ -34,8 +48,13 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
             //sends the new player the room he is in
             newPlayer.initializeClientRoom( new InitializeRoomPacket(giveMockupRoom()) );
 
-           //broadcasts the new room
-           broadcastMockupRoom();
+            //broadcasts the new room
+            broadcastMockupRoom();
+
+            //starts the countdown to game start if the number of necessary players was reached
+            if(maxNumOfPlayers == getNumConnectedPlayers()){
+                scheduleGameStart();
+            }
         }else{
             new RuntimeException("La stanza è piena, non puoi entrare nella stanza " + roomId + "." );
         }

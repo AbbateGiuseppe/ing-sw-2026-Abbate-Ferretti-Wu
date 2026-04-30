@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
+import it.polimi.ingsw.gc49.controller.massi.MassiController;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
@@ -16,6 +17,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
     public final String nickname;
     protected ApplicationPhase currentPhase;
     protected VirtualServerAdapter serverSide;
+    protected MassiController controller;
     protected final VirtualClient clientSide;
     protected final ObjectInputStream input;
     protected final ObjectOutputStream output;
@@ -46,6 +48,9 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
     }
     public void setServerSideObject ( VirtualServerAdapter serverSide ) {
         this.serverSide = serverSide;
+    }
+    public void setController ( MassiController controller ){
+        this.controller = controller;
     }
 
     protected void addSenderNickname ( Datapacket datapacket ) {

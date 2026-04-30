@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Game {
     private final int numOfPlayers;
-    private final String[] playersNicknames;
+    private final List<String> playersNicknames;
     private List<Player> players;
     private EventManager eventManager;
     private Track track;
@@ -26,7 +26,7 @@ public class Game {
 
 
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
-    public Game ( int numOfPlayers, String[] playersNicknames ) {
+    public Game ( int numOfPlayers, List<String> playersNicknames ) {
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
         currentState = new InitialSetup(this, numOfPlayers, playersNicknames);
@@ -45,7 +45,7 @@ public class Game {
     public int getNumOfPlayers () { return numOfPlayers; }
     public int getNumOfConnectedPlayers () { return numOfConnectedPlayers; }
     public List<Player> getPlayers () { return players; }
-    public String[] getPlayersNicknames () { return playersNicknames; }
+    public List<String> getPlayersNicknames () { return playersNicknames; }
     public EventManager getEventManager () { return eventManager; }
     public Track getTrack () { return track; }
     public CardBoard getCardBoard () { return cardBoard; }
