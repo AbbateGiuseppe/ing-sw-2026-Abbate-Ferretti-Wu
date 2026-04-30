@@ -42,6 +42,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
 
     public void runGame() {
         game.gameLoop();
+        System.out.println("La partita nella stanza " + roomName + " è conclusa.");
     }
 
     //### Room's methods

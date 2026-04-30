@@ -1,8 +1,9 @@
 package it.polimi.ingsw.gc49.View.mockupHall;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MockupRoom {
+public class MockupRoom implements Serializable {
     public enum RoomType { WAITING, PLAYING }
     public RoomType type;
     public String roomName;

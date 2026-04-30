@@ -22,6 +22,7 @@ public class Hall implements VirtualHallServer {
     private static final Map<String, PhasedProxyPlayer> PlayersInHall = new HashMap<>();
 
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
+        System.out.println("Il giocatore " + newPlayer.nickname + " è entrato nell'atrio.");
         PlayersInHall.put(newPlayer.nickname, newPlayer);
 
         //sends the new player the hall he is in

@@ -4,7 +4,9 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.Comma
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
 
-public interface VirtualGameServer {
+import java.rmi.Remote;
+
+public interface VirtualGameServer extends Remote {
     void sendCommand ( CommandPacket commandPacket ) throws Exception;
 
     void disconnect ( DisconnectPacket disconnectPacket ) throws Exception;

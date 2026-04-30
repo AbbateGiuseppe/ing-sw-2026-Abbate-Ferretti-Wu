@@ -58,7 +58,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
             try {
                 ServerSocket serverSocket = new ServerSocket(portSocket);
                 new ServerMultiplexer(portSocket, serverSocket).runSocketServer();
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }).start();
@@ -85,6 +85,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                         this, nickname, ApplicationPhase.HALL, new VirtualHallServerAdapter(hall),
                         clientStub
                 );
+                System.out.println(proxy.nickname + " si è connesso.");
                 clients.put(nickname, proxy); //store the player in the clients-list.
                 hall.enterPlayer(proxy); //enter the player into the hall
 
@@ -95,7 +96,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
         }
     }
 
-    private void runSocketServer() throws IOException, ClassNotFoundException {
+    private void runSocketServer() throws Exception {
         Socket clientSocket;
         while ((clientSocket = this.serverSocket.accept()) != null) {
             ObjectOutputStream socketOutput = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -108,8 +109,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                             this, nickname, ApplicationPhase.HALL, new VirtualHallServerAdapter(hall),
                             socketInput, socketOutput
                     );
-
-                    clients.put(nickname, proxy);
+                    System.out.println(proxy.nickname + " si è connesso.");
 
                     new Thread(() -> {
                         try {
@@ -121,6 +121,9 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
                     socketOutput.writeObject(new String("Connessione riuscita."));
                     socketOutput.flush();
+
+                    clients.put(nickname, proxy); //store the player in the clients-list.
+                    hall.enterPlayer(proxy); //enter the player into the hall
                 } else {
                     socketOutput.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
                     socketOutput.flush();

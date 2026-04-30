@@ -31,6 +31,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
     }
     private void startGame() {
         if(maxNumOfPlayers == getNumConnectedPlayers()){
+            System.out.println("La partita nella stanza " + roomName + " sta iniziando...");
             //creates the game
             hall.changeRoomIntoPlaying(roomName);
         }

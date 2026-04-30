@@ -4,7 +4,9 @@ import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 
-public interface VirtualGameClient {
+import java.rmi.Remote;
+
+public interface VirtualGameClient extends Remote {
     void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws Exception;
 
     void updateClientModel ( UpdateModelPacket updateModelPacket ) throws Exception;

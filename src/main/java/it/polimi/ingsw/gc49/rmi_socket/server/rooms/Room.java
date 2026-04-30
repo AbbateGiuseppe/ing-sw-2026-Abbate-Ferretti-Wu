@@ -27,6 +27,7 @@ public abstract class Room {
     }
 
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
+        System.out.println("Il giocatore " + newPlayer.nickname + " è entrato nella stanza" + roomName + ".");
         players.add(newPlayer);
     }
     protected abstract boolean canEnter();
