@@ -5,13 +5,13 @@ import java.util.List;
 public class MockupRoom {
     public enum RoomType { WAITING, PLAYING }
     public RoomType type;
-    public int roomId;
+    public String roomName;
     public int maxNumOfPlayers;
     public List<String> connectedPlayers;
 
-    public MockupRoom(RoomType type, int roomId, int maxNumOfPlayers, List<String> connectedPlayers) {
+    public MockupRoom(RoomType type, String roomName, int maxNumOfPlayers, List<String> connectedPlayers) {
         this.type = type;
-        this.roomId = roomId;
+        this.roomName = roomName;
         this.maxNumOfPlayers = maxNumOfPlayers;
         this.connectedPlayers = connectedPlayers;
     }

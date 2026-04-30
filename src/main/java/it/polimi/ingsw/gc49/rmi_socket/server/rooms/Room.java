@@ -9,14 +9,20 @@ import java.util.List;
 
 public abstract class Room {
     protected final Hall hall;
-    public final int roomId;
+    public final String roomName;
     public final int maxNumOfPlayers;
     protected final List<PhasedProxyPlayer> players = new ArrayList<>();
 
-    public Room ( Hall hall, int roomId, int maxNumOfPlayers ) {
+    public Room ( Hall hall, String roomName, int maxNumOfPlayers ) {
         this.hall = hall;
-        this.roomId = roomId;
+        this.roomName = roomName;
         this.maxNumOfPlayers = maxNumOfPlayers;
+    }
+    public Room ( Hall hall, String roomName, int maxNumOfPlayers, List<PhasedProxyPlayer> players ) {
+        this.hall = hall;
+        this.roomName = roomName;
+        this.maxNumOfPlayers = maxNumOfPlayers;
+        this.players.addAll(players);
     }
 
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {

@@ -12,10 +12,15 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualGameServerAdapter;
 
+import java.util.List;
+
 public class PlayingRoom extends Room implements VirtualGameServer {
 
-    public PlayingRoom ( Hall hall, int roomId, int maxNumOfPlayers ) {
-        super(hall, roomId, maxNumOfPlayers);
+    public PlayingRoom ( Hall hall, String roomName, int maxNumOfPlayers ) {
+        super(hall, roomName, maxNumOfPlayers);
+    }
+    public PlayingRoom ( Hall hall, String roomName, int maxNumOfPlayers, List<PhasedProxyPlayer> players ) {
+        super(hall, roomName, maxNumOfPlayers, players);
     }
 
 
@@ -32,7 +37,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
             super.enterPlayer(newPlayer);
             newPlayer.setServerSideObject(new VirtualGameServerAdapter(this));
         }else{
-            throw new RuntimeException("La partita è già iniziata, non puoi entrare nella stanza " + roomId + "." );
+            throw new RuntimeException("La partita è già iniziata, non puoi entrare nella stanza " + roomName + "." );
         }
     }
     @Override
@@ -42,7 +47,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
 
     @Override
     public MockupRoom giveMockupRoom () {
-        return new MockupRoom(MockupRoom.RoomType.PLAYING, roomId, maxNumOfPlayers, getListPlayerNicknames());
+        return new MockupRoom(MockupRoom.RoomType.PLAYING, roomName, maxNumOfPlayers, getListPlayerNicknames());
     }
 
     //### client's commands

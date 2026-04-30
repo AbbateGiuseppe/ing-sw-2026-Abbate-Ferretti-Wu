@@ -21,8 +21,8 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
 
     private ScheduledExecutorService startingGameScheduler = Executors.newSingleThreadScheduledExecutor();
 
-    public WaitingRoom ( Hall hall, int roomId, int maxNumOfPlayers ) {
-        super(hall, roomId, maxNumOfPlayers);
+    public WaitingRoom ( Hall hall, String roomName, int maxNumOfPlayers ) {
+        super(hall, roomName, maxNumOfPlayers);
     }
 
 
@@ -31,8 +31,8 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
     }
     private void startGame() {
         if(maxNumOfPlayers == getNumConnectedPlayers()){
-            //TODO: create game.
-            hall.changeRoomIntoPlaying(roomId);
+            //creates the game
+            hall.changeRoomIntoPlaying(roomName);
         }
     }
 
@@ -56,7 +56,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
                 scheduleGameStart();
             }
         }else{
-            new RuntimeException("La stanza è piena, non puoi entrare nella stanza " + roomId + "." );
+            new RuntimeException("La stanza è piena, non puoi entrare nella stanza " + roomName + "." );
         }
     }
     @Override
@@ -66,7 +66,11 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
 
     @Override
     public MockupRoom giveMockupRoom () {
-        return new MockupRoom(MockupRoom.RoomType.WAITING, roomId, maxNumOfPlayers, getListPlayerNicknames());
+        return new MockupRoom(MockupRoom.RoomType.WAITING, roomName, maxNumOfPlayers, getListPlayerNicknames());
+    }
+
+    public PlayingRoom convertIntoPlaying () {
+        return new PlayingRoom(hall, roomName, maxNumOfPlayers, players);
     }
 
     private void broadcastMockupRoom() throws Exception {

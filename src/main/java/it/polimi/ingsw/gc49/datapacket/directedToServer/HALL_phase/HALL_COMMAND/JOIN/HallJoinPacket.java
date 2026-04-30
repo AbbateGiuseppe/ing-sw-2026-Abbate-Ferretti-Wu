@@ -3,10 +3,10 @@ package it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.HallCommandPacket;
 
 public class HallJoinPacket extends HallCommandPacket {
-    public final int roomId;
+    public final String roomName;
 
-    public HallJoinPacket ( int roomId ) {
+    public HallJoinPacket ( String roomName ) {
         super(HallCommandType.JOIN);
-        this.roomId = roomId;
+        this.roomName = roomName;
     }
 }
