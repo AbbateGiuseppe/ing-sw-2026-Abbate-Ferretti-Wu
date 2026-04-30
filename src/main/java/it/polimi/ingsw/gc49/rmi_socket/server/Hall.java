@@ -1,5 +1,9 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
+import it.polimi.ingsw.gc49.View.mockupHall.MockupHall;
+import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_HALL.InitializeHallPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_HALL.UpdateHallPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
@@ -16,8 +20,11 @@ public class Hall implements VirtualHallServer {
     private static final List<Room> rooms = new ArrayList<>();
     private static final Map<String, PhasedProxyPlayer> PlayersInHall = new HashMap<>();
 
-    public void enterPlayer ( PhasedProxyPlayer enteringPlayer ) {
-        PlayersInHall.put(enteringPlayer.nickname, enteringPlayer);
+    public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
+        PlayersInHall.put(newPlayer.nickname, newPlayer);
+
+        //sends the new player the hall he is in
+        newPlayer.initializeClientHall( new InitializeHallPacket(giveMockupHall()) );
     }
 
     @Override
@@ -29,6 +36,9 @@ public class Hall implements VirtualHallServer {
 
             joiningRoom.enterPlayer(senderPlayer); //Enters the player with the nickname of the joinPacket.
             PlayersInHall.remove(senderNickname); //removes the player from the hall.
+
+            //broadcasts the new hall
+            broadcastMockupHall();
         }else{
             throw new RuntimeException("Stanza non trovata");
         }
@@ -44,6 +54,29 @@ public class Hall implements VirtualHallServer {
         newRoom.enterPlayer(senderPlayer); //adds the player to the room.
         PlayersInHall.remove(senderNickname); //removes the player from the hall.
         rooms.add(newRoom); //adds the room to the list of rooms.
+
+        //broadcasts the new hall
+        broadcastMockupHall();
+    }
+
+    public MockupHall giveMockupHall() {
+        List<MockupRoom> mockupRooms = new ArrayList<>();
+        for( Room room : rooms ) {
+            mockupRooms.add(room.giveMockupRoom());
+        }
+
+        return new MockupHall(
+                new ArrayList<>(PlayersInHall.keySet()),
+                mockupRooms
+        );
+    }
+
+    private void broadcastMockupHall() throws Exception {
+        UpdateHallPacket updatedHall = new UpdateHallPacket(giveMockupHall());
+
+        for( PhasedProxyPlayer player : PlayersInHall.values() ) {
+            player.updateClientHall(updatedHall);
+        }
     }
 
     private Room getRoomById ( int roomId ) {

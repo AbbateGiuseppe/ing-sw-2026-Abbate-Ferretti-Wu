@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
+import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
@@ -18,10 +20,10 @@ public class PlayingRoom extends Room implements VirtualGameServer {
 
     //### Room's methods
     @Override
-    public void enterPlayer ( PhasedProxyPlayer newPlayer ) {
+    public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
         //Shouldn't be possible to enter a game that already started anyway.
         if(canEnter()) {
-            newPlayer.changeLocalPhase(ApplicationPhase.GAME);
+            newPlayer.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
             super.enterPlayer(newPlayer);
             newPlayer.setServerSideObject(new VirtualGameServerAdapter(this));
         }else{
@@ -33,6 +35,10 @@ public class PlayingRoom extends Room implements VirtualGameServer {
         return false;
     }
 
+    @Override
+    public MockupRoom giveMockupRoom () {
+        return new MockupRoom(MockupRoom.RoomType.PLAYING, roomId, maxNumOfPlayers, getListPlayerNicknames());
+    }
 
     //### client's commands
     @Override

@@ -34,7 +34,7 @@ import java.util.Scanner;
 
 public class ClientApplication implements VirtualClient {
     private PhasedProxyServer server;
-    private ApplicationPhase currentApplicationPhase;
+    private ApplicationPhase currentApplicationPhase = ApplicationPhase.HALL;
     public final String nickname;
     private MockupGame mockupGame;
     private MockupHall mockupHall;

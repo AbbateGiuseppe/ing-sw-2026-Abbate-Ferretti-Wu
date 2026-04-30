@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
+import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 
@@ -18,7 +19,7 @@ public abstract class Room {
         this.maxNumOfPlayers = maxNumOfPlayers;
     }
 
-    public void enterPlayer ( PhasedProxyPlayer newPlayer ) {
+    public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
         players.add(newPlayer);
     }
     protected abstract boolean canEnter();
@@ -35,4 +36,14 @@ public abstract class Room {
         }
         return null;
     }
+
+    protected List<String> getListPlayerNicknames () {
+        List<String> nicknames = new ArrayList<>();
+        for( PhasedProxyPlayer player : players ) {
+            nicknames.add(player.nickname);
+        }
+        return nicknames;
+    }
+
+    public abstract MockupRoom giveMockupRoom ();
 }

@@ -13,5 +13,5 @@ public interface FactoryServiceRmi extends Remote {
      * @return The server's skeleton
      * @throws RemoteException an identical name is probably already connected.
      */
-    VirtualServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws RemoteException;
+    VirtualServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws Exception;
 }

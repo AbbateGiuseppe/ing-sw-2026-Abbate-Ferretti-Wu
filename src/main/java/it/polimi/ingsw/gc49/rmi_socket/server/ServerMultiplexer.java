@@ -78,7 +78,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     }
 
     @Override
-    public VirtualServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws RemoteException {
+    public VirtualServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws Exception {
         synchronized (clients) {
             if(!clients.containsKey(nickname)) {
                 PhasedProxyPlayer proxy = new RmiProxyPlayer(

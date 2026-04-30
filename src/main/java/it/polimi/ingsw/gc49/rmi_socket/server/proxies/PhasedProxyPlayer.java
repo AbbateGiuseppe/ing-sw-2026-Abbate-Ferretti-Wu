@@ -41,7 +41,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
      */
     public void runVirtualClient() throws SocketException{}
 
-    public void changeLocalPhase ( ApplicationPhase newPhase ) {
+    protected void changeLocalPhase ( ApplicationPhase newPhase ) {
         currentPhase = newPhase;
     }
     public void setServerSideObject ( VirtualServerAdapter serverSide ) {
