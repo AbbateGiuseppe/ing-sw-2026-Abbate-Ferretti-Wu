@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces;
 
-import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
+import it.polimi.ingsw.gc49.View.Mockup;
 import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
@@ -13,8 +13,8 @@ import java.util.Scanner;
 public class TextTerminal extends UserInputInterface {
     private static int commandIndex = 0;
 
-    public TextTerminal ( VirtualServer virtualServer , MockupGame model) {
-        super( virtualServer, model);
+    public TextTerminal ( VirtualServer virtualServer , Mockup mockups) {
+        super( virtualServer, mockups);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class TextTerminal extends UserInputInterface {
                 }
                 // Mostra i cibi e i punti di tutti i giocatori
                 else if(checkCommand("status",elems)) {
-                    for(MockupPlayer p : model.getPlayers()) {
+                    for(MockupPlayer p : mockups.getGame().getPlayers()) {
                         // Guarda toString() di MockupPlayer
                         System.out.println(p);
                     }
@@ -56,7 +56,7 @@ public class TextTerminal extends UserInputInterface {
                 // Mostra le carte di un giocatore dato il suo indice
                 else if(checkCommand("cards",elems)) {
                     index = Integer.parseInt(elems[elems.length - 1]);
-                    model.getPlayer(index).printCards();
+                    mockups.getGame().getPlayer(index).printCards();
                     continue;
                 }
 

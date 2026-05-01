@@ -1,8 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
-import it.polimi.ingsw.gc49.View.mockupHall.MockupHall;
-import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
-import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
+import it.polimi.ingsw.gc49.View.Mockup;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
@@ -36,9 +34,7 @@ public class ClientApplication implements VirtualClient {
     private PhasedProxyServer server;
     private ApplicationPhase currentApplicationPhase = ApplicationPhase.HALL;
     public final String nickname;
-    private MockupGame mockupGame;
-    private MockupHall mockupHall;
-    private MockupRoom mockupRoom;
+    private final Mockup mockups = new Mockup();
     private static final String mainServer = ServerMultiplexer.mainServer;
     private volatile boolean running;
 
@@ -139,7 +135,7 @@ public class ClientApplication implements VirtualClient {
         UserInputInterface inputInterface;
         if(interfaceChoice == 1) {
             System.out.println("Avvio dell'interfaccia testuale...");
-            inputInterface = new TextTerminal(server, nickname); //connect interface to server proxy
+            inputInterface = new TextTerminal(server, mockups); //connect interface to server proxy
         }else if(interfaceChoice == 2) {
             System.out.println("Avvio dell'interfaccia grafica...");
             System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
@@ -165,7 +161,7 @@ public class ClientApplication implements VirtualClient {
         UserInputInterface inputInterface;
         if(interfaceChoice == 1) {
             System.out.println("Avvio dell'interfaccia testuale...");
-            inputInterface = new TextTerminal(server, nickname); //connect interface to server proxy
+            inputInterface = new TextTerminal(server, mockups); //connect interface to server proxy
         }else if(interfaceChoice == 2) {
             System.out.println("Avvio dell'interfaccia grafica...");
             System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
@@ -198,12 +194,12 @@ public class ClientApplication implements VirtualClient {
     //### Game called methods
     @Override
     public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws RemoteException {
-        mockupGame = initializeModelPacket.mockupModel;
+        mockups.setGame(initializeModelPacket.mockupModel);
     }
     @Override
     public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws RemoteException {
-        if(mockupGame != null) {
-            updateModelPacket.updateTheMockupModel(mockupGame);
+        if(mockups.getGame() != null) {
+            updateModelPacket.updateTheMockupModel(mockups.getGame());
         }
     }
     @Override
@@ -214,20 +210,20 @@ public class ClientApplication implements VirtualClient {
     //### Hall called methods
     @Override
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
-        mockupHall = initializeHallPacket.mockupHall;
+        mockups.setHall(initializeHallPacket.mockupHall);
     }
     @Override
     public void updateClientHall ( UpdateHallPacket updateHallPacket ) throws Exception {
-        mockupHall = updateHallPacket.newMockupHall;
+        mockups.setHall(updateHallPacket.newMockupHall);
     }
 
     //### Room called methods
     @Override
     public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) throws Exception {
-        mockupRoom = initializeRoomPacket.mockupRoom;
+        mockups.setRoom(initializeRoomPacket.mockupRoom);
     }
     @Override
     public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) throws Exception {
-        mockupRoom = updateRoomPacket.newMockupRoom;
+        mockups.setRoom(updateRoomPacket.newMockupRoom);
     }
 }
