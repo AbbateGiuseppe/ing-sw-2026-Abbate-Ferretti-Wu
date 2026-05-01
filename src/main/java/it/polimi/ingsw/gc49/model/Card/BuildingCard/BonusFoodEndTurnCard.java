@@ -14,4 +14,14 @@ public class BonusFoodEndTurnCard extends BuildingCard {
             owner.addFood(1);
         }
     }
+
+    @Override
+    public String toString() {
+        return "BonusFoodEndTurnCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=get one bonus food if the totem is placed on an orderslot with food at the end of the turn" +
+                '}';
+    }
 }

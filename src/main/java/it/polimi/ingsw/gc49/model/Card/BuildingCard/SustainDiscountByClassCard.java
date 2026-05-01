@@ -16,4 +16,14 @@ public class SustainDiscountByClassCard extends BuildingCard {
     public void onEventEffect() {
         owner.setFoodToPay(owner.getFoodToPay() - owner.data.getCharacterCount(unit));
     }
+
+    @Override
+    public String toString() {
+        return "SustainDiscountByClassCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=get 1 food discount for each " + unit + " in possession during the sustenance event" +
+                '}';
+    }
 }

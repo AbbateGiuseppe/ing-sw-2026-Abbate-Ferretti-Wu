@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc49.model.DataBank;
 import it.polimi.ingsw.gc49.model.Player;
 
 public abstract class Card {
-    private final Era era;
+    protected final Era era;
     private final int minNumPlayers;
 
     public Card(Era era, int minNumPlayers) {

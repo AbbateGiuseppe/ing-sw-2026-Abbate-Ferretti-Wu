@@ -13,6 +13,15 @@ public class DoubleShamanPointsCard extends BuildingCard{
         if (owner.isUniqueWinner() && owner.getPointsToPay() < 0) {
             owner.setPointsToPay(2 * owner.getPointsToPay());
         }
+    }
 
+    @Override
+    public String toString() {
+        return "DoubleShamanPointsCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=if the player is the unique winner,then double the reward points during the shamanic event" +
+                '}';
     }
 }

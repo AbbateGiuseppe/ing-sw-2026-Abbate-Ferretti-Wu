@@ -19,4 +19,14 @@ public class ShamanicThreeStarCard extends BuildingCard {
         super.updateDataBank(dataBank);
         dataBank.addNumStar(3);
     }
+
+    @Override
+    public String toString() {
+        return "ShamanicThreeStarCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=get 3 virtual stars during the shamanic event" +
+                '}';
+    }
 }

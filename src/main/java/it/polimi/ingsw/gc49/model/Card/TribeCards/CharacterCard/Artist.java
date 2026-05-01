@@ -13,4 +13,11 @@ public class Artist extends CharacterCard {
     public void updateDataBank(DataBank dataBank) {
         dataBank.addCharacterCount(CharacterType.Artist,1);
     }
+
+    @Override
+    public String toString() {
+        return "Artist{" +
+                "era=" +  era +
+                '}';
+    }
 }

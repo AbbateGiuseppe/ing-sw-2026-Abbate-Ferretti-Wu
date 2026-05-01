@@ -17,4 +17,12 @@ public class Shaman extends CharacterCard {
         dataBank.addNumStar(numStars);
         dataBank.addCharacterCount(CharacterType.Shaman,1);
     }
+
+    @Override
+    public String toString() {
+        return "Shaman{" +
+                "era=" + era +
+                ", numStars=" + numStars +
+                '}';
+    }
 }

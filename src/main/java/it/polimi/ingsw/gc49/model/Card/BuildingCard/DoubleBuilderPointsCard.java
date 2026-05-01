@@ -12,4 +12,14 @@ public class DoubleBuilderPointsCard extends BuildingCard {
     public void onEventEffect() {
         owner.data.setNumBuilderPoints(2 * owner.data.getNumBuilderPoints());
     }
+
+    @Override
+    public String toString() {
+        return "DoubleBuilderPointsCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=double the builder points at the end of the game" +
+                '}';
+    }
 }

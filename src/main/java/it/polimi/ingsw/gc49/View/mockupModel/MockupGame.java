@@ -84,6 +84,7 @@ public class MockupGame implements Serializable {
     public List<MockupPlayer> getPlayers () {
         return players;
     }
+    public MockupPlayer getPlayer(int i) {return players.get(i);}
     //Cardboard
     public void setDeckTopEra(Era deckTopEra) {
         this.deckTopEra = deckTopEra;

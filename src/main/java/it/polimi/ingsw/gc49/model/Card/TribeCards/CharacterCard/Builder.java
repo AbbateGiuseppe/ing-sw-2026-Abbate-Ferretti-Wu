@@ -20,4 +20,13 @@ public class Builder extends CharacterCard {
         dataBank.addNumBuildingDiscount(buildingDiscount);
         dataBank.addNumBuilderPoints(numPoints);
     }
+
+    @Override
+    public String toString() {
+        return "Builder{" +
+                "era=" +  era +
+                "buildingDiscount=" + buildingDiscount +
+                ", numPoints=" + numPoints +
+                '}';
+    }
 }

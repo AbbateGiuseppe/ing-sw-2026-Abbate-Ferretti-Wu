@@ -14,4 +14,13 @@ public class ShamanicImmunityCard extends BuildingCard {
             owner.setPointsToPay(0);
         }
     }
+    @Override
+    public String toString() {
+        return "ShamanicImmunityCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=if the player is the loser,then he doesn't get penalized during the shamanic event" +
+                '}';
+    }
 }

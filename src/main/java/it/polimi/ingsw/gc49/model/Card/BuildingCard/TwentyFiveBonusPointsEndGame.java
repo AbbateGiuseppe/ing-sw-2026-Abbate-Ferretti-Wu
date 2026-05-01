@@ -12,4 +12,14 @@ public class TwentyFiveBonusPointsEndGame extends BuildingCard {
     public void onEventEffect() {
         owner.addPoints(25);
     }
+
+    @Override
+    public String toString() {
+        return "TwentyFiveBonusPointsEndGame{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=get 25 bonus points at the end of the game" +
+                '}';
+    }
 }

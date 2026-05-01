@@ -26,4 +26,11 @@ public class Hunter extends CharacterCard {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Hunter{" +
+                "era=" + era +
+                ", drumstick=" + drumstick +
+                '}';
+    }
 }

@@ -92,4 +92,22 @@ public class MockupPlayer implements Serializable {
     public void addBuildingCard ( Card card ) {
         buildingCards.add(card);
     }
+
+    public void printCards() {
+        // Guarda toString() delle carte
+        for(Card c : characterCards) {
+            System.out.println(c);
+        }
+
+        for(Card c : buildingCards) {
+            System.out.println(c);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "nickname='" + nickname  +
+                ", food=" + food +
+                ", points=" + points;
+    }
 }

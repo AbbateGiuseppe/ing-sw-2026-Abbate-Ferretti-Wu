@@ -14,4 +14,14 @@ public class BonusHuntingCard extends BuildingCard {
         owner.setFoodToPay(owner.getFoodToPay() - owner.data.getCharacterCount(CharacterType.Hunter));
         owner.setPointsToPay(owner.getPointsToPay() - owner.data.getCharacterCount(CharacterType.Hunter));
     }
+
+    @Override
+    public String toString() {
+        return "BonusHuntingCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=get bonus food and points equal to the number of hunters in possession during the hunting event" +
+                '}';
+    }
 }

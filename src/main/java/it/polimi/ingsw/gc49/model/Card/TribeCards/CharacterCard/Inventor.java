@@ -18,4 +18,12 @@ public class Inventor extends CharacterCard {
          dataBank.addCharacterCount(CharacterType.Inventor,1);
          dataBank.addInvention(invention);
     }
+
+    @Override
+    public String toString() {
+        return "Inventor{" +
+                "era=" + era +
+                ", invention=" + invention +
+                '}';
+    }
 }

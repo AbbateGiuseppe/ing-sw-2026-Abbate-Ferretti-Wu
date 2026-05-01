@@ -18,4 +18,16 @@ public class BonusPointsByClassEndGameCard extends BuildingCard {
     public void onEventEffect() {
         owner.addPoints(pointsPerUnit * owner.data.getCharacterCount(unit));
     }
+
+    @Override
+    public String toString() {
+        return "BonusPointsByClassEndGameCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", characterCard=" + unit +
+                ", pointsPerCard" + pointsPerUnit +
+                ", effect=get " + pointsPerUnit + " bonus points for each " + unit + " in possession at the end of the game" +
+                '}';
+    }
 }

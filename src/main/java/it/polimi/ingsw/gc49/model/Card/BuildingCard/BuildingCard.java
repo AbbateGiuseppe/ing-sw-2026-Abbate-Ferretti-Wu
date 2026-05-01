@@ -7,8 +7,8 @@ import it.polimi.ingsw.gc49.model.Card.Card;
 
 public abstract class BuildingCard extends Card implements BuildingEventListener {
     private final BuildingEvent buildingEvent;
-    private final int pointsEndgame;
-    private final int foodPrice;
+    protected final int pointsEndgame;
+    protected final int foodPrice;
     protected Player owner;
 
     public BuildingCard ( BuildingEvent buildingEvent, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {

@@ -24,4 +24,15 @@ public class CharacterSetCompleteFoodCard extends BuildingCard {
         // Record the current number of complete character card sets for future comparision
         owner.data.recordCharaSet();
     }
+
+    @Override
+    public String toString() {
+        return "CharacterSetCompleteFoodCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=get 5 bonus food whenever completed a full set of character cards" +
+                '}';
+    }
+
 }

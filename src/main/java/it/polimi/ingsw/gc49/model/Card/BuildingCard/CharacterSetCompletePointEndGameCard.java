@@ -13,4 +13,14 @@ public class CharacterSetCompletePointEndGameCard extends BuildingCard {
     public void onEventEffect() {
          owner.addPoints(6 * owner.data.getCharacterCount(CharacterType.CompleteSet));
     }
+
+    @Override
+    public String toString() {
+        return "CharacterSetCompletePointEndGameCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=get 6 bonus points for each completed set of character cards at the end of the game" +
+                '}';
+    }
 }

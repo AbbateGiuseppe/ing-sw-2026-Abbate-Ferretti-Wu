@@ -14,4 +14,12 @@ public class Gatherer extends CharacterCard {
          dataBank.addCharacterCount(CharacterType.Gatherer,1);
          dataBank.addNumSustenanceDiscount(3);
     }
+
+    @Override
+    public String toString() {
+        return "Gatherer{" +
+                "era=" + era +
+                ", sustenanceDiscount=3" +
+                '}';
+    }
 }

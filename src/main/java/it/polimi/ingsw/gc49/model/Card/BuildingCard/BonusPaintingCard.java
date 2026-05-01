@@ -13,4 +13,14 @@ public class BonusPaintingCard extends BuildingCard {
     public void onEventEffect() {
         owner.setFoodToPay(owner.getFoodToPay() - owner.data.getCharacterCount(CharacterType.Artist));
     }
+
+    @Override
+    public String toString() {
+        return "BonusPaintingCard{" +
+                "era=" + era +
+                ", foodPrice=" + foodPrice +
+                ", pointsEndgame=" + pointsEndgame +
+                ", effect=get bonus foodequal to the number of artists in possession during the painting event" +
+                '}';
+    }
 }
