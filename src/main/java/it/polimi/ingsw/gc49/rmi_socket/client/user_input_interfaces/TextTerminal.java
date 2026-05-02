@@ -32,10 +32,11 @@ public class TextTerminal extends UserInputInterface {
                     "white",Totem.WHITE
             );
 
+            System.out.println("\nTerminal started:\ntype help for the list of commands");
             while (play) {
 
                 ResetCommand();
-                System.out.println("Try Commands");
+                System.out.print(">");
                 String textCommand = scanner.nextLine();
                 textCommand.toLowerCase();
                 String[] elems = textCommand.split(" ");
@@ -137,9 +138,11 @@ public class TextTerminal extends UserInputInterface {
         manual.append(formatCommand("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
         manual.append(formatCommand("offer [offer index]", "Choose the specified offer"));
         manual.append(formatCommand("totem [totem color]", "Choose the specified totem"));
+
+        System.out.println(manual);
     }
 
     private String formatCommand(String command, String description) {
-        return String.format("  %-25s %s\n", command, description);
+        return String.format(" %60s | %s\n", command, description);
     }
 }
