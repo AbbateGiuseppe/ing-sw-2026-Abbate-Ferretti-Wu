@@ -7,11 +7,32 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.Comma
 import it.polimi.ingsw.gc49.model.Totem;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class TextTerminal extends UserInputInterface {
     private static int commandIndex = 0;
+    /**The key of the commands is the string representing the command type, such as "help" or "draw",
+     * the rest of the following strings are used as parameters to specify the behaviour in the function of the called TerminalCommand*/
+    private static final Map<String, TerminalCommand> commands = new HashMap<>();
+    private static StringBuilder manual = new StringBuilder();
+
+    static {
+        commands.put("help", ( terminalMockups, terminalParameters ) ->  printManual());
+        // Mostra i cibi e i punti di tutti i giocatori
+        commands.put("status", ( terminalMockups, terminalParameters ) -> {
+            for(MockupPlayer p : terminalMockups.getGame().getPlayers()) {
+                // Guarda toString() di MockupPlayer
+                System.out.println(p);
+            }
+        });
+        commands.put("cards", ( terminalMockups, terminalParameters ) -> {
+            int index = Integer.parseInt(terminalParameters[0]);
+            terminalMockups.getGame().getPlayer(index).printCards();
+        });
+
+    }
 
     public TextTerminal ( VirtualServer virtualServer , Mockup mockups) {
         super( virtualServer, mockups);
@@ -125,8 +146,7 @@ public class TextTerminal extends UserInputInterface {
         commandIndex = 0;
     }
 
-    private void printManual() {
-        StringBuilder manual = new StringBuilder();
+    static {
         // Commands section
         manual.append("COMMANDS:\n");
         manual.append("-".repeat(60)).append("\n");
@@ -138,11 +158,12 @@ public class TextTerminal extends UserInputInterface {
         manual.append(formatCommand("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
         manual.append(formatCommand("offer [offer index]", "Choose the specified offer"));
         manual.append(formatCommand("totem [totem color]", "Choose the specified totem"));
-
+    }
+    private static void printManual() {
         System.out.println(manual);
     }
 
-    private String formatCommand(String command, String description) {
+    private static String formatCommand(String command, String description) {
         return String.format(" %60s | %s\n", command, description);
     }
 }
