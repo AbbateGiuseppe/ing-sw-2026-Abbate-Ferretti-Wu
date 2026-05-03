@@ -20,7 +20,6 @@ module it.polimi.ingsw.gc49 {
     exports it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT;
     exports it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR;
     exports it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL;
-    exports it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT;
     exports it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_MODEL;
     exports it.polimi.ingsw.gc49.rmi_socket.server.rooms to java.rmi;
     exports it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients;

@@ -9,7 +9,7 @@ public abstract class Datapacket implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public enum DatapacketType { INITIALIZE_MODEL, UPDATE_MODEL, ERROR, CHANGE_PHASE,
-        COMMAND, DISCONNECT, RECONNECT,
+        COMMAND, DISCONNECT,
         INITIALIZE_HALL, UPDATE_HALL,
         HALL_COMMAND,
         INITIALIZE_ROOM, UPDATE_ROOM,
