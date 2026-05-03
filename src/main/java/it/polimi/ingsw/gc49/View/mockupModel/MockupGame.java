@@ -16,20 +16,20 @@ public class MockupGame implements Serializable {
     /**Stores the era on the back of the card on top of the deck*/
     private Era deckTopEra;
     /**Gets replaced with a new List at every line update*/
-    private List<Card> upperLine;
+    private ArrayList<Card> upperLine;
     /**Gets replaced with a new List at every line update*/
-    private List<Card> lowerLine;
+    private ArrayList<Card> lowerLine;
     /**Gets replaced with a new List at every line update*/
-    private List<Card> upperBuilding;
+    private ArrayList<Card> upperBuilding;
     /**Gets replaced with a new List at every line update*/
-    private List<Card> lowerBuilding;
+    private ArrayList<Card> lowerBuilding;
 
     private List<MockupPlayer> offerBoard;
     private List<MockupPlayer> orderBoard;
 
     /**[constructor] Should be initialized AFTER the real game has been initialized on the server!*/
-    public MockupGame (List<MockupPlayer> players, Era deckTopEra, List<Card> upperLine, List<Card> lowerLine
-    , List<Card> upperBuilding, List<Card> lowerBuilding, List<MockupPlayer> offerBoard, List<MockupPlayer> orderBoard) {
+    public MockupGame (List<MockupPlayer> players, Era deckTopEra, ArrayList<Card> upperLine, ArrayList<Card> lowerLine
+    , ArrayList<Card> upperBuilding, ArrayList<Card> lowerBuilding, List<MockupPlayer> offerBoard, List<MockupPlayer> orderBoard) {
         this.players = players;
         this.discards = new ArrayList<>();
         this.deckTopEra = deckTopEra;
@@ -88,16 +88,16 @@ public class MockupGame implements Serializable {
     public void setDeckTopEra(Era deckTopEra) {
         this.deckTopEra = deckTopEra;
     }
-    public void setUpperLine(List<Card> upperLine) {
+    public void setUpperLine(ArrayList<Card> upperLine) {
         this.upperLine = upperLine;
     }
-    public void setLowerLine(List<Card> lowerLine) {
+    public void setLowerLine(ArrayList<Card> lowerLine) {
         this.lowerLine = lowerLine;
     }
-    public void setUpperBuilding(List<Card> upperBuilding) {
+    public void setUpperBuilding(ArrayList<Card> upperBuilding) {
         this.upperBuilding = upperBuilding;
     }
-    public void setLowerBuilding(List<Card> lowerBuilding) {
+    public void setLowerBuilding(ArrayList<Card> lowerBuilding) {
         this.lowerBuilding = lowerBuilding;
     }
     //Track

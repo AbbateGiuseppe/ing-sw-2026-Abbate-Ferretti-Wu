@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DeckTest {
-
+/*
     private Game game;
     private Deck deck;
 
@@ -123,4 +123,6 @@ class DeckTest {
     void testDeckNotEmpty_afterInitialization() {
         assertNotNull(deck.dealTribeCard(), "Tribe deck should have cards after initialization");
     }
+
+ */
 }

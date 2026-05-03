@@ -45,6 +45,10 @@ public class PlayingRoom extends Room implements VirtualGameServer {
         System.out.println("La partita nella stanza " + roomName + " è conclusa.");
     }
 
+    public Game getGame() {
+        return game;
+    }
+
     //### Room's methods
     @Override
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
@@ -54,7 +58,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
             super.enterPlayer(newPlayer);
             newPlayer.setServerSideObject(new VirtualGameServerAdapter(this));
         }else{
-            throw new RuntimeException("La partita è già iniziata, non puoi entrare nella stanza " + roomName + "." );
+            throw new RuntimeException("Game already started, cannot enter into " + roomName + "." );
         }
     }
     @Override

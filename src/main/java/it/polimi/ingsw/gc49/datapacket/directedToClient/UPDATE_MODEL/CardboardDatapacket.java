@@ -4,18 +4,19 @@ import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.model.Card.Card;
 import it.polimi.ingsw.gc49.model.Era;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CardboardDatapacket extends UpdateModelElement {
     private final List<Card> discards;
     private final Era deckTopEra;
-    private final List<Card> upperLine;
-    private final List<Card> lowerLine;
-    private final List<Card> upperBuilding;
-    private final List<Card> lowerBuilding;
+    private final ArrayList<Card> upperLine;
+    private final ArrayList<Card> lowerLine;
+    private final ArrayList<Card> upperBuilding;
+    private final ArrayList<Card> lowerBuilding;
 
-    public CardboardDatapacket ( List<Card> discard, Era deckTopEra, List<Card> upperLine,
-                                 List<Card> lowerLine, List<Card> upperBuilding, List<Card> lowerBuilding) {
+    public CardboardDatapacket ( List<Card> discard, Era deckTopEra, ArrayList<Card> upperLine,
+                                 ArrayList<Card> lowerLine, ArrayList<Card> upperBuilding, ArrayList<Card> lowerBuilding) {
         super();
         this.discards = discard;
         this.deckTopEra = deckTopEra;

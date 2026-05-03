@@ -6,13 +6,14 @@ import java.io.Serializable;
 
 public abstract class Datapacket implements Serializable {
     private String senderNickname;
+    private static final long serialVersionUID = 1L;
 
     public enum DatapacketType { INITIALIZE_MODEL, UPDATE_MODEL, ERROR, CHANGE_PHASE,
         COMMAND, DISCONNECT, RECONNECT,
         INITIALIZE_HALL, UPDATE_HALL,
         HALL_COMMAND,
         INITIALIZE_ROOM, UPDATE_ROOM,
-        ROOM_COMMAND }
+        ROOM_COMMAND, HEARTBEAT }
 
     public final DatapacketType datapacketType;
     public final ApplicationPhase applicationPhase;
@@ -21,6 +22,7 @@ public abstract class Datapacket implements Serializable {
         this.datapacketType = datapacketType;
         this.applicationPhase = applicationPhase;
     }
+
 
     public DatapacketType getDatapacketType() {
         return datapacketType;

@@ -27,7 +27,7 @@ public abstract class Room {
     }
 
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
-        System.out.println("Il giocatore " + newPlayer.nickname + " è entrato nella stanza" + roomName + ".");
+        System.out.println("Player " + newPlayer.nickname + " has entered into " + roomName + ".");
         players.add(newPlayer);
     }
     protected abstract boolean canEnter();
@@ -50,6 +50,23 @@ public abstract class Room {
                 .map(player -> player.nickname)
                 .collect(Collectors.toList());
     }
+    public MockupRoom giveMockupRoom (){
+        List<String> names = players.stream()
+                .map(p -> p.nickname)
+                .collect(Collectors.toList());
 
-    public abstract MockupRoom giveMockupRoom ();
+        return new MockupRoom(MockupRoom.RoomType.WAITING,this.roomName, this.maxNumOfPlayers, names);
+    };
+
+    public MockupRoom giveMockupRoom (MockupRoom.RoomType type){
+        List<String> names = players.stream()
+                .map(p -> p.nickname)
+                .collect(Collectors.toList());
+
+        return new MockupRoom(type,this.roomName, this.maxNumOfPlayers, names);
+    };
+
+    public boolean isFull(){
+        return players.get(maxNumOfPlayers)!=null;
+    }
 }

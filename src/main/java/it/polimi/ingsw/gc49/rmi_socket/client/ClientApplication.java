@@ -79,6 +79,10 @@ public class ClientApplication implements VirtualClient {
                 //connecting the client to his client side proxy
                 runnableClient.setServer(phasedProxyServer);
 
+                //start heartbeat
+                phasedProxyServer.startHeartbeat(); //
+
+
                 //running the client
                 runnableClient.runRmi();
 
@@ -90,23 +94,22 @@ public class ClientApplication implements VirtualClient {
             }
         }else if(connectionChoice == 2) { //Socket
             int port = ServerMultiplexer.portSocket;
-            String host = null; //args[1];
+            String host = null;
 
             Socket serverSocket = new Socket(host, port);
-
             ObjectInputStream input = new ObjectInputStream(serverSocket.getInputStream());
             ObjectOutputStream output = new ObjectOutputStream(serverSocket.getOutputStream());
-            //sends the nickname to authorise the connection
+
             output.writeObject(nickname);
             output.flush();
-            //waits for authorisation
+
             Object authorisation = input.readObject();
 
-            if(authorisation instanceof RuntimeException) {
+            if(authorisation instanceof RuntimeException) { // Meglio Exception generica o Runtime
                 System.out.println("Connessione fallita.");
-                System.err.println("Il Serviente ha restituito un'eccezione: " + authorisation);
+                serverSocket.close();
+                return;
             } else {
-                System.out.println("Il Serviente ha restituito: " + authorisation);
 
                 //TODO: add listeners
 
@@ -118,6 +121,8 @@ public class ClientApplication implements VirtualClient {
                 phasedProxyServer.finishInitialization(null, input, output);
                 //connecting the client to his client side proxy
                 runnableClient.setServer(phasedProxyServer);
+                //start heartbeat
+                phasedProxyServer.startHeartbeat();
 
                 //running the client
                 runnableClient.runSocket();
@@ -195,6 +200,14 @@ public class ClientApplication implements VirtualClient {
         currentApplicationPhase = changePhasePacket.newPhase;
     }
 
+    @Override
+    public void receiveHeartbeat() throws RemoteException {
+        if (server != null) {
+            server.reportActivity();
+        }
+
+    }
+
     //### Game called methods
     @Override
     public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws RemoteException {
@@ -230,4 +243,5 @@ public class ClientApplication implements VirtualClient {
     public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) throws Exception {
         mockupRoom = updateRoomPacket.newMockupRoom;
     }
+
 }

@@ -1,10 +1,13 @@
 package it.polimi.ingsw.gc49.model;
 
+import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.model.Card.Card;
 import it.polimi.ingsw.gc49.model.Track.OrderSlot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Collections.addAll;
 
 public class Player {
     private final String nickname;
@@ -172,6 +175,32 @@ public class Player {
      */
     public boolean hasChosenAnOffer () {
         return choseAnOffer;
+    }
+
+    public MockupPlayer giveMockupPlayer() {
+        MockupPlayer mockup = new MockupPlayer(
+                this.nickname,
+                this.playerIndex,
+                this.food,
+                this.points
+        );
+
+
+        mockup.setConnected(this.isConnected()); // Supponendo tu abbia questo metodo
+        mockup.setTotem(this.totem);
+
+        for (Card c : this.characterCards) {
+            mockup.addCharacterCard(c);
+        }
+        for (Card c : this.buildingCards) {
+            mockup.addBuildingCard(c);
+        }
+
+        // Impostiamo i valori drawable
+        mockup.setDrawableUpper(this.drawableUpper);
+        mockup.setDrawableLower(this.drawableLower);
+
+        return mockup;
     }
 }
 

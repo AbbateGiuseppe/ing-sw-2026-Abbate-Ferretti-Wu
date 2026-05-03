@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49.model;
 
+import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
+import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.model.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.model.Card.Card;
 import it.polimi.ingsw.gc49.model.CardBoard.CardBoard;
@@ -7,10 +9,13 @@ import it.polimi.ingsw.gc49.model.States.InitialSetup;
 import it.polimi.ingsw.gc49.model.States.State;
 import it.polimi.ingsw.gc49.model.Track.Track;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Game {
+public class Game implements Serializable {
     private final int numOfPlayers;
     private final List<String> playersNicknames;
     private List<Player> players;
@@ -191,5 +196,24 @@ public class Game {
 
     public void connectPlayer( int playerIndex ) {
 
+    }
+
+
+    public MockupGame giveMockupModel() {
+        List<MockupPlayer> mockupPlayers = this.players.stream()
+                .map(Player::giveMockupPlayer)
+                .collect(Collectors.toList());
+
+        return new MockupGame(
+                mockupPlayers,
+                this.getCardBoard().getDeck().getBuildingDeck().getFirst().getEra(),
+                this.getCardBoard().getLine().getUpperLine(),
+                this.getCardBoard().getLine().getLowerLine(),
+                this.getCardBoard().getLine().getUpperBuilding(),
+                this.getCardBoard().getLine().getUpperBuilding(),
+                null,
+                null
+        );
+        //TODO
     }
 }

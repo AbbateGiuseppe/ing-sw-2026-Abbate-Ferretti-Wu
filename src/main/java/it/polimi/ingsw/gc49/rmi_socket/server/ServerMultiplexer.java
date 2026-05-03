@@ -85,13 +85,30 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                         this, nickname, ApplicationPhase.HALL, new VirtualHallServerAdapter(hall),
                         clientStub
                 );
-                System.out.println(proxy.nickname + " si è connesso.");
+                System.out.println(proxy.nickname + " is connected");
                 clients.put(nickname, proxy); //store the player in the clients-list.
                 hall.enterPlayer(proxy); //enter the player into the hall
 
+                proxy.startNetworkHealthChecks(); // check heartbeat
+
                 return (VirtualServer) UnicastRemoteObject.exportObject(proxy, port);
+
             } else {
-                throw new RemoteException("Nomignolo già esistente e connesso. Prego, cambiarlo.");
+                if (clients.containsKey(nickname)) {
+                    PhasedProxyPlayer existing = clients.get(nickname);
+                    if (existing.isRunning()) throw new RemoteException("Already logged");
+                    System.out.println(existing.nickname + " is now reconnected");
+
+                    // update stub of old proxy
+                    ((RmiProxyPlayer) existing).updateClientStub(clientStub);
+                    existing.startNetworkHealthChecks();
+
+                    // export old proxy already existing
+                    existing.refreshClientState();
+                    return (VirtualServer) existing;
+                } else {
+                    throw new RemoteException("Player Already Online");
+                }
             }
         }
     }
@@ -100,6 +117,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
         Socket clientSocket;
         while ((clientSocket = this.serverSocket.accept()) != null) {
             ObjectOutputStream socketOutput = new ObjectOutputStream(clientSocket.getOutputStream());
+            socketOutput.flush();
             ObjectInputStream socketInput = new ObjectInputStream(clientSocket.getInputStream());
 
             String nickname = (String) socketInput.readObject();
@@ -109,24 +127,52 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                             this, nickname, ApplicationPhase.HALL, new VirtualHallServerAdapter(hall),
                             socketInput, socketOutput
                     );
-                    System.out.println(proxy.nickname + " si è connesso.");
+                    System.out.println(proxy.nickname + " is connected");
 
                     new Thread(() -> {
                         try {
                             proxy.runVirtualClient();
                         } catch (SocketException e) {
-                            System.out.println("Connessione con " + proxy.nickname + " persa");
+                            System.out.println("Connection lost with " + proxy.nickname);
                         }
                     }).start();
 
+
                     socketOutput.writeObject(new String("Connessione riuscita."));
                     socketOutput.flush();
+                    // control heartbeat
+                    proxy.startNetworkHealthChecks();
 
                     clients.put(nickname, proxy); //store the player in the clients-list.
                     hall.enterPlayer(proxy); //enter the player into the hall
                 } else {
-                    socketOutput.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
-                    socketOutput.flush();
+                    if (clients.containsKey(nickname)) {
+                        PhasedProxyPlayer existingProxy = clients.get(nickname);
+
+                        if (!existingProxy.isRunning()) {
+                            if (existingProxy instanceof SocketProxyPlayer && !existingProxy.isRunning()) {
+                                ((SocketProxyPlayer) existingProxy).updateStreams(socketInput, socketOutput);
+                                System.out.println(existingProxy.nickname + " now reconnected");
+
+                                new Thread(() -> {
+                                    try {
+                                        existingProxy.runVirtualClient();
+                                    } catch (SocketException e) {
+                                        System.out.println("Connection Lost");
+                                    }
+                                }).start();
+
+                                existingProxy.startNetworkHealthChecks();
+                                existingProxy.refreshClientState();
+                            }
+                        } else {
+                            socketOutput.writeObject(new RuntimeException("Player already connected!"));
+                            return;
+                        }
+                    } else {
+                        socketOutput.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
+                        socketOutput.flush();
+                    }
                 }
             }
         }

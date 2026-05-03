@@ -17,10 +17,12 @@ import it.polimi.ingsw.gc49.model.Invention;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Deck {
+public class Deck implements Serializable {
 
     private final ArrayList<Card> tribeDeck;
     private final ArrayList<Card> buildingDeck;
@@ -494,6 +496,11 @@ public class Deck {
     }
     public void addCard(Card card){
         tribeDeck.add(card);
+    }
+
+
+    public ArrayList<Card> getBuildingDeck(){
+        return buildingDeck;
     }
 
 }

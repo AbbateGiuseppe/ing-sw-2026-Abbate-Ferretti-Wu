@@ -7,13 +7,14 @@ import it.polimi.ingsw.gc49.model.Game;
 import it.polimi.ingsw.gc49.model.Player;
 import it.polimi.ingsw.gc49.model.States.EraEndedException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.sort;
 
 
-public class Line {
+public class Line implements Serializable {
     /// Per la macchina a stati finiti
     private Era currentEra = Era.first(); //chiedi
     private boolean eraChanged = false;
@@ -206,5 +207,22 @@ public class Line {
             e.resolveEvent(playerList);
         }
     }
+    //TODO verificare
+    public ArrayList<Card> getUpperLine(){
+        return upperLine;
+    }
+    public ArrayList<Card> getLowerLine(){
+        return lowerLine;
+    }
+
+    public ArrayList<Card> getUpperBuilding(){
+        return upperBuilding;
+    }
+
+    public ArrayList<Card> getLowerBuilding(){
+        return lowerBuilding;
+    }
+
+
 
 }

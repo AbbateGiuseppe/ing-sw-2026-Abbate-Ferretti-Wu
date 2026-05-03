@@ -6,6 +6,8 @@ import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_HALL.Initiali
 import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_HALL.UpdateHallPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
+import it.polimi.ingsw.gc49.rmi_socket.RejoinException;
+import it.polimi.ingsw.gc49.rmi_socket.RoomFullException;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.server.rooms.WaitingRoom;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
@@ -22,30 +24,73 @@ public class Hall implements VirtualHallServer {
     private static final Map<String, PhasedProxyPlayer> PlayersInHall = new HashMap<>();
 
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
-        System.out.println("Il giocatore " + newPlayer.nickname + " è entrato nell'atrio.");
+        System.out.println("Player " + newPlayer.nickname + " is in the hall");
         PlayersInHall.put(newPlayer.nickname, newPlayer);
 
         //sends the new player the hall he is in
         newPlayer.initializeClientHall( new InitializeHallPacket(giveMockupHall()) );
     }
 
+
+    //modificato per diverse room
     @Override
     public void joinRoom ( HallJoinPacket hallJoinPacket ) throws Exception {
-        Room joiningRoom = rooms.get(hallJoinPacket.roomName);
-        if( joiningRoom != null ) {
-            //gets the sending player
-            String senderNickname = hallJoinPacket.getSenderNickname();
-            PhasedProxyPlayer senderPlayer = PlayersInHall.get(senderNickname);
+        String nickname = hallJoinPacket.getSenderNickname();
+        Room targetRoom = rooms.get(hallJoinPacket.roomName);
+        PhasedProxyPlayer player = PlayersInHall.get(nickname);
 
-            joiningRoom.enterPlayer(senderPlayer); //enters the player into the room.
-            PlayersInHall.remove(senderNickname); //removes the player from the hall.
+        if (targetRoom == null) throw new Exception("Room not Found");
 
-            //broadcasts the new hall
+        try {
+            // --- 1. rejoin logic
+            if (player.getOldRoom() != null) {
+
+                // Caso A: trying to return to oldRoom
+                if (player.getOldRoom() == targetRoom) {
+                    if (targetRoom instanceof PlayingRoom) {
+                        System.out.println("[REJOIN] " + nickname);
+
+                        player.setCurrentRoom(targetRoom);
+                        player.setOldRoom(null);
+                        PlayersInHall.remove(nickname);
+
+                        // synch with adapter
+                        player.getServerSide().syncPlayer(player);
+
+                        broadcastMockupHall();
+                        return;
+                    } else {
+                        System.out.println("[REJOIN] Returning to lobby: " + nickname);
+                    }
+                }
+                // Caso B: Trying to change room
+                else if (player.getOldRoom() instanceof PlayingRoom) {
+                    throw new RejoinException("You've already another match pending!");
+                }
+            }
+
+            // --- 2. standard join
+            if (targetRoom instanceof PlayingRoom) {
+                throw new RoomFullException("Impossibile entrare: partita già iniziata.");
+            }
+
+            if (targetRoom.isFull()) {
+                throw new RoomFullException("La stanza è piena.");
+            }
+
+            targetRoom.enterPlayer(player);
+            player.setCurrentRoom(targetRoom);
+            player.setOldRoom(null);
+            PlayersInHall.remove(nickname);
+
             broadcastMockupHall();
-        }else{
-            throw new RuntimeException("Stanza non trovata");
+
+        } catch (RejoinException | RoomFullException e) {
+            System.err.println("[JOIN ERROR] " + nickname + ": " + e.getMessage());
+            throw e;
         }
     }
+
 
     @Override
     public void createRoom ( HallCreatePacket hallCreatePacket ) throws Exception {

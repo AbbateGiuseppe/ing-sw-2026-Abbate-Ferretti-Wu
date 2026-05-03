@@ -7,12 +7,13 @@ import it.polimi.ingsw.gc49.model.Player;
 import it.polimi.ingsw.gc49.model.States.DeckEmptiedException;
 import it.polimi.ingsw.gc49.model.States.EraEndedException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
 
-public class CardBoard {
+public class CardBoard implements Serializable {
 
     private final Line line;
     private final List<Card> discards;
