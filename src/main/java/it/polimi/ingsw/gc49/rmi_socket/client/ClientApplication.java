@@ -32,10 +32,10 @@ import java.util.Scanner;
 
 public class ClientApplication implements VirtualClient {
     private PhasedProxyServer server;
-    private ApplicationPhase currentApplicationPhase = ApplicationPhase.HALL;
     public final String nickname;
     private final Mockup mockups = new Mockup();
     private static final String mainServer = ServerMultiplexer.mainServer;
+    private UserInputInterface inputInterface;
     private volatile boolean running;
 
     public ClientApplication ( String nickname ) {
@@ -132,10 +132,9 @@ public class ClientApplication implements VirtualClient {
         System.out.print("> ");
         int interfaceChoice = scan.nextInt();
 
-        UserInputInterface inputInterface;
         if(interfaceChoice == 1) {
             System.out.println("Avvio dell'interfaccia testuale...");
-            inputInterface = new TextTerminal(server, mockups); //connect interface to server proxy
+            inputInterface = new TextTerminal(server, mockups, ApplicationPhase.GAME); //connect interface to server proxy
         }else if(interfaceChoice == 2) {
             System.out.println("Avvio dell'interfaccia grafica...");
             System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
@@ -158,10 +157,9 @@ public class ClientApplication implements VirtualClient {
         System.out.print("> ");
         int interfaceChoice = scan.nextInt();
 
-        UserInputInterface inputInterface;
         if(interfaceChoice == 1) {
             System.out.println("Avvio dell'interfaccia testuale...");
-            inputInterface = new TextTerminal(server, mockups); //connect interface to server proxy
+            inputInterface = new TextTerminal(server, mockups, ApplicationPhase.GAME); //connect interface to server proxy
         }else if(interfaceChoice == 2) {
             System.out.println("Avvio dell'interfaccia grafica...");
             System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
@@ -188,7 +186,7 @@ public class ClientApplication implements VirtualClient {
     //### Client general methods
     @Override
     public void changePhaseClient ( ChangePhasePacket changePhasePacket ) throws Exception {
-        currentApplicationPhase = changePhasePacket.newPhase;
+        inputInterface.setCurrentPhase(changePhasePacket.newPhase);
     }
 
     //### Game called methods

@@ -5,8 +5,10 @@ import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.model.Totem;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -18,24 +20,54 @@ public class TextTerminal extends UserInputInterface {
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
     private static StringBuilder manual = new StringBuilder();
 
+    /*
+    public void processInput(String input) {
+        // 1. Split the string by whitespace
+        String[] parts = input.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+        if (parts.length == 0) return;
+
+        // 2. The first word is the key
+        String action = parts[0].toLowerCase();
+
+        // 3. The remaining words are parameters
+        String[] params = Arrays.copyOfRange(parts, 1, parts.length);
+
+        // 4. Look up and execute
+        TerminalCommand command = commands.get(action);
+        if (command != null) {
+            command.execute(mockups, params);
+        } else {
+            System.out.println("Unknown command: " + action);
+        }
+    }
+ */
     static {
-        commands.put("help", ( terminalMockups, terminalParameters ) ->  printManual());
+        commands.put("help", ( terminalPhase, terminalMockups, terminalParameters ) ->  {
+            if(terminalPhase == ApplicationPhase.GAME){
+                printManual();
+            }}
+        );
         // Mostra i cibi e i punti di tutti i giocatori
-        commands.put("status", ( terminalMockups, terminalParameters ) -> {
-            for(MockupPlayer p : terminalMockups.getGame().getPlayers()) {
-                // Guarda toString() di MockupPlayer
-                System.out.println(p);
+        commands.put("status", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+            if(terminalPhase == ApplicationPhase.GAME) {
+                for (MockupPlayer p : terminalMockups.getGame().getPlayers()) {
+                    // Guarda toString() di MockupPlayer
+                    System.out.println(p);
+                }
             }
         });
-        commands.put("cards", ( terminalMockups, terminalParameters ) -> {
-            int index = Integer.parseInt(terminalParameters[0]);
-            terminalMockups.getGame().getPlayer(index).printCards();
+        // Mostra le carte di un giocatore dato il suo indice
+        commands.put("cards", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+            if(terminalPhase == ApplicationPhase.GAME) {
+                int index = Integer.parseInt(terminalParameters[0]);
+                terminalMockups.getGame().getPlayer(index).printCards();
+            }
         });
 
     }
 
-    public TextTerminal ( VirtualServer virtualServer , Mockup mockups) {
-        super( virtualServer, mockups);
+    public TextTerminal ( VirtualServer virtualServer , Mockup mockups, ApplicationPhase currentPhase) {
+        super( virtualServer, mockups, currentPhase);
     }
 
     @Override
@@ -45,7 +77,6 @@ public class TextTerminal extends UserInputInterface {
             Scanner scanner = new Scanner(System.in);
             MassiPlayerActionEnum currentAction = MassiPlayerActionEnum.CONNECT;
             int index;
-            CommandPacket command;
             Map<String,Totem> totems = Map.of(
                     "orange", Totem.ORANGE,
                     "yellow", Totem.YELLOW,
@@ -59,29 +90,26 @@ public class TextTerminal extends UserInputInterface {
                 ResetCommand();
                 System.out.print(">");
                 String textCommand = scanner.nextLine();
-                textCommand.toLowerCase();
-                String[] elems = textCommand.split(" ");
-                int pos = 0;
+                // 1. Split the string by whitespace
+                String[] parts = textCommand.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+                if (parts.length == 0) continue;
 
-                if(checkCommand("help",elems)) {
-                    printManual();
-                    continue;
-                }
-                // Mostra i cibi e i punti di tutti i giocatori
-                else if(checkCommand("status",elems)) {
-                    for(MockupPlayer p : mockups.getGame().getPlayers()) {
-                        // Guarda toString() di MockupPlayer
-                        System.out.println(p);
-                    }
-                    continue;
-                }
-                // Mostra le carte di un giocatore dato il suo indice
-                else if(checkCommand("cards",elems)) {
-                    index = Integer.parseInt(elems[elems.length - 1]);
-                    mockups.getGame().getPlayer(index).printCards();
-                    continue;
+                // 2. The first word is the key
+                String action = parts[0].toLowerCase();
+
+                // 3. The remaining words are parameters
+                String[] params = Arrays.copyOfRange(parts, 1, parts.length);
+
+                // 4. Look up and execute
+                TerminalCommand command = commands.get(action);
+                if (command != null) {
+                    command.execute(currentPhase, mockups, params);
+                } else {
+                    System.out.println("Unknown command: " + action);
                 }
 
+
+                /*
                 // I seguenti comandi sono azioni di gioco proprie
                 if(checkCommand("draw",elems)){
                     if(checkCommand("upper",elems)){
@@ -125,6 +153,8 @@ public class TextTerminal extends UserInputInterface {
 
                 virtualServer.sendCommand(command);
                 System.out.println("Sent " + currentAction + " to server");
+
+                 */
             }
 
 
