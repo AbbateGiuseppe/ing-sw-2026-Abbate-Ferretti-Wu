@@ -48,6 +48,7 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
 
     @Override
     public void syncPlayer(PhasedProxyPlayer p) throws Exception {
+
         if (!(adaptee instanceof Room)) {
             throw new Exception("L'adaptee non è una Room, impossibile sincronizzare.");
         }

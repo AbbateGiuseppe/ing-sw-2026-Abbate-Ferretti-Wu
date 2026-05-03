@@ -78,5 +78,4 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer 
         reportActivity();
     }
 
-
 }

@@ -48,10 +48,6 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
                 datapacket = (Datapacket) input.readObject();
                 reportActivity(); // whatever packet received timeout is resetted
                 addSenderNickname(datapacket);
-                //don't pass to game logic
-                if (datapacket.datapacketType == Datapacket.DatapacketType.HEARTBEAT) {
-                    continue;
-                }
 
                 if(assureRightPhase(datapacket)) {
                     switch (datapacket.datapacketType) {
@@ -73,6 +69,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
                                 default -> throw new RuntimeException("Uncoded roomcommandpacket type: " + roomCommandPacket.commandType + " from: " + nickname);
                             }
                         }
+                        case HEARTBEAT -> {receiveHeartbeat();}
                         default ->
                                 throw new RuntimeException("Unsendable datapacket type: " + datapacket.getDatapacketType() + " from: " + nickname);
                     }

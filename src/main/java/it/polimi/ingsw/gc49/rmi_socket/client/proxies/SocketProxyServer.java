@@ -60,7 +60,7 @@ public class SocketProxyServer extends PhasedProxyServer {
                     case UPDATE_HALL -> updateClientHall((UpdateHallPacket) datapacket);
                     case INITIALIZE_ROOM  -> initializeClientRoom((InitializeRoomPacket) datapacket);
                     case UPDATE_ROOM -> updateClientRoom((UpdateRoomPacket) datapacket);
-                    case HEARTBEAT -> {}
+                    case HEARTBEAT -> {receiveHeartbeat();}
                     default -> throw new RuntimeException("Unsendable datapacket type: " + datapacket.getDatapacketType());
                 }
             }
@@ -153,6 +153,7 @@ public class SocketProxyServer extends PhasedProxyServer {
         }
     }
 
+
     @Override
     protected void pingServer() throws Exception {
         synchronized (writeLock) {
@@ -165,4 +166,6 @@ public class SocketProxyServer extends PhasedProxyServer {
     public void syncPlayer(PhasedProxyPlayer p) throws Exception {
 
     }
+
+
 }

@@ -53,7 +53,6 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
         this.output = output;
         this.currentRoom=null;
         this.oldRoom=null;
-
     }
 
     /**
@@ -89,8 +88,14 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
 
         // check if client is silent
         scheduler.scheduleAtFixedRate(() -> {
-            if (System.currentTimeMillis() - lastCheckIn > TIMEOUT_LIMIT * 1000) {;
-                handleDisconnection();
+            if (System.currentTimeMillis() - lastCheckIn > TIMEOUT_LIMIT * 1000) {
+                // solo per player in playingRoom
+                if(currentPhase==ApplicationPhase.GAME) {
+                    handleDisconnection();
+                }else{
+                    //disconessione completa, elimina riferimento
+                }
+
             }
         }, 5, 5, TimeUnit.SECONDS);
     }
