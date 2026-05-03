@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.rmi_socket.server;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.RmiProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.SocketProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.server.rooms.Room;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
@@ -173,6 +174,32 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                         socketOutput.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
                         socketOutput.flush();
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Rimuove completamente un giocatore dal sistema.
+     * @param proxy il proxy del giocatore da rimuovere
+     */
+    public void fullDisconnect(PhasedProxyPlayer proxy) throws Exception {
+        if (proxy == null) return;
+
+        synchronized (clients) {
+            String nickname = proxy.getNickname();
+            clients.remove(nickname);
+            hall.removePlayer(proxy);
+
+            if (proxy.getCurrentRoom() != null) {
+                proxy.getCurrentRoom().removePlayer(proxy); // Rimuove dalla stanza
+            }
+
+            if (proxy instanceof RmiProxyPlayer) {
+                try {
+                    java.rmi.server.UnicastRemoteObject.unexportObject(proxy, true);
+                } catch (java.rmi.RemoteException e) {
+                    // Già rimosso, ok così
                 }
             }
         }

@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 import it.polimi.ingsw.gc49.controller.massi.MassiController;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.rooms.Room;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
@@ -17,6 +18,7 @@ import java.rmi.RemoteException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
 
 public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer {
     public final ServerMultiplexer server;
@@ -83,19 +85,23 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
     public void startNetworkHealthChecks() {
         // sending heartbeat for each interval
         scheduler.scheduleAtFixedRate(() -> {
-            try { ping(); } catch (Exception e) { handleDisconnection(); }
+            try { ping(); } catch (Exception e) {
+                try {
+                    onConnectionLost();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         }, 0, SEND_INTERVAL, TimeUnit.SECONDS);
 
         // check if client is silent
         scheduler.scheduleAtFixedRate(() -> {
             if (System.currentTimeMillis() - lastCheckIn > TIMEOUT_LIMIT * 1000) {
-                // solo per player in playingRoom
-                if(currentPhase==ApplicationPhase.GAME) {
-                    handleDisconnection();
-                }else{
-                    //disconessione completa, elimina riferimento
+                try {
+                    onConnectionLost();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-
             }
         }, 5, 5, TimeUnit.SECONDS);
     }
@@ -112,6 +118,27 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
         return running;
     }
 
+    public ApplicationPhase getCurrentPhase() {
+        return currentPhase;
+    }
+
+    public void onConnectionLost() throws Exception {
+            if (this.getCurrentPhase() != ApplicationPhase.GAME) {
+                fullDisconnect();
+            } else {
+                handleDisconnection();
+            }
+    }
+
+    public void fullDisconnect() throws Exception {
+        this.running = false;
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdownNow();
+        }
+        this.server.fullDisconnect(this);
+    }
+
+
     protected synchronized void handleDisconnection() {
         if (!running) return;
         running = false; // Il proxy rimane in memoria ma segnato come non attivo
@@ -122,10 +149,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
 
     public void refreshClientState() {
         try {
-            this.changePhaseClient(new ChangePhasePacket(this.currentPhase));
-
             this.serverSide.syncPlayer(this);
-
             System.out.println("[RECONNECT] Sync completed for " + nickname);
         } catch (Exception e) {
             System.err.println("[RECONNECT] Error during the refresh of " + nickname + ": " + e.getMessage());
@@ -166,6 +190,11 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
     @Override
     public void receiveHeartbeat() throws RemoteException {
         this.reportActivity(); // Reset timestamp
+    }
+
+    @Override
+    public void disconnect(DisconnectPacket disconnectPacket) throws Exception {
+        this.fullDisconnect();
     }
 
 }

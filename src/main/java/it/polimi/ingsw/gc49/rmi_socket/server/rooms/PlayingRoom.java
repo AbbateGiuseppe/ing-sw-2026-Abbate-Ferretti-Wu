@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
 import it.polimi.ingsw.gc49.controller.massi.MassiController;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_ROOM.UpdateRoomPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
@@ -83,5 +84,12 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     @Override
     public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
 
+    }
+
+    private void broadcastMockupRoom() throws Exception {
+        UpdateRoomPacket updatedRoom = new UpdateRoomPacket(giveMockupRoom(MockupRoom.RoomType.PLAYING));
+        for( PhasedProxyPlayer player : players) {
+            player.updateClientRoom(updatedRoom);
+        }
     }
 }

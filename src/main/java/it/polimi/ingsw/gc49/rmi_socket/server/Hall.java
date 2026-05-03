@@ -119,6 +119,8 @@ public class Hall implements VirtualHallServer {
         );
     }
 
+
+
     private void broadcastMockupHall() throws Exception {
         UpdateHallPacket updatedHall = new UpdateHallPacket(giveMockupHall());
 
@@ -144,5 +146,18 @@ public class Hall implements VirtualHallServer {
         new Thread(() -> {
             playingRoom.runGame();
         }).start();
+    }
+
+    public void removePlayer(PhasedProxyPlayer player) throws Exception {
+        if (player == null) return;
+        synchronized (PlayersInHall) {
+            if (PlayersInHall.remove(player.nickname) != null) {
+                try {
+                    broadcastMockupHall();
+                } catch (Exception e) {
+                    System.err.println("Errore durante il broadcast della Hall");
+                }
+            }
+        }
     }
 }

@@ -43,9 +43,6 @@ public class VirtualRoomServerAdapter extends VirtualServerAdapter {
     }
     @Override
     public void syncPlayer(PhasedProxyPlayer p) throws Exception {
-
-        //TODO; chiedere come avere riferimenti a hall e room
-
         Room room = (Room) this.adaptee;
 
         p.initializeClientRoom(new InitializeRoomPacket(

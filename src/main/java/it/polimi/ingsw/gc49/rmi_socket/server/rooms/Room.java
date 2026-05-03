@@ -1,12 +1,15 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
 import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_HALL.UpdateHallPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_ROOM.UpdateRoomPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 public abstract class Room {
     protected final Hall hall;
@@ -50,6 +53,15 @@ public abstract class Room {
                 .map(player -> player.nickname)
                 .collect(Collectors.toList());
     }
+
+    private void broadcastMockupRoom() throws Exception {
+        UpdateRoomPacket updatedRoom = new UpdateRoomPacket(giveMockupRoom());
+
+        for( PhasedProxyPlayer player : players) {
+            player.updateClientRoom(updatedRoom);
+        }
+    }
+
     public MockupRoom giveMockupRoom (){
         List<String> names = players.stream()
                 .map(p -> p.nickname)
@@ -66,7 +78,18 @@ public abstract class Room {
         return new MockupRoom(type,this.roomName, this.maxNumOfPlayers, names);
     };
 
-    public boolean isFull(){
-        return players.get(maxNumOfPlayers)!=null;
+    public void removePlayer(PhasedProxyPlayer player) throws Exception {
+        if (player == null) return;
+        synchronized (players) {
+            if (players.contains(player)) {
+                players.remove(player);
+                player.setCurrentRoom(null);
+                broadcastMockupRoom();
+            }
+        }
+
+    }
+
+    public boolean isFull(){return players.size() >= maxNumOfPlayers;
     }
 }
