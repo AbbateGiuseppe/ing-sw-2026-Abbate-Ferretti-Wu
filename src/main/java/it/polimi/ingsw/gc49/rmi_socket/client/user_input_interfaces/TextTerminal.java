@@ -100,7 +100,7 @@ public class TextTerminal extends UserInputInterface {
                 // 3. The remaining words are parameters
                 String[] params = Arrays.copyOfRange(parts, 1, parts.length);
 
-                // 4. Look up and execute
+                // 4. Look up the terminal function and execute
                 TerminalCommand command = commands.get(action);
                 if (command != null) {
                     command.execute(currentPhase, mockups, params);
