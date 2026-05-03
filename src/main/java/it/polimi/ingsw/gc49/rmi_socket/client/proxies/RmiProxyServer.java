@@ -60,10 +60,7 @@ public class RmiProxyServer extends PhasedProxyServer {
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         serverSide.disconnect(disconnectPacket);
     }
-    @Override
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
-        serverSide.reconnect(reconnectPacket);
-    }
+
     //### VirtualHallClient
     @Override
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {

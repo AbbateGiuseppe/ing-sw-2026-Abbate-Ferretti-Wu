@@ -81,10 +81,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
 
     }
-    @Override
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
 
-    }
 
     private void broadcastMockupRoom() throws Exception {
         UpdateRoomPacket updatedRoom = new UpdateRoomPacket(giveMockupRoom(MockupRoom.RoomType.PLAYING));

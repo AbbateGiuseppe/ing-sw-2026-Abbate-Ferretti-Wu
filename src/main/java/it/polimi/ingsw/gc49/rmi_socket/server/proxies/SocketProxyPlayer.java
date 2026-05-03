@@ -126,9 +126,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         serverSide.disconnect(disconnectPacket);
     }
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
-        serverSide.reconnect(reconnectPacket);
-    }
+
     //### VirtualHallClient
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
         synchronized (writeLock) {

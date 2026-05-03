@@ -11,5 +11,4 @@ public interface VirtualGameServer extends Remote {
 
     void disconnect ( DisconnectPacket disconnectPacket ) throws Exception;
 
-    void reconnect ( ReconnectPacket reconnectPacket ) throws Exception;
 }

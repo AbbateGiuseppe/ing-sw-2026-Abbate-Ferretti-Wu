@@ -29,8 +29,6 @@ public class VirtualRoomServerAdapter extends VirtualServerAdapter {
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {}
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {}
-    @Override
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {}
     //### VirtualHallServer
     @Override
     public void joinRoom ( HallJoinPacket hallJoinPacket ) throws Exception {}

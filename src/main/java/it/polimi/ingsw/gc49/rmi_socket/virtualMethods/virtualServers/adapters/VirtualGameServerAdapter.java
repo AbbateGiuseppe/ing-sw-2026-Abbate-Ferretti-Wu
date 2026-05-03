@@ -33,10 +33,7 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         adaptee.disconnect(disconnectPacket);
     }
-    @Override
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
-        adaptee.reconnect(reconnectPacket);
-    }
+
     //### VirtualHallServer
     @Override
     public void joinRoom ( HallJoinPacket hallJoinPacket ) throws Exception {}

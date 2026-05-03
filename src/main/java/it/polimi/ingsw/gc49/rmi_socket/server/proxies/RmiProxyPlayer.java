@@ -79,13 +79,7 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
             serverSide.disconnect(disconnectPacket);
         }
     }
-    @Override
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
-        if(assureRightPhase(reconnectPacket)){
-            addSenderNickname(reconnectPacket);
-            serverSide.reconnect(reconnectPacket);
-        }
-    }
+
     //### VirtualHallClient
     @Override
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {

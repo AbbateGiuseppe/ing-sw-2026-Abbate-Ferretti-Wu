@@ -112,12 +112,7 @@ public class SocketProxyServer extends PhasedProxyServer {
             output.flush();
         }
     }
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
-        synchronized (writeLock) {
-            output.writeObject(reconnectPacket);
-            output.flush();
-        }
-    }
+
     //### VirtualHallClient
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
         clientSide.initializeClientHall(initializeHallPacket);
