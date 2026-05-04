@@ -16,4 +16,14 @@ public class MockupRoom implements Serializable {
         this.maxNumOfPlayers = maxNumOfPlayers;
         this.connectedPlayers = connectedPlayers;
     }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "status=" + type +
+                ", roomName='" + roomName + '\'' +
+                ", maxNumOfPlayers=" + maxNumOfPlayers +
+                ", connectedPlayers=" + connectedPlayers +
+                '}';
+    }
 }
