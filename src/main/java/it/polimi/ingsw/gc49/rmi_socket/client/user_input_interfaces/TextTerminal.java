@@ -1,9 +1,8 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces;
 
 import it.polimi.ingsw.gc49.View.Mockup;
-import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
 import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
-import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
+import it.polimi.ingsw.gc49.controller.massi.PlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
@@ -126,7 +125,7 @@ public class TextTerminal extends UserInputInterface {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int offerIndex = Integer.parseInt(terminalParameters[0]);
-                    CommandPacket commandPacket = new CommandPacket(MassiPlayerActionEnum.CHOOSE_OFFER, offerIndex);
+                    CommandPacket commandPacket = new CommandPacket(PlayerActionEnum.CHOOSE_OFFER, offerIndex);
                     terminalVirtualServer.sendCommand(commandPacket);
                 } catch (NumberFormatException e) {
                     System.out.println("please, insert a valid number!");
@@ -138,7 +137,7 @@ public class TextTerminal extends UserInputInterface {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 if (totems.containsKey(terminalParameters[0].toLowerCase())) {
                     Totem totem = totems.get(terminalParameters[0].toLowerCase());
-                    CommandPacket commandPacket = new CommandPacket(MassiPlayerActionEnum.CHOOSE_TOTEM,totem);
+                    CommandPacket commandPacket = new CommandPacket(PlayerActionEnum.CHOOSE_TOTEM,totem);
                     terminalVirtualServer.sendCommand(commandPacket);
                 }
             }
@@ -148,18 +147,18 @@ public class TextTerminal extends UserInputInterface {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 2) {
                 try {
                     int cardIndex = Integer.parseInt(terminalParameters[2]);
-                    MassiPlayerActionEnum action = null;
+                    PlayerActionEnum action = null;
                     if (terminalParameters[0].equalsIgnoreCase("lower")) {
                         if (terminalParameters[1].equalsIgnoreCase("character")) {
-                            action = MassiPlayerActionEnum.DRAW_LOWER_CHARACTER;
+                            action = PlayerActionEnum.DRAW_LOWER_CHARACTER;
                         } else if (terminalParameters[1].equalsIgnoreCase("building")) {
-                            action = MassiPlayerActionEnum.DRAW_LOWER_BUILDING;
+                            action = PlayerActionEnum.DRAW_LOWER_BUILDING;
                         }
                     } else if (terminalParameters[0].equalsIgnoreCase("upper")) {
                         if (terminalParameters[1].equalsIgnoreCase("character")) {
-                            action = MassiPlayerActionEnum.DRAW_UPPER_CHARACTER;
+                            action = PlayerActionEnum.DRAW_UPPER_CHARACTER;
                         } else if (terminalParameters[1].equalsIgnoreCase("building")) {
-                            action = MassiPlayerActionEnum.DRAW_UPPER_BUILDING;
+                            action = PlayerActionEnum.DRAW_UPPER_BUILDING;
                         }
                     }
                     if (action != null) {

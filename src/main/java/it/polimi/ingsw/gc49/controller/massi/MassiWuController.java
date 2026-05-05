@@ -8,12 +8,12 @@ import it.polimi.ingsw.gc49.model.Game;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 
-public class MassiController implements VirtualGameClient {
+public class MassiWuController implements VirtualGameClient {
     private Game game;
     private final int controllingPlayerIndex;
     private final PhasedProxyPlayer controllingPlayer;
 
-    public MassiController ( int controllingPlayerIndex, PhasedProxyPlayer controllingPlayer ) {
+    public MassiWuController ( int controllingPlayerIndex, PhasedProxyPlayer controllingPlayer ) {
         game = null;
         this.controllingPlayerIndex = controllingPlayerIndex;
         this.controllingPlayer = controllingPlayer;
@@ -25,7 +25,7 @@ public class MassiController implements VirtualGameClient {
     }
 
     public void executeCommand ( CommandPacket command ) {
-        MassiPlayerActionEnum action = command.getAction();
+        PlayerActionEnum action = command.getAction();
         switch ( action ) {
             case CHOOSE_TOTEM:
                 game.chooseTotem(controllingPlayerIndex, command.getTotem());

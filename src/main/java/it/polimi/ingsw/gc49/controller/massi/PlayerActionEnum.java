@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.controller.massi;
 
-public enum MassiPlayerActionEnum {
+public enum PlayerActionEnum {
     CHOOSE_TOTEM,
     DRAW_UPPER_CHARACTER,
     DRAW_LOWER_CHARACTER,

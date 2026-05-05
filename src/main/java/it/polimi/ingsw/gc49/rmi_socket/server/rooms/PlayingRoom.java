@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
 import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
-import it.polimi.ingsw.gc49.controller.massi.MassiController;
+import it.polimi.ingsw.gc49.controller.massi.MassiWuController;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
@@ -32,7 +32,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
         //creates the controllers and connects them
         int playerIndex = 0;
         for(PhasedProxyPlayer player : players){
-            MassiController controller = new MassiController(playerIndex, player); //creates a controller with the current index
+            MassiWuController controller = new MassiWuController(playerIndex, player); //creates a controller with the current index
             controller.connectModel(game); //connects controller to the game
             player.setController(controller); //connects the proxy to the controller
             player.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));//tells them they've entered a game

@@ -1,12 +1,12 @@
 package it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND;
 
-import it.polimi.ingsw.gc49.controller.massi.MassiPlayerActionEnum;
+import it.polimi.ingsw.gc49.controller.massi.PlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.model.Totem;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 
 public class CommandPacket extends Datapacket {
-    private final MassiPlayerActionEnum action;
+    private final PlayerActionEnum action;
     private int index;
     private Totem totem;
 
@@ -14,7 +14,7 @@ public class CommandPacket extends Datapacket {
      * Constructor for blank commands.
      * @param action, the player's action enum.
      */
-    public CommandPacket ( MassiPlayerActionEnum action ) {
+    public CommandPacket ( PlayerActionEnum action ) {
         super(DatapacketType.COMMAND, ApplicationPhase.GAME);
         this.action = action;
     }
@@ -24,7 +24,7 @@ public class CommandPacket extends Datapacket {
      * @param action, the player's action enum.
      * @param index, the action's chosen index.
      */
-    public CommandPacket ( MassiPlayerActionEnum action, int index ) {
+    public CommandPacket ( PlayerActionEnum action, int index ) {
         super(DatapacketType.COMMAND, ApplicationPhase.GAME);
         this.action = action;
         this.index = index;
@@ -35,7 +35,7 @@ public class CommandPacket extends Datapacket {
      * @param action, the player's action enum.
      * @param totem, the chosen totem's enum.
      */
-    public CommandPacket ( MassiPlayerActionEnum action, Totem totem ) {
+    public CommandPacket ( PlayerActionEnum action, Totem totem ) {
         super(DatapacketType.COMMAND, ApplicationPhase.GAME);
         this.action = action;
         this.totem = totem;
@@ -43,7 +43,7 @@ public class CommandPacket extends Datapacket {
 
 
     //### getters
-    public MassiPlayerActionEnum getAction () {
+    public PlayerActionEnum getAction () {
         return action;
     }
     public int getIndex () {

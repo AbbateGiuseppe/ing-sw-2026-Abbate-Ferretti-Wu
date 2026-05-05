@@ -6,7 +6,7 @@ module it.polimi.ingsw.gc49 {
     requires org.jline;
 
     opens it.polimi.ingsw.gc49 to javafx.fxml;
-    exports it.polimi.ingsw.gc49;
+    //exports it.polimi.ingsw.gc49;
     exports it.polimi.ingsw.gc49.model.States;
     opens it.polimi.ingsw.gc49.model.States to javafx.fxml;
     exports it.polimi.ingsw.gc49.model.Track;
