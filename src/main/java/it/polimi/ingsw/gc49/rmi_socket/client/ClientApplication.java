@@ -28,6 +28,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ClientApplication implements VirtualClient {
@@ -47,14 +48,26 @@ public class ClientApplication implements VirtualClient {
         inputInterface = chooseInputInterface();
         if (inputInterface != null) {
             Scanner scan = new Scanner(System.in);
+            int connectionChoice;
+            while(true) {
+                try {
+                    System.out.println("Premere 1 per la connessione RMI, Premere 2 per la connessione socket");
+                    System.out.print("> ");
+                    connectionChoice = Integer.parseInt(scan.nextLine());
+                    if(connectionChoice == 1 || connectionChoice == 2) {
+                        break;
+                    }else{
+                        System.out.println("SCEGLI UN NUMERO TRA 1 e 2! Riprova");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("NUMERO NON VALIDO! Riprova");
+                }
+            };
             System.out.println("Inserisci il tuo nomignolo");
             System.out.print("> ");
             String nickname = scan.nextLine();
-            System.out.println("Premere 1 per la connessione RMI, Premere 2 per la connessione socket");
-            System.out.print("> ");
-            String connectionChoice = scan.nextLine();
 
-            if (connectionChoice.equals("1")) { //RMI
+            if (connectionChoice == 1) { //RMI
                 int port = ServerMultiplexer.portRmi;
                 String host = null; //args[1];
 
@@ -89,7 +102,7 @@ public class ClientApplication implements VirtualClient {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else if (connectionChoice.equals("2")) { //Socket
+            } else if (connectionChoice == 2) { //Socket
                 int port = ServerMultiplexer.portSocket;
                 String host = null; //args[1];
 
