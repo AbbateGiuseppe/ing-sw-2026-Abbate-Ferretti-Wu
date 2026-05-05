@@ -11,7 +11,7 @@ public class TotemChoosing extends State {
             int numOfPlayers = game.getNumOfPlayers();
             while (game.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
                 try {
-                    wait();
+                    playerInputLock.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
