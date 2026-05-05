@@ -70,7 +70,7 @@ public class TextTerminal extends UserInputInterface {
                 }
             }
         });
-        // Mostrare tutte le stanze nell'atrio o la stanza attuale
+        // Mostrare tutte le informazioni importanti del luogo attuale
         commands.put("show", ( terminalPhase, terminalMockups, _, _ ) -> {
             if(terminalPhase == ApplicationPhase.HALL) {
                 if(terminalMockups.getHall() != null) {
@@ -85,6 +85,14 @@ public class TextTerminal extends UserInputInterface {
                 }else{
                     System.out.println("Hall not yet loaded.");
                 }
+            }else if(terminalPhase == ApplicationPhase.GAME) {
+                if(terminalMockups.getGame() != null) {
+                    for (MockupPlayer p : terminalMockups.getGame().getPlayers()) {
+                        System.out.println(p);
+                    }
+                }else{
+                    System.out.println("Game not yet loaded.");
+                }
             }
         });
 
@@ -98,18 +106,6 @@ public class TextTerminal extends UserInputInterface {
         });
 
 
-        // Mostra i cibi e i punti di tutti i giocatori
-        commands.put("status", ( terminalPhase, terminalMockups, _, _ ) -> {
-            if(terminalPhase == ApplicationPhase.GAME) {
-                if(terminalMockups.getGame() != null) {
-                    for (MockupPlayer p : terminalMockups.getGame().getPlayers()) {
-                        System.out.println(p);
-                    }
-                }else{
-                    System.out.println("Game not yet loaded.");
-                }
-            }
-        });
         // Mostra le carte di un giocatore dato il suo indice
         commands.put("cards", ( terminalPhase, terminalMockups, terminalParameters, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
@@ -192,25 +188,23 @@ public class TextTerminal extends UserInputInterface {
         // Command entries
         manual.append(String.format("%72s\n", "GENERAL commands:"));
         manual.append(formatCommand("help", "Displays this help message"));
+        manual.append(formatCommand("show", "Displays the info of the current place you are in"));
         //HALL commands
         manual.append("-".repeat(125)).append("\n");
         manual.append(String.format("%70s\n", "HALL commands:"));
-        manual.append(formatCommand("show", "Displays the hall"));
         manual.append(formatCommand("create (\"your room name\") (num. players)", "Creates a waiting room with the chosen room's name (in Quotation marks)"));
         manual.append(formatCommand("join (\"chosen room name\")", "Makes you join the room with your chosen name (in Quotation marks)"));
         //ROOM commands
         manual.append("-".repeat(125)).append("\n");
         manual.append(String.format("%70s\n", "ROOM commands:"));
-        manual.append(formatCommand("show", "Displays the room you are in"));
         manual.append(formatCommand("leave", "Leaves the current room"));
         //GAME commands
         manual.append("-".repeat(125)).append("\n");
         manual.append(String.format("%70s\n", "GAME commands:"));
-        manual.append(formatCommand("status", "Display the food and points of each player"));
         manual.append(formatCommand("cards [player index]", "Display the cards of the specified player"));
         manual.append(formatCommand("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
         manual.append(formatCommand("offer [offer index]", "Choose the specified offer"));
-        manual.append(formatCommand("totem [totem color]", "Choose the specified totem"));
+        manual.append(formatCommand("totem [orange/white/blue/black/yellow]", "Choose the specified totem"));
         manual.append(formatCommand("disconnect", "Disconnects you from the game"));
     }
     private static void printManual() {System.out.println(manual);}

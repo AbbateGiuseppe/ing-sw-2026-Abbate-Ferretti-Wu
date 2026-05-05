@@ -52,9 +52,9 @@ public class Game {
         }
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
             synchronized (Locks.playerInput) {
-                System.out.println("Entering new game state");
+                System.out.println("Entrando in un nuovo stato di gioco...");
                 executeCurrentState();
-                System.out.println("Finished previous game state");
+                System.out.println("Finito lo stato di gioco precedente.");
             }
         }
     }
