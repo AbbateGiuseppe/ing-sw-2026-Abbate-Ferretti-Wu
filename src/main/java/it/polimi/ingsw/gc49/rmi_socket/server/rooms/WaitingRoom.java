@@ -27,9 +27,19 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
 
 
     private void scheduleGameStart() {
-        startingGameScheduler.schedule(this::startGame, TIME_BEFORE_GAME_START, TimeUnit.SECONDS);
+        try {
+            startingGameScheduler.schedule(() -> {
+                try {
+                    startGame();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }, TIME_BEFORE_GAME_START, TimeUnit.SECONDS);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
-    private void startGame() {
+    private void startGame() throws Exception {
         if(maxNumOfPlayers == getNumConnectedPlayers()){
             System.out.println("La partita nella stanza " + roomName + " sta iniziando...");
             //creates the game

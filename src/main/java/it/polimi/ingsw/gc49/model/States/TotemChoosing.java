@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.model.States;
 
 import it.polimi.ingsw.gc49.model.Game;
+import it.polimi.ingsw.gc49.model.Locks;
 
 public class TotemChoosing extends State {
     public TotemChoosing ( Game game ) { super(game); }
@@ -9,7 +10,7 @@ public class TotemChoosing extends State {
         int numOfPlayers = game.getNumOfPlayers();
         while (game.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
             try {
-                wait();
+                Locks.playerInput.wait();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.model.States;
 
 import it.polimi.ingsw.gc49.model.Game;
+import it.polimi.ingsw.gc49.model.Locks;
 import it.polimi.ingsw.gc49.model.Player;
 
 public class OfferChoosing extends State {
@@ -13,7 +14,7 @@ public class OfferChoosing extends State {
             game.setCurrentPlayerIndex(currentPlayer.getPlayerIndex());
             while (!currentPlayer.hasChosenAnOffer()){ //waits until the current player has chosen an offer.
                 try {
-                    wait();
+                    Locks.playerInput.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

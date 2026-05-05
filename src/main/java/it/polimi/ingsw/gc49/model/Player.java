@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.model;
 
+import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.model.Card.Card;
 import it.polimi.ingsw.gc49.model.Track.OrderSlot;
 
@@ -114,6 +115,14 @@ public class Player {
     }
     public int getDrawableLower () {
         return drawableLower;
+    }
+    public MockupPlayer giveMockupPlayer() {
+        return new MockupPlayer(
+                    nickname,
+                    playerIndex,
+                    food,
+                    points
+        );
     }
 
     // Event Management
