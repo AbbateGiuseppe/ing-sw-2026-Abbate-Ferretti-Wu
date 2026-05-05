@@ -2,15 +2,18 @@ package it.polimi.ingsw.gc49.rmi_socket.server;
 
 import it.polimi.ingsw.gc49.View.mockupHall.MockupHall;
 import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_HALL.InitializeHallPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_HALL.UpdateHallPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.server.rooms.WaitingRoom;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
 import it.polimi.ingsw.gc49.rmi_socket.server.rooms.PlayingRoom;
 import it.polimi.ingsw.gc49.rmi_socket.server.rooms.Room;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,8 +28,15 @@ public class Hall implements VirtualHallServer {
         System.out.println("Il giocatore " + newPlayer.nickname + " è entrato nell'atrio.");
         PlayersInHall.put(newPlayer.nickname, newPlayer);
 
+        //connect the proxy to the hall
+        newPlayer.setServerSideObject(new VirtualHallServerAdapter(this));
+        //tells the player he entered the hall
+        newPlayer.changePhaseClient(new ChangePhasePacket(ApplicationPhase.HALL));
         //sends the new player the hall he is in
         newPlayer.initializeClientHall( new InitializeHallPacket(giveMockupHall()) );
+
+        //broadcasts the new hall
+        broadcastMockupHall();
     }
 
     @Override
@@ -49,7 +59,7 @@ public class Hall implements VirtualHallServer {
 
     @Override
     public void createRoom ( HallCreatePacket hallCreatePacket ) throws Exception {
-        Room newRoom = new PlayingRoom( this, hallCreatePacket.roomName, hallCreatePacket.maxNumOfPlayers ); //Creates a new room with Id of the last room + 1.
+        Room newRoom = new WaitingRoom( this, hallCreatePacket.roomName, hallCreatePacket.maxNumOfPlayers ); //Creates a new room with Id of the last room + 1.
 
         String senderNickname = hallCreatePacket.getSenderNickname();
         PhasedProxyPlayer senderPlayer = PlayersInHall.get(senderNickname);

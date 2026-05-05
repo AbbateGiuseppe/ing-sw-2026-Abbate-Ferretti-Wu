@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc49.model.Era;
 import it.polimi.ingsw.gc49.model.Game;
 
 public class EraEnd extends State {
-    public EraEnd ( Game game ) { super(game);}
+    public EraEnd ( Game game ) { super(game); }
 
     public State executeState () {
         try {

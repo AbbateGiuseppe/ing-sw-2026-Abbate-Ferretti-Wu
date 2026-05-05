@@ -31,120 +31,114 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
 public class ClientApplication implements VirtualClient {
-    private PhasedProxyServer server;
+    private static PhasedProxyServer server;
     public final String nickname;
-    private final Mockup mockups = new Mockup();
+    private static final Mockup mockups = new Mockup();
     private static final String mainServer = ServerMultiplexer.mainServer;
-    private UserInputInterface inputInterface;
+    private static UserInputInterface inputInterface;
     private volatile boolean running;
 
     public ClientApplication ( String nickname ) {
         this.nickname = nickname;
     }
 
-    public static void main( String[] args ) throws Exception {
+    public static void main ( String[] args ) throws Exception {
 
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Inserisci il tuo nomignolo");
-        System.out.print("> ");
-        String nickname = scan.nextLine();
-        System.out.println("Premere 1 per la connessione RMI, Premere 2 per la connessione socket");
-        System.out.print("> ");
-        int connectionChoice = scan.nextInt();
+        inputInterface = chooseInputInterface();
+        if (inputInterface != null) {
+            Scanner scan = new Scanner(System.in);
+            System.out.println("Inserisci il tuo nomignolo");
+            System.out.print("> ");
+            String nickname = scan.nextLine();
+            System.out.println("Premere 1 per la connessione RMI, Premere 2 per la connessione socket");
+            System.out.print("> ");
+            String connectionChoice = scan.nextLine();
 
-        if(connectionChoice == 1) { //RMI
-            int port = ServerMultiplexer.portRmi;
-            String host = null; //args[1];
+            if (connectionChoice.equals("1")) { //RMI
+                int port = ServerMultiplexer.portRmi;
+                String host = null; //args[1];
 
-            try {
-                Registry registry = LocateRegistry.getRegistry(host, port); //null means "localhost"
+                try {
+                    Registry registry = LocateRegistry.getRegistry(host, port); //null means "localhost"
 
-                ClientApplication runnableClient = new ClientApplication(nickname); //creating the client
+                    ClientApplication runnableClient = new ClientApplication(nickname); //creating the client
 
-                PhasedProxyServer phasedProxyServer = new RmiProxyServer(runnableClient); //creating the proxy, client side
+                    PhasedProxyServer phasedProxyServer = new RmiProxyServer(runnableClient); //creating the proxy, client side
 
-                //exporting the proxy
-                VirtualClient clientStub = (VirtualClient) UnicastRemoteObject.exportObject( phasedProxyServer, 0 ); //0 is a dynamic way to handle multiple client ports.
-                //gaining the proxy on the server side
-                VirtualServer server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname, clientStub);
+                    //exporting the proxy
+                    VirtualClient clientStub = (VirtualClient) UnicastRemoteObject.exportObject(phasedProxyServer, 0); //0 is a dynamic way to handle multiple client ports.
+                    //gaining the proxy on the server side
+                    VirtualServer server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname, clientStub);
 
-                System.out.println("Connessione riuscita.");
+                    System.out.println("Connessione riuscita.");
 
-                //connecting the proxy on this side to the server one
-                phasedProxyServer.finishInitialization(server, null, null);
-                //connecting the client to his client side proxy
-                runnableClient.setServer(phasedProxyServer);
+                    //connecting the proxy on this side to the server one
+                    phasedProxyServer.finishInitialization(server, null, null);
 
-                //running the client
-                runnableClient.runRmi();
+                    //connecting the interface to the server proxy
+                    inputInterface.setVirtualServer(phasedProxyServer);
+                    //connecting the client to his client side proxy
+                    runnableClient.setServer(phasedProxyServer);
 
-            } catch (RemoteException e) {
-                System.out.println("Connessione fallita.");
-                System.out.println("Il Serviente ha restituito un'eccezione: " + e);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }else if(connectionChoice == 2) { //Socket
-            int port = ServerMultiplexer.portSocket;
-            String host = null; //args[1];
+                    //running the client
+                    runnableClient.runRmi();
 
-            Socket serverSocket = new Socket(host, port);
+                } catch (RemoteException e) {
+                    System.out.println("Connessione fallita.");
+                    System.out.println("Il Serviente ha restituito un'eccezione: " + e);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else if (connectionChoice.equals("2")) { //Socket
+                int port = ServerMultiplexer.portSocket;
+                String host = null; //args[1];
 
-            ObjectInputStream input = new ObjectInputStream(serverSocket.getInputStream());
-            ObjectOutputStream output = new ObjectOutputStream(serverSocket.getOutputStream());
-            //sends the nickname to authorise the connection
-            output.writeObject(nickname);
-            output.flush();
-            //waits for authorisation
-            Object authorisation = input.readObject();
+                Socket serverSocket = new Socket(host, port);
 
-            if(authorisation instanceof RuntimeException) {
-                System.out.println("Connessione fallita.");
-                System.err.println("Il Serviente ha restituito un'eccezione: " + authorisation);
+                ObjectInputStream input = new ObjectInputStream(serverSocket.getInputStream());
+                ObjectOutputStream output = new ObjectOutputStream(serverSocket.getOutputStream());
+                //sends the nickname to authorise the connection
+                output.writeObject(nickname);
+                output.flush();
+                //waits for authorisation
+                Object authorisation = input.readObject();
+
+                if (authorisation instanceof RuntimeException) {
+                    System.out.println("Connessione fallita.");
+                    System.err.println("Il Serviente ha restituito un'eccezione: " + authorisation);
+                } else {
+                    System.out.println("Il Serviente ha restituito: " + authorisation);
+
+                    //TODO: add listeners
+
+                    ClientApplication runnableClient = new ClientApplication(nickname);
+
+                    PhasedProxyServer phasedProxyServer = new SocketProxyServer(runnableClient);
+
+                    //connecting the proxy on this side to the server one
+                    phasedProxyServer.finishInitialization(null, input, output);
+
+                    //connecting the interface to the server proxy
+                    inputInterface.setVirtualServer(phasedProxyServer);
+                    //connecting the client to his client side proxy
+                    runnableClient.setServer(phasedProxyServer);
+
+                    //running the client
+                    runnableClient.runSocket();
+                }
             } else {
-                System.out.println("Il Serviente ha restituito: " + authorisation);
-
-                //TODO: add listeners
-
-                ClientApplication runnableClient = new ClientApplication(nickname);
-
-                PhasedProxyServer phasedProxyServer = new SocketProxyServer(runnableClient);
-
-                //connecting the proxy on this side to the server one
-                phasedProxyServer.finishInitialization(null, input, output);
-                //connecting the client to his client side proxy
-                runnableClient.setServer(phasedProxyServer);
-
-                //running the client
-                runnableClient.runSocket();
+                System.out.println("Scelta non valida: chiusura imminente.");
+                return;
             }
-        }else{
-            System.out.println("Scelta non valida: chiusura imminente.");
-            return;
         }
 
 
     }
 
     private void runRmi() throws Exception {
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
-        System.out.print("> ");
-        int interfaceChoice = scan.nextInt();
-
-        if(interfaceChoice == 1) {
-            System.out.println("Avvio dell'interfaccia testuale...");
-            inputInterface = new TextTerminal(server, mockups, ApplicationPhase.GAME); //connect interface to server proxy
-        }else if(interfaceChoice == 2) {
-            System.out.println("Avvio dell'interfaccia grafica...");
-            System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
-            return;
-        }else{
-            System.out.println("Scelta non valida: chiusura imminente.");
-            return;
+        if(inputInterface != null) {
+            inputInterface.runInput(); //run interface
         }
-
-        inputInterface.runInput(); //run interface
     }
 
     public void setServer ( PhasedProxyServer server ) {
@@ -152,23 +146,6 @@ public class ClientApplication implements VirtualClient {
     }
 
     public void runSocket () throws Exception {
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
-        System.out.print("> ");
-        int interfaceChoice = scan.nextInt();
-
-        if(interfaceChoice == 1) {
-            System.out.println("Avvio dell'interfaccia testuale...");
-            inputInterface = new TextTerminal(server, mockups, ApplicationPhase.GAME); //connect interface to server proxy
-        }else if(interfaceChoice == 2) {
-            System.out.println("Avvio dell'interfaccia grafica...");
-            System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
-            return;
-        }else{
-            System.out.println("Scelta non valida: chiusura imminente.");
-            return;
-        }
-
         //run server connection (input/output)
         new Thread(() -> {
             try {
@@ -179,8 +156,28 @@ public class ClientApplication implements VirtualClient {
         }).start();
 
         //TODO: add input listening methods on clientside.
+        if(inputInterface != null) {
+            inputInterface.runInput(); //run interface
+        }
+    }
 
-        inputInterface.runInput(); //run interface
+    private static UserInputInterface chooseInputInterface() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
+        System.out.print("> ");
+        String interfaceChoice = scan.nextLine();
+
+        if(interfaceChoice.equals("1")) {
+            System.out.println("Avvio dell'interfaccia testuale...");
+            return inputInterface = new TextTerminal(server, mockups, ApplicationPhase.ANY); //connect interface to server proxy
+        }else if(interfaceChoice.equals("2")) {
+            System.out.println("Avvio dell'interfaccia grafica...");
+            System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
+            return null;
+        }else{
+            System.out.println("Scelta non valida: chiusura imminente.");
+            return null;
+        }
     }
 
     //### Client general methods

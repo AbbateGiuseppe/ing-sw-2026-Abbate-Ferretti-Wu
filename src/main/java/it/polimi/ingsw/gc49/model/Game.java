@@ -9,6 +9,7 @@ import it.polimi.ingsw.gc49.model.Track.Track;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
 public class Game {
     private final int numOfPlayers;
@@ -24,7 +25,6 @@ public class Game {
     private final EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
     private boolean lastRound;
 
-
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
     public Game ( int numOfPlayers, List<String> playersNicknames ) {
         this.numOfPlayers = numOfPlayers;
@@ -35,8 +35,10 @@ public class Game {
 
     public void gameLoop () {
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
-            synchronized (Locks.playerInput) {
+            synchronized (State.playerInputLock) {
+                System.out.println("strano");
                 executeCurrentState();
+                System.out.println("Ma che cazzo?");
             }
         }
     }

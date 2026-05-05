@@ -23,13 +23,18 @@ class LineTest {
 
     @BeforeEach
     void setUp() {
-        String[] nicknames = {"Player1", "Player2", "Player3"};
+        List<String> nicknames = new ArrayList<>();
+        nicknames.add("Player1");
+        nicknames.add("Player2");
+        nicknames.add("Player3");
         game = new Game(3, nicknames);
 
         // Crea la lista di giocatori
         List<Player> players = new ArrayList<>();
-        for (int i = 0; i < nicknames.length; i++) {
-            players.add(new Player(nicknames[i], i));
+        int i = 0;
+        for (String nickname : nicknames) {
+            players.add(new Player(nickname, i));
+            i++;
         }
         game.setPlayers(players);
         testPlayer = players.get(0);

@@ -12,79 +12,82 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.
 import it.polimi.ingsw.gc49.model.Totem;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 public class TextTerminal extends UserInputInterface {
     /**The key of the commands is the string representing the command type, such as "help" or "draw",
      * the rest of the following strings are used as parameters to specify the behaviour in the function of the called TerminalCommand*/
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
-    private static StringBuilder manual = new StringBuilder();
-    private static Map<String,Totem> totems = Map.of(
-            "orange", Totem.ORANGE,
-            "yellow", Totem.YELLOW,
-            "black", Totem.BLACK,
-            "white",Totem.WHITE
-    );
+    private static final StringBuilder manual = new StringBuilder();
+    private static final Map<String,Totem> totems = new HashMap<>();
+    static {
+        totems.put("orange", Totem.ORANGE);
+        totems.put("white", Totem.WHITE);
+        totems.put("blue", Totem.BLUE);
+        totems.put("black", Totem.BLACK);
+        totems.put("yellow", Totem.YELLOW);
+    }
 
     static {
+        // Mostra la manuale di istruzioni per il gioco
+        commands.put("help", ( _, _, _, _ ) -> printManual());
+
         // Creare una stanza
-        commands.put("create", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        commands.put("create", ( terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.HALL) {
                 String roomName = terminalParameters[0];
                 int maxNumOfPlayers = Integer.parseInt(terminalParameters[1]);
-                if ( maxNumOfPlayers <= 5) {
+                if ( maxNumOfPlayers <= 5 && maxNumOfPlayers >= 2 ) {
                     // Controlla se la stanza è gia stata creata
                     if (terminalMockups.getHall().rooms.stream().map(r -> r.roomName).noneMatch(s -> s.equals(roomName))) {
                         HallCreatePacket hallCreatePacket = new HallCreatePacket(roomName,maxNumOfPlayers);
-                        virtualServer.createRoom(hallCreatePacket);
+                        terminalVirtualServer.createRoom(hallCreatePacket);
                         // TODO:need change the phase to ROOM
                     }
                 }
             }
         });
         // Entrare una stanza
-        commands.put("join", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        commands.put("join", ( terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.HALL) {
                 String roomName = terminalParameters[0];
                 // Controlla se la stanza esiste
                 if (terminalMockups.getHall().rooms.stream().map(r -> r.roomName).anyMatch(s -> s.equals(roomName))) {
                     HallJoinPacket hallJoinPacket = new HallJoinPacket(roomName);
-                    virtualServer.joinRoom(hallJoinPacket);
+                    terminalVirtualServer.joinRoom(hallJoinPacket);
                     // TODO:change the phase to ROOM
                 }
             }
         });
-        // Mostrare tutte le stanze
-        commands.put("rooms", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        // Mostrare tutte le stanze nell'atrio o la stanza attuale
+        commands.put("show", ( terminalPhase, terminalMockups, _, _ ) -> {
             if(terminalPhase == ApplicationPhase.HALL) {
-                for (MockupRoom room : terminalMockups.getHall().rooms) {
-                    System.out.println(room);
-                }
+                System.out.println(terminalMockups.getHall());
+            }else if(terminalPhase == ApplicationPhase.ROOM) {
+                System.out.println(terminalMockups.getRoom());
+                System.out.println(terminalMockups.getRoom().toStringPlayers());
             }
         });
 
 
         // Uscire da una stanza
-        commands.put("leave", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        commands.put("leave", ( terminalPhase, _, _, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.ROOM) {
-                virtualServer.leaveRoom(new RoomLeavePacket());
+                terminalVirtualServer.leaveRoom(new RoomLeavePacket());
                 // TODO:need change the phase to HALL
             }
         });
 
 
-        // Mostra la manuale di istruzioni per il gioco
-        commands.put("help", ( terminalPhase, terminalMockups, terminalParameters ) ->  {
-            if(terminalPhase == ApplicationPhase.GAME){
-                printManual();
-            }}
-        );
         // Mostra i cibi e i punti di tutti i giocatori
-        commands.put("status", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        commands.put("status", ( terminalPhase, terminalMockups, _, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
                 for (MockupPlayer p : terminalMockups.getGame().getPlayers()) {
                     System.out.println(p);
@@ -92,32 +95,32 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Mostra le carte di un giocatore dato il suo indice
-        commands.put("cards", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        commands.put("cards", ( terminalPhase, terminalMockups, terminalParameters, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
                 int index = Integer.parseInt(terminalParameters[0]);
                 terminalMockups.getGame().getPlayer(index).printCards();
             }
         });
         // Sceglie una offerta
-        commands.put("offer", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        commands.put("offer", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
                 int offerIndex = Integer.parseInt(terminalParameters[0]);
                 CommandPacket commandPacket = new CommandPacket(MassiPlayerActionEnum.CHOOSE_OFFER,offerIndex);
-                virtualServer.sendCommand(commandPacket);
+                terminalVirtualServer.sendCommand(commandPacket);
             }
         });
         // Sceglie un totem
-        commands.put("totem", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        commands.put("totem", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
                 if (totems.containsKey(terminalParameters[0].toLowerCase())) {
                     Totem totem = totems.get(terminalParameters[0].toLowerCase());
                     CommandPacket commandPacket = new CommandPacket(MassiPlayerActionEnum.CHOOSE_TOTEM,totem);
-                    virtualServer.sendCommand(commandPacket);
+                    terminalVirtualServer.sendCommand(commandPacket);
                 }
             }
         });
         // Sceglie una carta
-        commands.put("card", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        commands.put("card", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
                 int cardIndex = Integer.parseInt(terminalParameters[2]);
                 MassiPlayerActionEnum action = null;
@@ -136,14 +139,14 @@ public class TextTerminal extends UserInputInterface {
                 }
                 if (action != null) {
                     CommandPacket commandPacket = new CommandPacket(action,cardIndex);
-                    virtualServer.sendCommand(commandPacket);
+                    terminalVirtualServer.sendCommand(commandPacket);
                 }
             }
         });
-        // Disconnete dal gioco
-        commands.put("disconnect", ( terminalPhase, terminalMockups, terminalParameters ) -> {
+        // Disconnette dal gioco
+        commands.put("disconnect", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
-                virtualServer.disconnect(new DisconnectPacket(terminalParameters[0]));
+                terminalVirtualServer.disconnect(new DisconnectPacket(terminalParameters[0]));
                 // TODO:need change the phase to ??
             }
         });
@@ -152,11 +155,25 @@ public class TextTerminal extends UserInputInterface {
 
     static {
         // Commands section
-        manual.append("COMMANDS:\n");
-        manual.append("-".repeat(60)).append("\n");
+        manual.append("-".repeat(125)).append("\n");
 
         // Command entries
+        manual.append(String.format("%72s\n", "GENERAL commands:"));
         manual.append(formatCommand("help", "Displays this help message"));
+        //HALL commands
+        manual.append("-".repeat(125)).append("\n");
+        manual.append(String.format("%70s\n", "HALL commands:"));
+        manual.append(formatCommand("show", "Displays the hall"));
+        manual.append(formatCommand("create (\"your room name\") (num. players)", "Creates a waiting room with the chosen room's name (in Quotation marks)"));
+        manual.append(formatCommand("join (\"chosen room name\")", "Makes you join the room with your chosen name (in Quotation marks)"));
+        //ROOM commands
+        manual.append("-".repeat(125)).append("\n");
+        manual.append(String.format("%70s\n", "ROOM commands:"));
+        manual.append(formatCommand("show", "Displays the room you are in"));
+        manual.append(formatCommand("leave", "Leaves the current room"));
+        //GAME commands
+        manual.append("-".repeat(125)).append("\n");
+        manual.append(String.format("%70s\n", "GAME commands:"));
         manual.append(formatCommand("status", "Display the food and points of each player"));
         manual.append(formatCommand("cards [player index]", "Display the cards of the specified player"));
         manual.append(formatCommand("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
@@ -171,17 +188,49 @@ public class TextTerminal extends UserInputInterface {
     }
 
     @Override
-    public void runInput() throws Exception {
+    public void setCurrentPhase ( ApplicationPhase phase ) {
+        super.setCurrentPhase(phase);
+        switch (phase) {
+            case GAME:
+                System.out.println("-The game started.");
+                break;
+            case HALL:
+                System.out.println("-You entered the hall.");
+                break;
+            case ROOM:
+                System.out.println("-You entered a room.");
+                break;
+        }
+    }
+
+    @Override
+    public void runInput() {
         try {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("\nTerminal started:\ntype help for the list of commands");
+            Terminal terminal = TerminalBuilder.builder().build();
+            LineReader scanner = LineReaderBuilder.builder().terminal(terminal).build();
+
+            // Start a background thread to print messages
+            new Thread(() -> {
+                try {
+                    for (int i = 0; i < 10; i++) {
+                        Thread.sleep(1000);
+                        //scanner.printAbove("-");
+                        //scanner.printAbove("Notification #" + i);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            System.out.println("\nTerminal started (type help for the list of commands):\n");
+
             while (true) {
                 // TODO:when does the loop stop?
-                System.out.print(">");
-                String textCommand = scanner.nextLine();
+                //System.out.print(">");
+                String lineCommand = scanner.readLine(">");
 
                 // 1. Split the string by whitespace
-                String[] parts = textCommand.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+                String[] parts = lineCommand.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
                 if (parts.length == 0) continue;
 
                 // 2. The first word is the key
@@ -193,7 +242,7 @@ public class TextTerminal extends UserInputInterface {
                 // 4. Look up the terminal function and execute
                 TerminalCommand command = commands.get(action);
                 if (command != null) {
-                    command.execute(currentPhase, mockups, params);
+                    command.execute(currentPhase, mockups, params, virtualServer);
                 } else {
                     System.out.println("Unknown command: " + action);
                 }

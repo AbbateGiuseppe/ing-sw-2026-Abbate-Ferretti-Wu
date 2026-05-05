@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
 public abstract class UserInputInterface {
-    protected final VirtualServer virtualServer;
+    protected VirtualServer virtualServer;
     protected final Mockup mockups;
     protected static ApplicationPhase currentPhase;
 
@@ -21,5 +21,8 @@ public abstract class UserInputInterface {
 
     public void setCurrentPhase ( ApplicationPhase phase ) {
         currentPhase = phase;
+    }
+    public void setVirtualServer ( VirtualServer virtualServer ) {
+        this.virtualServer = virtualServer;
     }
 }
