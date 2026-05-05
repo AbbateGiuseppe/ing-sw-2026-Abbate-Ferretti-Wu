@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
 import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_ROOM.UpdateRoomPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 
@@ -52,4 +53,22 @@ public abstract class Room {
     }
 
     public abstract MockupRoom giveMockupRoom ();
+
+    protected void broadcastMockupRoom() throws Exception {
+        UpdateRoomPacket updatedRoom = new UpdateRoomPacket(giveMockupRoom());
+
+        for( PhasedProxyPlayer player : players ){
+            player.updateClientRoom(updatedRoom);
+        }
+    }
+
+    public void fullyDisconnectPlayer ( PhasedProxyPlayer player ) throws Exception {
+        synchronized (players) {
+            if (player != null && players.contains(player)) {
+                    players.remove(player);
+                    hall.broadcastMockupHall();
+                    broadcastMockupRoom();
+            }
+        }
+    }
 }

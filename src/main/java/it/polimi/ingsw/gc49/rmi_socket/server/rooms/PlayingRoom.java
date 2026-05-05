@@ -5,7 +5,6 @@ import it.polimi.ingsw.gc49.controller.massi.MassiController;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
-import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
 import it.polimi.ingsw.gc49.model.Game;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
@@ -46,6 +45,10 @@ public class PlayingRoom extends Room implements VirtualGameServer {
         System.out.println("La partita nella stanza " + roomName + " è conclusa.");
     }
 
+    public Game getGame() {
+        return game;
+    }
+
     //### Room's methods
     @Override
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
@@ -75,10 +78,6 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     }
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
-
-    }
-    @Override
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
 
     }
 }

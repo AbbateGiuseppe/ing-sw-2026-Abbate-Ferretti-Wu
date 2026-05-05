@@ -13,17 +13,24 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.Di
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
-import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
+
+import java.rmi.RemoteException;
 
 public class RmiProxyPlayer extends PhasedProxyPlayer {
     public RmiProxyPlayer ( ServerMultiplexer server, String nickname,
                             ApplicationPhase startingPhase,
                             VirtualServerAdapter serverSide, VirtualClient clientSide ) {
         super(server, nickname, startingPhase, serverSide, clientSide, null, null);
+    }
+
+    // In RmiProxyPlayer
+    public void updateClientStub(VirtualClient newClientStub) {
+        this.clientSide = newClientStub; // Aggiorna il riferimento remoto
+        this.running = true;            // Riattiva il proxy
     }
 
     //###################
@@ -71,13 +78,7 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
             serverSide.disconnect(disconnectPacket);
         }
     }
-    @Override
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
-        if(assureRightPhase(reconnectPacket)){
-            addSenderNickname(reconnectPacket);
-            serverSide.reconnect(reconnectPacket);
-        }
-    }
+
     //### VirtualHallClient
     @Override
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
@@ -126,5 +127,22 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
             addSenderNickname(roomLeavePacket);
             serverSide.leaveRoom(roomLeavePacket);
         }
+    }
+
+    @Override
+    public void ping() throws Exception {
+        // call method on clientStub
+        clientSide.receiveHeartbeat();
+    }
+
+    // client tell server that it's still alive
+    @Override
+    public void receiveHeartbeat() throws RemoteException {
+        reportActivity(); // Reset timeout on server
+    }
+
+    @Override
+    public void syncPlayer(PhasedProxyPlayer p) throws Exception {
+
     }
 }

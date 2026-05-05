@@ -84,14 +84,6 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
         return new PlayingRoom(hall, roomName, maxNumOfPlayers, players);
     }
 
-    private void broadcastMockupRoom() throws Exception {
-        UpdateRoomPacket updatedRoom = new UpdateRoomPacket(giveMockupRoom());
-
-        for( PhasedProxyPlayer player : players ){
-            player.updateClientRoom(updatedRoom);
-        }
-    }
-
 
     //### client's commands
     @Override

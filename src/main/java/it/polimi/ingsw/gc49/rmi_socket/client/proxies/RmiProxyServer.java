@@ -13,7 +13,7 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.Di
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
-import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
@@ -59,10 +59,7 @@ public class RmiProxyServer extends PhasedProxyServer {
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         serverSide.disconnect(disconnectPacket);
     }
-    @Override
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
-        serverSide.reconnect(reconnectPacket);
-    }
+
     //### VirtualHallClient
     @Override
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
@@ -94,5 +91,14 @@ public class RmiProxyServer extends PhasedProxyServer {
     @Override
     public void leaveRoom ( RoomLeavePacket roomLeavePacket ) throws Exception {
         serverSide.leaveRoom(roomLeavePacket);
+    }
+
+    @Override
+    protected void pingServer() throws Exception {
+        serverSide.receiveHeartbeat();
+    }
+
+    @Override
+    public void syncPlayer(PhasedProxyPlayer p) throws Exception {
     }
 }

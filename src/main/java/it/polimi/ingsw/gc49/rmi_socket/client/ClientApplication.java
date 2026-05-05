@@ -93,6 +93,9 @@ public class ClientApplication implements VirtualClient {
                     //connecting the client to his client side proxy
                     runnableClient.setServer(phasedProxyServer);
 
+                    //start heartbeat
+                    phasedProxyServer.startHeartbeat();
+
                     //running the client
                     runnableClient.runRmi();
 
@@ -119,6 +122,7 @@ public class ClientApplication implements VirtualClient {
                 if (authorisation instanceof RuntimeException) {
                     System.out.println("Connessione fallita.");
                     System.err.println("Il Serviente ha restituito un'eccezione: " + authorisation);
+                    serverSocket.close();
                 } else {
                     System.out.println("Il Serviente ha restituito: " + authorisation);
 
@@ -135,6 +139,9 @@ public class ClientApplication implements VirtualClient {
                     inputInterface.setVirtualServer(phasedProxyServer);
                     //connecting the client to his client side proxy
                     runnableClient.setServer(phasedProxyServer);
+
+                    //start heartbeat
+                    phasedProxyServer.startHeartbeat();
 
                     //running the client
                     runnableClient.runSocket();
@@ -191,6 +198,14 @@ public class ClientApplication implements VirtualClient {
             System.out.println("Scelta non valida: chiusura imminente.");
             return null;
         }
+    }
+
+    @Override
+    public void receiveHeartbeat() throws RemoteException {
+        if (server != null) {
+            server.reportActivity();
+        }
+
     }
 
     //### Client general methods

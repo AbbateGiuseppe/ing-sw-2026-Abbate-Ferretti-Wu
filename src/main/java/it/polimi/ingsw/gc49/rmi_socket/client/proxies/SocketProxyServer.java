@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.proxies;
 
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
+import it.polimi.ingsw.gc49.datapacket.HEARTBEAT.HeartbeatPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
@@ -14,15 +15,17 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.Di
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
-import it.polimi.ingsw.gc49.datapacket.uncertain.RECONNECT.ReconnectPacket;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
 
 public class SocketProxyServer extends PhasedProxyServer {
+    private final Object writeLock = new Object();
 
     public SocketProxyServer ( VirtualClient clientSide ) {
         super(clientSide);
@@ -55,11 +58,17 @@ public class SocketProxyServer extends PhasedProxyServer {
                     case UPDATE_HALL -> updateClientHall((UpdateHallPacket) datapacket);
                     case INITIALIZE_ROOM  -> initializeClientRoom((InitializeRoomPacket) datapacket);
                     case UPDATE_ROOM -> updateClientRoom((UpdateRoomPacket) datapacket);
+                    case HEARTBEAT -> {receiveHeartbeat();}
                     default -> throw new RuntimeException("Unsendable datapacket type: " + datapacket.getDatapacketType());
                 }
             }
         } catch (SocketException e) {
             throw new SocketException(e);
+        } catch (InvalidClassException e) {
+            // QUI vedrai esattamente quale classe causa il flag conflict
+            System.err.println("ERRORE SERIALIZZAZIONE: " + e.classname);
+            System.err.println("Motivo: " + e.getMessage());
+            throw new RuntimeException("Riavvia tutto dopo un Clean!", e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -90,16 +99,16 @@ public class SocketProxyServer extends PhasedProxyServer {
     }
     //### VirtualGameServer
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
-        output.writeObject(commandPacket);
-        output.flush();
+        synchronized (writeLock) {
+            output.writeObject(commandPacket);
+            output.flush();
+        }
     }
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
-        output.writeObject(disconnectPacket);
-        output.flush();
-    }
-    public void reconnect ( ReconnectPacket reconnectPacket ) throws Exception {
-        output.writeObject(reconnectPacket);
-        output.flush();
+        synchronized (writeLock) {
+            output.writeObject(disconnectPacket);
+            output.flush();
+        }
     }
     //### VirtualHallClient
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
@@ -110,12 +119,16 @@ public class SocketProxyServer extends PhasedProxyServer {
     }
     //### VirtualHallServer
     public void joinRoom ( HallJoinPacket hallJoinPacket ) throws Exception {
-        output.writeObject(hallJoinPacket);
-        output.flush();
+        synchronized (writeLock) {
+            output.writeObject(hallJoinPacket);
+            output.flush();
+        }
     }
     public void createRoom ( HallCreatePacket hallCreatePacket ) throws Exception {
-        output.writeObject(hallCreatePacket);
-        output.flush();
+        synchronized (writeLock) {
+            output.writeObject(hallCreatePacket);
+            output.flush();
+        }
     }
     //### VirtualRoomClient
     public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) throws Exception {
@@ -126,7 +139,25 @@ public class SocketProxyServer extends PhasedProxyServer {
     }
     //### VirtualRoomServer
     public void leaveRoom ( RoomLeavePacket roomLeavePacket ) throws Exception {
-        output.writeObject(roomLeavePacket);
-        output.flush();
+        synchronized (writeLock) {
+            output.writeObject(roomLeavePacket);
+            output.flush();
+        }
     }
+
+
+    @Override
+    protected void pingServer() throws Exception {
+        synchronized (writeLock) {
+            output.writeObject(new HeartbeatPacket());
+            output.flush();
+        }
+    }
+
+    @Override
+    public void syncPlayer(PhasedProxyPlayer p) throws Exception {
+
+    }
+
+
 }

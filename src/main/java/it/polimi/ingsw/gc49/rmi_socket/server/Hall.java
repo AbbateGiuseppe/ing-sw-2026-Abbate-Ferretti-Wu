@@ -84,7 +84,7 @@ public class Hall implements VirtualHallServer {
         );
     }
 
-    private void broadcastMockupHall() throws Exception {
+    public void broadcastMockupHall() throws Exception {
         UpdateHallPacket updatedHall = new UpdateHallPacket(giveMockupHall());
 
         for( PhasedProxyPlayer player : PlayersInHall.values() ) {

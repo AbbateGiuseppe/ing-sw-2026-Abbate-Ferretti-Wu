@@ -92,7 +92,7 @@ public class Game {
             controller.initializeClientModel(initializeModel);
         }
     }
-    private MockupGame giveMockupGame() {
+    public MockupGame giveMockupGame() {
         /*int currentPlayerIndex;
         if(currentPlayer != null) {
             currentPlayerIndex = currentPlayer.getPlayerIndex();
