@@ -26,7 +26,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     }
 
 
-    public void createGame() {
+    public void createGame() throws Exception {
         //creates the game
         game = new Game(maxNumOfPlayers, getListPlayerNicknames());
 
@@ -36,6 +36,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
             MassiController controller = new MassiController(playerIndex); //creates a controller with the current index
             controller.connectModel(game); //connects controller to the game
             player.setController(controller); //connects the proxy to the controller
+            player.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));//tells them they've entered a game
             playerIndex++;
         }
     }

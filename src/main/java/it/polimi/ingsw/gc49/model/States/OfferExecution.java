@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.model.States;
 
 import it.polimi.ingsw.gc49.model.Game;
+import it.polimi.ingsw.gc49.model.Locks;
 import it.polimi.ingsw.gc49.model.Player;
 
 public class OfferExecution extends State{
@@ -13,7 +14,7 @@ public class OfferExecution extends State{
             game.setCurrentPlayerIndex(currentPlayer.getPlayerIndex());
             while (!currentPlayer.hasActionsLeft()){ //waits until the current player has no actions left.
                 try {
-                    wait();
+                    Locks.playerInput.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

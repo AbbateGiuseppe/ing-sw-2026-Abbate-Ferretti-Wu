@@ -7,11 +7,11 @@ public class TotemChoosing extends State {
     public TotemChoosing ( Game game ) { super(game); }
 
     public State executeState () {
-        synchronized (playerInputLock) {
+        synchronized (Locks.playerInput) {
             int numOfPlayers = game.getNumOfPlayers();
             while (game.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
                 try {
-                    playerInputLock.wait();
+                    Locks.playerInput.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

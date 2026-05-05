@@ -35,10 +35,10 @@ public class Game {
 
     public void gameLoop () {
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
-            synchronized (State.playerInputLock) {
-                System.out.println("strano");
+            synchronized (Locks.playerInput) {
+                System.out.println("Entering new game state");
                 executeCurrentState();
-                System.out.println("Ma che cazzo?");
+                System.out.println("Finished previous game state");
             }
         }
     }
@@ -76,10 +76,10 @@ public class Game {
     //### Players' actions
     public void chooseTotem ( int playerIndex, Totem chosenTotem ) {
         synchronized (Locks.playerInput) {
-            if (players.get(playerIndex).getTotem() != null && !usedTotems.contains(chosenTotem)) {
+            if (players.get(playerIndex).getTotem() == null && !usedTotems.contains(chosenTotem)) {
                 usedTotems.add(chosenTotem);
                 players.get(playerIndex).setTotem(chosenTotem);
-                notify();
+                Locks.playerInput.notify();
             }
         }
     }
@@ -109,7 +109,7 @@ public class Game {
                         drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
                     }
-                    notify();
+                    Locks.playerInput.notify();
                 }
             }
         }
@@ -126,7 +126,7 @@ public class Game {
                         drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
                     }
-                    notify();
+                    Locks.playerInput.notify();
                 }
             }
         }
@@ -144,7 +144,7 @@ public class Game {
                         drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
                     }
-                    notify();
+                    Locks.playerInput.notify();
                 }
             }
         }
@@ -162,7 +162,7 @@ public class Game {
                         drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
                     }
-                    notify();
+                    Locks.playerInput.notify();
                 }
             }
         }
@@ -172,7 +172,7 @@ public class Game {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
                 track.assignOffer(players.get(playerIndex), offerIndex); //TODO: implement not valid offerIndex exception.
-                notify();
+                Locks.playerInput.notify();
             }
         }
     }
@@ -181,7 +181,7 @@ public class Game {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
                 players.get(playerIndex).cleanRemainingActions();
-                notify();
+                Locks.playerInput.notify();
             }
         }
     }

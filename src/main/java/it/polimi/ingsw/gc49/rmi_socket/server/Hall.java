@@ -96,7 +96,7 @@ public class Hall implements VirtualHallServer {
      * This method converts a waiting room into a playing room and then initializes+starts the game.
      * @param WaitingRoomName, the name of the waiting room that is being change into a playing room;
      */
-    public void changeRoomIntoPlaying (String WaitingRoomName) {
+    public void changeRoomIntoPlaying (String WaitingRoomName) throws Exception {
         WaitingRoom changingRoom = (WaitingRoom) rooms.get(WaitingRoomName); //gets the waitingRoom to change into a playing room
         PlayingRoom playingRoom = changingRoom.convertIntoPlaying(); //gets its converted version.
         rooms.remove(WaitingRoomName);

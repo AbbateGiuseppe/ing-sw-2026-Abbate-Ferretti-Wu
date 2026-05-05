@@ -41,22 +41,26 @@ public class TextTerminal extends UserInputInterface {
 
         // Creare una stanza
         commands.put("create", ( terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.HALL) {
+            if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 1) {
                 String roomName = terminalParameters[0];
-                int maxNumOfPlayers = Integer.parseInt(terminalParameters[1]);
-                if ( maxNumOfPlayers <= 5 && maxNumOfPlayers >= 2 ) {
-                    // Controlla se la stanza è gia stata creata
-                    if (terminalMockups.getHall().rooms.stream().map(r -> r.roomName).noneMatch(s -> s.equals(roomName))) {
-                        HallCreatePacket hallCreatePacket = new HallCreatePacket(roomName,maxNumOfPlayers);
-                        terminalVirtualServer.createRoom(hallCreatePacket);
-                        // TODO:need change the phase to ROOM
+                try {
+                    int maxNumOfPlayers = Integer.parseInt(terminalParameters[1]);
+                    if ( maxNumOfPlayers <= 5 && maxNumOfPlayers >= 2 ) {
+                        // Controlla se la stanza è gia stata creata
+                        if (terminalMockups.getHall().rooms.stream().map(r -> r.roomName).noneMatch(s -> s.equals(roomName))) {
+                            HallCreatePacket hallCreatePacket = new HallCreatePacket(roomName,maxNumOfPlayers);
+                            terminalVirtualServer.createRoom(hallCreatePacket);
+                            // TODO:need change the phase to ROOM
+                        }
                     }
+                } catch (NumberFormatException e) {
+                    System.out.println("please, specify correctly the number of players!");
                 }
             }
         });
         // Entrare una stanza
         commands.put("join", ( terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.HALL) {
+            if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 1) {
                 String roomName = terminalParameters[0];
                 // Controlla se la stanza esiste
                 if (terminalMockups.getHall().rooms.stream().map(r -> r.roomName).anyMatch(s -> s.equals(roomName))) {
@@ -96,22 +100,34 @@ public class TextTerminal extends UserInputInterface {
         });
         // Mostra le carte di un giocatore dato il suo indice
         commands.put("cards", ( terminalPhase, terminalMockups, terminalParameters, _ ) -> {
-            if(terminalPhase == ApplicationPhase.GAME) {
-                int index = Integer.parseInt(terminalParameters[0]);
-                terminalMockups.getGame().getPlayer(index).printCards();
+            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
+                try {
+                    int index = Integer.parseInt(terminalParameters[0]);
+                    if(index < terminalMockups.getGame().getPlayers().size() && index >= 0) {
+                        terminalMockups.getGame().getPlayer(index).printCards();
+                    }else{
+                        throw new NumberFormatException();
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("please, insert a valid number!");
+                }
             }
         });
         // Sceglie una offerta
         commands.put("offer", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.GAME) {
-                int offerIndex = Integer.parseInt(terminalParameters[0]);
-                CommandPacket commandPacket = new CommandPacket(MassiPlayerActionEnum.CHOOSE_OFFER,offerIndex);
-                terminalVirtualServer.sendCommand(commandPacket);
+            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
+                try {
+                    int offerIndex = Integer.parseInt(terminalParameters[0]);
+                    CommandPacket commandPacket = new CommandPacket(MassiPlayerActionEnum.CHOOSE_OFFER, offerIndex);
+                    terminalVirtualServer.sendCommand(commandPacket);
+                } catch (NumberFormatException e) {
+                    System.out.println("please, insert a valid number!");
+                }
             }
         });
         // Sceglie un totem
         commands.put("totem", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.GAME) {
+            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 if (totems.containsKey(terminalParameters[0].toLowerCase())) {
                     Totem totem = totems.get(terminalParameters[0].toLowerCase());
                     CommandPacket commandPacket = new CommandPacket(MassiPlayerActionEnum.CHOOSE_TOTEM,totem);
@@ -121,32 +137,36 @@ public class TextTerminal extends UserInputInterface {
         });
         // Sceglie una carta
         commands.put("card", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.GAME) {
-                int cardIndex = Integer.parseInt(terminalParameters[2]);
-                MassiPlayerActionEnum action = null;
-                if (terminalParameters[0].equalsIgnoreCase("lower")) {
-                    if (terminalParameters[1].equalsIgnoreCase("character")) {
-                        action = MassiPlayerActionEnum.DRAW_LOWER_CHARACTER;
-                    } else if (terminalParameters[1].equalsIgnoreCase("building")) {
-                        action = MassiPlayerActionEnum.DRAW_LOWER_BUILDING;
+            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 2) {
+                try {
+                    int cardIndex = Integer.parseInt(terminalParameters[2]);
+                    MassiPlayerActionEnum action = null;
+                    if (terminalParameters[0].equalsIgnoreCase("lower")) {
+                        if (terminalParameters[1].equalsIgnoreCase("character")) {
+                            action = MassiPlayerActionEnum.DRAW_LOWER_CHARACTER;
+                        } else if (terminalParameters[1].equalsIgnoreCase("building")) {
+                            action = MassiPlayerActionEnum.DRAW_LOWER_BUILDING;
+                        }
+                    } else if (terminalParameters[0].equalsIgnoreCase("upper")) {
+                        if (terminalParameters[1].equalsIgnoreCase("character")) {
+                            action = MassiPlayerActionEnum.DRAW_UPPER_CHARACTER;
+                        } else if (terminalParameters[1].equalsIgnoreCase("building")) {
+                            action = MassiPlayerActionEnum.DRAW_UPPER_BUILDING;
+                        }
                     }
-                } else if (terminalParameters[0].equalsIgnoreCase("upper")) {
-                    if (terminalParameters[1].equalsIgnoreCase("character")) {
-                        action = MassiPlayerActionEnum.DRAW_UPPER_CHARACTER;
-                    } else if (terminalParameters[1].equalsIgnoreCase("building")) {
-                        action = MassiPlayerActionEnum.DRAW_UPPER_BUILDING;
+                    if (action != null) {
+                        CommandPacket commandPacket = new CommandPacket(action, cardIndex);
+                        terminalVirtualServer.sendCommand(commandPacket);
                     }
-                }
-                if (action != null) {
-                    CommandPacket commandPacket = new CommandPacket(action,cardIndex);
-                    terminalVirtualServer.sendCommand(commandPacket);
+                } catch (NumberFormatException e) {
+                    System.out.println("please, insert a valid number!");
                 }
             }
         });
         // Disconnette dal gioco
-        commands.put("disconnect", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("disconnect", ( terminalPhase, _, _, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
-                terminalVirtualServer.disconnect(new DisconnectPacket(terminalParameters[0]));
+                terminalVirtualServer.disconnect(new DisconnectPacket());
                 // TODO:need change the phase to ??
             }
         });
@@ -179,6 +199,7 @@ public class TextTerminal extends UserInputInterface {
         manual.append(formatCommand("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
         manual.append(formatCommand("offer [offer index]", "Choose the specified offer"));
         manual.append(formatCommand("totem [totem color]", "Choose the specified totem"));
+        manual.append(formatCommand("disconnect", "Disconnects you from the game"));
     }
     private static void printManual() {System.out.println(manual);}
     private static String formatCommand(String command, String description) {return String.format(" %60s | %s\n", command, description);}
