@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.controller.massi;
+package it.polimi.ingsw.gc49.controller;
 
 public enum PlayerActionEnum {
     CHOOSE_TOTEM,

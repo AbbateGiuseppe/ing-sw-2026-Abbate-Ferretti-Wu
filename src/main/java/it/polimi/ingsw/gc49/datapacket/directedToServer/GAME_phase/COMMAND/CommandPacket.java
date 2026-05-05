@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND;
 
-import it.polimi.ingsw.gc49.controller.massi.PlayerActionEnum;
+import it.polimi.ingsw.gc49.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.model.Totem;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;

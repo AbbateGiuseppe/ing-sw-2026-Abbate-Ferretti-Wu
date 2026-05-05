@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.controller.massi;
+package it.polimi.ingsw.gc49.controller;
 
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;

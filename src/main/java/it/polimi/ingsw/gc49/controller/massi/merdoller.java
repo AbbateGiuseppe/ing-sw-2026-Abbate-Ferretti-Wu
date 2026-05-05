@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.controller;
+package it.polimi.ingsw.gc49.controller.massi;
 
 public class merdoller {
     //PORCA LA PUTTANAAA!!!

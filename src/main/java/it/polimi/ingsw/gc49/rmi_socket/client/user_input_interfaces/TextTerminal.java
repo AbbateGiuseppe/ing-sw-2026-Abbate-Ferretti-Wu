@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc49.rmi_socket.client.user_input_interfaces;
 
 import it.polimi.ingsw.gc49.View.Mockup;
 import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
-import it.polimi.ingsw.gc49.controller.massi.PlayerActionEnum;
+import it.polimi.ingsw.gc49.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;

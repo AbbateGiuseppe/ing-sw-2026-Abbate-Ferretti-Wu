@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
-import it.polimi.ingsw.gc49.controller.massi.MassiWuController;
+import it.polimi.ingsw.gc49.controller.MassiWuController;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
