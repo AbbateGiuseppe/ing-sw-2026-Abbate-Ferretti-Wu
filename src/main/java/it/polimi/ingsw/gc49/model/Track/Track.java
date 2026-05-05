@@ -90,6 +90,12 @@ public class Track {
         }
     }
 
+    //### getters
+    public List<Offer> getOfferBoard() { return offerBoard; }
+    public List<OrderSlot> getOrderBoard() { return orderBoard; }
+
+    //### logic
+
     public void randomizeStartingOrder ( List<Player> players ) {
         List<Player> randomizedPlayers = players.stream()
                 .collect(Collectors.collectingAndThen(Collectors.toList(), collected -> {

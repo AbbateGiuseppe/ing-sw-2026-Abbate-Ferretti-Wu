@@ -24,10 +24,10 @@ public class Line {
 
 
     /// file sopra e sotto
-    private final ArrayList<Card> upperLine;
-    private final ArrayList<Card> lowerLine;
-    private final ArrayList<Card> upperBuilding;
-    private final ArrayList<Card> lowerBuilding;
+    private final List<Card> upperLine;
+    private final List<Card> lowerLine;
+    private final List<Card> upperBuilding;
+    private final List<Card> lowerBuilding;
     private final Deck deck;
 
 
@@ -207,4 +207,9 @@ public class Line {
         }
     }
 
+    //### getters
+    public List<Card> getUpperLine() { return upperLine; }
+    public List<Card> getLowerLine() { return lowerLine; }
+    public List<Card> getUpperBuilding() { return upperBuilding; }
+    public List<Card> getLowerBuilding() { return lowerBuilding; }
 }

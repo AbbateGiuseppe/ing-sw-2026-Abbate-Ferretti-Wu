@@ -73,10 +73,18 @@ public class TextTerminal extends UserInputInterface {
         // Mostrare tutte le stanze nell'atrio o la stanza attuale
         commands.put("show", ( terminalPhase, terminalMockups, _, _ ) -> {
             if(terminalPhase == ApplicationPhase.HALL) {
-                System.out.println(terminalMockups.getHall());
+                if(terminalMockups.getHall() != null) {
+                    System.out.println(terminalMockups.getHall());
+                }else{
+                    System.out.println("Hall not yet loaded.");
+                }
             }else if(terminalPhase == ApplicationPhase.ROOM) {
-                System.out.println(terminalMockups.getRoom());
-                System.out.println(terminalMockups.getRoom().toStringPlayers());
+                if(terminalMockups.getRoom() != null) {
+                    System.out.println(terminalMockups.getRoom());
+                    System.out.println(terminalMockups.getRoom().toStringPlayers());
+                }else{
+                    System.out.println("Hall not yet loaded.");
+                }
             }
         });
 
@@ -93,8 +101,12 @@ public class TextTerminal extends UserInputInterface {
         // Mostra i cibi e i punti di tutti i giocatori
         commands.put("status", ( terminalPhase, terminalMockups, _, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
-                for (MockupPlayer p : terminalMockups.getGame().getPlayers()) {
-                    System.out.println(p);
+                if(terminalMockups.getGame() != null) {
+                    for (MockupPlayer p : terminalMockups.getGame().getPlayers()) {
+                        System.out.println(p);
+                    }
+                }else{
+                    System.out.println("Game not yet loaded.");
                 }
             }
         });

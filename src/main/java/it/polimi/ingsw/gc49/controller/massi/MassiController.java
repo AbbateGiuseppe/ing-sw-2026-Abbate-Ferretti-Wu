@@ -1,19 +1,27 @@
 package it.polimi.ingsw.gc49.controller.massi;
 
+import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.model.Game;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 
-public class MassiController {
+public class MassiController implements VirtualGameClient {
     private Game game;
     private final int controllingPlayerIndex;
+    private final PhasedProxyPlayer controllingPlayer;
 
-    public MassiController ( int controllingPlayerIndex ) {
+    public MassiController ( int controllingPlayerIndex, PhasedProxyPlayer controllingPlayer ) {
         game = null;
         this.controllingPlayerIndex = controllingPlayerIndex;
+        this.controllingPlayer = controllingPlayer;
     }
 
     public void connectModel ( Game game ) {
         this.game = game;
+        game.addControllerListener(this);
     }
 
     public void executeCommand ( CommandPacket command ) {
@@ -50,5 +58,20 @@ public class MassiController {
                 // !ERROR!
                 break;
         }
+    }
+
+    @Override
+    public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws Exception {
+        controllingPlayer.initializeClientModel(initializeModelPacket);
+    }
+
+    @Override
+    public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws Exception {
+        controllingPlayer.updateClientModel(updateModelPacket);
+    }
+
+    @Override
+    public void reportError ( ErrorPacket errorPacket ) throws Exception {
+        controllingPlayer.reportError(errorPacket);
     }
 }

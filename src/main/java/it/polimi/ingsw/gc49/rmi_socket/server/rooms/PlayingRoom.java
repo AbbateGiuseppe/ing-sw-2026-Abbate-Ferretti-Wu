@@ -33,7 +33,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
         //creates the controllers and connects them
         int playerIndex = 0;
         for(PhasedProxyPlayer player : players){
-            MassiController controller = new MassiController(playerIndex); //creates a controller with the current index
+            MassiController controller = new MassiController(playerIndex, player); //creates a controller with the current index
             controller.connectModel(game); //connects controller to the game
             player.setController(controller); //connects the proxy to the controller
             player.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));//tells them they've entered a game

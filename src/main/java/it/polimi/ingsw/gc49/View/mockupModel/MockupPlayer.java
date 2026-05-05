@@ -94,20 +94,25 @@ public class MockupPlayer implements Serializable {
     }
 
     public void printCards() {
-        // Guarda toString() delle carte
-        for(Card c : characterCards) {
-            System.out.println(c);
-        }
+        if(!characterCards.isEmpty() || !buildingCards.isEmpty()) {
 
-        for(Card c : buildingCards) {
-            System.out.println(c);
+            // Guarda toString() delle carte
+            for (Card c : characterCards) {
+                System.out.println(c);
+            }
+
+            for (Card c : buildingCards) {
+                System.out.println(c);
+            }
+        }else{
+            System.out.println(nickname + " has no cards.");
         }
     }
 
     @Override
     public String toString() {
-        return "nickname='" + nickname  +
-                ", food=" + food +
-                ", points=" + points;
+        return playerIndex + ": " + nickname +
+                " (food=" + food +
+                ", points=" + points + ")";
     }
 }

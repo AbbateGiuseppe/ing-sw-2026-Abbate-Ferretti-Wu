@@ -1,17 +1,28 @@
 package it.polimi.ingsw.gc49.model;
 
+import it.polimi.ingsw.gc49.View.mockupModel.MockupGame;
+import it.polimi.ingsw.gc49.View.mockupModel.MockupPlayer;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_HALL.UpdateHallPacket;
 import it.polimi.ingsw.gc49.model.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.model.Card.Card;
 import it.polimi.ingsw.gc49.model.CardBoard.CardBoard;
 import it.polimi.ingsw.gc49.model.States.InitialSetup;
 import it.polimi.ingsw.gc49.model.States.State;
+import it.polimi.ingsw.gc49.model.Track.Offer;
+import it.polimi.ingsw.gc49.model.Track.OrderSlot;
 import it.polimi.ingsw.gc49.model.Track.Track;
+import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 public class Game {
+    private final List<VirtualGameClient> controllersListeners = new ArrayList<>();
     private final int numOfPlayers;
     private final List<String> playersNicknames;
     private List<Player> players;
@@ -34,6 +45,11 @@ public class Game {
     }
 
     public void gameLoop () {
+        try{
+            broadcastMockupHall();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
             synchronized (Locks.playerInput) {
                 System.out.println("Entering new game state");
@@ -56,6 +72,7 @@ public class Game {
     public boolean isLastRound () { return lastRound; }
 
     //### setters
+    public void addControllerListener ( VirtualGameClient listener ) { this.controllersListeners.add(listener); }
     public void setPlayers ( List<Player> players ) { this.players = players; }
     public void setEventManager ( EventManager eventManager ) { this.eventManager = eventManager; }
     public void setTrack ( Track track ){
@@ -66,6 +83,45 @@ public class Game {
     public void setCurrentPlayer ( Player currentPlayer ) { this.currentPlayer = currentPlayer; }
     public void setCurrentPlayerIndex ( int currentPlayerIndex ) { this.currentPlayerIndex = currentPlayerIndex; }
     public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }
+
+    //### controller communication
+    private void broadcastMockupHall() throws Exception {
+        InitializeModelPacket initializeModel = new InitializeModelPacket(giveMockupGame());
+
+        for( VirtualGameClient controller : controllersListeners ) {
+            controller.initializeClientModel(initializeModel);
+        }
+    }
+    private MockupGame giveMockupGame() {
+        /*int currentPlayerIndex;
+        if(currentPlayer != null) {
+            currentPlayerIndex = currentPlayer.getPlayerIndex();
+        }else{
+            currentPlayerIndex = -1;
+        }*/
+        List<MockupPlayer> players = new ArrayList<>();
+        for (Player player : this.players) {
+            players.add(player.giveMockupPlayer());
+        }
+
+        List<Card> upperLine = getCardBoard().getLine().getUpperLine();
+        List<Card> lowerLine = getCardBoard().getLine().getLowerLine();
+        List<Card> upperBuilding = getCardBoard().getLine().getUpperBuilding();
+        List<Card> lowerBuilding = getCardBoard().getLine().getLowerBuilding();
+
+        List<MockupPlayer> offerBoard = getTrack().getOfferBoard().stream()
+                .filter(offer -> offer.getAssignedPlayer() != null)
+                .map(Offer::getAssignedPlayer)
+                .map(Player::giveMockupPlayer)
+                .toList();
+        List<MockupPlayer> orderBoard = getTrack().getOrderBoard().stream()
+                .filter(orderSlot -> orderSlot.getAssignedPlayer() != null)
+                .map(OrderSlot::getAssignedPlayer)
+                .map(Player::giveMockupPlayer)
+                .toList();
+
+        return new MockupGame(players, cardBoard.getLine().getCurrentEra(), upperLine, lowerLine, upperBuilding, lowerBuilding, offerBoard, orderBoard);
+    }
 
     //### Game's execution
     public void executeCurrentState () {
