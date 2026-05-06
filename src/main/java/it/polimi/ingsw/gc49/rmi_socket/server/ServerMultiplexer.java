@@ -90,7 +90,13 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                 clients.put(nickname, proxy); //store the player in the clients-list.
                 hall.enterPlayer(proxy); //enter the player into the hall
 
-                proxy.startNetworkHealthChecks(); // check heartbeat
+                new Thread(() -> {
+                    try {
+                        proxy.runVirtualClient();
+                    } catch (Exception e) {
+                        System.out.println("Connection lost with " + proxy.nickname);
+                    }
+                }).start();
 
                 return (VirtualServer) UnicastRemoteObject.exportObject(proxy, port);
 
@@ -102,10 +108,17 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
                     // update stub of old proxy
                     ((RmiProxyPlayer) existing).updateClientStub(clientStub);
-                    existing.startNetworkHealthChecks();
 
                     // export old proxy already existing
                     existing.refreshClientState();
+
+                    new Thread(() -> {
+                        try {
+                            existing.runVirtualClient();
+                        } catch (Exception e) {
+                            System.out.println("Connection lost with " + existing.nickname);
+                        }
+                    }).start();
                     return (VirtualServer) existing;
                 } else {
                     throw new RemoteException("Player Already Online");
@@ -141,8 +154,6 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
                     socketOutput.writeObject(new String("Connessione riuscita."));
                     socketOutput.flush();
-                    // control heartbeat
-                    proxy.startNetworkHealthChecks();
 
                     clients.put(nickname, proxy); //store the player in the clients-list.
                     hall.enterPlayer(proxy); //enter the player into the hall
@@ -163,7 +174,6 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                                     }
                                 }).start();
 
-                                existingProxy.startNetworkHealthChecks();
                                 existingProxy.refreshClientState();
                             }
                         } else {

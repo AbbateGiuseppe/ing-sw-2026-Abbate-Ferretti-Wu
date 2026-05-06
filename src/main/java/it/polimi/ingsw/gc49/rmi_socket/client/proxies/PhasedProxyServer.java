@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc49.rmi_socket.client.proxies;
 
 import it.polimi.ingsw.gc49.rmi_socket.client.ClientApplication;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
@@ -13,7 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public abstract class PhasedProxyServer implements VirtualClient, VirtualServer {
+public abstract class PhasedProxyServer implements VirtualClient, VirtualServer, Heartbeatable {
     public final VirtualClient clientSide;
     protected ApplicationPhase currentPhase;
     protected VirtualServer serverSide;
@@ -35,19 +36,22 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer 
      * For socket only
      * @throws SocketException, if it loses connection.
      */
-    public void runVirtualServer() throws SocketException{}
+    public void runVirtualServer() throws SocketException{
+        startHeartbeating();
+    }
 
     private void changeLocalPhase ( ApplicationPhase newPhase ) {
         currentPhase = newPhase;
     }
     public abstract void finishInitialization ( VirtualServer serverSide, ObjectInputStream input, ObjectOutputStream output );
 
-
-    //Implementation heartbeat
-    public void startHeartbeat() {
+    ///-----------------------------------
+    // HEARTBEAT
+    @Override
+    public void startHeartbeating() {
         // Task 1: Invia segnale al Server
         scheduler.scheduleAtFixedRate(() -> {
-            try { pingServer(); } catch (Exception e) { handleServerOffline(); }
+            try { sendHeartbeat(); } catch (Exception e) { handleServerOffline(); }
         }, 0, SEND_INTERVAL, TimeUnit.SECONDS);
 
         // Task 2: Controlla se il Server è muto
@@ -58,22 +62,19 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer 
         }, 5, 5, TimeUnit.SECONDS);
     }
 
-    public void reportActivity() {
+    @Override
+    public void receiveHeartbeat() {
         this.lastServerContact = System.currentTimeMillis();
     }
 
-    protected abstract void pingServer() throws Exception;
+    @Override
+    public abstract void sendHeartbeat() throws Exception;
 
     protected void handleServerOffline() {
         running = false;
         scheduler.shutdownNow();
         System.err.println("\n[ERRORE] Il server non risponde. Chiusura...");
         System.exit(1);
-    }
-
-    @Override
-    public void receiveHeartbeat() throws RemoteException {
-        reportActivity();
     }
 
 }

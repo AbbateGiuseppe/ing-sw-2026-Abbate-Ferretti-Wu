@@ -7,7 +7,7 @@
     <groupId>it.polimi.ingsw</groupId>
     <artifactId>gc49</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>gc49</name>
+    <name>gc49-Mesos</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -70,7 +70,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>it.polimi.ingsw.gc49/it.polimi.ingsw.gc49.model.Game</mainClass>
+                            <mainClass>it.polimi.ingsw.gc49/it.polimi.ingsw.gc49.rmi_socket.client.ClientApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

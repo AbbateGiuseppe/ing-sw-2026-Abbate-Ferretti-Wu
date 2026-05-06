@@ -41,6 +41,7 @@ public class SocketProxyServer extends PhasedProxyServer {
     //### socket-input reader
     @Override
     public void runVirtualServer() throws SocketException {
+        super.runVirtualServer();
         running = true;
 
         Datapacket datapacket;
@@ -147,7 +148,7 @@ public class SocketProxyServer extends PhasedProxyServer {
 
 
     @Override
-    protected void pingServer() throws Exception {
+    public void sendHeartbeat() throws Exception {
         synchronized (writeLock) {
             output.writeObject(new HeartbeatPacket());
             output.flush();

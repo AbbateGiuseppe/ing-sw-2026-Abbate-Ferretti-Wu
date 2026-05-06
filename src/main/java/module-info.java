@@ -29,4 +29,6 @@ module it.polimi.ingsw.gc49 {
     opens it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers to javafx.fxml;
     exports it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters;
     opens it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters to javafx.fxml;
+    opens it.polimi.ingsw.gc49.rmi_socket.virtualMethods to javafx.fxml;
+    exports it.polimi.ingsw.gc49.rmi_socket.virtualMethods;
 }

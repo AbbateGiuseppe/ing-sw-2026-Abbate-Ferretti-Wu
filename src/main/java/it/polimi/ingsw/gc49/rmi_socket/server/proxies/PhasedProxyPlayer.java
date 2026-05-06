@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
@@ -17,7 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer {
+public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer, Heartbeatable {
     public final ServerMultiplexer server;
     public final String nickname;
     protected ApplicationPhase currentPhase;
@@ -51,7 +52,9 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
      * For socket only
      * @throws SocketException, if it loses connection.
      */
-    public void runVirtualClient() throws SocketException{}
+    public void runVirtualClient() throws SocketException{
+        startHeartbeating();
+    }
 
     protected void changeLocalPhase ( ApplicationPhase newPhase ) {
         currentPhase = newPhase;
@@ -73,10 +76,13 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
         return datapacket.applicationPhase == currentPhase;
     }
 
-    public void startNetworkHealthChecks() {
+    ///----------------------------------
+    // HEARTBEAT
+    @Override
+    public void startHeartbeating() {
         // sending heartbeat for each interval
         scheduler.scheduleAtFixedRate(() -> {
-            try { ping(); } catch (Exception e) {
+            try { sendHeartbeat(); } catch (Exception e) {
                 try {
                     onConnectionLost();
                 } catch (Exception ex) {
@@ -97,13 +103,15 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
         }, 5, 5, TimeUnit.SECONDS);
     }
 
-    public void reportActivity() {
+    @Override
+    public void receiveHeartbeat() {
         this.lastCheckIn = System.currentTimeMillis();
     }
 
-    public abstract void ping() throws Exception;
+    @Override
+    public abstract void sendHeartbeat() throws Exception;
 
-
+    ///-----------------------------
     // methods for reconnection
     public boolean isRunning() {
         return running;
@@ -150,11 +158,6 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer 
 
     public VirtualServerAdapter getServerSide(){
         return serverSide;
-    }
-
-    @Override
-    public void receiveHeartbeat() throws RemoteException {
-        this.reportActivity(); // Reset timestamp
     }
 
     @Override

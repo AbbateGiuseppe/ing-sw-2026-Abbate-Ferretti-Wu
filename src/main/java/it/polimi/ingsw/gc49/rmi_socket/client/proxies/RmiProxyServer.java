@@ -14,6 +14,7 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
@@ -94,8 +95,8 @@ public class RmiProxyServer extends PhasedProxyServer {
     }
 
     @Override
-    protected void pingServer() throws Exception {
-        serverSide.receiveHeartbeat();
+    public void sendHeartbeat() throws Exception {
+        ((Heartbeatable) serverSide).receiveHeartbeat();
     }
 
     @Override

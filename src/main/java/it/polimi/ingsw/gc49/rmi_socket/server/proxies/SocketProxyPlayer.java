@@ -38,6 +38,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     //### socket-input reader
     @Override
     public void runVirtualClient() throws SocketException {
+        super.startHeartbeating();
         running = true;
 
         Datapacket datapacket;
@@ -45,7 +46,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         try {
             while (running) {
                 datapacket = (Datapacket) input.readObject();
-                reportActivity(); // whatever packet received timeout is resetted
+                receiveHeartbeat(); // whatever packet received timeout is resetted
                 addSenderNickname(datapacket);
 
                 if(assureRightPhase(datapacket)) {
@@ -67,7 +68,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
                                 default -> throw new RuntimeException("Uncoded roomcommandpacket type: " + roomCommandPacket.commandType + " from: " + nickname);
                             }
                         }
-                        case HEARTBEAT -> {receiveHeartbeat();}
+                        case HEARTBEAT -> receiveHeartbeat();
                         default ->
                                 throw new RuntimeException("Unsendable datapacket type: " + datapacket.getDatapacketType() + " from: " + nickname);
                     }
@@ -172,7 +173,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     }
 
     @Override
-    public void ping() throws Exception {
+    public void sendHeartbeat() throws Exception {
         synchronized (writeLock) {
             output.writeObject(new HeartbeatPacket());
             output.flush();

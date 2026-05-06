@@ -28,7 +28,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class ClientApplication implements VirtualClient {
@@ -93,11 +92,8 @@ public class ClientApplication implements VirtualClient {
                     //connecting the client to his client side proxy
                     runnableClient.setServer(phasedProxyServer);
 
-                    //start heartbeat
-                    phasedProxyServer.startHeartbeat();
-
                     //running the client
-                    runnableClient.runRmi();
+                    runnableClient.run();
 
                 } catch (RemoteException e) {
                     System.out.println("Connessione fallita.");
@@ -140,11 +136,8 @@ public class ClientApplication implements VirtualClient {
                     //connecting the client to his client side proxy
                     runnableClient.setServer(phasedProxyServer);
 
-                    //start heartbeat
-                    phasedProxyServer.startHeartbeat();
-
                     //running the client
-                    runnableClient.runSocket();
+                    runnableClient.run();
                 }
             } else {
                 System.out.println("Scelta non valida: chiusura imminente.");
@@ -155,18 +148,8 @@ public class ClientApplication implements VirtualClient {
 
     }
 
-    private void runRmi() throws Exception {
-        if(inputInterface != null) {
-            inputInterface.runInput(); //run interface
-        }
-    }
-
-    public void setServer ( PhasedProxyServer server ) {
-        this.server = server;
-    }
-
-    public void runSocket () throws Exception {
-        //run server connection (input/output)
+    private void run() throws Exception {
+        //was used for socket, now used for both, also starts heartbeat.
         new Thread(() -> {
             try {
                 server.runVirtualServer();
@@ -179,6 +162,10 @@ public class ClientApplication implements VirtualClient {
         if(inputInterface != null) {
             inputInterface.runInput(); //run interface
         }
+    }
+
+    public void setServer ( PhasedProxyServer server ) {
+        this.server = server;
     }
 
     private static UserInputInterface chooseInputInterface() {
@@ -198,14 +185,6 @@ public class ClientApplication implements VirtualClient {
             System.out.println("Scelta non valida: chiusura imminente.");
             return null;
         }
-    }
-
-    @Override
-    public void receiveHeartbeat() throws RemoteException {
-        if (server != null) {
-            server.reportActivity();
-        }
-
     }
 
     //### Client general methods
