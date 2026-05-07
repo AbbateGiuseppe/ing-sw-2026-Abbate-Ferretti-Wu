@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.proxies;
 
-import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
@@ -14,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class PhasedProxyServer implements VirtualClient, VirtualServer, Heartbeatable {
     public final VirtualClient clientSide;
-    protected ApplicationPhase currentPhase;
     protected VirtualServer serverSide;
     protected ObjectInputStream input;
     protected ObjectOutputStream output;
@@ -37,9 +35,6 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer,
         startHeartbeating();
     }
 
-    private void changeLocalPhase ( ApplicationPhase newPhase ) {
-        currentPhase = newPhase;
-    }
     public abstract void finishInitialization ( VirtualServer serverSide, ObjectInputStream input, ObjectOutputStream output );
 
     ///-----------------------------------
@@ -56,7 +51,7 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer,
             if (System.currentTimeMillis() - lastServerContact > TIMEOUT_LIMIT * 1000) {
                 handleServerOffline();
             }
-        }, 5, 5, TimeUnit.SECONDS);
+        }, 5, SEND_INTERVAL, TimeUnit.SECONDS);
     }
 
     @Override

@@ -13,7 +13,10 @@ public abstract class Datapacket implements Serializable {
         INITIALIZE_HALL, UPDATE_HALL,
         HALL_COMMAND,
         INITIALIZE_ROOM, UPDATE_ROOM,
-        ROOM_COMMAND, HEARTBEAT }
+        ROOM_COMMAND,
+        HEARTBEAT,
+        STRING
+    }
 
     public final DatapacketType datapacketType;
     public final ApplicationPhase applicationPhase;

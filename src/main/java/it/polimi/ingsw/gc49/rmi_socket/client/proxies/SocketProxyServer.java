@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc49.rmi_socket.client.proxies;
 
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.HEARTBEAT.HeartbeatPacket;
+import it.polimi.ingsw.gc49.datapacket.STRING.StringPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
@@ -15,11 +16,9 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.Di
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
-import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
-import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
@@ -59,7 +58,8 @@ public class SocketProxyServer extends PhasedProxyServer {
                     case UPDATE_HALL -> updateClientHall((UpdateHallPacket) datapacket);
                     case INITIALIZE_ROOM  -> initializeClientRoom((InitializeRoomPacket) datapacket);
                     case UPDATE_ROOM -> updateClientRoom((UpdateRoomPacket) datapacket);
-                    case HEARTBEAT -> {receiveHeartbeat();}
+                    case HEARTBEAT -> receiveHeartbeat();
+                    case STRING -> sendString((StringPacket) datapacket);
                     default -> throw new RuntimeException("Unsendable datapacket type: " + datapacket.getDatapacketType());
                 }
             }
@@ -81,6 +81,10 @@ public class SocketProxyServer extends PhasedProxyServer {
     @Override
     public void changePhaseClient ( ChangePhasePacket changePhasePacket ) throws Exception {
         clientSide.changePhaseClient(changePhasePacket);
+    }
+    @Override
+    public void sendString ( StringPacket stringPacket ) throws Exception {
+        clientSide.sendString(stringPacket); //TODO: CHANGE INITIAL SERVER REPLY WITH THIS METHOD!
     }
     //#######################
     //### VirtualGameClient

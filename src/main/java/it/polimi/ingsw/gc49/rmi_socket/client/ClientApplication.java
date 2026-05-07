@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.rmi_socket.client;
 
 import it.polimi.ingsw.gc49.View.Mockup;
+import it.polimi.ingsw.gc49.datapacket.STRING.StringPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
@@ -192,6 +193,10 @@ public class ClientApplication implements VirtualClient {
     @Override
     public void changePhaseClient ( ChangePhasePacket changePhasePacket ) throws Exception {
         inputInterface.setCurrentPhase(changePhasePacket.newPhase);
+    }
+    @Override
+    public void sendString ( StringPacket stringPacket ) throws Exception {
+        inputInterface.printString(stringPacket.string);
     }
 
     //### Game called methods

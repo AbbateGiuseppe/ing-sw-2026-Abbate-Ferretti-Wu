@@ -207,6 +207,9 @@ public class TextTerminal extends UserInputInterface {
         manual.append(formatCommand("disconnect", "Disconnects you from the game"));
     }
     private static void printManual() {System.out.println(manual);}
+    public void printString ( String string ) {
+        System.out.println(string);
+    }
     private static String formatCommand(String command, String description) {return String.format(" %60s | %s\n", command, description);}
 
     public TextTerminal ( VirtualServer virtualServer , Mockup mockups, ApplicationPhase currentPhase) {

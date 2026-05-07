@@ -25,4 +25,6 @@ public abstract class UserInputInterface {
     public void setVirtualServer ( VirtualServer virtualServer ) {
         this.virtualServer = virtualServer;
     }
+
+    public abstract void printString ( String string );
 }
