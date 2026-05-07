@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
-import it.polimi.ingsw.gc49.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
@@ -20,8 +19,6 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.rmi.server.UnicastRemoteObject;
 
 public class RmiProxyPlayer extends PhasedProxyPlayer {

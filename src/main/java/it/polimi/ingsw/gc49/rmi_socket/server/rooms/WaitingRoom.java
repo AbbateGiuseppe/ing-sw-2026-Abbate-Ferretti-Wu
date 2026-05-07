@@ -10,7 +10,6 @@ import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
-import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualRoomServerAdapter;
 
 import java.util.concurrent.Executors;

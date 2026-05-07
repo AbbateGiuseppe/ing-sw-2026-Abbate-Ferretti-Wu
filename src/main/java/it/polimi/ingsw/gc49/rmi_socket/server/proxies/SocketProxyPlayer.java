@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
-import it.polimi.ingsw.gc49.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.HEARTBEAT.HeartbeatPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
@@ -20,13 +19,11 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.RoomCommandPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
-import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
-import java.rmi.server.UnicastRemoteObject;
 
 public class SocketProxyPlayer extends PhasedProxyPlayer {
 
@@ -41,7 +38,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     //### socket-input reader
     @Override
     public void runVirtualClient() throws SocketException {
-        //super.startHeartbeating();
+        super.runVirtualClient();
         connected = true;
 
         Datapacket datapacket;
@@ -49,7 +46,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         try {
             while (connected) {
                 datapacket = (Datapacket) input.readObject();
-                receiveHeartbeat(); // whatever packet received timeout is resetted
+                receiveHeartbeat(); // when whichever packet received, timeout is reset
                 addSenderNickname(datapacket);
 
                 if(assureRightPhase(datapacket)) {

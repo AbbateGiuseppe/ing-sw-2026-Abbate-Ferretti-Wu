@@ -50,11 +50,10 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
     }
 
     /**
-     * For socket only
-     * @throws SocketException, if it loses connection.
+     * @throws SocketException, if it loses connection (for socket only), starts a disconnection event chain.
      */
     public void runVirtualClient() throws SocketException{
-        //startHeartbeating();
+        startHeartbeating();
     }
 
     protected void changeLocalPhase ( ApplicationPhase newPhase ) {
@@ -110,7 +109,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
                     throw new RuntimeException(e);
                 }
             }
-        }, 5, 5, TimeUnit.SECONDS);
+        }, 5, SEND_INTERVAL, TimeUnit.SECONDS);
     }
 
     @Override

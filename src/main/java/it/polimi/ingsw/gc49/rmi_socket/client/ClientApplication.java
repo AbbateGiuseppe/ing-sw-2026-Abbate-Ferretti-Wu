@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -61,7 +62,7 @@ public class ClientApplication implements VirtualClient {
                 } catch (NumberFormatException e) {
                     System.out.println("NUMERO NON VALIDO! Riprova");
                 }
-            };
+            }
             System.out.println("Inserisci il tuo nomignolo");
             System.out.print("> ");
             String nickname = scan.nextLine();
@@ -153,8 +154,8 @@ public class ClientApplication implements VirtualClient {
         new Thread(() -> {
             try {
                 server.runVirtualServer();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (SocketException e) {
+                server.handleServerOffline();
             }
         }).start();
 

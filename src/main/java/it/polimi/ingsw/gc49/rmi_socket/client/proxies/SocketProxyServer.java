@@ -65,11 +65,6 @@ public class SocketProxyServer extends PhasedProxyServer {
             }
         } catch (SocketException e) {
             throw new SocketException(e);
-        } catch (InvalidClassException e) {
-            // QUI vedrai esattamente quale classe causa il flag conflict
-            System.err.println("ERRORE SERIALIZZAZIONE: " + e.classname);
-            System.err.println("Motivo: " + e.getMessage());
-            throw new RuntimeException("Riavvia tutto dopo un Clean!", e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

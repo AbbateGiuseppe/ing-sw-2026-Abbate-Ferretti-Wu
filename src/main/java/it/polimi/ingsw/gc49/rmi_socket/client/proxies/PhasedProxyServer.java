@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc49.rmi_socket.client.proxies;
 
-import it.polimi.ingsw.gc49.rmi_socket.client.ClientApplication;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
@@ -9,7 +8,6 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServ
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
-import java.rmi.RemoteException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,11 +31,10 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer,
     }
 
     /**
-     * For socket only
-     * @throws SocketException, if it loses connection.
+     * @throws SocketException, if it loses connection (for socket only), starts a disconnection event chain.
      */
     public void runVirtualServer() throws SocketException{
-        //startHeartbeating();
+        startHeartbeating();
     }
 
     private void changeLocalPhase ( ApplicationPhase newPhase ) {
@@ -70,7 +67,7 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer,
     @Override
     public abstract void sendHeartbeat() throws Exception;
 
-    protected void handleServerOffline() {
+    public void handleServerOffline() {
         running = false;
         scheduler.shutdownNow();
         System.err.println("\n[ERRORE] Il server non risponde. Chiusura...");
