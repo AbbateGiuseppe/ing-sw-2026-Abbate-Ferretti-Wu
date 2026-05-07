@@ -154,11 +154,4 @@ public class SocketProxyServer extends PhasedProxyServer {
             output.flush();
         }
     }
-
-    @Override
-    public void syncPlayer(PhasedProxyPlayer p) throws Exception {
-
-    }
-
-
 }

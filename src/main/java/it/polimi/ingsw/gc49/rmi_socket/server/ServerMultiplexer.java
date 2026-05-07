@@ -75,7 +75,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
                 registry.rebind(mainServer, serverRmi);
             } catch ( RemoteException e ) {
-                new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         }).start();
     }

@@ -31,12 +31,6 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
         super(server, nickname, startingPhase, serverSide, clientSide, null, null);
     }
 
-    // In RmiProxyPlayer
-    public void updateClientStub(VirtualClient newClientStub) {
-        this.clientSide = newClientStub; // Aggiorna il riferimento remoto
-        this.connected = true;            // Riattiva il proxy
-    }
-
     //###################
     //### VirtualClient
     @Override
@@ -145,7 +139,7 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     // methods for disconnection/reconnection
     @Override
     public void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
-        UnicastRemoteObject.unexportObject(clientSide, true);
+        UnicastRemoteObject.unexportObject(this, true);
         super.disconnectProcedure(disconnectPacket);
     }
 

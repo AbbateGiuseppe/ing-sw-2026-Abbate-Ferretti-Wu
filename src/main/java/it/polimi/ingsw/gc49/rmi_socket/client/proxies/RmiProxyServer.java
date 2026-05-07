@@ -98,8 +98,4 @@ public class RmiProxyServer extends PhasedProxyServer {
     public void sendHeartbeat() throws Exception {
         ((Heartbeatable) serverSide).receiveHeartbeat();
     }
-
-    @Override
-    public void syncPlayer(PhasedProxyPlayer p) throws Exception {
-    }
 }
