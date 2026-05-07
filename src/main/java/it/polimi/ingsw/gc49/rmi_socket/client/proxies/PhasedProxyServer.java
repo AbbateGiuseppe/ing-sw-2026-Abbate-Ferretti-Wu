@@ -51,12 +51,13 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer,
             if (System.currentTimeMillis() - lastServerContact > TIMEOUT_LIMIT * 1000) {
                 handleServerOffline();
             }
-        }, 5, SEND_INTERVAL, TimeUnit.SECONDS);
+        }, 5, SEND_INTERVAL*2, TimeUnit.SECONDS);
     }
 
     @Override
     public void receiveHeartbeat() {
         this.lastServerContact = System.currentTimeMillis();
+        System.out.println("HEARTBEAT RECEIVED.");
     }
 
     @Override

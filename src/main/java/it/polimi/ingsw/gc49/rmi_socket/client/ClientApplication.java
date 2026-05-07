@@ -84,8 +84,6 @@ public class ClientApplication implements VirtualClient {
                     //gaining the proxy on the server side
                     VirtualServer server = ((FactoryServiceRmi) registry.lookup(mainServer)).connectPlayerRmi(nickname, clientStub);
 
-                    System.out.println("Connessione riuscita.");
-
                     //connecting the proxy on this side to the server one
                     phasedProxyServer.finishInitialization(server, null, null);
 
@@ -114,33 +112,24 @@ public class ClientApplication implements VirtualClient {
                 //sends the nickname to authorise the connection
                 output.writeObject(nickname);
                 output.flush();
-                //waits for authorisation
-                Object authorisation = input.readObject();
 
-                if (authorisation instanceof RuntimeException) {
-                    System.out.println("Connessione fallita.");
-                    System.err.println("Il Serviente ha restituito un'eccezione: " + authorisation);
-                    serverSocket.close();
-                } else {
-                    System.out.println("Il Serviente ha restituito: " + authorisation);
+                //TODO: add listeners
 
-                    //TODO: add listeners
+                ClientApplication runnableClient = new ClientApplication(nickname);
 
-                    ClientApplication runnableClient = new ClientApplication(nickname);
+                PhasedProxyServer phasedProxyServer = new SocketProxyServer(runnableClient);
 
-                    PhasedProxyServer phasedProxyServer = new SocketProxyServer(runnableClient);
+                //connecting the proxy on this side to the server one
+                phasedProxyServer.finishInitialization(null, input, output);
 
-                    //connecting the proxy on this side to the server one
-                    phasedProxyServer.finishInitialization(null, input, output);
+                //connecting the interface to the server proxy
+                inputInterface.setVirtualServer(phasedProxyServer);
+                //connecting the client to his client side proxy
+                runnableClient.setServer(phasedProxyServer);
 
-                    //connecting the interface to the server proxy
-                    inputInterface.setVirtualServer(phasedProxyServer);
-                    //connecting the client to his client side proxy
-                    runnableClient.setServer(phasedProxyServer);
+                //running the client
+                runnableClient.run();
 
-                    //running the client
-                    runnableClient.run();
-                }
             } else {
                 System.out.println("Scelta non valida: chiusura imminente.");
                 return;

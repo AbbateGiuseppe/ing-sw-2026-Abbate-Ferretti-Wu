@@ -98,7 +98,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
                     throw new RuntimeException(ex);
                 }
             }
-        }, 0, SEND_INTERVAL, TimeUnit.SECONDS);
+        }, 0, SEND_INTERVAL*2, TimeUnit.SECONDS);
 
         // check if client is silent
         scheduler.scheduleAtFixedRate(() -> {
@@ -115,6 +115,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
     @Override
     public void receiveHeartbeat() {
         this.lastCheckIn = System.currentTimeMillis();
+        System.out.println("HEARTBEAT RECEIVED.");
     }
 
     @Override
@@ -123,7 +124,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
     private void onConnectionLost() throws Exception {
         DisconnectPacket disconnectPacket = new DisconnectPacket();
         disconnectPacket.setSenderNickname(nickname);
-        disconnectProcedure(disconnectPacket);
+        disconnect(disconnectPacket);
     }
 
     ///---------------------------------------

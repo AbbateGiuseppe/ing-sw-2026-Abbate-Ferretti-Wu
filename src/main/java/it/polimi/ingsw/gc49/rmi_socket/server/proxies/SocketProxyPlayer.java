@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.HEARTBEAT.HeartbeatPacket;
+import it.polimi.ingsw.gc49.datapacket.STRING.StringPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
@@ -97,6 +98,13 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
             output.flush();
         }
     }
+    @Override
+    public void sendString ( StringPacket stringPacket ) throws Exception {
+        synchronized (writeLock) {
+            output.writeObject(stringPacket);
+            output.flush();
+        }
+    }
     //#######################
     //### VirtualGameClient
     @Override
@@ -183,6 +191,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         synchronized (writeLock) {
             output.writeObject(new HeartbeatPacket());
             output.flush();
+            System.out.println("HEARTBEAT SENT.");
         }
     }
 

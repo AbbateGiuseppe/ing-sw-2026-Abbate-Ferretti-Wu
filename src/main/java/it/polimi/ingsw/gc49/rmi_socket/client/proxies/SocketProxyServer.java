@@ -48,6 +48,7 @@ public class SocketProxyServer extends PhasedProxyServer {
         try {
             while (running) {
                 datapacket = (Datapacket) input.readObject();
+                receiveHeartbeat(); // when whichever packet received, timeout is reset
 
                 switch (datapacket.datapacketType) {
                     case CHANGE_PHASE -> changePhaseClient((ChangePhasePacket) datapacket);
@@ -151,6 +152,7 @@ public class SocketProxyServer extends PhasedProxyServer {
         synchronized (writeLock) {
             output.writeObject(new HeartbeatPacket());
             output.flush();
+            System.out.println("HEARTBEAT SENT.");
         }
     }
 }

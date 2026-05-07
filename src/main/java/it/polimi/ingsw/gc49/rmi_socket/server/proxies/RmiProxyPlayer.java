@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
+import it.polimi.ingsw.gc49.datapacket.STRING.StringPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
@@ -34,6 +35,10 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     public void changePhaseClient ( ChangePhasePacket changePhasePacket ) throws Exception {
         changeLocalPhase(changePhasePacket.newPhase);
         clientSide.changePhaseClient(changePhasePacket);
+    }
+    @Override
+    public void sendString ( StringPacket stringPacket ) throws Exception {
+        clientSide.sendString(stringPacket);
     }
     //#######################
     //### VirtualGameClient

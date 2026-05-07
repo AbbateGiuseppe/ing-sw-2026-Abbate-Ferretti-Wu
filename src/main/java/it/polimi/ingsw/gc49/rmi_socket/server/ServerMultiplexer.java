@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
+import it.polimi.ingsw.gc49.datapacket.STRING.StringPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.RmiProxyPlayer;
@@ -89,6 +90,8 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                 clients.put(nickname, proxy); //store the player in the clients-list.
                 hall.enterPlayer(proxy); //enter the player into the hall
 
+                proxy.sendString(new StringPacket("Connessione riuscita."));
+
                 new Thread(() -> {
                     runVirtualClient(proxy);
                 }).start();
@@ -106,6 +109,8 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                 } else {
                     existingProxy.reconnect(clientStub, null, null);
                     System.out.println(existingProxy.nickname + " is reconnected");
+
+                    existingProxy.sendString(new StringPacket("Riconnessione riuscita."));
 
                     new Thread(() -> {
                         runVirtualClient(existingProxy);
@@ -133,13 +138,11 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                     );
                     System.out.println(proxy.nickname + " is connected");
 
+                    proxy.sendString(new StringPacket("Connessione riuscita."));
+
                     new Thread(() -> {
                         runVirtualClient(proxy);
                     }).start();
-
-
-                    socketOutput.writeObject("Connessione riuscita.");
-                    socketOutput.flush();
 
                     clients.put(nickname, proxy); //store the player in the clients-list.
                     hall.enterPlayer(proxy); //enter the player into the hall
@@ -150,14 +153,15 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                     clients.put(nickname, existingProxy);
 
                     if (existingProxy.isConnected()) {
-                        socketOutput.writeObject(new RuntimeException("A player with such a nickname is already connected. Please, change it."));
+                        socketOutput.writeObject(new StringPacket("A player with such a nickname is already connected. Please, change it."));
                         socketOutput.flush();
                         return;
                     } else {
-                        socketOutput.writeObject("Riconnessione riuscita.");
-                        socketOutput.flush();
                         existingProxy.reconnect(null, socketInput, socketOutput);
+
                         System.out.println(existingProxy.nickname + " is reconnected");
+
+                        existingProxy.sendString(new StringPacket("Riconnessione riuscita."));
 
                         new Thread(() -> {
                             runVirtualClient(existingProxy);
