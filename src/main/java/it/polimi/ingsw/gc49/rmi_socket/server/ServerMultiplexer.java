@@ -10,7 +10,6 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClie
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -34,7 +33,6 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
     /**
      * Constructor for rmi server
-     * @throws RemoteException
      */
     public ServerMultiplexer (int port) throws RemoteException {
         super();
@@ -45,7 +43,6 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     /**
      * Constructor for socket server
      * @param serverSocket, the serverSocket used to listen to new sockets connections.
-     * @throws RemoteException
      */
     public ServerMultiplexer(int port, ServerSocket serverSocket) throws RemoteException {
         super();
@@ -53,7 +50,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
         this.serverSocket = serverSocket;
     }
 
-    public static void main ( String[] args ) throws IOException {
+    public static void main ( String[] args ) {
         String host = null; //args[0];
 
         //SOCKET
@@ -93,30 +90,25 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                 hall.enterPlayer(proxy); //enter the player into the hall
 
                 new Thread(() -> {
-                    try {
-                        proxy.runVirtualClient();
-                    } catch (Exception e) {
-                        System.out.println("Connection lost with " + proxy.nickname);
-                    }
+                    runVirtualClient(proxy);
                 }).start();
 
                 return (VirtualServer) UnicastRemoteObject.exportObject(proxy, port);
 
             } else {
-                PhasedProxyPlayer existingProxy = clients.get(nickname);
+                //finds the existing proxy and converts it to the newly chosen connection technology
+                PhasedProxyPlayer existingProxy = clients.get(nickname).convertToRmi();
+                clients.remove(nickname);
+                clients.put(nickname, existingProxy);
 
                 if (existingProxy.isConnected()) {
                     throw new RemoteException("A player with such a nickname is already connected. Please, change it.");
                 } else {
-                    existingProxy.reconnectProcedure(clientStub, null, null);
+                    existingProxy.reconnect(clientStub, null, null);
                     System.out.println(existingProxy.nickname + " is reconnected");
 
                     new Thread(() -> {
-                        try {
-                            existingProxy.runVirtualClient();
-                        } catch (SocketException e) {
-                            System.out.println("Connection Lost");
-                        }
+                        runVirtualClient(existingProxy);
                     }).start();
 
                     return (VirtualServer) UnicastRemoteObject.exportObject(existingProxy, port);
@@ -142,11 +134,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                     System.out.println(proxy.nickname + " is connected");
 
                     new Thread(() -> {
-                        try {
-                            proxy.runVirtualClient();
-                        } catch (SocketException e) {
-                            System.out.println("Connection lost with " + proxy.nickname);
-                        }
+                        runVirtualClient(proxy);
                     }).start();
 
 
@@ -156,7 +144,10 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                     clients.put(nickname, proxy); //store the player in the clients-list.
                     hall.enterPlayer(proxy); //enter the player into the hall
                 } else {
-                    PhasedProxyPlayer existingProxy = clients.get(nickname);
+                    //finds the existing proxy and converts it to the newly chosen connection technology
+                    PhasedProxyPlayer existingProxy = clients.get(nickname).convertToSocket();
+                    clients.remove(nickname);
+                    clients.put(nickname, existingProxy);
 
                     if (existingProxy.isConnected()) {
                         socketOutput.writeObject(new RuntimeException("A player with such a nickname is already connected. Please, change it."));
@@ -165,18 +156,28 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                     } else {
                         socketOutput.writeObject("Riconnessione riuscita.");
                         socketOutput.flush();
-                        existingProxy.reconnectProcedure(null, socketInput, socketOutput);
+                        existingProxy.reconnect(null, socketInput, socketOutput);
                         System.out.println(existingProxy.nickname + " is reconnected");
 
                         new Thread(() -> {
-                            try {
-                                existingProxy.runVirtualClient();
-                            } catch (SocketException e) {
-                                System.out.println("Connection Lost");
-                            }
+                            runVirtualClient(existingProxy);
                         }).start();
                     }
                 }
+            }
+        }
+    }
+
+    private void runVirtualClient ( PhasedProxyPlayer proxy ) {
+        try {
+            proxy.runVirtualClient();
+        } catch (SocketException e) {
+            try {
+                DisconnectPacket disconnectPacket = new DisconnectPacket();
+                disconnectPacket.setSenderNickname(proxy.nickname);
+                proxy.disconnect(disconnectPacket);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
             }
         }
     }

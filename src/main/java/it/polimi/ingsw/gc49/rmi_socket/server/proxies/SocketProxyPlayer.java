@@ -26,6 +26,7 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.Vi
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
+import java.rmi.server.UnicastRemoteObject;
 
 public class SocketProxyPlayer extends PhasedProxyPlayer {
 
@@ -40,7 +41,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     //### socket-input reader
     @Override
     public void runVirtualClient() throws SocketException {
-        super.startHeartbeating();
+        //super.startHeartbeating();
         connected = true;
 
         Datapacket datapacket;
@@ -188,11 +189,22 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         }
     }
 
+    ///---------------------------------------
+    // methods for disconnection/reconnection
     @Override
-    public void reconnectProcedure ( VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput ) throws Exception {
-        input = newInput;
-        output = newOutput;
-        controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
-        serverSide.syncPlayer(this);
+    protected void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
+        input.close();
+        super.disconnectProcedure(disconnectPacket);
+    }
+
+    ///-------------------------------
+    // conversions methods
+    @Override
+    public RmiProxyPlayer convertToRmi(){
+        return new RmiProxyPlayer(server, nickname, currentPhase, serverSide, clientSide);
+    }
+    @Override
+    public SocketProxyPlayer convertToSocket(){
+        return this;
     }
 }

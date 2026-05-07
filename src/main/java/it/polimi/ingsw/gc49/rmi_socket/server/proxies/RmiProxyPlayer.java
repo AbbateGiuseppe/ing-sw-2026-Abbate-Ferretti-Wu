@@ -138,15 +138,19 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     ///---------------------------------------
     // methods for disconnection/reconnection
     @Override
-    public void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
+    protected void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
         UnicastRemoteObject.unexportObject(this, true);
         super.disconnectProcedure(disconnectPacket);
     }
 
+    ///-------------------------------
+    // conversions methods
     @Override
-    public void reconnectProcedure ( VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput ) throws Exception {
-        clientSide = newClientSide;
-        controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
-        serverSide.syncPlayer(this);
+    public RmiProxyPlayer convertToRmi(){
+        return this;
+    }
+    @Override
+    public SocketProxyPlayer convertToSocket(){
+        return new SocketProxyPlayer(server, nickname, currentPhase, serverSide, input, output);
     }
 }

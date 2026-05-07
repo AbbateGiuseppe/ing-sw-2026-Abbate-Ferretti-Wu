@@ -37,7 +37,7 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer,
      * @throws SocketException, if it loses connection.
      */
     public void runVirtualServer() throws SocketException{
-        startHeartbeating();
+        //startHeartbeating();
     }
 
     private void changeLocalPhase ( ApplicationPhase newPhase ) {

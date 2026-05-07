@@ -54,7 +54,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
      * @throws SocketException, if it loses connection.
      */
     public void runVirtualClient() throws SocketException{
-        startHeartbeating();
+        //startHeartbeating();
     }
 
     protected void changeLocalPhase ( ApplicationPhase newPhase ) {
@@ -132,14 +132,30 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
     @Override
     public void disconnect( DisconnectPacket disconnectPacket) throws Exception {
         this.disconnectProcedure(disconnectPacket);
+        System.out.println("Connection lost with " + nickname);
     }
 
-    public void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
+    protected void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
         connected = false;
         scheduler.shutdownNow();
-        controller.executeCommand(new CommandPacket(PlayerActionEnum.DISCONNECT));
+        if (controller != null) {
+            controller.executeCommand(new CommandPacket(PlayerActionEnum.DISCONNECT));
+        }
         serverSide.disconnect(disconnectPacket);
     }
 
-    public abstract void reconnectProcedure ( VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput) throws Exception;
+    public void reconnect ( VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput) throws Exception {
+        clientSide = newClientSide;
+        input = newInput;
+        output = newOutput;
+        if (controller != null) {
+            controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
+        }
+        serverSide.syncPlayer(this);
+    }
+
+    ///-------------------------------
+    // conversions methods
+    public abstract RmiProxyPlayer convertToRmi();
+    public abstract SocketProxyPlayer convertToSocket();
 }

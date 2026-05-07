@@ -103,9 +103,9 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
     public void leaveRoom ( RoomLeavePacket roomLeavePacket ) throws Exception {
         PhasedProxyPlayer senderPlayer = getPlayerByString(roomLeavePacket.getSenderNickname());
         if( senderPlayer != null ){
-            senderPlayer.changePhaseClient(new ChangePhasePacket(ApplicationPhase.HALL));
-            senderPlayer.setServerSideObject(new VirtualHallServerAdapter(hall));
+            //enter the hall
             players.remove(senderPlayer);
+            hall.enterPlayer(senderPlayer);
 
             //broadcasts the new room
             broadcastMockupRoom();
