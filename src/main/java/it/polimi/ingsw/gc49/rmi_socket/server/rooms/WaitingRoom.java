@@ -2,10 +2,11 @@ package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 
 import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_ROOM.UpdateRoomPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_ROOM.InitializeRoomPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
+import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
@@ -19,10 +20,10 @@ import java.util.concurrent.TimeUnit;
 public class WaitingRoom extends Room implements VirtualRoomServer {
     private static final int TIME_BEFORE_GAME_START = 10;
 
-    private ScheduledExecutorService startingGameScheduler = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService startingGameScheduler = Executors.newSingleThreadScheduledExecutor();
 
-    public WaitingRoom ( Hall hall, String roomName, int maxNumOfPlayers ) {
-        super(hall, roomName, maxNumOfPlayers);
+    public WaitingRoom ( ServerMultiplexer server, Hall hall, String roomName, int maxNumOfPlayers ) {
+        super(server, hall, roomName, maxNumOfPlayers);
     }
 
 
@@ -47,6 +48,18 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
         }
     }
 
+    ///----------------------
+    // disconnection
+    @Override
+    public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
+        String disconnectedNickname = disconnectPacket.getSenderNickname();
+        //disconnects the player from the room
+        players.removeIf(player -> player.nickname.equals(disconnectedNickname));
+        broadcastMockupRoom(); // updates the rooms view
+        server.disconnect(disconnectPacket); //removes the player reference from the server
+    }
+
+    ///---------------------------
     //### Room's methods
     @Override
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
@@ -67,7 +80,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
                 scheduleGameStart();
             }
         }else{
-            new RuntimeException("La stanza è piena, non puoi entrare nella stanza " + roomName + "." );
+            throw new RuntimeException("La stanza è piena, non puoi entrare nella stanza " + roomName + ".");
         }
     }
     @Override
@@ -81,7 +94,7 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
     }
 
     public PlayingRoom convertIntoPlaying () {
-        return new PlayingRoom(hall, roomName, maxNumOfPlayers, players);
+        return new PlayingRoom(server, hall, roomName, maxNumOfPlayers, players);
     }
 
 

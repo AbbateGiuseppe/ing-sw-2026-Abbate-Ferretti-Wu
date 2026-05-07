@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
+import it.polimi.ingsw.gc49.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.datapacket.HEARTBEAT.HeartbeatPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
@@ -19,6 +20,7 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.RoomCommandPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
 
 import java.io.ObjectInputStream;
@@ -39,12 +41,12 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     @Override
     public void runVirtualClient() throws SocketException {
         super.startHeartbeating();
-        running = true;
+        connected = true;
 
         Datapacket datapacket;
 
         try {
-            while (running) {
+            while (connected) {
                 datapacket = (Datapacket) input.readObject();
                 receiveHeartbeat(); // whatever packet received timeout is resetted
                 addSenderNickname(datapacket);
@@ -83,7 +85,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         }
     }
     public void stop() {
-        running = false;
+        connected = false;
     }
 
 
@@ -99,18 +101,21 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     }
     //#######################
     //### VirtualGameClient
+    @Override
     public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws Exception {
         synchronized (writeLock) {
             output.writeObject(initializeModelPacket);
             output.flush();
         }
     }
+    @Override
     public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws Exception {
         synchronized (writeLock) {
             output.writeObject(updateModelPacket);
             output.flush();
         }
     }
+    @Override
     public void reportError ( ErrorPacket errorPacket ) throws Exception {
         synchronized (writeLock) {
             output.writeObject(errorPacket);
@@ -118,21 +123,25 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         }
     }
     //### VirtualGameServer
+    @Override
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
         //executes the command on the controller
         controller.executeCommand(commandPacket);
     }
+    @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         serverSide.disconnect(disconnectPacket);
     }
 
     //### VirtualHallClient
+    @Override
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
         synchronized (writeLock) {
             output.writeObject(initializeHallPacket);
             output.flush();
         }
     }
+    @Override
     public void updateClientHall ( UpdateHallPacket updateHallPacket ) throws Exception {
         synchronized (writeLock) {
             output.writeObject(updateHallPacket);
@@ -140,19 +149,23 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         }
     }
     //### VirtualHallServer
+    @Override
     public void joinRoom ( HallJoinPacket hallJoinPacket ) throws Exception {
         serverSide.joinRoom(hallJoinPacket);
     }
+    @Override
     public void createRoom ( HallCreatePacket hallCreatePacket ) throws Exception {
         serverSide.createRoom(hallCreatePacket);
     }
     //### VirtualRoomClient
+    @Override
     public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) throws Exception {
         synchronized (writeLock) {
             output.writeObject(initializeRoomPacket);
             output.flush();
         }
     }
+    @Override
     public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) throws Exception {
         synchronized (writeLock) {
             output.writeObject(updateRoomPacket);
@@ -160,18 +173,13 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         }
     }
     //### VirtualRoomServer
+    @Override
     public void leaveRoom ( RoomLeavePacket roomLeavePacket ) throws Exception {
         serverSide.leaveRoom(roomLeavePacket);
     }
 
-    public void updateStreams(ObjectInputStream in, ObjectOutputStream out) {
-        synchronized (writeLock) {
-            this.input = in;
-            this.output = out;
-            this.running = true;
-        }// Permette al loop di ripartire
-    }
-
+    ///-------------------------------
+    // Heartbeat
     @Override
     public void sendHeartbeat() throws Exception {
         synchronized (writeLock) {
@@ -181,7 +189,10 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     }
 
     @Override
-    public void syncPlayer(PhasedProxyPlayer p) throws Exception {
-
+    public void reconnectProcedure ( VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput ) throws Exception {
+        input = newInput;
+        output = newOutput;
+        controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
+        serverSide.syncPlayer(this);
     }
 }

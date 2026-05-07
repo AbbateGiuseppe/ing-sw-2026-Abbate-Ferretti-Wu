@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.Comma
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.model.Game;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
+import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
@@ -17,11 +18,12 @@ import java.util.List;
 public class PlayingRoom extends Room implements VirtualGameServer {
     private Game game;
 
-    public PlayingRoom ( Hall hall, String roomName, int maxNumOfPlayers ) {
-        super(hall, roomName, maxNumOfPlayers);
+    @SuppressWarnings("unused")
+    public PlayingRoom ( ServerMultiplexer server, Hall hall, String roomName, int maxNumOfPlayers ) {
+        super(server, hall, roomName, maxNumOfPlayers);
     }
-    public PlayingRoom ( Hall hall, String roomName, int maxNumOfPlayers, List<PhasedProxyPlayer> players ) {
-        super(hall, roomName, maxNumOfPlayers, players);
+    public PlayingRoom ( ServerMultiplexer server, Hall hall, String roomName, int maxNumOfPlayers, List<PhasedProxyPlayer> players ) {
+        super(server, hall, roomName, maxNumOfPlayers, players);
     }
 
 
@@ -74,10 +76,13 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     //### client's commands
     @Override
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
-
+        //already directed by controller.
     }
+
+    ///----------------------
+    // disconnection
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
-
+        //player's reference remains on the server.
     }
 }

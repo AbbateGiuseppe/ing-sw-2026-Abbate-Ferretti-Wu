@@ -1,7 +1,9 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
 import it.polimi.ingsw.gc49.controller.MassiWuController;
+import it.polimi.ingsw.gc49.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.Datapacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
@@ -13,13 +15,12 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.Vi
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.SocketException;
-import java.rmi.RemoteException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer, Heartbeatable {
-    public final ServerMultiplexer server;
+    protected final ServerMultiplexer server;
     public final String nickname;
     protected ApplicationPhase currentPhase;
     protected VirtualServerAdapter serverSide;
@@ -27,7 +28,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
     protected VirtualClient clientSide;
     protected ObjectInputStream input;
     protected ObjectOutputStream output;
-    protected volatile boolean running;
+    protected volatile boolean connected;
     //Handling TIMEOUTS
     protected long lastCheckIn = System.currentTimeMillis();
     protected ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
@@ -76,13 +77,22 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
         return datapacket.applicationPhase == currentPhase;
     }
 
+    public String getNickname(){
+        return nickname;
+    }
+    public boolean isConnected () {
+        return connected;
+    }
+
     ///----------------------------------
     // HEARTBEAT
     @Override
     public void startHeartbeating() {
         // sending heartbeat for each interval
         scheduler.scheduleAtFixedRate(() -> {
-            try { sendHeartbeat(); } catch (Exception e) {
+            try {
+                sendHeartbeat();
+            } catch (Exception e) {
                 try {
                     onConnectionLost();
                 } catch (Exception ex) {
@@ -111,57 +121,25 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
     @Override
     public abstract void sendHeartbeat() throws Exception;
 
-    ///-----------------------------
-    // methods for reconnection
-    public boolean isRunning() {
-        return running;
+    private void onConnectionLost() throws Exception {
+        DisconnectPacket disconnectPacket = new DisconnectPacket();
+        disconnectPacket.setSenderNickname(nickname);
+        disconnectProcedure(disconnectPacket);
     }
 
-    private ApplicationPhase getCurrentPhase() {
-        return currentPhase;
-    }
-
-    public void onConnectionLost() throws Exception {
-        if (this.getCurrentPhase() != ApplicationPhase.GAME) {
-            fullDisconnect();
-        } else {
-            handleDisconnection();
-        }
-    }
-
-    public void fullDisconnect() throws Exception {
-        this.running = false;
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdownNow();
-        }
-        this.server.fullDisconnect(this);
-    }
-
-    protected synchronized void handleDisconnection() {
-        if (!running) return;
-        running = false; // Il proxy rimane in memoria ma segnato come non attivo
-        if (scheduler != null) scheduler.shutdownNow();
-    }
-
-    public void refreshClientState() {
-        try {
-            this.serverSide.syncPlayer(this);
-            System.out.println("[RECONNECT] Sync completed for " + nickname);
-        } catch (Exception e) {
-            System.err.println("[RECONNECT] Error during the refresh of " + nickname + ": " + e.getMessage());
-        }
-    }
-
-    public String getNickname(){
-        return nickname;
-    }
-
-    public VirtualServerAdapter getServerSide(){
-        return serverSide;
-    }
-
+    ///---------------------------------------
+    // methods for disconnection/reconnection
     @Override
     public void disconnect( DisconnectPacket disconnectPacket) throws Exception {
-        this.fullDisconnect();
+        this.disconnectProcedure(disconnectPacket);
     }
+
+    public void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
+        connected = false;
+        scheduler.shutdownNow();
+        controller.executeCommand(new CommandPacket(PlayerActionEnum.DISCONNECT));
+        serverSide.disconnect(disconnectPacket);
+    }
+
+    public abstract void reconnectProcedure ( VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput) throws Exception;
 }

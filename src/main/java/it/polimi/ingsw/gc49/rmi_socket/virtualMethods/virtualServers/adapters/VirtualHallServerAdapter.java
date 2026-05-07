@@ -19,11 +19,16 @@ public class VirtualHallServerAdapter extends VirtualServerAdapter {
         this.adaptee = adaptee;
     }
 
+    ///------------------------
+    // disconnection
+    @Override
+    public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
+        adaptee.disconnect(disconnectPacket);
+    }
+
     //### VirtualGameServer
     @Override
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {}
-    @Override
-    public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {}
 
     //### VirtualHallServer
     @Override

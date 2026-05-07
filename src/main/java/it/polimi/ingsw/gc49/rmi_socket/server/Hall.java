@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_HALL.InitializeHallPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_HALL.UpdateHallPacket;
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
@@ -21,8 +22,13 @@ import java.util.List;
 import java.util.Map;
 
 public class Hall implements VirtualHallServer {
+    private ServerMultiplexer server;
     private static final Map<String, Room> rooms = new HashMap<>();
     private static final Map<String, PhasedProxyPlayer> PlayersInHall = new HashMap<>();
+
+    public void setServer ( ServerMultiplexer server ){
+        this.server = server;
+    }
 
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
         System.out.println("Il giocatore " + newPlayer.nickname + " è entrato nell'atrio.");
@@ -38,7 +44,17 @@ public class Hall implements VirtualHallServer {
         //broadcasts the new hall
         broadcastMockupHall();
     }
+    ///----------------------
+    // disconnection
+    @Override
+    public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
+        String disconnectedNickname = disconnectPacket.getSenderNickname();
+        PlayersInHall.remove(disconnectedNickname); //disconnects the player from the hall
+        server.disconnect(disconnectPacket); //removes the player reference from the server
+    }
 
+    ///----------------------------
+    // hall commands
     @Override
     public void joinRoom ( HallJoinPacket hallJoinPacket ) throws Exception {
         Room joiningRoom = rooms.get(hallJoinPacket.roomName);
@@ -59,7 +75,7 @@ public class Hall implements VirtualHallServer {
 
     @Override
     public void createRoom ( HallCreatePacket hallCreatePacket ) throws Exception {
-        Room newRoom = new WaitingRoom( this, hallCreatePacket.roomName, hallCreatePacket.maxNumOfPlayers ); //Creates a new room with Id of the last room + 1.
+        Room newRoom = new WaitingRoom( server, this, hallCreatePacket.roomName, hallCreatePacket.maxNumOfPlayers ); //Creates a new room with Id of the last room + 1.
 
         String senderNickname = hallCreatePacket.getSenderNickname();
         PhasedProxyPlayer senderPlayer = PlayersInHall.get(senderNickname);
@@ -106,8 +122,6 @@ public class Hall implements VirtualHallServer {
         playingRoom.createGame();
 
         //starts the new game with its own thread.
-        new Thread(() -> {
-            playingRoom.runGame();
-        }).start();
+        new Thread(playingRoom::runGame).start();
     }
 }

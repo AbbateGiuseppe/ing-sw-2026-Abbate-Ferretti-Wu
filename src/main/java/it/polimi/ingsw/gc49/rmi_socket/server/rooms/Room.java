@@ -3,24 +3,29 @@ package it.polimi.ingsw.gc49.rmi_socket.server.rooms;
 import it.polimi.ingsw.gc49.View.mockupHall.MockupRoom;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_ROOM.UpdateRoomPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.Hall;
+import it.polimi.ingsw.gc49.rmi_socket.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Disconnectable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class Room {
+public abstract class Room implements Disconnectable {
+    protected final ServerMultiplexer server;
     protected final Hall hall;
     public final String roomName;
     public final int maxNumOfPlayers;
     protected final List<PhasedProxyPlayer> players = new ArrayList<>();
 
-    public Room ( Hall hall, String roomName, int maxNumOfPlayers ) {
+    public Room ( ServerMultiplexer server, Hall hall, String roomName, int maxNumOfPlayers ) {
+        this.server = server;
         this.hall = hall;
         this.roomName = roomName;
         this.maxNumOfPlayers = maxNumOfPlayers;
     }
-    public Room ( Hall hall, String roomName, int maxNumOfPlayers, List<PhasedProxyPlayer> players ) {
+    public Room ( ServerMultiplexer server, Hall hall, String roomName, int maxNumOfPlayers, List<PhasedProxyPlayer> players ) {
+        this.server = server;
         this.hall = hall;
         this.roomName = roomName;
         this.maxNumOfPlayers = maxNumOfPlayers;
@@ -59,16 +64,6 @@ public abstract class Room {
 
         for( PhasedProxyPlayer player : players ){
             player.updateClientRoom(updatedRoom);
-        }
-    }
-
-    public void fullyDisconnectPlayer ( PhasedProxyPlayer player ) throws Exception {
-        synchronized (players) {
-            if (player != null && players.contains(player)) {
-                    players.remove(player);
-                    hall.broadcastMockupHall();
-                    broadcastMockupRoom();
-            }
         }
     }
 }

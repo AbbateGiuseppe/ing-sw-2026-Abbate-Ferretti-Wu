@@ -11,7 +11,6 @@ import it.polimi.ingsw.gc49.datapacket.directedToServer.HALL_phase.HALL_COMMAND.
 import it.polimi.ingsw.gc49.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.server.rooms.PlayingRoom;
-import it.polimi.ingsw.gc49.rmi_socket.server.rooms.Room;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
 
@@ -22,14 +21,17 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
         this.adaptee = adaptee;
     }
 
+    ///------------------------
+    // disconnection
+    @Override
+    public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
+        adaptee.disconnect(disconnectPacket);
+    }
+
     //### VirtualGameServer
     @Override
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
         adaptee.sendCommand(commandPacket);
-    }
-    @Override
-    public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
-        adaptee.disconnect(disconnectPacket);
     }
 
     //### VirtualHallServer
@@ -44,25 +46,14 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
     @Override
     public void syncPlayer(PhasedProxyPlayer proxy) throws Exception {
 
-        if (!(adaptee instanceof Room)) {
-            throw new Exception("L'adaptee non è una Room, impossibile sincronizzare.");
-        }
-        Room room = (Room) adaptee;
+        PlayingRoom playingRoom = (PlayingRoom) adaptee;
 
-        proxy.initializeClientRoom(new InitializeRoomPacket(
-                room.giveMockupRoom()
-        ));
+        proxy.changePhaseClient( new ChangePhasePacket(ApplicationPhase.GAME) );
 
-        if (room instanceof PlayingRoom) {
-            PlayingRoom playingRoom = (PlayingRoom) room;
+        proxy.initializeClientRoom( new InitializeRoomPacket(playingRoom.giveMockupRoom()) );
+        MockupGame gameSnapshot = playingRoom.getGame().giveMockupGame();
+        proxy.initializeClientModel( new InitializeModelPacket(gameSnapshot) );
 
-            proxy.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
-
-            MockupGame gameSnapshot = playingRoom.getGame().giveMockupGame();
-            proxy.initializeClientModel(new InitializeModelPacket(gameSnapshot));
-
-            System.out.println("[GAME-SYNC] Synchronizing Completed " + proxy.nickname);
-        }
-
+        System.out.println("[GAME-SYNC] Synchronizing Completed " + proxy.nickname);
     }
 }

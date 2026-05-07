@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.rmi_socket.server.proxies;
 
+import it.polimi.ingsw.gc49.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
@@ -19,7 +20,9 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
 
-import java.rmi.RemoteException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.rmi.server.UnicastRemoteObject;
 
 public class RmiProxyPlayer extends PhasedProxyPlayer {
     public RmiProxyPlayer ( ServerMultiplexer server, String nickname,
@@ -31,7 +34,7 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     // In RmiProxyPlayer
     public void updateClientStub(VirtualClient newClientStub) {
         this.clientSide = newClientStub; // Aggiorna il riferimento remoto
-        this.running = true;            // Riattiva il proxy
+        this.connected = true;            // Riattiva il proxy
     }
 
     //###################
@@ -130,14 +133,26 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
         }
     }
 
+    ///-------------------------------
+    // Heartbeat
     @Override
     public void sendHeartbeat() throws Exception {
         // call method on clientStub
         ((Heartbeatable) clientSide).receiveHeartbeat();
     }
 
+    ///---------------------------------------
+    // methods for disconnection/reconnection
     @Override
-    public void syncPlayer(PhasedProxyPlayer p) throws Exception {
+    public void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
+        UnicastRemoteObject.unexportObject(clientSide, true);
+        super.disconnectProcedure(disconnectPacket);
+    }
 
+    @Override
+    public void reconnectProcedure ( VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput ) throws Exception {
+        clientSide = newClientSide;
+        controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
+        serverSide.syncPlayer(this);
     }
 }

@@ -1,10 +1,11 @@
 package it.polimi.ingsw.gc49.rmi_socket.server;
 
+import it.polimi.ingsw.gc49.datapacket.directedToServer.GAME_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.RmiProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.server.proxies.SocketProxyPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.server.rooms.Room;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Disconnectable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
@@ -22,7 +23,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServerMultiplexer extends UnicastRemoteObject implements FactoryServiceRmi {
+public class ServerMultiplexer extends UnicastRemoteObject implements FactoryServiceRmi, Disconnectable {
     public static final String mainServer = "MesosMainServer";
     public static final int portSocket = 2001;
     public static final int portRmi = 2002;
@@ -38,6 +39,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     public ServerMultiplexer (int port) throws RemoteException {
         super();
         this.port = port;
+        hall.setServer(this);
     }
 
     /**
@@ -101,27 +103,23 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                 return (VirtualServer) UnicastRemoteObject.exportObject(proxy, port);
 
             } else {
-                if (clients.containsKey(nickname)) {
-                    PhasedProxyPlayer existing = clients.get(nickname);
-                    if (existing.isRunning()) throw new RemoteException("Already logged");
-                    System.out.println(existing.nickname + " is now reconnected");
+                PhasedProxyPlayer existingProxy = clients.get(nickname);
 
-                    // update stub of old proxy
-                    ((RmiProxyPlayer) existing).updateClientStub(clientStub);
-
-                    // export old proxy already existing
-                    existing.refreshClientState();
+                if (existingProxy.isConnected()) {
+                    throw new RemoteException("A player with such a nickname is already connected. Please, change it.");
+                } else {
+                    existingProxy.reconnectProcedure(clientStub, null, null);
+                    System.out.println(existingProxy.nickname + " is reconnected");
 
                     new Thread(() -> {
                         try {
-                            existing.runVirtualClient();
-                        } catch (Exception e) {
-                            System.out.println("Connection lost with " + existing.nickname);
+                            existingProxy.runVirtualClient();
+                        } catch (SocketException e) {
+                            System.out.println("Connection Lost");
                         }
                     }).start();
-                    return (VirtualServer) existing;
-                } else {
-                    throw new RemoteException("Player Already Online");
+
+                    return (VirtualServer) UnicastRemoteObject.exportObject(existingProxy, port);
                 }
             }
         }
@@ -152,66 +150,42 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                     }).start();
 
 
-                    socketOutput.writeObject(new String("Connessione riuscita."));
+                    socketOutput.writeObject("Connessione riuscita.");
                     socketOutput.flush();
 
                     clients.put(nickname, proxy); //store the player in the clients-list.
                     hall.enterPlayer(proxy); //enter the player into the hall
                 } else {
-                    if (clients.containsKey(nickname)) {
-                        PhasedProxyPlayer existingProxy = clients.get(nickname);
+                    PhasedProxyPlayer existingProxy = clients.get(nickname);
 
-                        if (!existingProxy.isRunning()) {
-                            if (existingProxy instanceof SocketProxyPlayer && !existingProxy.isRunning()) {
-                                ((SocketProxyPlayer) existingProxy).updateStreams(socketInput, socketOutput);
-                                System.out.println(existingProxy.nickname + " now reconnected");
-
-                                new Thread(() -> {
-                                    try {
-                                        existingProxy.runVirtualClient();
-                                    } catch (SocketException e) {
-                                        System.out.println("Connection Lost");
-                                    }
-                                }).start();
-
-                                existingProxy.refreshClientState();
-                            }
-                        } else {
-                            socketOutput.writeObject(new RuntimeException("Player already connected!"));
-                            return;
-                        }
-                    } else {
-                        socketOutput.writeObject(new RuntimeException("Nomignolo già esistente e connesso. Prego, cambiarlo."));
+                    if (existingProxy.isConnected()) {
+                        socketOutput.writeObject(new RuntimeException("A player with such a nickname is already connected. Please, change it."));
                         socketOutput.flush();
+                        return;
+                    } else {
+                        socketOutput.writeObject("Riconnessione riuscita.");
+                        socketOutput.flush();
+                        existingProxy.reconnectProcedure(null, socketInput, socketOutput);
+                        System.out.println(existingProxy.nickname + " is reconnected");
+
+                        new Thread(() -> {
+                            try {
+                                existingProxy.runVirtualClient();
+                            } catch (SocketException e) {
+                                System.out.println("Connection Lost");
+                            }
+                        }).start();
                     }
                 }
             }
         }
     }
 
-    /**
-     * Rimuove completamente un giocatore dal sistema.
-     * @param proxy il proxy del giocatore da rimuovere
-     */
-    public void fullDisconnect(PhasedProxyPlayer proxy) throws Exception {
-        if (proxy == null) return;
-
+    @Override
+    public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         synchronized (clients) {
-            String nickname = proxy.getNickname();
-            clients.remove(nickname);
-            //hall.removePlayer(proxy);//TODO
-
-            /*if (proxy.getCurrentRoom() != null) {
-                proxy.getCurrentRoom().removePlayer(proxy); // Rimuove dalla stanza
-            }*///TODO
-
-            /*if (proxy instanceof RmiProxyPlayer) {
-                try {
-                    java.rmi.server.UnicastRemoteObject.unexportObject(proxy, true);
-                } catch (java.rmi.RemoteException e) {
-                    // Già rimosso, ok così
-                }
-            }*///TODO
+            String disconnectedNickname = disconnectPacket.getSenderNickname();
+            clients.remove(disconnectedNickname); //completely removes the player from the server list.
         }
     }
 }
