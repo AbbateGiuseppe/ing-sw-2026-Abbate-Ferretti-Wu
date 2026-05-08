@@ -76,9 +76,6 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
         return datapacket.applicationPhase == currentPhase;
     }
 
-    public String getNickname(){
-        return nickname;
-    }
     public boolean isConnected () {
         return connected;
     }
@@ -121,13 +118,21 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
     public abstract void sendHeartbeat() throws Exception;
 
     private void onConnectionLost() throws Exception {
+        forceDisconnect();
+    }
+
+    ///---------------------------------------
+    // methods for disconnection/reconnection
+
+    /**
+     * Forces a disconnection of the player from the server, typically called when an exception with that player is thrown.
+     */
+    public void forceDisconnect() throws Exception {
         DisconnectPacket disconnectPacket = new DisconnectPacket();
         disconnectPacket.setSenderNickname(nickname);
         disconnect(disconnectPacket);
     }
 
-    ///---------------------------------------
-    // methods for disconnection/reconnection
     @Override
     public void disconnect( DisconnectPacket disconnectPacket) throws Exception {
         this.disconnectProcedure(disconnectPacket);

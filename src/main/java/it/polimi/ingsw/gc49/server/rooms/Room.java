@@ -62,8 +62,13 @@ public abstract class Room implements Disconnectable {
     protected void broadcastMockupRoom() throws Exception {
         UpdateRoomPacket updatedRoom = new UpdateRoomPacket(giveMockupRoom());
 
-        for( PhasedProxyPlayer player : players ){
-            player.updateClientRoom(updatedRoom);
+        for (PhasedProxyPlayer player : players) {
+            try {
+                player.updateClientRoom(updatedRoom);
+            } catch (Exception e) {
+                player.forceDisconnect();
+                return; //already finished the broadcast in the forceDisconnect
+            }
         }
     }
 }

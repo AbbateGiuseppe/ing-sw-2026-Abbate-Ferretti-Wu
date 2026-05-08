@@ -20,6 +20,7 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class RmiProxyPlayer extends PhasedProxyPlayer {
@@ -134,7 +135,11 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     // methods for disconnection/reconnection
     @Override
     protected void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
-        UnicastRemoteObject.unexportObject(this, true);
+        try {
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException _) {
+            //no problem, already cleaned!
+        }
         super.disconnectProcedure(disconnectPacket);
     }
 

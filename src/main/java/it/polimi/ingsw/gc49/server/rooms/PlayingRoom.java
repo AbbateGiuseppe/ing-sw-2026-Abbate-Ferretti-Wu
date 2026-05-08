@@ -37,7 +37,11 @@ public class PlayingRoom extends Room implements VirtualGameServer {
             MassiWuController controller = new MassiWuController(playerIndex, player); //creates a controller with the current index
             controller.connectModel(game); //connects controller to the game
             player.setController(controller); //connects the proxy to the controller
-            player.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));//tells them they've entered a game
+            try {
+                player.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));//tells them they've entered a game
+            } catch (Exception e) { //some bastard disconnected
+                player.forceDisconnect();
+            }
             playerIndex++;
         }
     }
@@ -56,9 +60,13 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
         //Shouldn't be possible to enter a game that already started anyway.
         if(canEnter()) {
-            newPlayer.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
-            super.enterPlayer(newPlayer);
-            newPlayer.setServerSideObject(new VirtualGameServerAdapter(this));
+            try {
+                newPlayer.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
+                super.enterPlayer(newPlayer);
+                newPlayer.setServerSideObject(new VirtualGameServerAdapter(this));
+            } catch (Exception e) {
+                newPlayer.forceDisconnect();
+            }
         }else{
             throw new RuntimeException("La partita è già iniziata, non puoi entrare nella stanza " + roomName + "." );
         }

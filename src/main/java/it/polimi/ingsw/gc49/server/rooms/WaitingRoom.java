@@ -63,20 +63,24 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
     @Override
     public void enterPlayer ( PhasedProxyPlayer newPlayer ) throws Exception {
         if(canEnter()) {
-            newPlayer.changePhaseClient(new ChangePhasePacket(ApplicationPhase.ROOM));
+            try {
+                newPlayer.changePhaseClient(new ChangePhasePacket(ApplicationPhase.ROOM));
 
-            super.enterPlayer(newPlayer);
-            newPlayer.setServerSideObject(new VirtualRoomServerAdapter(this));
+                super.enterPlayer(newPlayer);
+                newPlayer.setServerSideObject(new VirtualRoomServerAdapter(this));
 
-            //sends the new player the room he is in
-            newPlayer.initializeClientRoom( new InitializeRoomPacket(giveMockupRoom()) );
+                //sends the new player the room he is in
+                newPlayer.initializeClientRoom(new InitializeRoomPacket(giveMockupRoom()));
 
-            //broadcasts the new room
-            broadcastMockupRoom();
+                //broadcasts the new room
+                broadcastMockupRoom();
 
-            //starts the countdown to game start if the number of necessary players was reached
-            if(maxNumOfPlayers == getNumConnectedPlayers()){
-                scheduleGameStart();
+                //starts the countdown to game start if the number of necessary players was reached
+                if (maxNumOfPlayers == getNumConnectedPlayers()) {
+                    scheduleGameStart();
+                }
+            } catch (Exception e) {
+                newPlayer.forceDisconnect();
             }
         }else{
             throw new RuntimeException("La stanza è piena, non puoi entrare nella stanza " + roomName + ".");
