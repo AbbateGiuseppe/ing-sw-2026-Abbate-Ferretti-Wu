@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc49.model.Card.BuildingCard;
 
-import it.polimi.ingsw.gc49.model.*;
+import it.polimi.ingsw.gc49.server.model.*;
+import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.BuildingCard;
+import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.SamePairInventionsCard;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

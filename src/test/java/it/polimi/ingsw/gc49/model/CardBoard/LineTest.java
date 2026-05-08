@@ -1,11 +1,13 @@
 package it.polimi.ingsw.gc49.model.CardBoard;
 
-import it.polimi.ingsw.gc49.model.Card.Card;
-import it.polimi.ingsw.gc49.model.Card.TribeCards.CharacterCard.Artist;
-import it.polimi.ingsw.gc49.model.Era;
-import it.polimi.ingsw.gc49.model.Game;
-import it.polimi.ingsw.gc49.model.Player;
-import it.polimi.ingsw.gc49.model.States.EraEndedException;
+import it.polimi.ingsw.gc49.server.model.Card.Card;
+import it.polimi.ingsw.gc49.server.model.Card.TribeCards.CharacterCard.Artist;
+import it.polimi.ingsw.gc49.server.model.CardBoard.Deck;
+import it.polimi.ingsw.gc49.server.model.CardBoard.Line;
+import it.polimi.ingsw.gc49.server.model.Era;
+import it.polimi.ingsw.gc49.server.model.Game;
+import it.polimi.ingsw.gc49.server.model.Player;
+import it.polimi.ingsw.gc49.server.model.States.EraEndedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

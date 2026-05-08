@@ -1,8 +1,9 @@
 package it.polimi.ingsw.gc49.model.CardBoard;
 
-import it.polimi.ingsw.gc49.model.Card.Card;
-import it.polimi.ingsw.gc49.model.Era;
-import it.polimi.ingsw.gc49.model.Game;
+import it.polimi.ingsw.gc49.server.model.Card.Card;
+import it.polimi.ingsw.gc49.server.model.CardBoard.Deck;
+import it.polimi.ingsw.gc49.server.model.Era;
+import it.polimi.ingsw.gc49.server.model.Game;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc49.model.Card.BuildingCard;
 
-import it.polimi.ingsw.gc49.model.*;
-import it.polimi.ingsw.gc49.model.Card.BuildingCard.*;
+import it.polimi.ingsw.gc49.server.model.*;
+import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

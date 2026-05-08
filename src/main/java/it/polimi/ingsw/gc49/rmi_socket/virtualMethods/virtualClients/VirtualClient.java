@@ -1,11 +1,9 @@
 package it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients;
 
-import it.polimi.ingsw.gc49.datapacket.STRING.StringPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
-import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.STRING.StringPacket;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 
 import java.rmi.Remote;
-import java.rmi.RemoteException;
 
 public interface VirtualClient extends Remote, VirtualGameClient, VirtualHallClient, VirtualRoomClient {
     void changePhaseClient ( ChangePhasePacket changePhasePacket ) throws Exception;

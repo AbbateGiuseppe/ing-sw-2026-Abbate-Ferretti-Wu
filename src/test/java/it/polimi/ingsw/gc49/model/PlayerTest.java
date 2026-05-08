@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49.model;
 
+import it.polimi.ingsw.gc49.server.model.Player;
+import it.polimi.ingsw.gc49.server.model.Totem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

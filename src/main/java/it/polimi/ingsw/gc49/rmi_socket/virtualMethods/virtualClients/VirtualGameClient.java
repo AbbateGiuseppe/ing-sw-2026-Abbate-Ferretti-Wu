@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients;
 
-import it.polimi.ingsw.gc49.datapacket.directedToClient.ERROR.ErrorPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
-import it.polimi.ingsw.gc49.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 
 import java.rmi.Remote;
 

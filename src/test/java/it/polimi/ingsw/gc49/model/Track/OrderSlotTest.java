@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.model.Track;
 
-import it.polimi.ingsw.gc49.model.Player;
+import it.polimi.ingsw.gc49.server.model.Player;
+import it.polimi.ingsw.gc49.server.model.Track.OrderSlot;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

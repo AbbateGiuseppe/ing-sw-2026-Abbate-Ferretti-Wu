@@ -1,9 +1,10 @@
 package it.polimi.ingsw.gc49.model.Card.TribeCards.EventCard;
 
-import it.polimi.ingsw.gc49.model.CharacterType;
-import it.polimi.ingsw.gc49.model.Era;
-import it.polimi.ingsw.gc49.model.EventManager;
-import it.polimi.ingsw.gc49.model.Player;
+import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.*;
+import it.polimi.ingsw.gc49.server.model.CharacterType;
+import it.polimi.ingsw.gc49.server.model.Era;
+import it.polimi.ingsw.gc49.server.model.EventManager;
+import it.polimi.ingsw.gc49.server.model.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

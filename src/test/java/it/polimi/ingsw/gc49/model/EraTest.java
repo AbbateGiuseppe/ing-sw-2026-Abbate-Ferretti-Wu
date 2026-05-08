@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.model;
 
+import it.polimi.ingsw.gc49.server.model.Era;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

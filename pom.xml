@@ -70,7 +70,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>it.polimi.ingsw.gc49/it.polimi.ingsw.gc49.rmi_socket.client.ClientApplication</mainClass>
+                            <mainClass>it.polimi.ingsw.gc49/it.polimi.ingsw.gc49.client.ClientApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
