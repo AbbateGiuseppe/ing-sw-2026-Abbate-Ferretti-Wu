@@ -1,12 +1,13 @@
-package it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL;
+package it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement;
 
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelElement;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.Era;
 
 import java.util.List;
 
-public class CardboardDatapacket extends UpdateModelElement {
+public class CardboardModelElement extends UpdateModelElement {
     private final List<Card> discards;
     private final Era deckTopEra;
     private final List<Card> upperLine;
@@ -14,9 +15,9 @@ public class CardboardDatapacket extends UpdateModelElement {
     private final List<Card> upperBuilding;
     private final List<Card> lowerBuilding;
 
-    public CardboardDatapacket ( List<Card> discard, Era deckTopEra, List<Card> upperLine,
-                                 List<Card> lowerLine, List<Card> upperBuilding, List<Card> lowerBuilding) {
-        super();
+    public CardboardModelElement ( String actionInfo, List<Card> discard, Era deckTopEra, List<Card> upperLine,
+                                   List<Card> lowerLine, List<Card> upperBuilding, List<Card> lowerBuilding) {
+        super(actionInfo);
         this.discards = discard;
         this.deckTopEra = deckTopEra;
         this.upperLine = upperLine;

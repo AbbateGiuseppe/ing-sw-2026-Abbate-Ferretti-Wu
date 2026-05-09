@@ -20,12 +20,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Hall implements VirtualHallServer {
     private ServerMultiplexer server;
-    private static final Map<String, Room> rooms = new ConcurrentHashMap<>();
-    private static final Map<String, PhasedProxyPlayer> PlayersInHall = new ConcurrentHashMap<>();
+    private static final Map<String, Room> rooms = new HashMap<>();
+    private static final Map<String, PhasedProxyPlayer> PlayersInHall = new HashMap<>();
 
     public void setServer ( ServerMultiplexer server ){
         this.server = server;

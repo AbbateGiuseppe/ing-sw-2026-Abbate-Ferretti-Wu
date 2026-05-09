@@ -1,10 +1,12 @@
 package it.polimi.ingsw.gc49.server.model.Track;
 
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Track {
@@ -93,6 +95,20 @@ public class Track {
     //### getters
     public List<Offer> getOfferBoard() { return offerBoard; }
     public List<OrderSlot> getOrderBoard() { return orderBoard; }
+    public List<MockupPlayer> giveOfferBoardMockup() {
+        return offerBoard.stream()
+                .map(Offer::getAssignedPlayer)
+                .filter(Objects::nonNull)
+                .map(Player::giveMockupPlayer)
+                .toList();
+    }
+    public List<MockupPlayer> giveOrderBoardMockup() {
+        return orderBoard.stream()
+                .map(OrderSlot::getAssignedPlayer)
+                .filter(Objects::nonNull)
+                .map(Player::giveMockupPlayer)
+                .toList();
+    }
 
     //### logic
 

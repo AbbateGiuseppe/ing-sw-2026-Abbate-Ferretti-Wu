@@ -16,6 +16,7 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,15 @@ public class TextTerminal extends UserInputInterface {
      * the rest of the following strings are used as parameters to specify the behaviour in the function of the called TerminalCommand*/
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
     private static final StringBuilder manual = new StringBuilder();
+    private static final Terminal terminal;
+    static {
+        try {
+            terminal = TerminalBuilder.builder().build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static final LineReader scanner = LineReaderBuilder.builder().terminal(terminal).build();
     private static final Map<String,Totem> totems = new HashMap<>();
     static {
         totems.put("orange", Totem.ORANGE);
@@ -38,9 +48,19 @@ public class TextTerminal extends UserInputInterface {
         // Mostra la manuale di istruzioni per il gioco
         commands.put("help", ( _, _, _, _ ) -> printManual());
 
+        //Chiude l'applicazione e si disconnette dal serviente
+        commands.put("disconnect", ( _, _, _, terminalVirtualServer ) -> {
+            System.out.println("| Are you sure you want disconnect from the server?   |");
+            System.out.println("| You'll have to restart the application to reconnect |");
+            if( scanner.readLine("  Type YES to confirm: ").equalsIgnoreCase("yes") ){
+                terminalVirtualServer.disconnect(new DisconnectPacket());
+                System.exit(0);
+            }
+        });
+
         // Creare una stanza
         commands.put("create", ( terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 1) {
+            if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 2) {
                 String roomName = terminalParameters[0];
                 try {
                     int maxNumOfPlayers = Integer.parseInt(terminalParameters[1]);
@@ -49,7 +69,6 @@ public class TextTerminal extends UserInputInterface {
                         if (terminalMockups.getHall().rooms.stream().map(r -> r.roomName).noneMatch(s -> s.equals(roomName))) {
                             HallCreatePacket hallCreatePacket = new HallCreatePacket(roomName,maxNumOfPlayers);
                             terminalVirtualServer.createRoom(hallCreatePacket);
-                            // TODO:need change the phase to ROOM
                         }
                     }
                 } catch (NumberFormatException e) {
@@ -65,7 +84,6 @@ public class TextTerminal extends UserInputInterface {
                 if (terminalMockups.getHall().rooms.stream().map(r -> r.roomName).anyMatch(s -> s.equals(roomName))) {
                     HallJoinPacket hallJoinPacket = new HallJoinPacket(roomName);
                     terminalVirtualServer.joinRoom(hallJoinPacket);
-                    // TODO:change the phase to ROOM
                 }
             }
         });
@@ -82,7 +100,7 @@ public class TextTerminal extends UserInputInterface {
                     System.out.println(terminalMockups.getRoom());
                     System.out.println(terminalMockups.getRoom().toStringPlayers());
                 }else{
-                    System.out.println("Hall not yet loaded.");
+                    System.out.println("Room not yet loaded.");
                 }
             }else if(terminalPhase == ApplicationPhase.GAME) {
                 if(terminalMockups.getGame() != null) {
@@ -144,7 +162,7 @@ public class TextTerminal extends UserInputInterface {
         });
         // Sceglie una carta
         commands.put("card", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 2) {
+            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
                 try {
                     int cardIndex = Integer.parseInt(terminalParameters[2]);
                     PlayerActionEnum action = null;
@@ -164,20 +182,14 @@ public class TextTerminal extends UserInputInterface {
                     if (action != null) {
                         CommandPacket commandPacket = new CommandPacket(action, cardIndex);
                         terminalVirtualServer.sendCommand(commandPacket);
+                    }else{
+                        terminal.writer().println("not a valid card choice!");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("please, insert a valid number!");
+                    terminal.writer().println("please, insert a valid number!");
                 }
             }
         });
-        // Disconnette dal gioco
-        commands.put("disconnect", ( terminalPhase, _, _, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.GAME) {
-                terminalVirtualServer.disconnect(new DisconnectPacket());
-                // TODO:need change the phase to ??
-            }
-        });
-        // TODO:reconnect command
     }
 
     static {
@@ -208,7 +220,7 @@ public class TextTerminal extends UserInputInterface {
     }
     private static void printManual() {System.out.println(manual);}
     public void printString ( String string ) {
-        System.out.println(string);
+        scanner.printAbove(string);
     }
     private static String formatCommand(String command, String description) {return String.format(" %60s | %s\n", command, description);}
 
@@ -221,13 +233,13 @@ public class TextTerminal extends UserInputInterface {
         super.setCurrentPhase(phase);
         switch (phase) {
             case GAME:
-                System.out.println("-The game started.");
+                scanner.printAbove("-The game started.");
                 break;
             case HALL:
-                System.out.println("-You entered the hall.");
+                scanner.printAbove("-You entered the hall.");
                 break;
             case ROOM:
-                System.out.println("-You entered a room.");
+                scanner.printAbove("-You entered a room.");
                 break;
         }
     }
@@ -235,21 +247,19 @@ public class TextTerminal extends UserInputInterface {
     @Override
     public void runInput() {
         try {
-            Terminal terminal = TerminalBuilder.builder().build();
-            LineReader scanner = LineReaderBuilder.builder().terminal(terminal).build();
 
-            // Start a background thread to print messages
+            /*// Start a background thread to print messages
             new Thread(() -> {
                 try {
                     for (int i = 0; i < 10; i++) {
                         Thread.sleep(1000);
-                        //scanner.printAbove("-");
-                        //scanner.printAbove("Notification #" + i);
+                        scanner.printAbove("-");
+                        scanner.printAbove("Notification #" + i);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }).start();
+            }).start();*/
 
             System.out.println("\nTerminal started (type help for the list of commands):\n");
 
@@ -273,7 +283,7 @@ public class TextTerminal extends UserInputInterface {
                 if (command != null) {
                     command.execute(currentPhase, mockups, params, virtualServer);
                 } else {
-                    System.out.println("Unknown command: " + action);
+                    terminal.writer().println("Unknown command: " + action);
                 }
 
             }

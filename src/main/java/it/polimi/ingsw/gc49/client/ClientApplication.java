@@ -20,7 +20,12 @@ import it.polimi.ingsw.gc49.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -29,7 +34,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Scanner;
 
 public class ClientApplication implements VirtualClient {
     private static PhasedProxyServer server;
@@ -37,41 +41,63 @@ public class ClientApplication implements VirtualClient {
     private static final Mockup mockups = new Mockup();
     private static final String mainServer = ServerMultiplexer.mainServer;
     private static UserInputInterface inputInterface;
-    private volatile boolean running;
+    private static final Terminal terminal;
+    static {
+        try {
+            terminal = TerminalBuilder.builder().build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static final LineReader scanner = LineReaderBuilder.builder().terminal(terminal).build();
 
     public ClientApplication ( String nickname ) {
         this.nickname = nickname;
     }
 
-    public static void main ( String[] args ) throws Exception {
+    public static void main ( String[] args ) {
 
+        String host;
         inputInterface = chooseInputInterface();
         if (inputInterface != null) {
-            Scanner scan = new Scanner(System.in);
+
+            while (true) {
+                try {
+                    host = scanner.readLine("Inserire l'indirizzo IP del serviente (lasciare vuoto se in locale): ");
+                    Registry registry = LocateRegistry.getRegistry(host, ServerMultiplexer.portRmi);
+                    if ( ((FactoryServiceRmi)registry.lookup(mainServer)).ping() ){
+                        terminal.writer().println("Serviente esistente..");
+                        break;
+                    } else {
+                        terminal.writer().println("??? COME HAI FFATTO?!");
+                        throw new RuntimeException("???");
+                    }
+                } catch (Exception e) {
+                    terminal.writer().println("Serviente non trovato. Ritenta");
+                }
+            }
+
             int connectionChoice;
             while(true) {
                 try {
-                    System.out.println("Premere 1 per la connessione RMI, Premere 2 per la connessione socket");
-                    System.out.print("> ");
-                    connectionChoice = Integer.parseInt(scan.nextLine());
+                    terminal.writer().println("Premere 1 per la connessione RMI, Premere 2 per la connessione socket");
+                    connectionChoice = Integer.parseInt(scanner.readLine("> "));
                     if(connectionChoice == 1 || connectionChoice == 2) {
                         break;
                     }else{
-                        System.out.println("SCEGLI UN NUMERO TRA 1 e 2! Riprova");
+                        terminal.writer().println("SCEGLI UN NUMERO TRA 1 e 2! Riprova");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("NUMERO NON VALIDO! Riprova");
+                    terminal.writer().println("NUMERO NON VALIDO! Riprova");
                 }
             }
-            System.out.println("Inserisci il tuo nomignolo");
-            System.out.print("> ");
-            String nickname = scan.nextLine();
+            terminal.writer().println("Inserisci il tuo nomignolo");
+            String nickname = scanner.readLine("> ");
 
-            if (connectionChoice == 1) { //RMI
-                int port = ServerMultiplexer.portRmi;
-                String host = null; //args[1];
+            try {
+                if (connectionChoice == 1) { //RMI
+                    int port = ServerMultiplexer.portRmi;
 
-                try {
                     Registry registry = LocateRegistry.getRegistry(host, port); //null means "localhost"
 
                     ClientApplication runnableClient = new ClientApplication(nickname); //creating the client
@@ -94,44 +120,36 @@ public class ClientApplication implements VirtualClient {
                     //running the client
                     runnableClient.run();
 
-                } catch (RemoteException e) {
-                    System.out.println("Connessione fallita.");
-                    System.out.println("Il Serviente ha restituito un'eccezione: " + e);
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+                } else { //Socket, connectionChoice == 2
+                    int port = ServerMultiplexer.portSocket;
+
+                    Socket serverSocket = new Socket(host, port);
+
+                    ObjectInputStream input = new ObjectInputStream(serverSocket.getInputStream());
+                    ObjectOutputStream output = new ObjectOutputStream(serverSocket.getOutputStream());
+                    //sends the nickname to authorise the connection
+                    output.writeObject(nickname);
+                    output.flush();
+
+                    ClientApplication runnableClient = new ClientApplication(nickname);
+
+                    PhasedProxyServer phasedProxyServer = new SocketProxyServer(runnableClient);
+
+                    //connecting the proxy on this side to the server one
+                    phasedProxyServer.finishInitialization(null, input, output);
+
+                    //connecting the interface to the server proxy
+                    inputInterface.setVirtualServer(phasedProxyServer);
+                    //connecting the client to his client side proxy
+                    runnableClient.setServer(phasedProxyServer);
+
+                    //running the client
+                    runnableClient.run();
+
                 }
-            } else if (connectionChoice == 2) { //Socket
-                int port = ServerMultiplexer.portSocket;
-                String host = null; //args[1];
-
-                Socket serverSocket = new Socket(host, port);
-
-                ObjectInputStream input = new ObjectInputStream(serverSocket.getInputStream());
-                ObjectOutputStream output = new ObjectOutputStream(serverSocket.getOutputStream());
-                //sends the nickname to authorise the connection
-                output.writeObject(nickname);
-                output.flush();
-
-                //TODO: add listeners
-
-                ClientApplication runnableClient = new ClientApplication(nickname);
-
-                PhasedProxyServer phasedProxyServer = new SocketProxyServer(runnableClient);
-
-                //connecting the proxy on this side to the server one
-                phasedProxyServer.finishInitialization(null, input, output);
-
-                //connecting the interface to the server proxy
-                inputInterface.setVirtualServer(phasedProxyServer);
-                //connecting the client to his client side proxy
-                runnableClient.setServer(phasedProxyServer);
-
-                //running the client
-                runnableClient.run();
-
-            } else {
-                System.out.println("Scelta non valida: chiusura imminente.");
-                return;
+            } catch (Exception e) {
+                terminal.writer().println("Connessione fallita.");
             }
         }
 
@@ -159,21 +177,26 @@ public class ClientApplication implements VirtualClient {
     }
 
     private static UserInputInterface chooseInputInterface() {
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
-        System.out.print("> ");
-        String interfaceChoice = scan.nextLine();
 
-        if(interfaceChoice.equals("1")) {
-            System.out.println("Avvio dell'interfaccia testuale...");
-            return inputInterface = new TextTerminal(server, mockups, ApplicationPhase.ANY); //connect interface to server proxy
-        }else if(interfaceChoice.equals("2")) {
-            System.out.println("Avvio dell'interfaccia grafica...");
-            System.out.println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
-            return null;
-        }else{
-            System.out.println("Scelta non valida: chiusura imminente.");
-            return null;
+        while(true) {
+            try{
+                terminal.writer().println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
+                int interfaceChoice = Integer.parseInt(scanner.readLine("> "));
+
+                if (interfaceChoice == 1) {
+                    terminal.writer().println("Avvio dell'interfaccia testuale...");
+                    return inputInterface = new TextTerminal(server, mockups, ApplicationPhase.ANY); //connect interface to server proxy
+                } else if (interfaceChoice == 2) {
+                    terminal.writer().println("Avvio dell'interfaccia grafica...");
+                    terminal.writer().println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
+                    System.exit(0);
+                    return null;
+                } else {
+                    terminal.writer().println("SCEGLI UN NUMERO TRA 1 e 2! Riprova");
+                }
+            } catch (NumberFormatException e) {
+                terminal.writer().println("NUMERO NON VALIDO! Riprova");
+            }
         }
     }
 
@@ -183,7 +206,7 @@ public class ClientApplication implements VirtualClient {
         inputInterface.setCurrentPhase(changePhasePacket.newPhase);
     }
     @Override
-    public void sendString ( StringPacket stringPacket ) throws Exception {
+    public void sendString ( StringPacket stringPacket ) {
         inputInterface.printString(stringPacket.string);
     }
 
@@ -195,7 +218,7 @@ public class ClientApplication implements VirtualClient {
     @Override
     public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws RemoteException {
         if(mockups.getGame() != null) {
-            updateModelPacket.updateTheMockupModel(mockups.getGame());
+            updateModelPacket.updateTheMockupModel(mockups.getGame(), inputInterface);
         }
     }
     @Override
@@ -205,21 +228,21 @@ public class ClientApplication implements VirtualClient {
 
     //### Hall called methods
     @Override
-    public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) throws Exception {
+    public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) {
         mockups.setHall(initializeHallPacket.mockupHall);
     }
     @Override
-    public void updateClientHall ( UpdateHallPacket updateHallPacket ) throws Exception {
+    public void updateClientHall ( UpdateHallPacket updateHallPacket ) {
         mockups.setHall(updateHallPacket.newMockupHall);
     }
 
     //### Room called methods
     @Override
-    public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) throws Exception {
+    public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) {
         mockups.setRoom(initializeRoomPacket.mockupRoom);
     }
     @Override
-    public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) throws Exception {
+    public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) {
         mockups.setRoom(updateRoomPacket.newMockupRoom);
     }
 }

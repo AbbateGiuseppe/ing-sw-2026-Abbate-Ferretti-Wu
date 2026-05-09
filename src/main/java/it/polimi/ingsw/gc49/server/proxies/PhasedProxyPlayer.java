@@ -129,12 +129,12 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
      */
     public void forceDisconnect() throws Exception {
         DisconnectPacket disconnectPacket = new DisconnectPacket();
-        disconnectPacket.setSenderNickname(nickname);
         disconnect(disconnectPacket);
     }
 
     @Override
     public void disconnect( DisconnectPacket disconnectPacket) throws Exception {
+        disconnectPacket.setSenderNickname(nickname);
         this.disconnectProcedure(disconnectPacket);
         System.out.println("Connection lost with " + nickname);
     }

@@ -3,6 +3,8 @@ package it.polimi.ingsw.gc49.server.model;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TotemModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.CardBoard.CardBoard;
@@ -16,6 +18,8 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGame
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+
+import static it.polimi.ingsw.gc49.server.model.Locks.broadcastLock;
 
 public class Game {
     private final List<VirtualGameClient> controllersListeners = new ArrayList<>();
@@ -41,11 +45,8 @@ public class Game {
     }
 
     public void gameLoop () {
-        try{
-            broadcastMockupHall();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        broadcastMockupGame();
+
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
             synchronized (Locks.playerInput) {
                 System.out.println("Entrando in un nuovo stato di gioco...");
@@ -81,11 +82,38 @@ public class Game {
     public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }
 
     //### controller communication
-    private void broadcastMockupHall() throws Exception {
-        InitializeModelPacket initializeModel = new InitializeModelPacket(giveMockupGame());
+    private void broadcastMockupGame () {
+        synchronized (broadcastLock) {
+            try{
+                InitializeModelPacket initializeModel = new InitializeModelPacket(giveMockupGame());
 
-        for( VirtualGameClient controller : controllersListeners ) {
-            controller.initializeClientModel(initializeModel);
+                //iterates through all the controllers but only updates the ones connected
+                int i = 0;
+                while(i < numOfPlayers) {
+                    if(players.get(i).isConnected()){
+                        controllersListeners.get(i).initializeClientModel(initializeModel);
+                    }
+                    i++;
+                }
+            } catch (Exception _) {
+
+            }
+        }
+    }
+    public void broadcastGameUpdate ( UpdateModelPacket updateModelPacket ) {
+        synchronized (broadcastLock) {
+            try {
+                //iterates through all the controllers but only updates the ones connected
+                int i = 0;
+                while (i < numOfPlayers) {
+                    if (players.get(i).isConnected()) {
+                        controllersListeners.get(i).updateClientModel(updateModelPacket);
+                    }
+                    i++;
+                }
+            } catch (Exception _){
+
+            }
         }
     }
     public MockupGame giveMockupGame() {
@@ -105,16 +133,8 @@ public class Game {
         List<Card> upperBuilding = getCardBoard().getLine().getUpperBuilding();
         List<Card> lowerBuilding = getCardBoard().getLine().getLowerBuilding();
 
-        List<MockupPlayer> offerBoard = getTrack().getOfferBoard().stream()
-                .filter(offer -> offer.getAssignedPlayer() != null)
-                .map(Offer::getAssignedPlayer)
-                .map(Player::giveMockupPlayer)
-                .toList();
-        List<MockupPlayer> orderBoard = getTrack().getOrderBoard().stream()
-                .filter(orderSlot -> orderSlot.getAssignedPlayer() != null)
-                .map(OrderSlot::getAssignedPlayer)
-                .map(Player::giveMockupPlayer)
-                .toList();
+        List<MockupPlayer> offerBoard = getTrack().giveOfferBoardMockup();
+        List<MockupPlayer> orderBoard = getTrack().giveOrderBoardMockup();
 
         return new MockupGame(players, cardBoard.getLine().getCurrentEra(), upperLine, lowerLine, upperBuilding, lowerBuilding, offerBoard, orderBoard);
     }
@@ -131,6 +151,17 @@ public class Game {
             if (players.get(playerIndex).getTotem() == null && !usedTotems.contains(chosenTotem)) {
                 usedTotems.add(chosenTotem);
                 players.get(playerIndex).setTotem(chosenTotem);
+
+                UpdateModelPacket updateModelPacket = new UpdateModelPacket();
+                updateModelPacket.addUpdateElement(
+                        new TotemModelElement(
+                            new String(playersNicknames.get(playerIndex) + " ha scelto il totem " + chosenTotem.toString()),
+                            playerIndex,
+                            chosenTotem
+                        )
+                );
+                broadcastGameUpdate(updateModelPacket);
+
                 Locks.playerInput.notify();
             }
         }

@@ -13,9 +13,7 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.Vi
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
+import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -52,7 +50,13 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     }
 
     public static void main ( String[] args ) {
-        String host = null; //args[0];
+
+        try {
+            InetAddress localHost = InetAddress.getLocalHost();
+            System.out.println("Local IP Address: " + localHost.getHostAddress());
+        } catch (UnknownHostException e) {
+            System.out.println("Could not get local hostname: " + e.getMessage());
+        }
 
         //SOCKET
         new Thread(() -> {
@@ -76,6 +80,11 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                 throw new RuntimeException(e);
             }
         }).start();
+    }
+
+    @Override
+    public boolean ping() {
+        return true;
     }
 
     @Override

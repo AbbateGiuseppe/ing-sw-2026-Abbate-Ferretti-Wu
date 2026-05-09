@@ -61,17 +61,29 @@ public class MassiWuController implements VirtualGameClient {
     }
 
     @Override
-    public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws Exception {
-        controllingPlayer.initializeClientModel(initializeModelPacket);
+    public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) {
+        try {
+            controllingPlayer.initializeClientModel(initializeModelPacket);
+        } catch (Exception e) {
+            game.disconnectPlayer(controllingPlayerIndex);
+        }
     }
 
     @Override
-    public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws Exception {
-        controllingPlayer.updateClientModel(updateModelPacket);
+    public void updateClientModel ( UpdateModelPacket updateModelPacket ) {
+        try {
+            controllingPlayer.updateClientModel(updateModelPacket);
+        } catch (Exception e) {
+            game.disconnectPlayer(controllingPlayerIndex);
+        }
     }
 
     @Override
-    public void reportError ( ErrorPacket errorPacket ) throws Exception {
-        controllingPlayer.reportError(errorPacket);
+    public void reportError ( ErrorPacket errorPacket ) {
+        try {
+            controllingPlayer.reportError(errorPacket);
+        } catch (Exception e) {
+            game.disconnectPlayer(controllingPlayerIndex);
+        }
     }
 }

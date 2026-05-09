@@ -14,4 +14,10 @@ public interface FactoryServiceRmi extends Remote {
      * @throws RemoteException an identical name is probably already connected.
      */
     VirtualServer connectPlayerRmi ( String nickname, VirtualClient clientStub ) throws Exception;
+
+    /**
+     * Used by the client to check if there is such a server on an IP address.
+     * @return true, always
+     */
+    boolean ping() throws Exception;
 }
