@@ -24,4 +24,9 @@ public class DoubleShamanPointsCard extends BuildingCard{
                 ", effect=if the player is the unique winner,then double the reward points during the shamanic event" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (doppie stelle)";
+    }
 }

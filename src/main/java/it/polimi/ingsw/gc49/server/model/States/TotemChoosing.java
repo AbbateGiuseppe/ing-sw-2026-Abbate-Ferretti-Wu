@@ -32,12 +32,11 @@ public class TotemChoosing extends State {
             actionInfo.append(i).append(". ").
                     append(player.getNickname()).append("(").append(player.getPlayerIndex()).append(");\n");
         }
-        UpdateModelPacket updateModelPacket = new UpdateModelPacket();
-        updateModelPacket.addUpdateElement(new OrderboardModelElement(
+        game.queueUpdateModelElement(new OrderboardModelElement(
                 actionInfo.toString(),
                 game.getTrack().giveOrderBoardMockup()
         ));
-        game.broadcastGameUpdate(updateModelPacket);
+        game.broadcastGameUpdate();
 
         return new OfferChoosing(game);
     }

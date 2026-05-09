@@ -25,4 +25,9 @@ public class Shaman extends CharacterCard {
                 ", numStars=" + numStars +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "SCIAMANO";
+    }
 }

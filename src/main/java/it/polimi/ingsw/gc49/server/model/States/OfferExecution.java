@@ -12,7 +12,8 @@ public class OfferExecution extends State{
         while (currentPlayer != null) { //loops until there's no player remaining to choose his actions.
             game.setCurrentPlayer(currentPlayer);
             game.setCurrentPlayerIndex(currentPlayer.getPlayerIndex());
-            while (!currentPlayer.hasActionsLeft()){ //waits until the current player has no actions left.
+            game.broadcastCurrentPlayerTurn();
+            while (currentPlayer.hasActionsLeft()){ //waits until the current player has no actions left.
                 try {
                     Locks.playerInput.wait();
                 } catch (InterruptedException e) {

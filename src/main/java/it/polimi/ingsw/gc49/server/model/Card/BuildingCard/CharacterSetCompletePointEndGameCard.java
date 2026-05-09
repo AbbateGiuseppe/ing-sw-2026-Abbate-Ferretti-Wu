@@ -23,4 +23,9 @@ public class CharacterSetCompletePointEndGameCard extends BuildingCard {
                 ", effect=get 6 bonus points for each completed set of character cards at the end of the game" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (strapunti da set)";
+    }
 }

@@ -22,4 +22,9 @@ public class DoubleBuilderPointsCard extends BuildingCard {
                 ", effect=double the builder points at the end of the game" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (doppipunti da costruttori)";
+    }
 }

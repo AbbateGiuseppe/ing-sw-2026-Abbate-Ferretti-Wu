@@ -3,15 +3,16 @@ package it.polimi.ingsw.gc49.server.model;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.CurrentPlayerModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferboardModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TotemModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.BuildingCard;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.CardBoard.CardBoard;
 import it.polimi.ingsw.gc49.server.model.States.InitialSetup;
 import it.polimi.ingsw.gc49.server.model.States.State;
-import it.polimi.ingsw.gc49.server.model.Track.Offer;
-import it.polimi.ingsw.gc49.server.model.Track.OrderSlot;
 import it.polimi.ingsw.gc49.server.model.Track.Track;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 
@@ -35,6 +36,7 @@ public class Game {
     private int currentPlayerIndex;
     private final EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
     private boolean lastRound;
+    private UpdateModelPacket updatesQueue = new UpdateModelPacket();
 
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
     public Game ( int numOfPlayers, List<String> playersNicknames ) {
@@ -82,6 +84,9 @@ public class Game {
     public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }
 
     //### controller communication
+    public void queueUpdateModelElement ( UpdateModelElement updateModelElement ) {
+        updatesQueue.addUpdateElement(updateModelElement);
+    }
     private void broadcastMockupGame () {
         synchronized (broadcastLock) {
             try{
@@ -100,20 +105,32 @@ public class Game {
             }
         }
     }
-    public void broadcastGameUpdate ( UpdateModelPacket updateModelPacket ) {
+    public void broadcastGameUpdate () {
         synchronized (broadcastLock) {
             try {
                 //iterates through all the controllers but only updates the ones connected
                 int i = 0;
                 while (i < numOfPlayers) {
                     if (players.get(i).isConnected()) {
-                        controllersListeners.get(i).updateClientModel(updateModelPacket);
+                        controllersListeners.get(i).updateClientModel(updatesQueue);
                     }
                     i++;
                 }
             } catch (Exception _){
 
+            } finally {
+                updatesQueue = new UpdateModelPacket();
             }
+        }
+    }
+    public void broadcastCurrentPlayerTurn() {
+        synchronized (broadcastLock) {
+            queueUpdateModelElement(new CurrentPlayerModelElement(
+                    "TOCCA A " + currentPlayer.getNickname() + "...",
+                    currentPlayerIndex
+                    )
+            );
+            broadcastGameUpdate();
         }
     }
     public MockupGame giveMockupGame() {
@@ -152,15 +169,14 @@ public class Game {
                 usedTotems.add(chosenTotem);
                 players.get(playerIndex).setTotem(chosenTotem);
 
-                UpdateModelPacket updateModelPacket = new UpdateModelPacket();
-                updateModelPacket.addUpdateElement(
+                queueUpdateModelElement(
                         new TotemModelElement(
-                            new String(playersNicknames.get(playerIndex) + " ha scelto il totem " + chosenTotem.toString()),
+                            playersNicknames.get(playerIndex) + " ha scelto il totem " + chosenTotem.toString(),
                             playerIndex,
                             chosenTotem
                         )
                 );
-                broadcastGameUpdate(updateModelPacket);
+                broadcastGameUpdate();
 
                 Locks.playerInput.notify();
             }
@@ -188,6 +204,7 @@ public class Game {
                 if(drawingPlayer.getDrawableUpper() > 0){
                     Card drawnCard = cardBoard.drawUpperCharacter(cardIndex, drawingPlayer);
                     if (drawnCard != null) {
+                        //TODO: PROSSIMO UPDATE!!
                         drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
                         drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
@@ -254,7 +271,15 @@ public class Game {
     public void chooseOffer ( int playerIndex, int offerIndex ) {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
-                track.assignOffer(players.get(playerIndex), offerIndex); //TODO: implement not valid offerIndex exception.
+                Player callingPlayer = players.get(playerIndex);
+
+                track.assignOffer(callingPlayer, offerIndex); //TODO: implement not valid offerIndex exception.
+                queueUpdateModelElement(new OfferboardModelElement(
+                        callingPlayer.getNickname() + " ha scelto l'offerta[" + (offerIndex) + "].",
+                        track.giveOfferBoardMockup()
+                ));
+                broadcastGameUpdate();
+                callingPlayer.setChoseAnOffer(true);
                 Locks.playerInput.notify();
             }
         }

@@ -20,7 +20,12 @@ public class BonusPaintingCard extends BuildingCard {
                 "era=" + era +
                 ", foodPrice=" + foodPrice +
                 ", pointsEndgame=" + pointsEndgame +
-                ", effect=get bonus foodequal to the number of artists in possession during the painting event" +
+                ", effect=get bonus food equal to the number of artists in possession during the painting event" +
                 '}';
+    }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (strapitture)";
     }
 }

@@ -35,4 +35,9 @@ public class SustenanceEvent extends EventCard {
             player.confirmToPay();
         }
     }
+
+    @Override
+    public String simpleToString () {
+        return "SOSTENTAMENTO";
+    }
 }

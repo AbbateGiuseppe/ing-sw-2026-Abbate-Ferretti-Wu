@@ -34,4 +34,9 @@ public class PaintingEvent extends EventCard {
             player.confirmToPay();
         }
     }
+
+    @Override
+    public String simpleToString () {
+        return "PITTURE RUPESTRI";
+    }
 }

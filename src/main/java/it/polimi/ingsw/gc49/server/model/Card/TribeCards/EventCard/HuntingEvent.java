@@ -27,4 +27,9 @@ public class HuntingEvent extends EventCard {
             player.confirmToPay();
         }
     }
+
+    @Override
+    public String simpleToString () {
+        return "CACCIA";
+    }
 }

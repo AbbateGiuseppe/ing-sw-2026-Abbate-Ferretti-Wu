@@ -161,7 +161,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Sceglie una carta
-        commands.put("card", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("draw", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
                 try {
                     int cardIndex = Integer.parseInt(terminalParameters[2]);

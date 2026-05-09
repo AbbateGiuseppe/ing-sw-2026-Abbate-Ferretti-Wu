@@ -38,4 +38,10 @@ public abstract class Card {
     public void onDraw( Player player ) {
 
     }
+
+    /**
+     * Used to have a simple identifiable name for the card to print, instead of the entire description that is present in the toString method,
+     * @return A simple one line String.
+     */
+    public abstract String simpleToString();
 }

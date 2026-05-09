@@ -10,8 +10,10 @@ public class OfferChoosing extends State {
     public State executeState () {
         Player currentPlayer = game.getTrack().getNextPlayerOrderSlot();
         while ( currentPlayer != null) { //loops until there's no player remaining to choose an offer.
+            currentPlayer.setChoseAnOffer(false);
             game.setCurrentPlayer(currentPlayer);
             game.setCurrentPlayerIndex(currentPlayer.getPlayerIndex());
+            game.broadcastCurrentPlayerTurn();
             while (!currentPlayer.hasChosenAnOffer()){ //waits until the current player has chosen an offer.
                 try {
                     Locks.playerInput.wait();

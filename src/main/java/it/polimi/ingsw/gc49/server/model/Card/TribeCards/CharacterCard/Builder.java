@@ -29,4 +29,9 @@ public class Builder extends CharacterCard {
                 ", numPoints=" + numPoints +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "COSTRUTTORE";
+    }
 }

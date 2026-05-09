@@ -33,4 +33,9 @@ public class Hunter extends CharacterCard {
                 ", drumstick=" + drumstick +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "CACCIATORE";
+    }
 }

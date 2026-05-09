@@ -23,4 +23,9 @@ public class ShamanicImmunityCard extends BuildingCard {
                 ", effect=if the player is the loser,then he doesn't get penalized during the shamanic event" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (immunità sciamanica)";
+    }
 }

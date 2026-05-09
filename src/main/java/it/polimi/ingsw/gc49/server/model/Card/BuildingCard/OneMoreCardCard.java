@@ -22,4 +22,9 @@ public class OneMoreCardCard extends BuildingCard {
                 ", effect=the player gets to pick another card at the end of the round" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (ulteriore carta)";
+    }
 }

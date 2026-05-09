@@ -35,4 +35,8 @@ public class CharacterSetCompleteFoodCard extends BuildingCard {
                 '}';
     }
 
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (stracibo da set)";
+    }
 }

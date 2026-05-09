@@ -26,4 +26,9 @@ public class SustainDiscountByClassCard extends BuildingCard {
                 ", effect=get 1 food discount for each " + unit + " in possession during the sustenance event" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (sconto sostentamento)";
+    }
 }

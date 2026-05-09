@@ -22,4 +22,9 @@ public class TwentyFiveBonusPointsEndGame extends BuildingCard {
                 ", effect=get 25 bonus points at the end of the game" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (25 punti finali)";
+    }
 }

@@ -26,4 +26,9 @@ public class Inventor extends CharacterCard {
                 ", invention=" + invention +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "INVENTORE";
+    }
 }

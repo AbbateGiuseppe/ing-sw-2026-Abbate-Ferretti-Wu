@@ -24,4 +24,9 @@ public class BonusHuntingCard extends BuildingCard {
                 ", effect=get bonus food and points equal to the number of hunters in possession during the hunting event" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (stracaccia)";
+    }
 }

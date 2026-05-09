@@ -24,4 +24,9 @@ public class BonusFoodEndTurnCard extends BuildingCard {
                 ", effect=get one bonus food if the totem is placed on an orderslot with food at the end of the turn" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (cibo da piazzamento)";
+    }
 }

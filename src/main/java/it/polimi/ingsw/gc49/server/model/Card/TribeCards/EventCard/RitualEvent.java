@@ -66,4 +66,9 @@ public class RitualEvent extends EventCard {
                 .filter(p -> p.data.getNumStars()  == minScore)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public String simpleToString () {
+        return "RITUALE SCIAMANICO";
+    }
 }

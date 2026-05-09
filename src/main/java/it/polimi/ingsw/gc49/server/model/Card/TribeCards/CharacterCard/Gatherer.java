@@ -22,4 +22,9 @@ public class Gatherer extends CharacterCard {
                 ", sustenanceDiscount=3" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "RACCOGLITORE";
+    }
 }

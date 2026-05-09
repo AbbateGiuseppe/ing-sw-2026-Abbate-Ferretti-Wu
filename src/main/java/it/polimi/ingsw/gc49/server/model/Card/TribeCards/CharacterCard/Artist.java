@@ -20,4 +20,9 @@ public class Artist extends CharacterCard {
                 "era=" +  era +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "ARTISTA";
+    }
 }

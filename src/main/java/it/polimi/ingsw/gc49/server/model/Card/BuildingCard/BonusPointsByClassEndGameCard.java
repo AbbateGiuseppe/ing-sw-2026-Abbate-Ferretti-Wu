@@ -30,4 +30,9 @@ public class BonusPointsByClassEndGameCard extends BuildingCard {
                 ", effect=get " + pointsPerUnit + " bonus points for each " + unit + " in possession at the end of the game" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (strapunti da classe)";
+    }
 }

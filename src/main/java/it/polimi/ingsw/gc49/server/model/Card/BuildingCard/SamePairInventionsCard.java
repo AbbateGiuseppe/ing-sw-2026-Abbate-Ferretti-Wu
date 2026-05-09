@@ -31,4 +31,8 @@ public class SamePairInventionsCard extends BuildingCard {
                 '}';
     }
 
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (stracibo da inventori)";
+    }
 }

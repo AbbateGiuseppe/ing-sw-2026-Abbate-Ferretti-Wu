@@ -29,4 +29,9 @@ public class ShamanicThreeStarCard extends BuildingCard {
                 ", effect=get 3 virtual stars during the shamanic event" +
                 '}';
     }
+
+    @Override
+    public String simpleToString () {
+        return "EDIFICIO (tre stelle)";
+    }
 }
