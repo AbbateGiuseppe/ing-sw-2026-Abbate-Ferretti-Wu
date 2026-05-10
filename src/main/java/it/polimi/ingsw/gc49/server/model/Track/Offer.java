@@ -29,8 +29,12 @@ public class Offer {
      * can also deassign the currently assigned player by passing a null.
      * @param assignedPlayer the newly assigned player;
      */
-    public void assignPlayer ( Player assignedPlayer ) {
-        this.assignedPlayer = assignedPlayer;
+    public void assignPlayer ( Player assignedPlayer ) throws NotValidOfferException {
+        if(this.assignedPlayer != null) {
+            throw new NotValidOfferException("C'è già un giocatore sull'offerta selezionata.");
+        }else{
+            this.assignedPlayer = assignedPlayer;
+        }
     }
 
     /**

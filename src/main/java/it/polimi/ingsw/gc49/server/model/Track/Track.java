@@ -125,8 +125,14 @@ public class Track {
         }
     }
 
-    public void assignOffer ( Player player, int offerIndex ) {
-        offerBoard.get(offerIndex).assignPlayer(player);
+    public void assignOffer ( Player player, int offerIndex ) throws NotValidOfferException {
+        Offer chosenOffer;
+        try {
+            chosenOffer = offerBoard.get(offerIndex);
+        } catch (IndexOutOfBoundsException e) {
+            throw new NotValidOfferException("L'indice inserito sfora.");
+        }
+        chosenOffer.assignPlayer(player);
     }
 
     /**

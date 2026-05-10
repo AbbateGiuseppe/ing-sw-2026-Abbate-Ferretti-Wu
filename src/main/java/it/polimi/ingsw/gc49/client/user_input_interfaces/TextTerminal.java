@@ -1,7 +1,9 @@
 package it.polimi.ingsw.gc49.client.user_input_interfaces;
 
+import it.polimi.ingsw.gc49.client.ClientApplication;
 import it.polimi.ingsw.gc49.client.view.Mockup;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.ANY_phase.DISCONNECT.DisconnectPacket;
@@ -12,12 +14,14 @@ import it.polimi.ingsw.gc49.server.model.Totem;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
+import org.jline.utils.Status;
 
-import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,15 +30,12 @@ public class TextTerminal extends UserInputInterface {
      * the rest of the following strings are used as parameters to specify the behaviour in the function of the called TerminalCommand*/
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
     private static final StringBuilder manual = new StringBuilder();
-    private static final Terminal terminal;
+    private static final Terminal terminal = ClientApplication.terminal;
+    private static final Status status;
     static {
-        try {
-            terminal = TerminalBuilder.builder().build();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        status = Status.getStatus(terminal);
     }
-    private static final LineReader scanner = LineReaderBuilder.builder().terminal(terminal).build();
+    private static final LineReader scanner = ClientApplication.scanner;
     private static final Map<String,Totem> totems = new HashMap<>();
     static {
         totems.put("orange", Totem.ORANGE);
@@ -218,15 +219,24 @@ public class TextTerminal extends UserInputInterface {
         manual.append(formatCommand("totem [orange/white/blue/black/yellow]", "Choose the specified totem"));
         manual.append(formatCommand("disconnect", "Disconnects you from the game"));
     }
+
+    public TextTerminal (VirtualServer virtualServer , Mockup mockups, ApplicationPhase currentPhase) {
+        super( virtualServer, mockups, currentPhase);
+    }
+
     private static void printManual() {System.out.println(manual);}
     public void printString ( String string ) {
         scanner.printAbove(string);
     }
+    public void printErrorPacket ( ErrorPacket errorPacket ) {
+        scanner.printAbove("ERRORE: " + errorPacket.errorTitle);
+        scanner.printAbove(errorPacket.errorContent);
+        if(errorPacket.forceDisconnection){
+            System.exit(-1);
+        }
+    }
     private static String formatCommand(String command, String description) {return String.format(" %60s | %s\n", command, description);}
 
-    public TextTerminal ( VirtualServer virtualServer , Mockup mockups, ApplicationPhase currentPhase) {
-        super( virtualServer, mockups, currentPhase);
-    }
 
     @Override
     public void setCurrentPhase ( ApplicationPhase phase ) {
@@ -247,6 +257,12 @@ public class TextTerminal extends UserInputInterface {
     @Override
     public void runInput() {
         try {
+            AttributedString line1 = new AttributedStringBuilder()
+                    .append(" Sei dentro: ")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN))
+                    .append(currentPhase.toString())
+                    .toAttributedString();
+            status.update(Collections.singletonList(line1));
 
             /*// Start a background thread to print messages
             new Thread(() -> {
@@ -264,7 +280,6 @@ public class TextTerminal extends UserInputInterface {
             System.out.println("\nTerminal started (type help for the list of commands):\n");
 
             while (true) {
-                // TODO:when does the loop stop?
                 //System.out.print(">");
                 String lineCommand = scanner.readLine(">");
 

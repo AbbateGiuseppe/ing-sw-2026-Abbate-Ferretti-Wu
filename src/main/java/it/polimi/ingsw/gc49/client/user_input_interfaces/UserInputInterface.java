@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.client.user_input_interfaces;
 
 import it.polimi.ingsw.gc49.client.view.Mockup;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 
@@ -27,4 +28,5 @@ public abstract class UserInputInterface {
     }
 
     public abstract void printString ( String string );
+    public abstract void printErrorPacket ( ErrorPacket errorPacket );
 }

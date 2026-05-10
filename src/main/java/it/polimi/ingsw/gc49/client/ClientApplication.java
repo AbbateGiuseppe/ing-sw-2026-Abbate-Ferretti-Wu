@@ -41,15 +41,15 @@ public class ClientApplication implements VirtualClient {
     private static final Mockup mockups = new Mockup();
     private static final String mainServer = ServerMultiplexer.mainServer;
     private static UserInputInterface inputInterface;
-    private static final Terminal terminal;
+    public static final Terminal terminal;
     static {
         try {
-            terminal = TerminalBuilder.builder().build();
+            terminal = TerminalBuilder.builder().system(true).provider("ffm").build();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    private static final LineReader scanner = LineReaderBuilder.builder().terminal(terminal).build();
+    public static final LineReader scanner = LineReaderBuilder.builder().terminal(terminal).build();
 
     public ClientApplication ( String nickname ) {
         this.nickname = nickname;
@@ -223,7 +223,7 @@ public class ClientApplication implements VirtualClient {
     }
     @Override
     public void reportError ( ErrorPacket errorPacket ) throws RemoteException {
-        //TODO: implement error reporting on the client's interface.
+        inputInterface.printErrorPacket(errorPacket);
     }
 
     //### Hall called methods

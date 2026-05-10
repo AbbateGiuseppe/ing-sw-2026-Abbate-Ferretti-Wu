@@ -13,6 +13,7 @@ import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.CardBoard.CardBoard;
 import it.polimi.ingsw.gc49.server.model.States.InitialSetup;
 import it.polimi.ingsw.gc49.server.model.States.State;
+import it.polimi.ingsw.gc49.server.model.Track.NotValidOfferException;
 import it.polimi.ingsw.gc49.server.model.Track.Track;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 
@@ -268,12 +269,12 @@ public class Game {
         }
     }
 
-    public void chooseOffer ( int playerIndex, int offerIndex ) {
+    public void chooseOffer ( int playerIndex, int offerIndex ) throws NotValidOfferException {
         synchronized (Locks.playerInput) {
             if(playerIndex == currentPlayerIndex) {
                 Player callingPlayer = players.get(playerIndex);
 
-                track.assignOffer(callingPlayer, offerIndex); //TODO: implement not valid offerIndex exception.
+                track.assignOffer(callingPlayer, offerIndex); //throws NotValidOfferException
                 queueUpdateModelElement(new OfferboardModelElement(
                         callingPlayer.getNickname() + " ha scelto l'offerta[" + (offerIndex) + "].",
                         track.giveOfferBoardMockup()

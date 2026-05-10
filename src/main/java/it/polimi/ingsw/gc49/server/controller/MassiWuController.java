@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MO
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.server.model.Game;
+import it.polimi.ingsw.gc49.server.model.Track.NotValidOfferException;
 import it.polimi.ingsw.gc49.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 
@@ -43,7 +44,11 @@ public class MassiWuController implements VirtualGameClient {
                 game.drawLowerBuilding(controllingPlayerIndex, command.getIndex());
                 break;
             case CHOOSE_OFFER:
-                game.chooseOffer(controllingPlayerIndex, command.getIndex());
+                try {
+                    game.chooseOffer(controllingPlayerIndex, command.getIndex());
+                } catch (NotValidOfferException e) {
+                    reportError(new ErrorPacket("Offerta non valida", e.getMessage(), false));
+                }
                 break;
             case PASS_TURN:
                 game.passYourTurn(controllingPlayerIndex);
