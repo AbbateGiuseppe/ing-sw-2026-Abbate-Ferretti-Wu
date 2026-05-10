@@ -4,12 +4,12 @@ import java.util.*;
 
 public class DataBank {
     public final Player assignedPlayer;
-    private Map<CharacterType,Integer> numCharacterMap;
+    private final Map<CharacterType,Integer> numCharacterMap = new HashMap<>();
     private int numStars;
     private int numBuildingDiscount;
     private int numBuilderPoints;
     private int numSustenanceDiscount;
-    private EnumSet<Invention> inventions;
+    private final EnumSet<Invention> inventions = EnumSet.noneOf(Invention.class);
     private int numBuildingPoints;
 
     // Event Management
@@ -21,19 +21,9 @@ public class DataBank {
 
     public DataBank(Player assignedPlayer) {
         this.assignedPlayer = assignedPlayer;
-        numCharacterMap = new HashMap<>();
-        inventions = EnumSet.noneOf(Invention.class);
     }
 
     //### update done by considering just the new card being added to the previously saved data
-//    public void partialUpdate (Card addedCard) {
-//        addedCard.updateDataBank(this);
-//    }
-
-    //### update done by going through every card the player has
-//    public void fullUpdate () {
-//
-//    }
 
 
     // Returns the number of character cards of the given type

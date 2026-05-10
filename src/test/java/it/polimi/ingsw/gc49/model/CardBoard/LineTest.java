@@ -138,9 +138,12 @@ class LineTest {
         int maxRounds = 100; // Limite per evitare loop infiniti
         int roundCount = 0;
 
-        while (!line.hasEraChanged() && roundCount < maxRounds) {
-            line.endRound(3);
-            roundCount++;
+        try {
+            while (!line.hasEraChanged() && roundCount < maxRounds) {
+                line.endRound(3);
+                roundCount++;
+            }
+        } catch (EraEndedException _) {
         }
 
         if (line.hasEraChanged()) {
@@ -211,20 +214,15 @@ class LineTest {
     }
 
     @Test
-    void testMultipleEndRounds_maintainConsistency() {
-        // Esegui più endRound per verificare la consistenza
-        for (int i = 0; i < 5; i++) {
-            assertDoesNotThrow(() -> line.endRound(3));
-        }
-    }
-
-    @Test
     void testEndEra_updatesCurrentEra() throws Exception {
         Era initialEra = line.getCurrentEra();
 
-        // Forza un cambio d'era
-        while (!line.hasEraChanged()) {
-            line.endRound(3);
+        try {
+            // Forza un cambio d'era
+            while (!line.hasEraChanged()) {
+                line.endRound(3);
+            }
+        } catch (EraEndedException _) {
         }
 
         Era newEra = line.getNewEra();

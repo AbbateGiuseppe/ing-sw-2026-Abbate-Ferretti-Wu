@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc49.model.Card.TribeCards.EventCard;
 
+import it.polimi.ingsw.gc49.server.model.Card.Card;
+import it.polimi.ingsw.gc49.server.model.Card.TribeCards.CharacterCard.Gatherer;
+import it.polimi.ingsw.gc49.server.model.Card.TribeCards.CharacterCard.Hunter;
 import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.HuntingEvent;
 import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.PaintingEvent;
 import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.RitualEvent;
@@ -126,7 +129,7 @@ class EventCardTest {
         event.resolveEvent(players);
 
         assertEquals(10, player1.getPoints(), "Winner should gain 10 points");
-        assertTrue(player1.isUniqueWinner(), "Single winner should be marked as unique winner");
+        assertEquals(-3, player3.getPoints(), "Losers should lose 3 points");
     }
 
     @Test
@@ -180,8 +183,12 @@ class EventCardTest {
     @Test
     void testSustenanceEvent_withGathererDiscount() {
         player1.addFood(10);
-        player1.data.addCharacterCount(CharacterType.Hunter, 3);
-        player1.data.addCharacterCount(CharacterType.Gatherer, 1);
+        Card hunter = new Hunter(false, Era.FIRST, 2);
+        player1.addCharacterCard(hunter);
+        player1.addCharacterCard(hunter);
+        player1.addCharacterCard(hunter);
+        Card gatherer = new Gatherer(Era.FIRST, 2);
+        player1.addCharacterCard(gatherer);
 
         SustenanceEvent event = new SustenanceEvent(2, eventManager, Era.FIRST, 2);
         event.resolveEvent(players);

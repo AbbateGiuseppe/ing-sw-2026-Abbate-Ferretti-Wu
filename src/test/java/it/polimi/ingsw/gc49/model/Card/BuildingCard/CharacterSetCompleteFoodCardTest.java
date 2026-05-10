@@ -26,6 +26,7 @@ public class CharacterSetCompleteFoodCardTest {
         BuildingCard bcard = new CharacterSetCompleteFoodCard(BuildingEvent.DRAW_EVENT, PPReward, foodPrice, Era.FIRST,3);
         bcard.updateDataBank(p.data);
         bcard.onDraw(p);
+        bcard.addBuildingToManager(p, eventManager);
         p.data.addCharacterCount(CharacterType.Builder,1);
         eventManager.invokeEvent(BuildingEvent.DRAW_EVENT);
         assertEquals(oldFood,p.getFood());

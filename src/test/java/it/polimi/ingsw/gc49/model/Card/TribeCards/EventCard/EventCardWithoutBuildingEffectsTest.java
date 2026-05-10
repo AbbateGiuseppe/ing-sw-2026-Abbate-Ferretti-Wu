@@ -20,7 +20,7 @@ public class EventCardWithoutBuildingEffectsTest {
     List<Player> ls;
     private Era era = Era.FIRST;
     private int minNumPlayers = 3;
-    EventManager eventManager = null;
+    EventManager eventManager = new EventManager();
 
     @BeforeEach
     void setUp() {

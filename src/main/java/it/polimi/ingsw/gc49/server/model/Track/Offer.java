@@ -26,8 +26,9 @@ public class Offer {
 
     /**
      * Assigns the player to the offer,
-     * can also deassign the currently assigned player by passing a null.
+     * can't overwrite the offer if there's already an assigned player.
      * @param assignedPlayer the newly assigned player;
+     * @throws NotValidOfferException if there's already an assigned player
      */
     public void assignPlayer ( Player assignedPlayer ) throws NotValidOfferException {
         if(this.assignedPlayer != null) {
@@ -35,6 +36,13 @@ public class Offer {
         }else{
             this.assignedPlayer = assignedPlayer;
         }
+    }
+
+    /**
+     * Removes the assignedPlayer from the offer.
+     */
+    public void deassignPlayer () {
+        this.assignedPlayer = null;
     }
 
     /**

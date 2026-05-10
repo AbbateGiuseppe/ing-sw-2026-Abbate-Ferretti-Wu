@@ -1,2 +1,4 @@
 #!/bin/bash
-winpty java --enable-native-access=ALL-UNNAMED -jar "C:\Users\Max\progetti\IS26-GC49\out\artifacts\Mesos_client_jar\Mesos_client.jar"
+cd "$(dirname "$0")" || exit
+CLIENT_PATH="target\gc49-1.0-SNAPSHOT-client.jar"
+winpty java --enable-native-access=ALL-UNNAMED -jar "$CLIENT_PATH"

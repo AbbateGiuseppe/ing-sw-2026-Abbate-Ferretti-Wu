@@ -11,13 +11,14 @@ public class SamePairInventionsCardTest {
     @Test
     void test() {
         EventManager eventManager = new EventManager();
-        Player p = new Player(null,0);;
+        Player p = new Player(null,0);
 
         int PPReward = 0;
         int foodPrice = 0;
         BuildingCard bcard = new SamePairInventionsCard(BuildingEvent.DRAW_EVENT,PPReward,foodPrice, Era.FIRST,3);
         bcard.updateDataBank(p.data);
         bcard.onDraw(p);
+        bcard.addBuildingToManager(p, eventManager);
 
         p.data.addInvention(Invention.ARROWHEAD);
         int oldFood = p.getFood();

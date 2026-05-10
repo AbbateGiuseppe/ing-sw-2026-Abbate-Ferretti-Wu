@@ -134,21 +134,22 @@ public class Line {
         upperLine.clear();
 
         Era previousEra = currentEra;
+        Era lastCardEra = currentEra;
 
         for (int i = 0; i < numPlayers + 4; i++) {
             Card drawn = deck.dealTribeCard();
             if (drawn == null) break;
 
-            Era cardEra = drawn.getEra();
-            if (!cardEra.equals(previousEra)) {
-                // segna che c'è stato un cambio era, ma NON fai ancora endEra
-                currentEra = cardEra;
-                eraChanged = true;
-                newEra = cardEra;
-                throw new EraEndedException("Era ended");
-            }
-
             upperLine.add(drawn);
+
+            lastCardEra = drawn.getEra();
+        }
+        if (!lastCardEra.equals(previousEra)) {
+            // segna che c'è stato un cambio era, ma NON fai ancora endEra
+            currentEra = lastCardEra;
+            eraChanged = true;
+            newEra = lastCardEra;
+            throw new EraEndedException("Era ended");
         }
     }
 

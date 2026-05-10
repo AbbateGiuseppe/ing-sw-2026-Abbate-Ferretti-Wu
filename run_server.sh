@@ -1,2 +1,4 @@
 #!/bin/bash
-java -jar "C:\Users\Max\progetti\IS26-GC49\out\artifacts\Mesos_server_jar\Mesos_server.jar"
+cd "$(dirname "$0")" || exit
+SERVER_PATH="target\gc49-1.0-SNAPSHOT-server.jar"
+java -jar "$SERVER_PATH"

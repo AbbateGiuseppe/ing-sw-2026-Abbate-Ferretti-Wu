@@ -140,7 +140,7 @@ public class Track {
      */
     public void deassignCurrentOffer () {
         Player currentPlayer = offerBoard.get(selectedOffer).getAssignedPlayer();
-        offerBoard.get(selectedOffer).assignPlayer(null); //deassigns.
+        offerBoard.get(selectedOffer).deassignPlayer(); //deassigns.
 
         //assigns the current player to the next order slot and activates the order slot's effect.
         orderBoard.get(selectedOrderSlot).assignPlayer(currentPlayer);
