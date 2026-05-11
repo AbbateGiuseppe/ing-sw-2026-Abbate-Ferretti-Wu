@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc49.server.model.States;
 import it.polimi.ingsw.gc49.server.model.Game;
 
 public class RoundEnd extends State {
-    public RoundEnd ( Game game ) { super(game); }
+    public RoundEnd ( Game game ) { super(game, States.OTHER); }
 
     public State executeState () {
         try {

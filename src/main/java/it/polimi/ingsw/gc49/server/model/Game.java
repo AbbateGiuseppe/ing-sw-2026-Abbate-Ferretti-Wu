@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.CurrentPlayerModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.ConnectionModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferboardModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TotemModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelElement;
@@ -25,14 +26,11 @@ import static it.polimi.ingsw.gc49.server.model.Locks.broadcastLock;
 
 public class Game {
     private final List<VirtualGameClient> controllersListeners = new ArrayList<>();
-    private final int numOfPlayers;
-    private final List<String> playersNicknames;
     private List<Player> players;
     private EventManager eventManager;
     private Track track;
     private CardBoard cardBoard;
     private State currentState;
-    private int numOfConnectedPlayers;
     private Player currentPlayer;
     private int currentPlayerIndex;
     private final EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
@@ -41,8 +39,6 @@ public class Game {
 
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
     public Game ( int numOfPlayers, List<String> playersNicknames ) {
-        this.numOfPlayers = numOfPlayers;
-        this.playersNicknames = playersNicknames;
         currentState = new InitialSetup(this, numOfPlayers, playersNicknames);
         executeCurrentState();
     }
@@ -60,10 +56,10 @@ public class Game {
     }
 
     //### getters
-    public int getNumOfPlayers () { return numOfPlayers; }
-    public int getNumOfConnectedPlayers () { return numOfConnectedPlayers; }
+    public int getNumOfPlayers () { return players.size(); }
+    public int getNumOfConnectedPlayers () { return players.stream().filter(Player::isConnected).toList().size(); }
     public List<Player> getPlayers () { return players; }
-    public List<String> getPlayersNicknames () { return playersNicknames; }
+    public List<String> getPlayersNicknames () { return players.stream().map(Player::getNickname).toList(); }
     public EventManager getEventManager () { return eventManager; }
     public Track getTrack () { return track; }
     public CardBoard getCardBoard () { return cardBoard; }
@@ -79,7 +75,6 @@ public class Game {
         this.track = track;
     }
     public void setCardBoard ( CardBoard cardBoard ) { this.cardBoard = cardBoard; }
-    public void setNumOfConnectedPlayers ( int numOfConnectedPlayers ) { this.numOfConnectedPlayers = numOfConnectedPlayers; }
     public void setCurrentPlayer ( Player currentPlayer ) { this.currentPlayer = currentPlayer; }
     public void setCurrentPlayerIndex ( int currentPlayerIndex ) { this.currentPlayerIndex = currentPlayerIndex; }
     public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }
@@ -95,7 +90,7 @@ public class Game {
 
                 //iterates through all the controllers but only updates the ones connected
                 int i = 0;
-                while(i < numOfPlayers) {
+                while(i < getNumOfPlayers()) {
                     if(players.get(i).isConnected()){
                         controllersListeners.get(i).initializeClientModel(initializeModel);
                     }
@@ -111,7 +106,7 @@ public class Game {
             try {
                 //iterates through all the controllers but only updates the ones connected
                 int i = 0;
-                while (i < numOfPlayers) {
+                while (i < getNumOfPlayers()) {
                     if (players.get(i).isConnected()) {
                         controllersListeners.get(i).updateClientModel(updatesQueue);
                     }
@@ -135,12 +130,6 @@ public class Game {
         }
     }
     public MockupGame giveMockupGame() {
-        /*int currentPlayerIndex;
-        if(currentPlayer != null) {
-            currentPlayerIndex = currentPlayer.getPlayerIndex();
-        }else{
-            currentPlayerIndex = -1;
-        }*/
         List<MockupPlayer> players = new ArrayList<>();
         for (Player player : this.players) {
             players.add(player.giveMockupPlayer());
@@ -162,28 +151,6 @@ public class Game {
         currentState = currentState.executeState();
     }
 
-    //TODO: implement a check to know if the current player is choosing the admissible actions of this phase.
-    //### Players' actions
-    public void chooseTotem ( int playerIndex, Totem chosenTotem ) {
-        synchronized (Locks.playerInput) {
-            if (players.get(playerIndex).getTotem() == null && !usedTotems.contains(chosenTotem)) {
-                usedTotems.add(chosenTotem);
-                players.get(playerIndex).setTotem(chosenTotem);
-
-                queueUpdateModelElement(
-                        new TotemModelElement(
-                            playersNicknames.get(playerIndex) + " ha scelto il totem " + chosenTotem.toString(),
-                            playerIndex,
-                            chosenTotem
-                        )
-                );
-                broadcastGameUpdate();
-
-                Locks.playerInput.notify();
-            }
-        }
-    }
-
     //### Event calls
     public void callDrawEvent() {
         eventManager.invokeEventByPlayer(currentPlayer, BuildingEvent.DRAW_EVENT);
@@ -198,9 +165,30 @@ public class Game {
         eventManager.invokeEvent(BuildingEvent.GAME_END);
     }
 
+    //### Players' actions
+    public void chooseTotem ( int playerIndex, Totem chosenTotem ) {
+        synchronized (Locks.playerInput) {
+            if (players.get(playerIndex).getTotem() == null && !usedTotems.contains(chosenTotem) && currentState.getCurrentStateType().equals(State.States.TOTEM_CHOOSING) ) {
+                usedTotems.add(chosenTotem);
+                players.get(playerIndex).setTotem(chosenTotem);
+
+                queueUpdateModelElement(
+                        new TotemModelElement(
+                                players.get(playerIndex).getNickname() + " ha scelto il totem " + chosenTotem.toString(),
+                                playerIndex,
+                                chosenTotem
+                        )
+                );
+                broadcastGameUpdate();
+
+                Locks.playerInput.notify();
+            }
+        }
+    }
+
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
-            if(playerIndex == currentPlayerIndex) {
+            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                 Player drawingPlayer = players.get(playerIndex);
                 if(drawingPlayer.getDrawableUpper() > 0){
                     Card drawnCard = cardBoard.drawUpperCharacter(cardIndex, drawingPlayer);
@@ -218,7 +206,7 @@ public class Game {
 
     public void drawLowerCharacter ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
-            if(playerIndex == currentPlayerIndex) {
+            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                 Player drawingPlayer = players.get(playerIndex);
                 if(drawingPlayer.getDrawableLower() > 0) {
                     Card drawnCard = cardBoard.drawLowerCharacter(cardIndex, drawingPlayer);
@@ -235,7 +223,7 @@ public class Game {
 
     public void drawUpperBuilding ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
-            if(playerIndex == currentPlayerIndex) {
+            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                 Player drawingPlayer = players.get(playerIndex);
                 if(drawingPlayer.getDrawableUpper() > 0) {
                     BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawUpperBuilding(cardIndex, drawingPlayer);
@@ -253,7 +241,7 @@ public class Game {
 
     public void drawLowerBuilding ( int playerIndex, int cardIndex ) {
         synchronized (Locks.playerInput) {
-            if(playerIndex == currentPlayerIndex) {
+            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                 Player drawingPlayer = players.get(playerIndex);
                 if(drawingPlayer.getDrawableLower() > 0){
                     BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawLowerBuilding(cardIndex, drawingPlayer);
@@ -271,7 +259,7 @@ public class Game {
 
     public void chooseOffer ( int playerIndex, int offerIndex ) throws NotValidOfferException {
         synchronized (Locks.playerInput) {
-            if(playerIndex == currentPlayerIndex) {
+            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_CHOOSING) ) {
                 Player callingPlayer = players.get(playerIndex);
 
                 track.assignOffer(callingPlayer, offerIndex); //throws NotValidOfferException
@@ -288,7 +276,7 @@ public class Game {
 
     public void passYourTurn ( int playerIndex ) {
         synchronized (Locks.playerInput) {
-            if(playerIndex == currentPlayerIndex) {
+            if( playerIndex == currentPlayerIndex && !currentState.getCurrentStateType().equals(State.States.OTHER) ) {
                 players.get(playerIndex).cleanRemainingActions();
                 Locks.playerInput.notify();
             }
@@ -297,10 +285,23 @@ public class Game {
 
     //### Connection methods
     public void disconnectPlayer( int playerIndex ) {
-
+        queueUpdateModelElement(new ConnectionModelElement(
+                players.get(playerIndex).getNickname() + " si è disconnesso",
+                playerIndex,
+                false
+        ));
+        players.get(playerIndex).setConnected(false);
+        //TODO: finish these two disconnection methods and implement the symbiosis with the state-machine's states
+        Locks.playerInput.notify();
     }
 
     public void connectPlayer( int playerIndex ) {
-
+        queueUpdateModelElement(new ConnectionModelElement(
+                players.get(playerIndex).getNickname() + " si è riconnesso",
+                playerIndex,
+                true
+        ));
+        players.get(playerIndex).setConnected(true);
+        Locks.playerInput.notify();
     }
 }

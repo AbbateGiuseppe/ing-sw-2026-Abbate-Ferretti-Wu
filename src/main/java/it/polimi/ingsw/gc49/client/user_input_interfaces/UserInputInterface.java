@@ -9,6 +9,7 @@ public abstract class UserInputInterface {
     protected VirtualServer virtualServer;
     protected final Mockup mockups;
     protected static ApplicationPhase currentPhase;
+    protected String nickname;
 
     public UserInputInterface (VirtualServer virtualServer, Mockup mockups, ApplicationPhase phase ) {
         this.virtualServer = virtualServer;
@@ -20,6 +21,7 @@ public abstract class UserInputInterface {
         System.out.println("Interfaccia vuota?!");
     }
 
+    public void setNickname(String nickname) { this.nickname = nickname; }
     public void setCurrentPhase ( ApplicationPhase phase ) {
         currentPhase = phase;
     }

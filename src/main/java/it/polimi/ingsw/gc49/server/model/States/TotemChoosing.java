@@ -10,7 +10,7 @@ import it.polimi.ingsw.gc49.server.model.Track.OrderSlot;
 import java.util.List;
 
 public class TotemChoosing extends State {
-    public TotemChoosing ( Game game ) { super(game); }
+    public TotemChoosing ( Game game ) { super(game, States.TOTEM_CHOOSING); }
 
     public State executeState () {
         int numOfPlayers = game.getNumOfPlayers();

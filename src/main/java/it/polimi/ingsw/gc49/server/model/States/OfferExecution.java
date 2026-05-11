@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 public class OfferExecution extends State{
-    public OfferExecution ( Game game ) { super(game);}
+    public OfferExecution ( Game game ) { super(game, States.OFFER_EXECUTION);}
 
     public State executeState () {
         Player currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();

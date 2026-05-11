@@ -12,7 +12,7 @@ public class GameEnd extends State {
     private static final int NUMBER_OF_ARTISTS_FOR_POINTS = 2;
     private static final int POINTS_PER_NUMBER_OF_ARTISTS = 10;
 
-    public GameEnd ( Game game ) { super(game);}
+    public GameEnd ( Game game ) { super(game, States.OTHER);}
 
     public State executeState () {
         //solving the last events

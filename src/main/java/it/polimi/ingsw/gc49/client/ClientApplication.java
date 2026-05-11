@@ -93,6 +93,7 @@ public class ClientApplication implements VirtualClient {
             }
             terminal.writer().println("Inserisci il tuo nomignolo");
             String nickname = scanner.readLine("> ");
+            inputInterface.setNickname(nickname);
 
             try {
                 if (connectionChoice == 1) { //RMI

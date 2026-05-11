@@ -14,7 +14,7 @@ public class InitialSetup extends State {
     private final List<String> playersNicknames;
 
     public InitialSetup ( Game game, int numOfPlayers, List<String> playersNicknames ) {
-        super(game);
+        super(game, States.OTHER);
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
     }

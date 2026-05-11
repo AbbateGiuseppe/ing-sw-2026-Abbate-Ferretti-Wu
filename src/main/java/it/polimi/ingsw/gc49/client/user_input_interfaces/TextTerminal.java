@@ -15,15 +15,13 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
-import org.jline.utils.AttributedString;
-import org.jline.utils.AttributedStringBuilder;
-import org.jline.utils.AttributedStyle;
-import org.jline.utils.Status;
+import org.jline.utils.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class TextTerminal extends UserInputInterface {
     /**The key of the commands is the string representing the command type, such as "help" or "draw",
@@ -31,18 +29,21 @@ public class TextTerminal extends UserInputInterface {
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
     private static final StringBuilder manual = new StringBuilder();
     private static final Terminal terminal = ClientApplication.terminal;
-    private static final Status status;
-    static {
-        status = Status.getStatus(terminal);
-    }
+    private static final Display bottomDisplay = new Display(terminal, true);
+    private static final List<AtomicReference<AttributedString>> displayLines = new ArrayList<>();
+    private static final AtomicReference<AttributedString> linePlace = new AtomicReference<>();
+    private static final Status status  = Status.getStatus(terminal);
+    private static AttributedString lineTimeStatus;
+    @SuppressWarnings("FieldCanBeLocal")
+    private String time;
+    @SuppressWarnings("FieldCanBeLocal")
+    private long memory;
     private static final LineReader scanner = ClientApplication.scanner;
     private static final Map<String,Totem> totems = new HashMap<>();
     static {
-        totems.put("orange", Totem.ORANGE);
-        totems.put("white", Totem.WHITE);
-        totems.put("blue", Totem.BLUE);
-        totems.put("black", Totem.BLACK);
-        totems.put("yellow", Totem.YELLOW);
+        for(Totem totem : Totem.values()){
+            totems.put(totem.name().toLowerCase(), totem); //for example, totems.put("orange", Totem.ORANGE);
+        }
     }
 
     static {
@@ -201,10 +202,11 @@ public class TextTerminal extends UserInputInterface {
         manual.append(String.format("%72s\n", "GENERAL commands:"));
         manual.append(formatCommand("help", "Displays this help message"));
         manual.append(formatCommand("show", "Displays the info of the current place you are in"));
+        manual.append(formatCommand("disconnect", "Disconnects you from the server and exits the application"));
         //HALL commands
         manual.append("-".repeat(125)).append("\n");
         manual.append(String.format("%70s\n", "HALL commands:"));
-        manual.append(formatCommand("create (\"your room name\") (num. players)", "Creates a waiting room with the chosen room's name (in Quotation marks)"));
+        manual.append(formatCommand("create (\"your room name\") (num. players)", "Creates a waiting room with the chosen room's name\n(in Quotation marks for a name with whitespaces)"));
         manual.append(formatCommand("join (\"chosen room name\")", "Makes you join the room with your chosen name (in Quotation marks)"));
         //ROOM commands
         manual.append("-".repeat(125)).append("\n");
@@ -217,7 +219,6 @@ public class TextTerminal extends UserInputInterface {
         manual.append(formatCommand("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
         manual.append(formatCommand("offer [offer index]", "Choose the specified offer"));
         manual.append(formatCommand("totem [orange/white/blue/black/yellow]", "Choose the specified totem"));
-        manual.append(formatCommand("disconnect", "Disconnects you from the game"));
     }
 
     public TextTerminal (VirtualServer virtualServer , Mockup mockups, ApplicationPhase currentPhase) {
@@ -241,6 +242,7 @@ public class TextTerminal extends UserInputInterface {
     @Override
     public void setCurrentPhase ( ApplicationPhase phase ) {
         super.setCurrentPhase(phase);
+        changeDisplaylines();
         switch (phase) {
             case GAME:
                 scanner.printAbove("-The game started.");
@@ -257,54 +259,116 @@ public class TextTerminal extends UserInputInterface {
     @Override
     public void runInput() {
         try {
-            AttributedString line1 = new AttributedStringBuilder()
-                    .append(" Sei dentro: ")
-                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN))
-                    .append(currentPhase.toString())
-                    .toAttributedString();
-            status.update(Collections.singletonList(line1));
+            //clears the screen
+            terminal.puts(InfoCmp.Capability.clear_screen);
+            terminal.flush();
 
-            /*// Start a background thread to print messages
-            new Thread(() -> {
-                try {
-                    for (int i = 0; i < 10; i++) {
-                        Thread.sleep(1000);
-                        scanner.printAbove("-");
-                        scanner.printAbove("Notification #" + i);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();*/
+            // Start a background update thread to show the current position's view.
+            ScheduledExecutorService schedulerStatus = Executors.newSingleThreadScheduledExecutor();
+            schedulerStatus.scheduleAtFixedRate(this::updateStatus, 0, 2, TimeUnit.SECONDS);
 
-            System.out.println("\nTerminal started (type help for the list of commands):\n");
+            terminal.writer().println("Terminal started (type help for the list of commands):\n");
 
+
+            int rows;
+            int columns;
+            int readChar;
+            StringBuilder inputBuffer = new StringBuilder();
+            terminal.enterRawMode();
             while (true) {
-                //System.out.print(">");
-                String lineCommand = scanner.readLine(">");
+                //rows = terminal.getWidth();
+                //columns = terminal.getHeight();
 
-                // 1. Split the string by whitespace
-                String[] parts = lineCommand.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-                if (parts.length == 0) continue;
+                // Perform your background update
+                terminal.writer().print("\r>" + inputBuffer);
+                terminal.flush();
 
-                // 2. The first word is the key
-                String action = parts[0].toLowerCase();
+                // Peek for input (100ms timeout)
+                if (terminal.reader().peek(100) != -1) { // -1 means no data was available within the timeout
+                    readChar = terminal.reader().read();
 
-                // 3. The remaining words are parameters
-                String[] params = Arrays.copyOfRange(parts, 1, parts.length);
+                    if (readChar == '\r' || readChar == '\n') {
+                        terminal.writer().println(); //Start a new line
+                        // v Check if the buffered string matches v
+                        // 1. Split the string by whitespace
+                        String[] parts = inputBuffer.toString().split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+                        if (parts.length == 0) continue;
 
-                // 4. Look up the terminal function and execute
-                TerminalCommand command = commands.get(action);
-                if (command != null) {
-                    command.execute(currentPhase, mockups, params, virtualServer);
-                } else {
-                    terminal.writer().println("Unknown command: " + action);
+                        // 2. The first lowercase word is the key
+                        String action = parts[0].toLowerCase();
+
+                        // 3. The remaining words are parameters
+                        String[] params = Arrays.copyOfRange(parts, 1, parts.length);
+
+                        // 4. Look up the terminal function and execute
+                        TerminalCommand command = commands.get(action);
+                        if (command != null) {
+                            command.execute(currentPhase, mockups, params, virtualServer);
+                        } else {
+                            terminal.writer().println("Unknown command: " + action);
+                        }
+
+                        inputBuffer.setLength(0); // Clear buffer for next attempt
+                    } else if ((readChar == 127 || readChar == 8) && !inputBuffer.isEmpty()) { // Handle backspace
+                        inputBuffer.setLength(inputBuffer.length() - 1);
+                        terminal.writer().print("\b \b");
+                        terminal.writer().flush();
+                    } else {
+                        inputBuffer.append((char) readChar);
+                    }
                 }
+
+                // Small sleep to prevent 100% CPU usage if peek timeout is 0
+                Thread.sleep(50);
 
             }
         } catch (Exception e) {
             System.err.println("Client exception: " + e);
             e.printStackTrace();
         }
+    }
+
+    ///---------------
+    // display
+    private void changeDisplaylines() {
+        //linePlace
+        linePlace.set(new AttributedStringBuilder()
+                .append(" Sei dentro: ")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN))
+                .append(currentPhase.toString())
+                .toAttributedString());
+
+
+        switch(currentPhase){
+            case ANY:
+                break;
+            case GAME:
+                break;
+            case HALL:
+                break;
+            case ROOM:
+                break;
+        }
+    }
+
+    ///---------------
+    // status
+    private void updateStatus() {
+        //lineTime
+        time = java.time.LocalTime.now().withNano(0).toString();
+        memory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
+        lineTimeStatus = new AttributedStringBuilder()
+                .append(" {")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)).append(currentPhase.toString())
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("}")
+                .append("[")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append(nickname)
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("]")
+                .append("Time: ").append(time).append(" | Memory: ").append(String.valueOf(memory)).append("MB")
+                .toAttributedString();
+
+        //show the updated view
+        status.update(Collections.singletonList(lineTimeStatus), true);
+        //status.update(statusLines.stream().map(AtomicReference::get).toList(), true);
     }
 }
