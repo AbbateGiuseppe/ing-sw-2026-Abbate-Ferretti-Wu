@@ -57,20 +57,20 @@ public class TextTerminal extends UserInputInterface {
 
     static {
         // Mostra la manuale di istruzioni per il gioco
-        commands.put("help", ( terminalTerminal, _, _, _, _ ) -> terminalTerminal.printManual());
+        commands.put("help", ( terminalMethods, _, _, _, _ ) -> terminalMethods.printManual());
 
         //Chiude l'applicazione e si disconnette dal serviente
-        commands.put("disconnect", ( _, _, _, _, terminalVirtualServer ) -> {
-            terminal.writer().println("| Are you sure you want disconnect from the server?   |");
-            terminal.writer().println("| You'll have to restart the application to reconnect |");
-            if( lineReader.readLine("  Type YES to confirm: ").equalsIgnoreCase("yes") ){
+        commands.put("disconnect", ( terminalMethods, _, _, _, terminalVirtualServer ) -> {
+            terminalMethods.printScroll("| Are you sure you want disconnect from the server? You'll have to restart the application to reconnect |");
+            terminalMethods.printScroll("|                                     Type YES to confirm                                               |");
+            if (terminalMethods.readInput().equalsIgnoreCase("yes")) {
                 terminalVirtualServer.disconnect(new DisconnectPacket());
                 System.exit(0);
             }
         });
 
         // Creare una stanza
-        commands.put("create", ( _, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("create", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 2) {
                 String roomName = terminalParameters[0];
                 try {
@@ -83,7 +83,7 @@ public class TextTerminal extends UserInputInterface {
                         }
                     }
                 } catch (NumberFormatException e) {
-                    terminal.writer().println("please, specify correctly the number of players!");
+                    terminalMethods.printScroll("please, specify correctly the number of players!");
                 }
             }
         });
@@ -98,44 +98,18 @@ public class TextTerminal extends UserInputInterface {
                 }
             }
         });
-        // Mostrare tutte le informazioni importanti del luogo attuale
-        commands.put("show", ( _, terminalPhase, terminalMockups, _, _ ) -> {
-            if(terminalPhase == ApplicationPhase.HALL) {
-                if(terminalMockups.getHall() != null) {
-                    terminal.writer().println(terminalMockups.getHall());
-                }else{
-                    terminal.writer().println("Hall not yet loaded.");
-                }
-            }else if(terminalPhase == ApplicationPhase.ROOM) {
-                if(terminalMockups.getRoom() != null) {
-                    terminal.writer().println(terminalMockups.getRoom());
-                    terminal.writer().println(terminalMockups.getRoom().toAttributedStringPlayers());
-                }else{
-                    terminal.writer().println("Room not yet loaded.");
-                }
-            }else if(terminalPhase == ApplicationPhase.GAME) {
-                if(terminalMockups.getGame() != null) {
-                    for (MockupPlayer p : terminalMockups.getGame().getPlayers()) {
-                        terminal.writer().println(p);
-                    }
-                }else{
-                    terminal.writer().println("Game not yet loaded.");
-                }
-            }
-        });
 
 
         // Uscire da una stanza
         commands.put("leave", ( _, terminalPhase, _, _, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.ROOM) {
                 terminalVirtualServer.leaveRoom(new RoomLeavePacket());
-                // TODO:need change the phase to HALL
             }
         });
 
 
         // Mostra le carte di un giocatore dato il suo indice
-        commands.put("cards", ( _, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
+        commands.put("cards", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int index = Integer.parseInt(terminalParameters[0]);
@@ -145,19 +119,19 @@ public class TextTerminal extends UserInputInterface {
                         throw new NumberFormatException();
                     }
                 } catch (NumberFormatException e) {
-                    terminal.writer().println("please, insert a valid number!");
+                    terminalMethods.printScroll("please, insert a valid number!");
                 }
             }
         });
         // Sceglie una offerta
-        commands.put("offer", ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("offer", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int offerIndex = Integer.parseInt(terminalParameters[0]);
                     CommandPacket commandPacket = new CommandPacket(PlayerActionEnum.CHOOSE_OFFER, offerIndex);
                     terminalVirtualServer.sendCommand(commandPacket);
                 } catch (NumberFormatException e) {
-                    terminal.writer().println("please, insert a valid number!");
+                    terminalMethods.printScroll("please, insert a valid number!");
                 }
             }
         });
@@ -172,7 +146,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Sceglie una carta
-        commands.put("draw", ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("draw", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
                 try {
                     int cardIndex = Integer.parseInt(terminalParameters[2]);
@@ -194,10 +168,10 @@ public class TextTerminal extends UserInputInterface {
                         CommandPacket commandPacket = new CommandPacket(action, cardIndex);
                         terminalVirtualServer.sendCommand(commandPacket);
                     }else{
-                        terminal.writer().println("not a valid card choice!");
+                        terminalMethods.printScroll("not a valid card choice!");
                     }
                 } catch (NumberFormatException e) {
-                    terminal.writer().println("please, insert a valid number!");
+                    terminalMethods.printScroll("please, insert a valid number!");
                 }
             }
         });
@@ -207,28 +181,28 @@ public class TextTerminal extends UserInputInterface {
         // Command entries
         //GENERAL/ANY commands
         manual.append(String.format("%72s\n", "GENERAL commands:"));
-        manual.append(formatCommand("help", "Displays this help message for " + HELP_TIMEOUT + " seconds"));
-        manual.append(formatCommand("disconnect", "Disconnects you from the server and exits the application"));
+        manual.append(manualFormat("help", "Displays this help message for " + HELP_TIMEOUT + " seconds"));
+        manual.append(manualFormat("disconnect", "Disconnects you from the server and exits the application"));
         //HALL commands
-        manual.append(helplistSeparator()).append("\n");
+        manual.append(manualSeparator()).append("\n");
         manual.append(String.format("%70s\n", "HALL commands:"));
-        manual.append(formatCommand("create/join [\"your room name\"] (num. players)", "Creates/Joins a waiting room"));
+        manual.append(manualFormat("create/join [\"your room name\"] (num. players)", "Creates/Joins a waiting room"));
         //ROOM commands
-        manual.append(helplistSeparator()).append("\n");
+        manual.append(manualSeparator()).append("\n");
         manual.append(String.format("%70s\n", "ROOM commands:"));
-        manual.append(formatCommand("leave", "Leaves the current room"));
+        manual.append(manualFormat("leave", "Leaves the current room"));
         //GAME commands
-        manual.append(helplistSeparator()).append("\n");
+        manual.append(manualSeparator()).append("\n");
         manual.append(String.format("%70s\n", "GAME commands:"));
-        manual.append(formatCommand("totem [orange/white/blue/black/yellow]", "Choose the specified totem"));
-        manual.append(formatCommand("offer [offer index]", "Choose the specified offer"));
-        manual.append(formatCommand("cards [player index]", "Displays the cards of the specified player"));
-        manual.append(formatCommand("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
+        manual.append(manualFormat("totem [orange/white/blue/black/yellow]", "Choose the specified totem"));
+        manual.append(manualFormat("offer [offer index]", "Choose the specified offer"));
+        manual.append(manualFormat("cards [player index]", "Displays the cards of the specified player"));
+        manual.append(manualFormat("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
 
-        manual.append(helplistSeparator());
+        manual.append(manualSeparator());
     }
-    private static String helplistSeparator() { return " "+"-".repeat(127); }
-    private static String formatCommand(String command, String description) {return " " + String.format(" %60s | %s\n", command, description);}
+    private static String manualSeparator () { return " "+"-".repeat(127); }
+    private static String manualFormat ( String command, String description) {return " " + String.format(" %60s | %s\n", command, description);}
 
 
     public TextTerminal (VirtualServer virtualServer, ApplicationPhase currentPhase) {
@@ -269,6 +243,11 @@ public class TextTerminal extends UserInputInterface {
                 terminal.puts(InfoCmp.Capability.clear_screen);
                 terminal.writer().println("Terminal started (type help for the list of commands):\n");
 
+                // Set scroll region from first to scrollRegionHeight
+                //the scroll region is where the previous user commands can be seen in
+                terminal.puts(InfoCmp.Capability.change_scroll_region, 1, SCROLL_REGION_HEIGHT - 1);
+
+                // Draw the separators between the terminal's sections
                 terminal.puts(InfoCmp.Capability.cursor_address, rows - 3, 1);
                 AttributedString promptSeparator = new AttributedString("━".repeat(columns - 2), AttributedStyle.DEFAULT.foreground(AttributedStyle.BLUE));
                 promptSeparator.print(terminal);
@@ -276,46 +255,26 @@ public class TextTerminal extends UserInputInterface {
                 promptSeparator.print(terminal);
             }
 
-            // Set scroll region from first to scrollRegionHeight
-            //the scroll region is where the previous user commands can be seen in
-            terminal.puts(InfoCmp.Capability.change_scroll_region, 1, SCROLL_REGION_HEIGHT - 1);
-
             printStatus();
             show();
 
+            // Initialization finished, start the input loop
             //noinspection InfiniteLoopStatement
             while (true) {
-                synchronized (cursorLock) {
-                    rows = terminal.getHeight();
-                    // Move cursor to prompt line to get ready for a read
-                    moveCursorToPrompt();
-                    terminal.writer().print(">");
-                    terminal.flush();
-                }
 
                 // Read input
-                String inputLine = lineReader.readLine(" ").toLowerCase();
+                String inputLine = readInput();
 
 
                 if (!inputLine.isEmpty()) {
-                    synchronized (cursorLock) {
-                        //## Prints the command inserted into the scroll region and also clears the prompt
-                        // Restores cursor to prompt position
-                        moveCursorToPrompt();
-                        // Clear the prompt line
-                        terminal.puts(InfoCmp.Capability.clr_eol);
-                        // Move cursor to scroll region, where commands should print
-                        moveCursorToScroll();
-                        terminal.writer().println();
-                        // Print the command inserted
-                        terminal.writer().println(" "+inputLine);
-                        // Restores cursor to prompt position
-                        moveCursorToPrompt();
-                    }
+                    // Print the inserted input
+                    printScroll(inputLine);
+
 
                     // Split the string by whitespace
-                    String[] parts = inputLine.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+                    String[] parts = splitInput(inputLine);
                     // The first word is the key
+                    assert parts != null;
                     String action = parts[0];
                     // The remaining words are parameters
                     String[] params = Arrays.copyOfRange(parts, 1, parts.length);
@@ -325,28 +284,77 @@ public class TextTerminal extends UserInputInterface {
                     if (command != null) {
                         command.execute(this, currentPhase, mockups, params, virtualServer);
                     } else {
-                        // Move cursor to scroll region, where commands should print
-                        moveCursorToScroll();
-                        terminal.writer().print("Unknown command: " + action);
-                        // Restores cursor to prompt position
-                        moveCursorToPrompt();
+                        printScroll("Unknown command: " + action);
                     }
-                    terminal.flush();
+                    printScroll("");
                 }
 
             }
 
         } catch (Exception e) {
-            System.err.println("Client exception: " + e);
+            printScroll("Client exception: " + e);
             e.printStackTrace();
         }
     }
 
-    private void moveCursorToPrompt() {
-        terminal.puts(InfoCmp.Capability.cursor_address, rows - 2, 1);
+    private String readInput() {
+        synchronized (cursorLock) {
+            // Move cursor to prompt line to get ready for a read
+            rows = terminal.getHeight();
+            terminal.puts(InfoCmp.Capability.cursor_address, rows - 2, 1);
+            terminal.writer().print("> ");
+            terminal.flush();
+        }
+        String input = lineReader.readLine("").toLowerCase();
+        synchronized (cursorLock) {
+            // Clear the prompt line
+            rows = terminal.getHeight();
+            terminal.puts(InfoCmp.Capability.cursor_address, rows - 2, 0);
+            terminal.puts(InfoCmp.Capability.clr_eol);
+        }
+        return input;
     }
-    private void moveCursorToScroll() {
-        terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT - 1, 1);
+    private String[] splitInput(String input) {
+        if(input.isEmpty()) return null;
+
+        List<String> parts = new ArrayList<>();
+        StringBuilder currentPart = new StringBuilder();
+
+        boolean quoting = false; //activated when a quotation is opened
+        for(int i=0; i<input.length(); i++) {
+            char c = input.charAt(i);
+
+            // Open or Close quotation
+            if( c == '\"' ){
+                quoting = !quoting;
+            }
+            else if(Character.isWhitespace(c) && !quoting) {
+                // Close and store the current part, because it has been separated without quotation
+                parts.add(currentPart.toString());
+                currentPart.setLength(0); //reset the buffer
+            }
+            else{
+                // Append the character to the current part
+                currentPart.append(c);
+            }
+        }
+        // Add the final computed part
+        if (!currentPart.isEmpty()) {
+            parts.add(currentPart.toString());
+        }
+
+        return parts.toArray(new String[0]);
+    }
+    private void printScroll(String toPrint){
+        synchronized (cursorLock) {
+            terminal.puts(InfoCmp.Capability.save_cursor);
+            // Move cursor to scroll region, where commands should print
+            terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT - 1, 1);
+            // Print the string inserted
+            terminal.writer().println(toPrint);
+            // Restores cursor position
+            terminal.puts(InfoCmp.Capability.restore_cursor);
+        }
     }
     private void printManual () {
         synchronized (cursorLock) {
@@ -372,7 +380,6 @@ public class TextTerminal extends UserInputInterface {
                     .style(AttributedStyle.DEFAULT.underline()).append("Last message")
                     .style(AttributedStyle.DEFAULT).append(": ").append(message)
                     .toAttributedString().print(terminal);
-            terminal.flush();
             terminal.puts(InfoCmp.Capability.restore_cursor);
         }
     }
@@ -383,7 +390,6 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 1);
             terminal.puts(InfoCmp.Capability.clr_eol);
             terminal.writer().print(errorString);
-            terminal.flush();
             terminal.puts(InfoCmp.Capability.restore_cursor);
             if (errorPacket.forceDisconnection) {
                 System.exit(-1);
@@ -402,7 +408,6 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.cursor_address, rows-1, 1);
             terminal.puts(InfoCmp.Capability.clr_eol);
             status.print(terminal);
-            terminal.flush();
             terminal.puts(InfoCmp.Capability.restore_cursor);
         }
     }
@@ -432,9 +437,15 @@ public class TextTerminal extends UserInputInterface {
                     }
                     break;
                 case GAME:
+                    if(mockups.getGame() != null) {
+                        for (MockupPlayer p : mockups.getGame().getPlayers()) {
+                            terminal.writer().println(p);
+                        }
+                    }else{
+                        terminal.writer().println("Game not yet loaded.");
+                    }
                     break;
             }
-            terminal.flush();
             terminal.puts(InfoCmp.Capability.restore_cursor);
         }
     }
