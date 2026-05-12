@@ -246,12 +246,15 @@ public class TextTerminal extends UserInputInterface {
         switch (phase) {
             case GAME:
                 printMessage("The game started.");
+                printStatus();
                 break;
             case HALL:
                 printMessage("You entered the hall.");
+                printStatus();
                 break;
             case ROOM:
                 printMessage("-You entered a room.");
+                printStatus();
                 break;
         }
     }
@@ -274,6 +277,7 @@ public class TextTerminal extends UserInputInterface {
             //the scroll region is where the previous user commands can be seen in
             terminal.puts(InfoCmp.Capability.change_scroll_region, 1, SCROLL_REGION_HEIGHT - 1);
 
+            printStatus();
 
             //noinspection InfiniteLoopStatement
             while (true) {
@@ -356,6 +360,22 @@ public class TextTerminal extends UserInputInterface {
             if (errorPacket.forceDisconnection) {
                 System.exit(-1);
             }
+        }
+    }
+    private void printStatus() {
+        synchronized (cursorLock) {
+            AttributedString status = new AttributedStringBuilder()
+                    .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append(nickname)
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("]")
+                    .append(" | position: ").style(AttributedStyle.DEFAULT.bold().foreground(AttributedStyle.RED))
+                    .append(currentPhase.toString())
+                    .toAttributedString();
+            terminal.puts(InfoCmp.Capability.save_cursor);
+            terminal.puts(InfoCmp.Capability.cursor_address, rows-1, 1);
+            terminal.puts(InfoCmp.Capability.clr_eol);
+            status.print(terminal);
+            terminal.flush();
+            terminal.puts(InfoCmp.Capability.restore_cursor);
         }
     }
     @Override
