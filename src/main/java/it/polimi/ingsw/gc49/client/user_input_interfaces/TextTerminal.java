@@ -259,12 +259,16 @@ public class TextTerminal extends UserInputInterface {
     @Override
     public void runInput() {
         try {
-            terminal.puts(InfoCmp.Capability.clear_screen);
-            terminal.writer().println("Terminal started (type help for the list of commands):\n");
+            synchronized (cursorLock) {
+                terminal.puts(InfoCmp.Capability.clear_screen);
+                terminal.writer().println("Terminal started (type help for the list of commands):\n");
 
-            terminal.puts(InfoCmp.Capability.cursor_address, rows-3, 1);
-            AttributedString promptSeparator = new AttributedString("━".repeat(columns-2), AttributedStyle.DEFAULT.foreground(AttributedStyle.BLUE));
-            promptSeparator.print(terminal);
+                terminal.puts(InfoCmp.Capability.cursor_address, rows - 3, 1);
+                AttributedString promptSeparator = new AttributedString("━".repeat(columns - 2), AttributedStyle.DEFAULT.foreground(AttributedStyle.BLUE));
+                promptSeparator.print(terminal);
+                terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT, 1);
+                promptSeparator.print(terminal);
+            }
 
             // Set scroll region from first to scrollRegionHeight
             //the scroll region is where the previous user commands can be seen in
@@ -273,37 +277,43 @@ public class TextTerminal extends UserInputInterface {
 
             //noinspection InfiniteLoopStatement
             while (true) {
-                rows = terminal.getHeight();
-                // Move cursor to prompt line to get ready for a read
-                moveCursorToPrompt();
+                synchronized (cursorLock) {
+                    rows = terminal.getHeight();
+                    // Move cursor to prompt line to get ready for a read
+                    moveCursorToPrompt();
+                }
 
                 // Read input
                 String inputLine = lineReader.readLine("> ").toLowerCase();
 
-                if (!inputLine.isEmpty()) {
-                    // Move cursor to scroll region, where commands should print
-                    moveCursorToScroll();
-                    // Print the command inserted
-                    terminal.writer().println(inputLine);
+                synchronized (cursorLock) {
+                    if (!inputLine.isEmpty()) {
+                        // Move cursor to scroll region, where commands should print
+                        moveCursorToScroll();
+                        terminal.writer().println();
+                        // Print the command inserted
+                        terminal.writer().println(inputLine);
 
-                    // Split the string by whitespace
-                    String[] parts = inputLine.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-                    // The first word is the key
-                    String action = parts[0];
-                    // The remaining words are parameters
-                    String[] params = Arrays.copyOfRange(parts, 1, parts.length);
+                        // Split the string by whitespace
+                        String[] parts = inputLine.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+                        // The first word is the key
+                        String action = parts[0];
+                        // The remaining words are parameters
+                        String[] params = Arrays.copyOfRange(parts, 1, parts.length);
 
-                    // Look up the terminal function and execute
-                    TerminalCommand command = commands.get(action);
-                    if (command != null) {
-                        command.execute(currentPhase, mockups, params, virtualServer);
-                    } else {
-                        terminal.writer().println("Unknown command: " + action);
+                        // Look up the terminal function and execute
+                        TerminalCommand command = commands.get(action);
+                        if (command != null) {
+                            command.execute(currentPhase, mockups, params, virtualServer);
+                        } else {
+                            terminal.writer().print("Unknown command: " + action);
+                        }
+                        terminal.flush();
+
+                        // Restores cursor to prompt position
+                        moveCursorToPrompt();
+                        terminal.puts(InfoCmp.Capability.clr_eol); //clear the prompt line
                     }
-                    terminal.flush();
-
-                    // Restores cursor to prompt position
-                    moveCursorToPrompt();
                 }
             }
 
@@ -325,8 +335,11 @@ public class TextTerminal extends UserInputInterface {
             message = newMessage;
             terminal.puts(InfoCmp.Capability.save_cursor);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 1);
-            terminal.writer().println("Previous message: " + previousMessage);
-            terminal.writer().println(" Message: " + message);
+            terminal.puts(InfoCmp.Capability.clr_eol);
+            terminal.writer().print("Previous message: " + previousMessage);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 1);
+            terminal.puts(InfoCmp.Capability.clr_eol);
+            terminal.writer().print("Message: " + message);
             terminal.flush();
             terminal.puts(InfoCmp.Capability.restore_cursor);
         }
@@ -336,7 +349,8 @@ public class TextTerminal extends UserInputInterface {
             String errorString = new StringBuilder().append("error,").append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
             terminal.puts(InfoCmp.Capability.save_cursor);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 1);
-            terminal.writer().println(errorString);
+            terminal.puts(InfoCmp.Capability.clr_eol);
+            terminal.writer().print(errorString);
             terminal.flush();
             terminal.puts(InfoCmp.Capability.restore_cursor);
             if (errorPacket.forceDisconnection) {
@@ -348,7 +362,11 @@ public class TextTerminal extends UserInputInterface {
     public void show(){
         synchronized (cursorLock) {
             terminal.puts(InfoCmp.Capability.save_cursor);
-            terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT, 1);
+            for( int i = SCROLL_REGION_HEIGHT+1; i < LINE_PREVIOUS_MESSAGE; i++ ) {
+                terminal.puts(InfoCmp.Capability.cursor_address, i, 1);
+                terminal.puts(InfoCmp.Capability.clr_eol);
+            }
+            terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT+1, 1);
             switch (currentPhase) {
                 case HALL:
                     if(mockups.getHall() != null) {
