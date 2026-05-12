@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.client.user_input_interfaces;
 
+import it.polimi.ingsw.gc49.client.ClientApplication;
 import it.polimi.ingsw.gc49.client.view.Mockup;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
@@ -7,13 +8,13 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServ
 
 public abstract class UserInputInterface {
     protected VirtualServer virtualServer;
-    protected final Mockup mockups;
+    protected static Mockup mockups;
     protected static ApplicationPhase currentPhase;
     protected String nickname;
 
-    public UserInputInterface (VirtualServer virtualServer, Mockup mockups, ApplicationPhase phase ) {
+    public UserInputInterface (VirtualServer virtualServer, ApplicationPhase phase ) {
         this.virtualServer = virtualServer;
-        this.mockups = mockups;
+        mockups = ClientApplication.mockups;
         currentPhase = phase;
     }
 
@@ -31,5 +32,5 @@ public abstract class UserInputInterface {
 
     public abstract void printString ( String string );
     public abstract void printErrorPacket ( ErrorPacket errorPacket );
-    public abstract void show();
+    public abstract void show ();
 }

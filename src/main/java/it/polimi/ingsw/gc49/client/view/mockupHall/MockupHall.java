@@ -15,7 +15,7 @@ public class MockupHall implements Serializable {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Online players: ");
+        stringBuilder.append("|Players online, in the hall|: ");
         int i = connectedPlayers.size();
         for(String player : connectedPlayers){
             i--;
@@ -26,8 +26,10 @@ public class MockupHall implements Serializable {
                 stringBuilder.append(", ");
             }
         }
+        stringBuilder.append(" -----------------------------\n");
+        stringBuilder.append(" list of rooms:");
         for(MockupRoom room : rooms){
-            stringBuilder.append(room);
+            stringBuilder.append(" ").append(room);
             stringBuilder.append("\n");
         }
         return  stringBuilder.toString();

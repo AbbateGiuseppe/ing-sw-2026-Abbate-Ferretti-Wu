@@ -22,20 +22,20 @@ public class MockupRoom implements Serializable {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(roomName);
         if(type == RoomType.WAITING) {
-            stringBuilder.append(" (waiting for players): ");
+            stringBuilder.append(" (it's waiting for players): ");
         }else if(type == RoomType.PLAYING) {
-            stringBuilder.append(" (in game): ");
+            stringBuilder.append(" (it's in game): ");
         }
         stringBuilder.append(connectedPlayers.size());
         stringBuilder.append("/");
         stringBuilder.append(maxNumOfPlayers);
-        stringBuilder.append(" players connected.");
+        stringBuilder.append(" players are inside.");
         return stringBuilder.toString();
     }
 
     public String toStringPlayers() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("PLAYERS: ");
+        stringBuilder.append(" Players online, in the room: ");
         int i = connectedPlayers.size();
         for(String player : connectedPlayers){
             i--;

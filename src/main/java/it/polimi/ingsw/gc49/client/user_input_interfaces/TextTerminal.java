@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc49.client.user_input_interfaces;
 
 import it.polimi.ingsw.gc49.client.ClientApplication;
-import it.polimi.ingsw.gc49.client.view.Mockup;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
@@ -18,6 +17,9 @@ import org.jline.terminal.Terminal;
 import org.jline.utils.*;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class TextTerminal extends UserInputInterface {
     /**The key of the commands is the string representing the command type, such as "help" or "draw",
@@ -26,13 +28,16 @@ public class TextTerminal extends UserInputInterface {
     private static final StringBuilder manual = new StringBuilder();
     private static final Terminal terminal = ClientApplication.terminal;
     private static final LineReader lineReader = ClientApplication.lineReader;
+    private static final ScheduledExecutorService helpScheduler = Executors.newSingleThreadScheduledExecutor();
+    private static final int HELP_TIMEOUT = 10;
     private static int rows = 35;
     private static int columns = 130;
     private static final int SCROLL_REGION_HEIGHT = 12;
+    private static final int LINE_SHOW = SCROLL_REGION_HEIGHT+1;
     private static final int LINE_PREVIOUS_MESSAGE = rows-6;
     private static final int LINE_ERROR = rows-4;
 
-    private final Object cursorLock = new Object();
+    private static final Object cursorLock = new Object();
 
     static {
         terminal.handle(Terminal.Signal.WINCH, _ -> {
@@ -52,10 +57,10 @@ public class TextTerminal extends UserInputInterface {
 
     static {
         // Mostra la manuale di istruzioni per il gioco
-        commands.put("help", ( _, _, _, _ ) -> terminal.writer().println(manual));
+        commands.put("help", ( terminalTerminal, _, _, _, _ ) -> terminalTerminal.printManual());
 
         //Chiude l'applicazione e si disconnette dal serviente
-        commands.put("disconnect", ( _, _, _, terminalVirtualServer ) -> {
+        commands.put("disconnect", ( _, _, _, _, terminalVirtualServer ) -> {
             terminal.writer().println("| Are you sure you want disconnect from the server?   |");
             terminal.writer().println("| You'll have to restart the application to reconnect |");
             if( lineReader.readLine("  Type YES to confirm: ").equalsIgnoreCase("yes") ){
@@ -65,7 +70,7 @@ public class TextTerminal extends UserInputInterface {
         });
 
         // Creare una stanza
-        commands.put("create", ( terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("create", ( _, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 2) {
                 String roomName = terminalParameters[0];
                 try {
@@ -83,7 +88,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Entrare una stanza
-        commands.put("join", ( terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("join", ( _, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 1) {
                 String roomName = terminalParameters[0];
                 // Controlla se la stanza esiste
@@ -94,7 +99,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Mostrare tutte le informazioni importanti del luogo attuale
-        commands.put("show", ( terminalPhase, terminalMockups, _, _ ) -> {
+        commands.put("show", ( _, terminalPhase, terminalMockups, _, _ ) -> {
             if(terminalPhase == ApplicationPhase.HALL) {
                 if(terminalMockups.getHall() != null) {
                     terminal.writer().println(terminalMockups.getHall());
@@ -121,7 +126,7 @@ public class TextTerminal extends UserInputInterface {
 
 
         // Uscire da una stanza
-        commands.put("leave", ( terminalPhase, _, _, terminalVirtualServer ) -> {
+        commands.put("leave", ( _, terminalPhase, _, _, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.ROOM) {
                 terminalVirtualServer.leaveRoom(new RoomLeavePacket());
                 // TODO:need change the phase to HALL
@@ -130,7 +135,7 @@ public class TextTerminal extends UserInputInterface {
 
 
         // Mostra le carte di un giocatore dato il suo indice
-        commands.put("cards", ( terminalPhase, terminalMockups, terminalParameters, _ ) -> {
+        commands.put("cards", ( _, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int index = Integer.parseInt(terminalParameters[0]);
@@ -145,7 +150,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Sceglie una offerta
-        commands.put("offer", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("offer", ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int offerIndex = Integer.parseInt(terminalParameters[0]);
@@ -157,7 +162,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Sceglie un totem
-        commands.put("totem", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("totem", ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 if (totems.containsKey(terminalParameters[0].toLowerCase())) {
                     Totem totem = totems.get(terminalParameters[0].toLowerCase());
@@ -167,7 +172,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Sceglie una carta
-        commands.put("draw", ( terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("draw", ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
                 try {
                     int cardIndex = Integer.parseInt(terminalParameters[2]);
@@ -199,37 +204,35 @@ public class TextTerminal extends UserInputInterface {
     }
 
     static {
-        // Commands section
-        manual.append("-".repeat(125)).append("\n");
-
         // Command entries
+        //GENERAL/ANY commands
         manual.append(String.format("%72s\n", "GENERAL commands:"));
-        manual.append(formatCommand("help", "Displays this help message"));
-        manual.append(formatCommand("show", "Displays the info of the current place you are in"));
+        manual.append(formatCommand("help", "Displays this help message for " + HELP_TIMEOUT + " seconds"));
         manual.append(formatCommand("disconnect", "Disconnects you from the server and exits the application"));
         //HALL commands
-        manual.append("-".repeat(125)).append("\n");
+        manual.append(helplistSeparator()).append("\n");
         manual.append(String.format("%70s\n", "HALL commands:"));
-        manual.append(formatCommand("create (\"your room name\") (num. players)", "Creates a waiting room with the chosen room's name"));
-        manual.append(formatCommand("", "(in Quotation marks for a name with whitespaces)"));
-        manual.append(formatCommand("join (\"chosen room name\")", "Makes you join the room with your chosen name (in Quotation marks)"));
+        manual.append(formatCommand("create/join [\"your room name\"] (num. players)", "Creates/Joins a waiting room"));
         //ROOM commands
-        manual.append("-".repeat(125)).append("\n");
+        manual.append(helplistSeparator()).append("\n");
         manual.append(String.format("%70s\n", "ROOM commands:"));
         manual.append(formatCommand("leave", "Leaves the current room"));
         //GAME commands
-        manual.append("-".repeat(125)).append("\n");
+        manual.append(helplistSeparator()).append("\n");
         manual.append(String.format("%70s\n", "GAME commands:"));
-        manual.append(formatCommand("cards [player index]", "Display the cards of the specified player"));
-        manual.append(formatCommand("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
-        manual.append(formatCommand("offer [offer index]", "Choose the specified offer"));
         manual.append(formatCommand("totem [orange/white/blue/black/yellow]", "Choose the specified totem"));
+        manual.append(formatCommand("offer [offer index]", "Choose the specified offer"));
+        manual.append(formatCommand("cards [player index]", "Displays the cards of the specified player"));
+        manual.append(formatCommand("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
+
+        manual.append(helplistSeparator());
     }
-    private static String formatCommand(String command, String description) {return String.format(" %60s | %s\n", command, description);}
+    private static String helplistSeparator() { return " "+"-".repeat(127); }
+    private static String formatCommand(String command, String description) {return " " + String.format(" %60s | %s\n", command, description);}
 
 
-    public TextTerminal (VirtualServer virtualServer , Mockup mockups, ApplicationPhase currentPhase) {
-        super( virtualServer, mockups, currentPhase);
+    public TextTerminal (VirtualServer virtualServer, ApplicationPhase currentPhase) {
+        super( virtualServer, currentPhase);
     }
 
     public void printString ( String string ) {
@@ -253,7 +256,7 @@ public class TextTerminal extends UserInputInterface {
                 printStatus();
                 break;
             case ROOM:
-                printMessage("-You entered a room.");
+                printMessage("You entered a room.");
                 printStatus();
                 break;
         }
@@ -308,7 +311,7 @@ public class TextTerminal extends UserInputInterface {
                         // Look up the terminal function and execute
                         TerminalCommand command = commands.get(action);
                         if (command != null) {
-                            command.execute(currentPhase, mockups, params, virtualServer);
+                            command.execute(this, currentPhase, mockups, params, virtualServer);
                         } else {
                             terminal.writer().print("Unknown command: " + action);
                         }
@@ -332,6 +335,13 @@ public class TextTerminal extends UserInputInterface {
     }
     private void moveCursorToScroll() {
         terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT - 1, 1);
+    }
+    private void printManual () {
+        synchronized (cursorLock) {
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 0);
+            terminal.writer().println(manual);
+            helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
+        }
     }
     private void printMessage(String newMessage){
         synchronized (cursorLock) {
@@ -382,7 +392,7 @@ public class TextTerminal extends UserInputInterface {
     public void show(){
         synchronized (cursorLock) {
             terminal.puts(InfoCmp.Capability.save_cursor);
-            for( int i = SCROLL_REGION_HEIGHT+1; i < LINE_PREVIOUS_MESSAGE; i++ ) {
+            for( int i = LINE_SHOW; i < LINE_PREVIOUS_MESSAGE; i++ ) {
                 terminal.puts(InfoCmp.Capability.cursor_address, i, 1);
                 terminal.puts(InfoCmp.Capability.clr_eol);
             }

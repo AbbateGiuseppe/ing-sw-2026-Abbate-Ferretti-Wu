@@ -38,7 +38,7 @@ import java.rmi.server.UnicastRemoteObject;
 public class ClientApplication implements VirtualClient {
     private static PhasedProxyServer server;
     public final String nickname;
-    private static final Mockup mockups = new Mockup();
+    public static final Mockup mockups = new Mockup();
     private static final String mainServer = ServerMultiplexer.mainServer;
     private static UserInputInterface inputInterface;
     public static final Terminal terminal;
@@ -186,7 +186,7 @@ public class ClientApplication implements VirtualClient {
 
                 if (interfaceChoice == 1) {
                     terminal.writer().println("Avvio dell'interfaccia testuale...");
-                    return inputInterface = new TextTerminal(server, mockups, ApplicationPhase.ANY); //connect interface to server proxy
+                    return inputInterface = new TextTerminal(server, ApplicationPhase.ANY); //connect interface to server proxy
                 } else if (interfaceChoice == 2) {
                     terminal.writer().println("Avvio dell'interfaccia grafica...");
                     terminal.writer().println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
