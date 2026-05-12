@@ -34,7 +34,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
                                ObjectInputStream input, ObjectOutputStream output) {
         super(server, nickname, startingPhase, serverSide, null, input, output);
     }
-    private final Object writeLock = new Object();
+    private transient Object writeLock = new Object();
 
     //### socket-input reader
     @Override
@@ -207,5 +207,12 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     @Override
     public SocketProxyPlayer convertToSocket(){
         return this;
+    }
+
+    @Override
+    public void resumeAfterServerCrash(ServerMultiplexer server) {
+        super.resumeAfterServerCrash(server);
+        // Ricrea il lock per la sincronizzazione (se l'avevi messo transient)
+        this.writeLock = new Object();
     }
 }

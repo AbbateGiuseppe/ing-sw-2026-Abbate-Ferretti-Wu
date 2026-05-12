@@ -2,9 +2,10 @@ package it.polimi.ingsw.gc49.server.model;
 
 import javafx.util.Pair;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class EventManager {
+public class EventManager implements Serializable {
     private final Map<BuildingEvent, List<Pair<Player, BuildingEventListener>>> listenersByEvent;
 
     public EventManager () {

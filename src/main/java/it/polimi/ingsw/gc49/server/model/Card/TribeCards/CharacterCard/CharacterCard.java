@@ -4,7 +4,9 @@ import it.polimi.ingsw.gc49.server.model.Card.TribeCards.TribeCard;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.Player;
 
-public abstract class CharacterCard extends TribeCard {
+import java.io.Serializable;
+
+public abstract class CharacterCard extends TribeCard implements Serializable {
     public CharacterCard ( Era era, int minNumPlayers ) {
         super(era, minNumPlayers);
     }

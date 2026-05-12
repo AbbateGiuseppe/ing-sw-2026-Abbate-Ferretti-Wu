@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc49.server;
 
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.STRING.StringPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.ANY_phase.DISCONNECT.DisconnectPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualGameServerAdapter;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
 import it.polimi.ingsw.gc49.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.server.proxies.RmiProxyPlayer;
 import it.polimi.ingsw.gc49.server.proxies.SocketProxyPlayer;
@@ -10,9 +12,10 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Disconnectable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
+import it.polimi.ingsw.gc49.server.rooms.PlayingRoom;
+import it.polimi.ingsw.gc49.server.rooms.Room;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -20,15 +23,20 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ServerMultiplexer extends UnicastRemoteObject implements FactoryServiceRmi, Disconnectable {
     public static final String mainServer = "MesosMainServer";
     public static final int portSocket = 2001;
     public static final int portRmi = 2002;
-    private ServerSocket serverSocket;
+    private transient ServerSocket serverSocket;
     private static final Map<String, PhasedProxyPlayer> clients = new HashMap<>();
-    private static final Hall hall = new Hall();
+    private static Hall hall = new Hall();
     private final int port;
+    private VirtualServerAdapter recoverRoom;
+    // Executor per gestire i salvataggi in background
+    private static final ExecutorService persistenceExecutor = Executors.newSingleThreadExecutor();
 
     /**
      * Constructor for rmi server
@@ -50,6 +58,20 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
     }
 
     public static void main ( String[] args ) {
+        // Ci serve un'istanza per "rianimare" i campi transient (il riferimento al server)
+        try {
+            ServerMultiplexer loader = new ServerMultiplexer(portRmi);
+            loadState(loader);
+
+            if (hall == null) {
+                hall = new Hall();
+                hall.setServer(loader);
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+
 
         try {
             InetAddress localHost = InetAddress.getLocalHost();
@@ -109,7 +131,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
             } else {
                 //finds the existing proxy and converts it to the newly chosen connection technology
-                PhasedProxyPlayer existingProxy = clients.get(nickname).convertToRmi();
+                PhasedProxyPlayer existingProxy = clients.get(nickname).convertToSocket();
                 clients.remove(nickname);
                 clients.put(nickname, existingProxy);
 
@@ -147,7 +169,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                     );
                     System.out.println(proxy.nickname + " is connected");
 
-                    proxy.sendString(new StringPacket("Connessione riuscita."));
+                    proxy.sendString(new StringPacket("Connected Successfully."));
 
                     new Thread(() -> {
                         runVirtualClient(proxy);
@@ -197,9 +219,56 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
-        synchronized (clients) {
-            String disconnectedNickname = disconnectPacket.getSenderNickname();
-            clients.remove(disconnectedNickname); //completely removes the player from the server list.
+    }
+
+    //salvataggio stati
+    public static void saveStateAsync() {
+        // Chiama il metodo sincrono che scrive su file
+        persistenceExecutor.submit(ServerMultiplexer::saveState);
+    }
+
+    public static synchronized void saveState() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("server_state.ser"))) {
+            oos.writeObject(hall);
+            oos.writeObject(clients);
+            System.out.println("[PERSISTENCE] Snapshot saved.");
+        } catch (IOException e) {
+            System.err.println("[PERSISTENCE] Controlla se tutto è Serializable: " + e.getMessage());
+        }
+    }
+
+    private static void loadState(ServerMultiplexer newServer) {
+        File file = new File("server_state.ser");
+        if (!file.exists()) return;
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            hall = (Hall) ois.readObject();
+            Map<String, PhasedProxyPlayer> savedClients = (Map<String, PhasedProxyPlayer>) ois.readObject();
+            clients.putAll(savedClients);
+
+            // 1. Rianimiamo la Hall
+            hall.setServer(newServer);
+
+            // 2. Rianimiamo i Proxy
+            for (PhasedProxyPlayer p : clients.values()) {
+                p.resumeAfterServerCrash(newServer);
+            }
+
+            // 3. Rianimiamo le Partite usando la Map<String, Room>
+            Map<String, Room> roomsMap = hall.getRooms(); // La tua Map<String, Room>
+            for (Room room : roomsMap.values()) {
+                // Iniettiamo il nuovo server in ogni stanza (era transient)
+                room.setServer(newServer);
+
+                if (room instanceof PlayingRoom) {
+                    PlayingRoom pRoom = (PlayingRoom) room;
+                    // Facciamo ripartire il gameLoop() in un nuovo thread
+                    new Thread(pRoom::runGame).start();
+                    System.out.println("[RECOVERY] Match restarted " + pRoom.roomName);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

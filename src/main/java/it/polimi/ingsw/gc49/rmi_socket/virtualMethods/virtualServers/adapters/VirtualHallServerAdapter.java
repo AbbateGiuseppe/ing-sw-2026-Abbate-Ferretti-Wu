@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc49.server.Hall;
 import it.polimi.ingsw.gc49.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualHallServer;
 
+import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveStateAsync;
 
 
 public class VirtualHallServerAdapter extends VirtualServerAdapter {
@@ -24,6 +25,7 @@ public class VirtualHallServerAdapter extends VirtualServerAdapter {
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         adaptee.disconnect(disconnectPacket);
+        saveStateAsync();
     }
 
     //### VirtualGameServer
@@ -34,10 +36,13 @@ public class VirtualHallServerAdapter extends VirtualServerAdapter {
     @Override
     public void joinRoom ( HallJoinPacket hallJoinPacket ) throws Exception {
         adaptee.joinRoom(hallJoinPacket);
+        saveStateAsync();
     }
+
     @Override
     public void createRoom ( HallCreatePacket hallCreatePacket ) throws Exception {
         adaptee.createRoom(hallCreatePacket);
+        saveStateAsync();
     }
     //### VirtualRoomServer
     @Override
@@ -45,7 +50,5 @@ public class VirtualHallServerAdapter extends VirtualServerAdapter {
 
     @Override
     public void syncPlayer(PhasedProxyPlayer p) throws Exception {
-        Hall hall = (Hall) adaptee;
-        p.initializeClientHall(new InitializeHallPacket(hall.giveMockupHall()));
     }
 }

@@ -3,13 +3,14 @@ package it.polimi.ingsw.gc49.server.model.Track;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.server.model.Player;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class Track {
+public class Track implements Serializable {
     private final List<Offer> offerBoard = new ArrayList<>();
     private final List<OrderSlot> orderBoard = new ArrayList<>();
     private int selectedOffer;

@@ -16,10 +16,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveState;
+
 public class WaitingRoom extends Room implements VirtualRoomServer {
     private static final int TIME_BEFORE_GAME_START = 10;
 
-    private final ScheduledExecutorService startingGameScheduler = Executors.newSingleThreadScheduledExecutor();
+    private transient final ScheduledExecutorService startingGameScheduler = Executors.newSingleThreadScheduledExecutor();
 
     public WaitingRoom ( ServerMultiplexer server, Hall hall, String roomName, int maxNumOfPlayers ) {
         super(server, hall, roomName, maxNumOfPlayers);

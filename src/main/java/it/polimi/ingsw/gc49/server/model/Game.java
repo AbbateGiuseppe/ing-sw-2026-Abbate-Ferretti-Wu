@@ -18,13 +18,14 @@ import it.polimi.ingsw.gc49.server.model.Track.NotValidOfferException;
 import it.polimi.ingsw.gc49.server.model.Track.Track;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 import static it.polimi.ingsw.gc49.server.model.Locks.broadcastLock;
 
-public class Game {
+public class Game implements Serializable {
     private final List<VirtualGameClient> controllersListeners = new ArrayList<>();
     private List<Player> players;
     private EventManager eventManager;
@@ -292,7 +293,10 @@ public class Game {
         ));
         players.get(playerIndex).setConnected(false);
         //TODO: finish these two disconnection methods and implement the symbiosis with the state-machine's states
-        Locks.playerInput.notify();
+        synchronized (Locks.playerInput) {
+            Locks.playerInput.notify();
+        }
+
     }
 
     public void connectPlayer( int playerIndex ) {
@@ -302,6 +306,9 @@ public class Game {
                 true
         ));
         players.get(playerIndex).setConnected(true);
-        Locks.playerInput.notify();
+
+        synchronized (Locks.playerInput) {
+            Locks.playerInput.notify();
+        }
     }
 }

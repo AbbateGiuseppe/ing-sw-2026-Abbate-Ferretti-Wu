@@ -14,6 +14,8 @@ import it.polimi.ingsw.gc49.server.rooms.PlayingRoom;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
 
+import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveStateAsync;
+
 public class VirtualGameServerAdapter extends VirtualServerAdapter {
     private final VirtualGameServer adaptee;
 
@@ -26,12 +28,14 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         adaptee.disconnect(disconnectPacket);
+        saveStateAsync();
     }
 
     //### VirtualGameServer
     @Override
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
         adaptee.sendCommand(commandPacket);
+        saveStateAsync();
     }
 
     //### VirtualHallServer

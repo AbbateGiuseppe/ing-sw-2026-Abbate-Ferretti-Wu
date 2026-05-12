@@ -20,10 +20,11 @@ import it.polimi.ingsw.gc49.server.model.Invention;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Deck {
+public class Deck implements Serializable {
 
     private final ArrayList<Card> tribeDeck;
     private final ArrayList<Card> buildingDeck;
