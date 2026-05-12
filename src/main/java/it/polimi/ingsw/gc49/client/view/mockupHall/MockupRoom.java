@@ -1,5 +1,9 @@
 package it.polimi.ingsw.gc49.client.view.mockupHall;
 
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -17,35 +21,38 @@ public class MockupRoom implements Serializable {
         this.connectedPlayers = connectedPlayers;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(roomName);
+    public AttributedString toAttributedString() {
+        AttributedStringBuilder stringBuilder = new AttributedStringBuilder();
+        stringBuilder
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN)).append(roomName)
+                .style(AttributedStyle.DEFAULT); //restores style
         if(type == RoomType.WAITING) {
             stringBuilder.append(" (it's waiting for players): ");
         }else if(type == RoomType.PLAYING) {
             stringBuilder.append(" (it's in game): ");
         }
-        stringBuilder.append(connectedPlayers.size());
+        stringBuilder.append(String.valueOf(connectedPlayers.size()));
         stringBuilder.append("/");
-        stringBuilder.append(maxNumOfPlayers);
+        stringBuilder.append(String.valueOf(maxNumOfPlayers));
         stringBuilder.append(" players are inside.");
-        return stringBuilder.toString();
+        return stringBuilder.toAttributedString();
     }
 
-    public String toStringPlayers() {
-        StringBuilder stringBuilder = new StringBuilder();
+    public AttributedString toAttributedStringPlayers () {
+        AttributedStringBuilder stringBuilder = new AttributedStringBuilder();
         stringBuilder.append(" Players online, in the room: ");
         int i = connectedPlayers.size();
         for(String player : connectedPlayers){
             i--;
-            stringBuilder.append(player);
+            stringBuilder
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append(player)
+                    .style(AttributedStyle.DEFAULT); //restores style
             if(i==0){
                 stringBuilder.append(".\n");
             }else{
                 stringBuilder.append(", ");
             }
         }
-        return stringBuilder.toString();
+        return stringBuilder.toAttributedString();
     }
 }

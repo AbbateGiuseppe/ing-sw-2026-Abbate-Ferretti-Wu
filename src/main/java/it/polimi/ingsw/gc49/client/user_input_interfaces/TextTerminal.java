@@ -109,7 +109,7 @@ public class TextTerminal extends UserInputInterface {
             }else if(terminalPhase == ApplicationPhase.ROOM) {
                 if(terminalMockups.getRoom() != null) {
                     terminal.writer().println(terminalMockups.getRoom());
-                    terminal.writer().println(terminalMockups.getRoom().toStringPlayers());
+                    terminal.writer().println(terminalMockups.getRoom().toAttributedStringPlayers());
                 }else{
                     terminal.writer().println("Room not yet loaded.");
                 }
@@ -281,6 +281,7 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.change_scroll_region, 1, SCROLL_REGION_HEIGHT - 1);
 
             printStatus();
+            show();
 
             //noinspection InfiniteLoopStatement
             while (true) {
@@ -288,40 +289,51 @@ public class TextTerminal extends UserInputInterface {
                     rows = terminal.getHeight();
                     // Move cursor to prompt line to get ready for a read
                     moveCursorToPrompt();
+                    terminal.writer().print(">");
+                    terminal.flush();
                 }
 
                 // Read input
-                String inputLine = lineReader.readLine("> ").toLowerCase();
+                String inputLine = lineReader.readLine(" ").toLowerCase();
 
-                synchronized (cursorLock) {
-                    if (!inputLine.isEmpty()) {
+
+                if (!inputLine.isEmpty()) {
+                    synchronized (cursorLock) {
+                        //## Prints the command inserted into the scroll region and also clears the prompt
+                        // Restores cursor to prompt position
+                        moveCursorToPrompt();
+                        // Clear the prompt line
+                        terminal.puts(InfoCmp.Capability.clr_eol);
                         // Move cursor to scroll region, where commands should print
                         moveCursorToScroll();
                         terminal.writer().println();
                         // Print the command inserted
-                        terminal.writer().println(inputLine);
-
-                        // Split the string by whitespace
-                        String[] parts = inputLine.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-                        // The first word is the key
-                        String action = parts[0];
-                        // The remaining words are parameters
-                        String[] params = Arrays.copyOfRange(parts, 1, parts.length);
-
-                        // Look up the terminal function and execute
-                        TerminalCommand command = commands.get(action);
-                        if (command != null) {
-                            command.execute(this, currentPhase, mockups, params, virtualServer);
-                        } else {
-                            terminal.writer().print("Unknown command: " + action);
-                        }
-                        terminal.flush();
-
+                        terminal.writer().println(" "+inputLine);
                         // Restores cursor to prompt position
                         moveCursorToPrompt();
-                        terminal.puts(InfoCmp.Capability.clr_eol); //clear the prompt line
                     }
+
+                    // Split the string by whitespace
+                    String[] parts = inputLine.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+                    // The first word is the key
+                    String action = parts[0];
+                    // The remaining words are parameters
+                    String[] params = Arrays.copyOfRange(parts, 1, parts.length);
+
+                    // Look up the terminal function and execute
+                    TerminalCommand command = commands.get(action);
+                    if (command != null) {
+                        command.execute(this, currentPhase, mockups, params, virtualServer);
+                    } else {
+                        // Move cursor to scroll region, where commands should print
+                        moveCursorToScroll();
+                        terminal.writer().print("Unknown command: " + action);
+                        // Restores cursor to prompt position
+                        moveCursorToPrompt();
+                    }
+                    terminal.flush();
                 }
+
             }
 
         } catch (Exception e) {
@@ -350,10 +362,16 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.save_cursor);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 1);
             terminal.puts(InfoCmp.Capability.clr_eol);
-            terminal.writer().print("Previous message: " + previousMessage);
+            new AttributedStringBuilder()
+                    .style(AttributedStyle.DEFAULT.underline()).append("Previous message")
+                    .style(AttributedStyle.DEFAULT).append(": ").append(previousMessage)
+                    .toAttributedString().print(terminal);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 1);
             terminal.puts(InfoCmp.Capability.clr_eol);
-            terminal.writer().print("Message: " + message);
+            new AttributedStringBuilder()
+                    .style(AttributedStyle.DEFAULT.underline()).append("Last message")
+                    .style(AttributedStyle.DEFAULT).append(": ").append(message)
+                    .toAttributedString().print(terminal);
             terminal.flush();
             terminal.puts(InfoCmp.Capability.restore_cursor);
         }
@@ -400,15 +418,15 @@ public class TextTerminal extends UserInputInterface {
             switch (currentPhase) {
                 case HALL:
                     if(mockups.getHall() != null) {
-                        terminal.writer().println(mockups.getHall());
+                        mockups.getHall().toAttributedString().println(terminal);
                     }else{
                         terminal.writer().println("Hall not yet loaded.");
                     }
                     break;
                 case ROOM:
                     if(mockups.getRoom() != null) {
-                        terminal.writer().println(mockups.getRoom());
-                        terminal.writer().println(mockups.getRoom().toStringPlayers());
+                        mockups.getRoom().toAttributedString().println(terminal);
+                        mockups.getRoom().toAttributedStringPlayers().println(terminal);
                     }else{
                         terminal.writer().println("Room not yet loaded.");
                     }
