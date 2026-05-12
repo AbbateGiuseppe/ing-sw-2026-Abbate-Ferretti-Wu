@@ -31,4 +31,5 @@ public abstract class UserInputInterface {
 
     public abstract void printString ( String string );
     public abstract void printErrorPacket ( ErrorPacket errorPacket );
+    public abstract void show();
 }

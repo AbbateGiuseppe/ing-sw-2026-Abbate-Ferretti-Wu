@@ -215,12 +215,14 @@ public class ClientApplication implements VirtualClient {
     @Override
     public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws RemoteException {
         mockups.setGame(initializeModelPacket.mockupModel);
+        inputInterface.show();
     }
     @Override
     public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws RemoteException {
         if(mockups.getGame() != null) {
             updateModelPacket.updateTheMockupModel(mockups.getGame(), inputInterface);
         }
+        inputInterface.show();
     }
     @Override
     public void reportError ( ErrorPacket errorPacket ) throws RemoteException {
@@ -231,19 +233,23 @@ public class ClientApplication implements VirtualClient {
     @Override
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) {
         mockups.setHall(initializeHallPacket.mockupHall);
+        inputInterface.show();
     }
     @Override
     public void updateClientHall ( UpdateHallPacket updateHallPacket ) {
         mockups.setHall(updateHallPacket.newMockupHall);
+        inputInterface.show();
     }
 
     //### Room called methods
     @Override
     public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) {
         mockups.setRoom(initializeRoomPacket.mockupRoom);
+        inputInterface.show();
     }
     @Override
     public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) {
         mockups.setRoom(updateRoomPacket.newMockupRoom);
+        inputInterface.show();
     }
 }

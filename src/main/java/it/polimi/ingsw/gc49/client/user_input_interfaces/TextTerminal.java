@@ -28,16 +28,20 @@ public class TextTerminal extends UserInputInterface {
     private static final LineReader lineReader = ClientApplication.lineReader;
     private static int rows = 35;
     private static int columns = 130;
-    private final static int SCROLL_REGION_HEIGHT = 12;
+    private static final int SCROLL_REGION_HEIGHT = 12;
+    private static final int LINE_PREVIOUS_MESSAGE = rows-6;
+    private static final int LINE_ERROR = rows-4;
+
+    private final Object cursorLock = new Object();
+
     static {
         terminal.handle(Terminal.Signal.WINCH, _ -> {
             columns = terminal.getWidth();
             rows = terminal.getHeight();
         });
     }
-
-    private static final Display commandDisplay = new Display(terminal, true);
-    //private static final List<AtomicReference<AttributedString>> displayLines = new ArrayList<>();
+    private String previousMessage = "";
+    private String message = "";
 
     private static final Map<String,Totem> totems = new HashMap<>();
     static {
@@ -229,15 +233,10 @@ public class TextTerminal extends UserInputInterface {
     }
 
     public void printString ( String string ) {
-        //
+        printMessage(string);
     }
     public void printErrorPacket ( ErrorPacket errorPacket ) {
-        //
-        if(errorPacket.forceDisconnection){
-            terminal.writer().println(errorPacket.errorTitle);
-            terminal.writer().println(errorPacket.errorContent);
-            System.exit(-1);
-        }
+        printError(errorPacket);
     }
 
 
@@ -246,13 +245,13 @@ public class TextTerminal extends UserInputInterface {
         super.setCurrentPhase(phase);
         switch (phase) {
             case GAME:
-                //scanner.printAbove("-The game started.");
+                printMessage("The game started.");
                 break;
             case HALL:
-                //scanner.printAbove("-You entered the hall.");
+                printMessage("You entered the hall.");
                 break;
             case ROOM:
-                //scanner.printAbove("-You entered a room.");
+                printMessage("-You entered a room.");
                 break;
         }
     }
@@ -262,9 +261,7 @@ public class TextTerminal extends UserInputInterface {
         try {
             terminal.puts(InfoCmp.Capability.clear_screen);
             terminal.writer().println("Terminal started (type help for the list of commands):\n");
-            for(int i=1; i<31 ;i++){
-                terminal.writer().println(i);
-            }
+
             terminal.puts(InfoCmp.Capability.cursor_address, rows-3, 1);
             AttributedString promptSeparator = new AttributedString("━".repeat(columns-2), AttributedStyle.DEFAULT.foreground(AttributedStyle.BLUE));
             promptSeparator.print(terminal);
@@ -322,11 +319,57 @@ public class TextTerminal extends UserInputInterface {
     private void moveCursorToScroll() {
         terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT - 1, 1);
     }
-    private void printMessage(){
-        terminal.writer().println("Previous message:");
-        terminal.writer().println("Message:");
+    private void printMessage(String newMessage){
+        synchronized (cursorLock) {
+            previousMessage = message;
+            message = newMessage;
+            terminal.puts(InfoCmp.Capability.save_cursor);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 1);
+            terminal.writer().println("Previous message: " + previousMessage);
+            terminal.writer().println(" Message: " + message);
+            terminal.flush();
+            terminal.puts(InfoCmp.Capability.restore_cursor);
+        }
     }
-    private void printError(){
-        terminal.writer().println("error," + "[TITOLO]: " + "[CONTENUTO]");
+    private void printError(ErrorPacket errorPacket) {
+        synchronized (cursorLock) {
+            String errorString = new StringBuilder().append("error,").append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
+            terminal.puts(InfoCmp.Capability.save_cursor);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 1);
+            terminal.writer().println(errorString);
+            terminal.flush();
+            terminal.puts(InfoCmp.Capability.restore_cursor);
+            if (errorPacket.forceDisconnection) {
+                System.exit(-1);
+            }
+        }
+    }
+    @Override
+    public void show(){
+        synchronized (cursorLock) {
+            terminal.puts(InfoCmp.Capability.save_cursor);
+            terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT, 1);
+            switch (currentPhase) {
+                case HALL:
+                    if(mockups.getHall() != null) {
+                        terminal.writer().println(mockups.getHall());
+                    }else{
+                        terminal.writer().println("Hall not yet loaded.");
+                    }
+                    break;
+                case ROOM:
+                    if(mockups.getRoom() != null) {
+                        terminal.writer().println(mockups.getRoom());
+                        terminal.writer().println(mockups.getRoom().toStringPlayers());
+                    }else{
+                        terminal.writer().println("Room not yet loaded.");
+                    }
+                    break;
+                case GAME:
+                    break;
+            }
+            terminal.flush();
+            terminal.puts(InfoCmp.Capability.restore_cursor);
+        }
     }
 }
