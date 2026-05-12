@@ -18,10 +18,6 @@ import org.jline.terminal.Terminal;
 import org.jline.utils.*;
 
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class TextTerminal extends UserInputInterface {
     /**The key of the commands is the string representing the command type, such as "help" or "draw",
@@ -29,16 +25,20 @@ public class TextTerminal extends UserInputInterface {
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
     private static final StringBuilder manual = new StringBuilder();
     private static final Terminal terminal = ClientApplication.terminal;
-    private static final Display bottomDisplay = new Display(terminal, true);
-    private static final List<AtomicReference<AttributedString>> displayLines = new ArrayList<>();
-    private static final AtomicReference<AttributedString> linePlace = new AtomicReference<>();
-    private static final Status status  = Status.getStatus(terminal);
-    private static AttributedString lineTimeStatus;
-    @SuppressWarnings("FieldCanBeLocal")
-    private String time;
-    @SuppressWarnings("FieldCanBeLocal")
-    private long memory;
-    private static final LineReader scanner = ClientApplication.scanner;
+    private static final LineReader lineReader = ClientApplication.lineReader;
+    private static int rows = 35;
+    private static int columns = 130;
+    private final static int SCROLL_REGION_HEIGHT = 12;
+    static {
+        terminal.handle(Terminal.Signal.WINCH, _ -> {
+            columns = terminal.getWidth();
+            rows = terminal.getHeight();
+        });
+    }
+
+    private static final Display commandDisplay = new Display(terminal, true);
+    //private static final List<AtomicReference<AttributedString>> displayLines = new ArrayList<>();
+
     private static final Map<String,Totem> totems = new HashMap<>();
     static {
         for(Totem totem : Totem.values()){
@@ -48,13 +48,13 @@ public class TextTerminal extends UserInputInterface {
 
     static {
         // Mostra la manuale di istruzioni per il gioco
-        commands.put("help", ( _, _, _, _ ) -> printManual());
+        commands.put("help", ( _, _, _, _ ) -> terminal.writer().println(manual));
 
         //Chiude l'applicazione e si disconnette dal serviente
         commands.put("disconnect", ( _, _, _, terminalVirtualServer ) -> {
-            System.out.println("| Are you sure you want disconnect from the server?   |");
-            System.out.println("| You'll have to restart the application to reconnect |");
-            if( scanner.readLine("  Type YES to confirm: ").equalsIgnoreCase("yes") ){
+            terminal.writer().println("| Are you sure you want disconnect from the server?   |");
+            terminal.writer().println("| You'll have to restart the application to reconnect |");
+            if( lineReader.readLine("  Type YES to confirm: ").equalsIgnoreCase("yes") ){
                 terminalVirtualServer.disconnect(new DisconnectPacket());
                 System.exit(0);
             }
@@ -74,7 +74,7 @@ public class TextTerminal extends UserInputInterface {
                         }
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("please, specify correctly the number of players!");
+                    terminal.writer().println("please, specify correctly the number of players!");
                 }
             }
         });
@@ -93,24 +93,24 @@ public class TextTerminal extends UserInputInterface {
         commands.put("show", ( terminalPhase, terminalMockups, _, _ ) -> {
             if(terminalPhase == ApplicationPhase.HALL) {
                 if(terminalMockups.getHall() != null) {
-                    System.out.println(terminalMockups.getHall());
+                    terminal.writer().println(terminalMockups.getHall());
                 }else{
-                    System.out.println("Hall not yet loaded.");
+                    terminal.writer().println("Hall not yet loaded.");
                 }
             }else if(terminalPhase == ApplicationPhase.ROOM) {
                 if(terminalMockups.getRoom() != null) {
-                    System.out.println(terminalMockups.getRoom());
-                    System.out.println(terminalMockups.getRoom().toStringPlayers());
+                    terminal.writer().println(terminalMockups.getRoom());
+                    terminal.writer().println(terminalMockups.getRoom().toStringPlayers());
                 }else{
-                    System.out.println("Room not yet loaded.");
+                    terminal.writer().println("Room not yet loaded.");
                 }
             }else if(terminalPhase == ApplicationPhase.GAME) {
                 if(terminalMockups.getGame() != null) {
                     for (MockupPlayer p : terminalMockups.getGame().getPlayers()) {
-                        System.out.println(p);
+                        terminal.writer().println(p);
                     }
                 }else{
-                    System.out.println("Game not yet loaded.");
+                    terminal.writer().println("Game not yet loaded.");
                 }
             }
         });
@@ -136,7 +136,7 @@ public class TextTerminal extends UserInputInterface {
                         throw new NumberFormatException();
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("please, insert a valid number!");
+                    terminal.writer().println("please, insert a valid number!");
                 }
             }
         });
@@ -148,7 +148,7 @@ public class TextTerminal extends UserInputInterface {
                     CommandPacket commandPacket = new CommandPacket(PlayerActionEnum.CHOOSE_OFFER, offerIndex);
                     terminalVirtualServer.sendCommand(commandPacket);
                 } catch (NumberFormatException e) {
-                    System.out.println("please, insert a valid number!");
+                    terminal.writer().println("please, insert a valid number!");
                 }
             }
         });
@@ -206,7 +206,8 @@ public class TextTerminal extends UserInputInterface {
         //HALL commands
         manual.append("-".repeat(125)).append("\n");
         manual.append(String.format("%70s\n", "HALL commands:"));
-        manual.append(formatCommand("create (\"your room name\") (num. players)", "Creates a waiting room with the chosen room's name\n(in Quotation marks for a name with whitespaces)"));
+        manual.append(formatCommand("create (\"your room name\") (num. players)", "Creates a waiting room with the chosen room's name"));
+        manual.append(formatCommand("", "(in Quotation marks for a name with whitespaces)"));
         manual.append(formatCommand("join (\"chosen room name\")", "Makes you join the room with your chosen name (in Quotation marks)"));
         //ROOM commands
         manual.append("-".repeat(125)).append("\n");
@@ -220,38 +221,38 @@ public class TextTerminal extends UserInputInterface {
         manual.append(formatCommand("offer [offer index]", "Choose the specified offer"));
         manual.append(formatCommand("totem [orange/white/blue/black/yellow]", "Choose the specified totem"));
     }
+    private static String formatCommand(String command, String description) {return String.format(" %60s | %s\n", command, description);}
+
 
     public TextTerminal (VirtualServer virtualServer , Mockup mockups, ApplicationPhase currentPhase) {
         super( virtualServer, mockups, currentPhase);
     }
 
-    private static void printManual() {System.out.println(manual);}
     public void printString ( String string ) {
-        scanner.printAbove(string);
+        //
     }
     public void printErrorPacket ( ErrorPacket errorPacket ) {
-        scanner.printAbove("ERRORE: " + errorPacket.errorTitle);
-        scanner.printAbove(errorPacket.errorContent);
+        //
         if(errorPacket.forceDisconnection){
+            terminal.writer().println(errorPacket.errorTitle);
+            terminal.writer().println(errorPacket.errorContent);
             System.exit(-1);
         }
     }
-    private static String formatCommand(String command, String description) {return String.format(" %60s | %s\n", command, description);}
 
 
     @Override
     public void setCurrentPhase ( ApplicationPhase phase ) {
         super.setCurrentPhase(phase);
-        changeDisplaylines();
         switch (phase) {
             case GAME:
-                scanner.printAbove("-The game started.");
+                //scanner.printAbove("-The game started.");
                 break;
             case HALL:
-                scanner.printAbove("-You entered the hall.");
+                //scanner.printAbove("-You entered the hall.");
                 break;
             case ROOM:
-                scanner.printAbove("-You entered a room.");
+                //scanner.printAbove("-You entered a room.");
                 break;
         }
     }
@@ -259,116 +260,73 @@ public class TextTerminal extends UserInputInterface {
     @Override
     public void runInput() {
         try {
-            //clears the screen
             terminal.puts(InfoCmp.Capability.clear_screen);
-            terminal.flush();
-
-            // Start a background update thread to show the current position's view.
-            ScheduledExecutorService schedulerStatus = Executors.newSingleThreadScheduledExecutor();
-            schedulerStatus.scheduleAtFixedRate(this::updateStatus, 0, 2, TimeUnit.SECONDS);
-
             terminal.writer().println("Terminal started (type help for the list of commands):\n");
-
-
-            int rows;
-            int columns;
-            int readChar;
-            StringBuilder inputBuffer = new StringBuilder();
-            terminal.enterRawMode();
-            while (true) {
-                //rows = terminal.getWidth();
-                //columns = terminal.getHeight();
-
-                // Perform your background update
-                terminal.writer().print("\r>" + inputBuffer);
-                terminal.flush();
-
-                // Peek for input (100ms timeout)
-                if (terminal.reader().peek(100) != -1) { // -1 means no data was available within the timeout
-                    readChar = terminal.reader().read();
-
-                    if (readChar == '\r' || readChar == '\n') {
-                        terminal.writer().println(); //Start a new line
-                        // v Check if the buffered string matches v
-                        // 1. Split the string by whitespace
-                        String[] parts = inputBuffer.toString().split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-                        if (parts.length == 0) continue;
-
-                        // 2. The first lowercase word is the key
-                        String action = parts[0].toLowerCase();
-
-                        // 3. The remaining words are parameters
-                        String[] params = Arrays.copyOfRange(parts, 1, parts.length);
-
-                        // 4. Look up the terminal function and execute
-                        TerminalCommand command = commands.get(action);
-                        if (command != null) {
-                            command.execute(currentPhase, mockups, params, virtualServer);
-                        } else {
-                            terminal.writer().println("Unknown command: " + action);
-                        }
-
-                        inputBuffer.setLength(0); // Clear buffer for next attempt
-                    } else if ((readChar == 127 || readChar == 8) && !inputBuffer.isEmpty()) { // Handle backspace
-                        inputBuffer.setLength(inputBuffer.length() - 1);
-                        terminal.writer().print("\b \b");
-                        terminal.writer().flush();
-                    } else {
-                        inputBuffer.append((char) readChar);
-                    }
-                }
-
-                // Small sleep to prevent 100% CPU usage if peek timeout is 0
-                Thread.sleep(50);
-
+            for(int i=1; i<31 ;i++){
+                terminal.writer().println(i);
             }
+            terminal.puts(InfoCmp.Capability.cursor_address, rows-3, 1);
+            AttributedString promptSeparator = new AttributedString("━".repeat(columns-2), AttributedStyle.DEFAULT.foreground(AttributedStyle.BLUE));
+            promptSeparator.print(terminal);
+
+            // Set scroll region from first to scrollRegionHeight
+            //the scroll region is where the previous user commands can be seen in
+            terminal.puts(InfoCmp.Capability.change_scroll_region, 1, SCROLL_REGION_HEIGHT - 1);
+
+
+            //noinspection InfiniteLoopStatement
+            while (true) {
+                rows = terminal.getHeight();
+                // Move cursor to prompt line to get ready for a read
+                moveCursorToPrompt();
+
+                // Read input
+                String inputLine = lineReader.readLine("> ").toLowerCase();
+
+                if (!inputLine.isEmpty()) {
+                    // Move cursor to scroll region, where commands should print
+                    moveCursorToScroll();
+                    // Print the command inserted
+                    terminal.writer().println(inputLine);
+
+                    // Split the string by whitespace
+                    String[] parts = inputLine.split("\\s+(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+                    // The first word is the key
+                    String action = parts[0];
+                    // The remaining words are parameters
+                    String[] params = Arrays.copyOfRange(parts, 1, parts.length);
+
+                    // Look up the terminal function and execute
+                    TerminalCommand command = commands.get(action);
+                    if (command != null) {
+                        command.execute(currentPhase, mockups, params, virtualServer);
+                    } else {
+                        terminal.writer().println("Unknown command: " + action);
+                    }
+                    terminal.flush();
+
+                    // Restores cursor to prompt position
+                    moveCursorToPrompt();
+                }
+            }
+
         } catch (Exception e) {
             System.err.println("Client exception: " + e);
             e.printStackTrace();
         }
     }
 
-    ///---------------
-    // display
-    private void changeDisplaylines() {
-        //linePlace
-        linePlace.set(new AttributedStringBuilder()
-                .append(" Sei dentro: ")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN))
-                .append(currentPhase.toString())
-                .toAttributedString());
-
-
-        switch(currentPhase){
-            case ANY:
-                break;
-            case GAME:
-                break;
-            case HALL:
-                break;
-            case ROOM:
-                break;
-        }
+    private void moveCursorToPrompt() {
+        terminal.puts(InfoCmp.Capability.cursor_address, rows - 2, 1);
     }
-
-    ///---------------
-    // status
-    private void updateStatus() {
-        //lineTime
-        time = java.time.LocalTime.now().withNano(0).toString();
-        memory = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
-        lineTimeStatus = new AttributedStringBuilder()
-                .append(" {")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)).append(currentPhase.toString())
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("}")
-                .append("[")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append(nickname)
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("]")
-                .append("Time: ").append(time).append(" | Memory: ").append(String.valueOf(memory)).append("MB")
-                .toAttributedString();
-
-        //show the updated view
-        status.update(Collections.singletonList(lineTimeStatus), true);
-        //status.update(statusLines.stream().map(AtomicReference::get).toList(), true);
+    private void moveCursorToScroll() {
+        terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT - 1, 1);
+    }
+    private void printMessage(){
+        terminal.writer().println("Previous message:");
+        terminal.writer().println("Message:");
+    }
+    private void printError(){
+        terminal.writer().println("error," + "[TITOLO]: " + "[CONTENUTO]");
     }
 }

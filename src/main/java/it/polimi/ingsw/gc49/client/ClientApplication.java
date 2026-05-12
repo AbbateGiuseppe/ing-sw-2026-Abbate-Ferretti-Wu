@@ -49,7 +49,7 @@ public class ClientApplication implements VirtualClient {
             throw new RuntimeException(e);
         }
     }
-    public static final LineReader scanner = LineReaderBuilder.builder().terminal(terminal).build();
+    public static final LineReader lineReader = LineReaderBuilder.builder().terminal(terminal).build();
 
     public ClientApplication ( String nickname ) {
         this.nickname = nickname;
@@ -63,7 +63,7 @@ public class ClientApplication implements VirtualClient {
 
             while (true) {
                 try {
-                    host = scanner.readLine("Inserire l'indirizzo IP del serviente (lasciare vuoto se in locale): ");
+                    host = lineReader.readLine("Inserire l'indirizzo IP del serviente (lasciare vuoto se in locale): ");
                     Registry registry = LocateRegistry.getRegistry(host, ServerMultiplexer.portRmi);
                     if ( ((FactoryServiceRmi)registry.lookup(mainServer)).ping() ){
                         terminal.writer().println("Serviente esistente..");
@@ -81,7 +81,7 @@ public class ClientApplication implements VirtualClient {
             while(true) {
                 try {
                     terminal.writer().println("Premere 1 per la connessione RMI, Premere 2 per la connessione socket");
-                    connectionChoice = Integer.parseInt(scanner.readLine("> "));
+                    connectionChoice = Integer.parseInt(lineReader.readLine("> "));
                     if(connectionChoice == 1 || connectionChoice == 2) {
                         break;
                     }else{
@@ -92,7 +92,7 @@ public class ClientApplication implements VirtualClient {
                 }
             }
             terminal.writer().println("Inserisci il tuo nomignolo");
-            String nickname = scanner.readLine("> ");
+            String nickname = lineReader.readLine("> ");
             inputInterface.setNickname(nickname);
 
             try {
@@ -182,7 +182,7 @@ public class ClientApplication implements VirtualClient {
         while(true) {
             try{
                 terminal.writer().println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
-                int interfaceChoice = Integer.parseInt(scanner.readLine("> "));
+                int interfaceChoice = Integer.parseInt(lineReader.readLine("> "));
 
                 if (interfaceChoice == 1) {
                     terminal.writer().println("Avvio dell'interfaccia testuale...");
