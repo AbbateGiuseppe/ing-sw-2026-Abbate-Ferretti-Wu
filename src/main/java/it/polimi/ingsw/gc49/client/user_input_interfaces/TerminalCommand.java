@@ -6,5 +6,5 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServ
 
 @FunctionalInterface
 public interface TerminalCommand {
-    void execute( ApplicationPhase terminalPhase, Mockup terminalMockups, String[] terminalParameters, VirtualServer terminalVirtualServer ) throws Exception;
+    void execute( TextTerminal terminalTerminal, ApplicationPhase terminalPhase, Mockup terminalMockups, String[] terminalParameters, VirtualServer terminalVirtualServer ) throws Exception;
 }
