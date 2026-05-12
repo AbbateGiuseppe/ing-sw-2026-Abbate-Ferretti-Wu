@@ -12,6 +12,8 @@ import it.polimi.ingsw.gc49.server.rooms.WaitingRoom;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
 
+import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveStateAsync;
+
 public class VirtualRoomServerAdapter extends VirtualServerAdapter {
     private final VirtualRoomServer adaptee;
 
@@ -24,6 +26,7 @@ public class VirtualRoomServerAdapter extends VirtualServerAdapter {
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         adaptee.disconnect(disconnectPacket);
+        saveStateAsync();
     }
 
     //### VirtualGameServer
@@ -38,6 +41,7 @@ public class VirtualRoomServerAdapter extends VirtualServerAdapter {
     @Override
     public void leaveRoom ( RoomLeavePacket roomLeavePacket ) throws Exception {
         adaptee.leaveRoom(roomLeavePacket);
+        saveStateAsync();
     }
 
     @Override

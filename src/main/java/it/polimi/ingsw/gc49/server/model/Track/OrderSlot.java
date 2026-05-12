@@ -2,7 +2,9 @@ package it.polimi.ingsw.gc49.server.model.Track;
 
 import it.polimi.ingsw.gc49.server.model.Player;
 
-public class OrderSlot {
+import java.io.Serializable;
+
+public class OrderSlot implements Serializable {
     /** The player currently assigned to the order slot*/
     private Player assignedPlayer;
     /** The food gained on non-setup occupation*/

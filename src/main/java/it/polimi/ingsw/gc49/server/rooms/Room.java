@@ -7,12 +7,13 @@ import it.polimi.ingsw.gc49.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Disconnectable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class Room implements Disconnectable {
-    protected final ServerMultiplexer server;
+public abstract class Room implements Disconnectable, Serializable {
+    protected transient ServerMultiplexer server;
     protected final Hall hall;
     public final String roomName;
     public final int maxNumOfPlayers;
@@ -70,5 +71,17 @@ public abstract class Room implements Disconnectable {
                 return; //already finished the broadcast in the forceDisconnect
             }
         }
+    }
+
+    public void setServer(ServerMultiplexer server){
+        this.server=server;
+    }
+
+    /**
+     * Verifica se la stanza è vuota.
+     * @return true se non ci sono giocatori, false altrimenti.
+     */
+    public boolean isEmpty() {
+        return players.isEmpty();
     }
 }

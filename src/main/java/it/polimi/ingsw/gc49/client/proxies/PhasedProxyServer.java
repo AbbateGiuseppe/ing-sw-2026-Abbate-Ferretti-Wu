@@ -41,6 +41,9 @@ public abstract class PhasedProxyServer implements VirtualClient, VirtualServer,
     // HEARTBEAT
     @Override
     public void startHeartbeating() {
+        if (this.scheduler == null || this.scheduler.isShutdown()) {
+            this.scheduler = Executors.newScheduledThreadPool(1);
+        }
         // Task 1: Invia segnale al Server
         scheduler.scheduleAtFixedRate(() -> {
             try { sendHeartbeat(); } catch (Exception e) { handleServerOffline(); }

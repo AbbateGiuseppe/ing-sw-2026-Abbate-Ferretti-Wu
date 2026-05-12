@@ -7,13 +7,14 @@ import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Player;
 import it.polimi.ingsw.gc49.server.model.States.EraEndedException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.sort;
 
 
-public class Line {
+public class Line implements Serializable {
     /// Per la macchina a stati finiti
     private Era currentEra = Era.first(); //chiedi
     private boolean eraChanged = false;

@@ -2,7 +2,9 @@ package it.polimi.ingsw.gc49.server.model.Track;
 
 import it.polimi.ingsw.gc49.server.model.Player;
 
-public class Offer {
+import java.io.Serializable;
+
+public class Offer implements Serializable {
     /** The player currently assigned to the offer.*/
     private Player assignedPlayer;
     /** The food gained on effect activation.*/

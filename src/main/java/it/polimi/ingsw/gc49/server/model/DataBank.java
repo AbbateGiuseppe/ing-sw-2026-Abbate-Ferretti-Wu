@@ -1,8 +1,9 @@
 package it.polimi.ingsw.gc49.server.model;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class DataBank {
+public class DataBank implements Serializable {
     public final Player assignedPlayer;
     private final Map<CharacterType,Integer> numCharacterMap = new HashMap<>();
     private int numStars;

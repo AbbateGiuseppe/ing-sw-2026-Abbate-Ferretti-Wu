@@ -16,15 +16,18 @@ import it.polimi.ingsw.gc49.server.rooms.PlayingRoom;
 import it.polimi.ingsw.gc49.server.rooms.Room;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Hall implements VirtualHallServer {
-    private ServerMultiplexer server;
-    private static final Map<String, Room> rooms = new HashMap<>();
-    private static final Map<String, PhasedProxyPlayer> PlayersInHall = new HashMap<>();
+import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveState;
+
+public class Hall implements VirtualHallServer, Serializable {
+    private transient ServerMultiplexer server;
+    private final Map<String, Room> rooms = new HashMap<>();
+    private final Map<String, PhasedProxyPlayer> PlayersInHall = new HashMap<>();
 
     public void setServer ( ServerMultiplexer server ){
         this.server = server;
@@ -158,4 +161,8 @@ public class Hall implements VirtualHallServer {
             new Thread(playingRoom::runGame).start();
         }
     }
+
+    public Map<String, Room> getRooms(){return rooms;}
+
+
 }

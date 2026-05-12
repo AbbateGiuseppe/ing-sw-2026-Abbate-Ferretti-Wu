@@ -5,9 +5,10 @@ import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.EventManager;
 import it.polimi.ingsw.gc49.server.model.Player;
 
+import java.io.Serializable;
 import java.util.List;
 
-public abstract class EventCard extends TribeCard implements Comparable<EventCard> {
+public abstract class EventCard extends TribeCard implements Comparable<EventCard>, Serializable {
     protected final EventManager eventManager;
 
     public EventCard ( EventManager eventManager, Era era, int minNumPlayers ) {

@@ -9,7 +9,9 @@ import it.polimi.ingsw.gc49.server.model.Track.NotValidOfferException;
 import it.polimi.ingsw.gc49.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 
-public class MassiWuController implements VirtualGameClient {
+import java.io.Serializable;
+
+public class MassiWuController implements VirtualGameClient{
     private Game game;
     private final int controllingPlayerIndex;
     private final PhasedProxyPlayer controllingPlayer;

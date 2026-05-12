@@ -39,6 +39,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
             player.setController(controller); //connects the proxy to the controller
             try {
                 player.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));//tells them they've entered a game
+                player.setServerSideObject(new VirtualGameServerAdapter(this));
             } catch (Exception e) { //some bastard disconnected
                 player.forceDisconnect();
             }

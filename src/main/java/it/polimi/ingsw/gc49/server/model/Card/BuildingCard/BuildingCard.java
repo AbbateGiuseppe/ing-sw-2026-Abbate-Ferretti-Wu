@@ -5,7 +5,9 @@ import javafx.util.Pair;
 
 import it.polimi.ingsw.gc49.server.model.Card.Card;
 
-public abstract class BuildingCard extends Card implements BuildingEventListener {
+import java.io.Serializable;
+
+public abstract class BuildingCard extends Card implements BuildingEventListener, Serializable {
     private final BuildingEvent buildingEvent;
     protected final int pointsEndgame;
     protected final int foodPrice;
