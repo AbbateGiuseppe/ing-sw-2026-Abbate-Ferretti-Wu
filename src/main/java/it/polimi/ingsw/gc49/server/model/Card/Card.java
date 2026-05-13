@@ -5,7 +5,9 @@ import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.DataBank;
 import it.polimi.ingsw.gc49.server.model.Player;
 
-public abstract class Card {
+import java.io.Serializable;
+
+public abstract class Card implements Serializable {
     protected final Era era;
     private final int minNumPlayers;
 
