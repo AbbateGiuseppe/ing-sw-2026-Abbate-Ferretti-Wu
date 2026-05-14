@@ -34,11 +34,11 @@ public class MockupOffer implements Rectangable {
         if(assignedPlayer == null) {
             attributedString.append("║ ░ ║");
         }else{
-            attributedString.
-                    append("║ ")
-                    //TODO: choose color based on totem color!
-                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("▓")
-                    .style(AttributedStyle.DEFAULT).append(" ║");
+            attributedString
+                    .append("║ ")
+                    //Adds color based on player's totem color
+                    .append(assignedPlayer.getTotem().getTotemAttributedString())
+                    .append(" ║");
         }
 
         //Next 2 lines

@@ -40,10 +40,8 @@ public class MockupOrder implements Rectangable {
         if(assignedPlayer == null) {
             attributedString.append("░");
         }else{
-            attributedString
-            //TODO: choose color based on totem color!
-                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("▓")
-                    .style(AttributedStyle.DEFAULT);
+            //Adds color based on player's totem color
+            attributedString.append(assignedPlayer.getTotem().getTotemAttributedString());
         }
 
         //Add the food to pay and the points to pay
