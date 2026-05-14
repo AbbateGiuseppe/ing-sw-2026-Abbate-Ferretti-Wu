@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.Track;
 
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOffer;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 import java.io.Serializable;
@@ -58,5 +59,13 @@ public class Offer implements Serializable {
 
     public Player getAssignedPlayer() {
         return assignedPlayer;
+    }
+
+    public MockupOffer giveOfferMockup() {
+        if(assignedPlayer != null) {
+            return new MockupOffer(foodGain, upperDraw, lowerDraw, assignedPlayer.giveMockupPlayer());
+        }else{
+            return new MockupOffer(foodGain, upperDraw, lowerDraw, null);
+        }
     }
 }

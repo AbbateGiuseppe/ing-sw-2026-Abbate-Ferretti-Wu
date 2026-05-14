@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Track;
 
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOffer;
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.server.model.Player;
 
@@ -96,19 +98,19 @@ public class Track implements Serializable {
     //### getters
     public List<Offer> getOfferBoard() { return offerBoard; }
     public List<OrderSlot> getOrderBoard() { return orderBoard; }
-    public List<MockupPlayer> giveOfferBoardMockup() {
-        return offerBoard.stream()
-                .map(Offer::getAssignedPlayer)
-                .filter(Objects::nonNull)
-                .map(Player::giveMockupPlayer)
-                .toList();
+    public List<MockupOffer> giveOfferBoardMockup() {
+        List<MockupOffer> mockupOffers = new ArrayList<>();
+        for(Offer offer : offerBoard){
+            mockupOffers.add(offer.giveOfferMockup());
+        }
+        return mockupOffers;
     }
-    public List<MockupPlayer> giveOrderBoardMockup() {
-        return orderBoard.stream()
-                .map(OrderSlot::getAssignedPlayer)
-                .filter(Objects::nonNull)
-                .map(Player::giveMockupPlayer)
-                .toList();
+    public List<MockupOrder> giveOrderBoardMockup() {
+        List<MockupOrder> mockupOrders = new ArrayList<>();
+        for(OrderSlot orderSlot : orderBoard){
+            mockupOrders.add(orderSlot.giveOrderMockup());
+        }
+        return mockupOrders;
     }
 
     //### logic

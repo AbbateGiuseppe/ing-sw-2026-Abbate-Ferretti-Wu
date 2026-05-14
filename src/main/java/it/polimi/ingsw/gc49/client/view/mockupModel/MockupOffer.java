@@ -17,10 +17,23 @@ public class MockupOffer implements Rectangable {
     /** The lower line drawable cards on effect activation.*/
     private final int lowerDraw;
 
-    public MockupOffer(int foodGain, int upperDraw, int lowerDraw) {
+    public MockupOffer(int foodGain, int upperDraw, int lowerDraw, MockupPlayer assignedPlayer) {
         this.foodGain = foodGain;
         this.upperDraw = upperDraw;
         this.lowerDraw = lowerDraw;
+        this.assignedPlayer = assignedPlayer;
+    }
+
+
+    //###setters
+    /** MIGHT WANT TO USE AN INDEX!!*/
+    public void setAssignedPlayer(MockupPlayer assignedPlayer) {
+        this.assignedPlayer = assignedPlayer;
+    }
+
+    //###getters
+    public MockupPlayer getAssignedPlayer() {
+        return assignedPlayer;
     }
 
     @Override

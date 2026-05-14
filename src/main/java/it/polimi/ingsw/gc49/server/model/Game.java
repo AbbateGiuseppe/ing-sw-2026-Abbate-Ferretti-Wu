@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc49.server.model;
 
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOffer;
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.CurrentPlayerModelElement;
@@ -141,8 +143,8 @@ public class Game implements Serializable {
         List<Card> upperBuilding = getCardBoard().getLine().getUpperBuilding();
         List<Card> lowerBuilding = getCardBoard().getLine().getLowerBuilding();
 
-        List<MockupPlayer> offerBoard = getTrack().giveOfferBoardMockup();
-        List<MockupPlayer> orderBoard = getTrack().giveOrderBoardMockup();
+        List<MockupOffer> offerBoard = getTrack().giveOfferBoardMockup();
+        List<MockupOrder> orderBoard = getTrack().giveOrderBoardMockup();
 
         return new MockupGame(players, cardBoard.getLine().getCurrentEra(), upperLine, lowerLine, upperBuilding, lowerBuilding, offerBoard, orderBoard);
     }

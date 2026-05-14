@@ -17,11 +17,24 @@ public class MockupOrder implements Rectangable {
     /** The points removed if the food wasn't paid on non-setup occupation*/
     private final int removedPointsOnStarvation;
 
-    public MockupOrder(int foodGain, boolean payFood, int foodToPay, int removedPointsOnStarvation) {
+    public MockupOrder(int foodGain, boolean payFood, int foodToPay, int removedPointsOnStarvation, MockupPlayer assignedPlayer) {
         this.foodGain = foodGain;
         this.payFood = payFood;
         this.foodToPay = foodToPay;
         this.removedPointsOnStarvation = removedPointsOnStarvation;
+        this.assignedPlayer = assignedPlayer;
+    }
+
+
+    //###setters
+    /** MIGHT WANT TO USE AN INDEX!!*/
+    public void setAssignedPlayer(MockupPlayer assignedPlayer) {
+        this.assignedPlayer = assignedPlayer;
+    }
+
+    //###getters
+    public MockupPlayer getAssignedPlayer() {
+        return assignedPlayer;
     }
 
     /**

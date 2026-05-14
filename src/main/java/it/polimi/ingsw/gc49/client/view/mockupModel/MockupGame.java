@@ -12,7 +12,7 @@ public class MockupGame implements Serializable {
     private List<MockupPlayer> players;
 
     /**List that keeps count of the discarded cards, adds new ones everytime.*/
-    private final List<Card> discards;
+    private final List<Card> discards = new ArrayList<>();
     /**Stores the era on the back of the card on top of the deck*/
     private Era deckTopEra;
     /**Gets replaced with a new List at every line update*/
@@ -24,14 +24,13 @@ public class MockupGame implements Serializable {
     /**Gets replaced with a new List at every line update*/
     private List<Card> lowerBuilding;
 
-    private List<MockupPlayer> offerBoard;
-    private List<MockupPlayer> orderBoard;
+    private final List<MockupOffer> offerBoard;
+    private final List<MockupOrder> orderBoard;
 
     /**[constructor] Should be initialized AFTER the real game has been initialized on the server!*/
     public MockupGame (List<MockupPlayer> players, Era deckTopEra, List<Card> upperLine, List<Card> lowerLine
-    , List<Card> upperBuilding, List<Card> lowerBuilding, List<MockupPlayer> offerBoard, List<MockupPlayer> orderBoard) {
+    , List<Card> upperBuilding, List<Card> lowerBuilding, List<MockupOffer> offerBoard, List<MockupOrder> orderBoard) {
         this.players = players;
-        this.discards = new ArrayList<>();
         this.deckTopEra = deckTopEra;
         this.upperLine = upperLine;
         this.lowerLine = lowerLine;
@@ -43,11 +42,9 @@ public class MockupGame implements Serializable {
 
     //### setters
     //Players
+    public void setPlayers (List<MockupPlayer> players) { this.players = players; }
     public void setCurrentPlayerIndex (int currentPlayerIndex) {
         this.currentPlayerIndex = currentPlayerIndex;
-    }
-    public void setPlayers (List<MockupPlayer> players) {
-        this.players = players;
     }
     //Cardboard
     public List<Card> getDiscards() {
@@ -67,13 +64,6 @@ public class MockupGame implements Serializable {
     }
     public List<Card> getLowerBuilding() {
         return lowerBuilding;
-    }
-    //Track
-    public void setOfferBoard(List<MockupPlayer> offerBoard) {
-        this.offerBoard = offerBoard;
-    }
-    public void setOrderBoard(List<MockupPlayer> orderBoard) {
-        this.orderBoard = orderBoard;
     }
 
     //### getters
@@ -102,10 +92,10 @@ public class MockupGame implements Serializable {
         this.lowerBuilding = lowerBuilding;
     }
     //Track
-    public List<MockupPlayer> getOfferBoard() {
+    public List<MockupOffer> getOfferBoard() {
         return offerBoard;
     }
-    public List<MockupPlayer> getOrderBoard() {
+    public List<MockupOrder> getOrderBoard() {
         return orderBoard;
     }
 

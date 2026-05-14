@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Track;
 
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOffer;
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 import java.io.Serializable;
@@ -80,4 +82,12 @@ public class OrderSlot implements Serializable {
         return assignedPlayer;
     }
     public int getFoodGain() { return foodGain; }
+
+    public MockupOrder giveOrderMockup() {
+        if(assignedPlayer != null) {
+            return new MockupOrder(foodGain, payFood, foodToPay, removedPointsOnStarvation, assignedPlayer.giveMockupPlayer());
+        }else{
+            return new MockupOrder(foodGain, payFood, foodToPay, removedPointsOnStarvation, null);
+        }
+    }
 }
