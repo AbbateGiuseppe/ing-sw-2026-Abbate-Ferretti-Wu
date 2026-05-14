@@ -1,7 +1,11 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
+import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Era;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
 
 public class ShamanicImmunityCard extends BuildingCard {
     public ShamanicImmunityCard ( BuildingEvent buildingEvent, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
@@ -27,5 +31,21 @@ public class ShamanicImmunityCard extends BuildingCard {
     @Override
     public String simpleToString () {
         return "EDIFICIO (immunità sciamanica)";
+    }
+
+    @Override
+    public RectangleAttributedString getRectangleAttributedString () {
+        AttributedString attributedString = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
+                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
+                .append("      ").append(String.valueOf(foodPrice)).append("♥")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
+                .style(AttributedStyle.DEFAULT).append("imm.   §")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝")
+                .toAttributedString();
+        int height = 2;
+        int width = 10;
+        return new RectangleAttributedString(height, width, attributedString);
     }
 }

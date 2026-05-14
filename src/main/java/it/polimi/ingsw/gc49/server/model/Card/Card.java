@@ -1,11 +1,12 @@
 package it.polimi.ingsw.gc49.server.model.Card;
 
 
+import it.polimi.ingsw.gc49.client.view.Rectangable;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.DataBank;
 import it.polimi.ingsw.gc49.server.model.Player;
 
-public abstract class Card {
+public abstract class Card implements Rectangable {
     protected final Era era;
     private final int minNumPlayers;
 

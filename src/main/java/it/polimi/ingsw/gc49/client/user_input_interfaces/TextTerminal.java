@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.client.user_input_interfaces;
 
 import it.polimi.ingsw.gc49.client.ClientApplication;
+import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
@@ -13,6 +14,7 @@ import it.polimi.ingsw.gc49.server.model.Totem;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
 import org.jline.reader.LineReader;
+import org.jline.terminal.Cursor;
 import org.jline.terminal.Terminal;
 import org.jline.utils.*;
 
@@ -344,6 +346,22 @@ public class TextTerminal extends UserInputInterface {
         }
 
         return parts.toArray(new String[0]);
+    }
+    private void printRectangleString( RectangleAttributedString rectangleAttributedString ){
+        terminal.puts(InfoCmp.Capability.save_cursor);
+
+        Cursor cursor = terminal.getCursorPosition(_ -> {});
+        int x = cursor.getX();
+        int y = cursor.getY();
+        int width = rectangleAttributedString.width;
+        int height = rectangleAttributedString.height;
+        for(int i = 0; i < height; i++){
+            terminal.puts(InfoCmp.Capability.cursor_address, x, y);
+            rectangleAttributedString.attributedString.subSequence(i*width, (width-1)*(i+1)).print(terminal);
+            y++;
+        }
+
+        terminal.puts(InfoCmp.Capability.restore_cursor);
     }
     private void printScroll(String toPrint){
         synchronized (cursorLock) {

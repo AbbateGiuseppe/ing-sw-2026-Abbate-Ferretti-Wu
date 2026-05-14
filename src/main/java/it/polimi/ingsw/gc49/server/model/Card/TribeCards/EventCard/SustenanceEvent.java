@@ -1,9 +1,13 @@
 package it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard;
 
+import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.EventManager;
 import it.polimi.ingsw.gc49.server.model.Player;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
 
 import java.util.List;
 
@@ -39,5 +43,21 @@ public class SustenanceEvent extends EventCard {
     @Override
     public String simpleToString () {
         return "SOSTENTAMENTO";
+    }
+
+    @Override
+    public RectangleAttributedString getRectangleAttributedString () {
+        AttributedString attributedString = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("╔═══╗")
+                .append("║")
+                .style(AttributedStyle.DEFAULT).append("│€│")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("║")
+                .append("║")
+                .style(AttributedStyle.DEFAULT).append("└─┘")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("║")
+                .append("╚═══╝").toAttributedString();
+        int height = 4;
+        int width = 5;
+        return new RectangleAttributedString(height, width, attributedString);
     }
 }
