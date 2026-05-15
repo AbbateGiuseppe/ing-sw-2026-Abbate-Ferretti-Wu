@@ -2,6 +2,9 @@ package it.polimi.ingsw.gc49.client.view.mockupModel;
 
 import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.Totem;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -106,6 +109,23 @@ public class MockupPlayer implements Serializable {
             }
         }else{
             System.out.println(nickname + " has no cards.");
+        }
+    }
+    public AttributedString displayAttributedString() {
+        if(totem != null) {
+            AttributedString attributedString = new AttributedStringBuilder().append(totem.getTotemAttributedString())
+                    .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
+                    .append(nickname).style(AttributedStyle.DEFAULT)
+                    .append("]: ").append(String.valueOf(food)).append("♥/").append(String.valueOf(points)).append("♦ |")
+                    .toAttributedString();
+            return attributedString;
+        }else{
+            AttributedString attributedString = new AttributedStringBuilder().append("░")
+                    .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
+                    .append(nickname).style(AttributedStyle.DEFAULT)
+                    .append("]: ").append(String.valueOf(food)).append("♥/").append(String.valueOf(points)).append("♦ |")
+                    .toAttributedString();
+            return attributedString;
         }
     }
 

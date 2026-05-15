@@ -2,12 +2,12 @@ package it.polimi.ingsw.gc49.client.view.mockupModel;
 
 import it.polimi.ingsw.gc49.client.view.Rectangable;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
-import org.w3c.dom.Attr;
 
-public class MockupOffer implements Rectangable {
+import java.io.Serializable;
+
+public class MockupOffer implements Serializable, Rectangable {
     /** The player currently assigned to the offer.*/
     private MockupPlayer assignedPlayer;
     /** The food gained on effect activation.*/

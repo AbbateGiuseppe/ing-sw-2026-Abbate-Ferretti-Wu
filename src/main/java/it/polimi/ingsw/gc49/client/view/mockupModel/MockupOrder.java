@@ -3,9 +3,10 @@ package it.polimi.ingsw.gc49.client.view.mockupModel;
 import it.polimi.ingsw.gc49.client.view.Rectangable;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import org.jline.utils.AttributedStringBuilder;
-import org.jline.utils.AttributedStyle;
 
-public class MockupOrder implements Rectangable {
+import java.io.Serializable;
+
+public class MockupOrder implements Serializable, Rectangable {
     /** The player currently assigned to the order slot*/
     private MockupPlayer assignedPlayer;
     /** The food gained on non-setup occupation*/

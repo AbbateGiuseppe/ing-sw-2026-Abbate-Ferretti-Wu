@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc49.client.user_input_interfaces;
 
 import it.polimi.ingsw.gc49.client.ClientApplication;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
@@ -10,6 +11,7 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.ANY_phase.DIS
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.HALL_phase.HALL_COMMAND.CREATE.HallCreatePacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
+import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.Totem;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServer;
@@ -28,6 +30,7 @@ public class TextTerminal extends UserInputInterface {
      * the rest of the following strings are used as parameters to specify the behaviour in the function of the called TerminalCommand*/
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
     private static final StringBuilder manual = new StringBuilder();
+    private static final AttributedStringBuilder legend = new AttributedStringBuilder();
     private static final Terminal terminal = ClientApplication.terminal;
     private static final LineReader lineReader = ClientApplication.lineReader;
     private static final ScheduledExecutorService helpScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -125,28 +128,6 @@ public class TextTerminal extends UserInputInterface {
                 }
             }
         });
-        // Sceglie una offerta
-        commands.put("offer", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
-                try {
-                    int offerIndex = Integer.parseInt(terminalParameters[0]);
-                    CommandPacket commandPacket = new CommandPacket(PlayerActionEnum.CHOOSE_OFFER, offerIndex);
-                    terminalVirtualServer.sendCommand(commandPacket);
-                } catch (NumberFormatException e) {
-                    terminalMethods.printScroll("please, insert a valid number!");
-                }
-            }
-        });
-        // Sceglie un totem
-        commands.put("totem", ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
-                if (totems.containsKey(terminalParameters[0].toLowerCase())) {
-                    Totem totem = totems.get(terminalParameters[0].toLowerCase());
-                    CommandPacket commandPacket = new CommandPacket(PlayerActionEnum.CHOOSE_TOTEM,totem);
-                    terminalVirtualServer.sendCommand(commandPacket);
-                }
-            }
-        });
         // Sceglie una carta
         commands.put("draw", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
@@ -174,6 +155,34 @@ public class TextTerminal extends UserInputInterface {
                     }
                 } catch (NumberFormatException e) {
                     terminalMethods.printScroll("please, insert a valid number!");
+                }
+            }
+        });
+        // Sceglie un totem
+        commands.put("legend", ( terminalMethods, terminalPhase, _, _, _ ) -> {
+            if(terminalPhase == ApplicationPhase.GAME) {
+                terminalMethods.printLegend();
+            }
+        });
+        // Sceglie una offerta
+        commands.put("offer", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
+                try {
+                    int offerIndex = Integer.parseInt(terminalParameters[0]);
+                    CommandPacket commandPacket = new CommandPacket(PlayerActionEnum.CHOOSE_OFFER, offerIndex);
+                    terminalVirtualServer.sendCommand(commandPacket);
+                } catch (NumberFormatException e) {
+                    terminalMethods.printScroll("please, insert a valid number!");
+                }
+            }
+        });
+        // Sceglie un totem
+        commands.put("totem", ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
+                if (totems.containsKey(terminalParameters[0].toLowerCase())) {
+                    Totem totem = totems.get(terminalParameters[0].toLowerCase());
+                    CommandPacket commandPacket = new CommandPacket(PlayerActionEnum.CHOOSE_TOTEM,totem);
+                    terminalVirtualServer.sendCommand(commandPacket);
                 }
             }
         });
@@ -205,7 +214,30 @@ public class TextTerminal extends UserInputInterface {
     }
     private static String manualSeparator () { return " "+"-".repeat(127); }
     private static String manualFormat ( String command, String description) {return " " + String.format(" %60s | %s\n", command, description);}
-
+    static {
+        legend.append(" Symbols meaning:\n");
+        legend.append(" ♥ food    | ░ free space                       | card types by color:\n");
+        legend.append(" ♦ points  | ▓ space occupied by totem          | ")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╬")
+                .style(AttributedStyle.DEFAULT).append(" character card\n");
+        legend.append(" ✶ stars   |__                                  | ")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╬")
+                .style(AttributedStyle.DEFAULT).append(" building card\n");
+        legend.append(" ≥ at end game|_________________________________| ")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("╬")
+                .style(AttributedStyle.DEFAULT).append(" event card\n");
+        legend.append(" ● at set completion   |  character types:      |\n");
+        legend.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)).append(" ▼")
+                .style(AttributedStyle.DEFAULT).append(" drawable lower cards|  A = artist            |\n");
+        legend.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN)).append(" ▲")
+                .style(AttributedStyle.DEFAULT).append(" drawable upper cards|  B = builder           |\n");
+        legend.append(" ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|  G = gatherer          |\n");
+        legend.append(" event types:          |  H = hunter            |\n");
+        legend.append(" ¤ painting            |  I = inventor          |\n");
+        legend.append(" § ritual              |  S = shaman            |\n");
+        legend.append(" % hunt                |\n");
+        legend.append(" € sustenance          |\n");
+    }
 
     public TextTerminal (VirtualServer virtualServer, ApplicationPhase currentPhase) {
         super( virtualServer, currentPhase);
@@ -348,20 +380,20 @@ public class TextTerminal extends UserInputInterface {
         return parts.toArray(new String[0]);
     }
     private void printRectangleString( RectangleAttributedString rectangleAttributedString ){
-        terminal.puts(InfoCmp.Capability.save_cursor);
+        synchronized (cursorLock) {
 
-        Cursor cursor = terminal.getCursorPosition(_ -> {});
-        int x = cursor.getX();
-        int y = cursor.getY();
-        int width = rectangleAttributedString.width;
-        int height = rectangleAttributedString.height;
-        for(int i = 0; i < height; i++){
+            Cursor cursor = terminal.getCursorPosition(_ -> {});
+            int x = cursor.getX();
+            int y = cursor.getY();
+            int width = rectangleAttributedString.width;
+            int height = rectangleAttributedString.height;
+            for (int i = 0; i < height; i++) {
+                terminal.puts(InfoCmp.Capability.cursor_address, x, y+i);
+                rectangleAttributedString.attributedString.subSequence(i * width, (width - 1) * (i + 1)).print(terminal);
+            }
+
             terminal.puts(InfoCmp.Capability.cursor_address, x, y);
-            rectangleAttributedString.attributedString.subSequence(i*width, (width-1)*(i+1)).print(terminal);
-            y++;
         }
-
-        terminal.puts(InfoCmp.Capability.restore_cursor);
     }
     private void printScroll(String toPrint){
         synchronized (cursorLock) {
@@ -378,6 +410,13 @@ public class TextTerminal extends UserInputInterface {
         synchronized (cursorLock) {
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 0);
             terminal.writer().println(manual);
+            helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
+        }
+    }
+    private void printLegend () {
+        synchronized (cursorLock) {
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 0);
+            legend.toAttributedString().print(terminal);
             helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
         }
     }
@@ -434,10 +473,10 @@ public class TextTerminal extends UserInputInterface {
         synchronized (cursorLock) {
             terminal.puts(InfoCmp.Capability.save_cursor);
             for( int i = LINE_SHOW; i < LINE_PREVIOUS_MESSAGE; i++ ) {
-                terminal.puts(InfoCmp.Capability.cursor_address, i, 1);
+                terminal.puts(InfoCmp.Capability.cursor_address, i, 0);
                 terminal.puts(InfoCmp.Capability.clr_eol);
             }
-            terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT+1, 1);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 1);
             switch (currentPhase) {
                 case HALL:
                     if(mockups.getHall() != null) {
@@ -456,15 +495,53 @@ public class TextTerminal extends UserInputInterface {
                     break;
                 case GAME:
                     if(mockups.getGame() != null) {
-                        for (MockupPlayer p : mockups.getGame().getPlayers()) {
-                            terminal.writer().println(p);
-                        }
+                        printGame();
                     }else{
                         terminal.writer().println("Game not yet loaded.");
                     }
                     break;
             }
             terminal.puts(InfoCmp.Capability.restore_cursor);
+        }
+    }
+
+    private void printGame() {
+        synchronized (cursorLock) {
+            Cursor cursor = terminal.getCursorPosition(_ -> {});
+            int startingCursorY = cursor.getY();
+            int startingCursorX = cursor.getX();
+            int cursorY = startingCursorY;
+            int cursorX = startingCursorX;
+            cursorX = cursorX + 14;
+            terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            MockupGame mockupGame = mockups.getGame();
+            for(Card card : mockupGame.getUpperLine()){
+                printRectangleString(card.getRectangleAttributedString());
+                cursorX = cursorX + card.getRectangleAttributedString().width;
+                terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            }
+            cursorY = startingCursorY + 14;
+            cursorX = startingCursorX;
+            terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            for(MockupPlayer mockupPlayer : mockupGame.getPlayers()){
+                mockupPlayer.displayAttributedString().print(terminal);
+            }
+            //01.              ╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗   ╔hthtrhtr╗
+            //02.              ║ I ║║B2♥║║ G ║║   ║║ S ║║ H ║║│%│║║│€│║║ H ║ │ ╚grgrgrgr╝[kuykyuky][hthgeqnz]
+            //03.              ║(3)║║ 3♦║║3♥ ║║ P ║║3✶ ║║♥♥♥║║└─┘║║└─┘║║   ║ │ ╔12345678╗[htfhhgtr]
+            //04.              ╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝   ╚90123456╝
+            //05.   Ordine     Offerte                             Mazzo
+            //06.   ╔════════╗ ╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗ ╔═══╗
+            //07.1. ║░ 3♥    ║ ║ ░ ║║ ░ ║║ ░ ║║ ░ ║║ ░ ║║ ░ ║║ ░ ║ ║Era║
+            //08.2. ║░ 1♥    ║ ║ 3♥║║ 1▼║║ 1▲║║ 2▼║║ 1▼║║ 2▲║║ 1▼║ ║ 3 ║
+            //09.3. ║░       ║ ║   ║║   ║║   ║║   ║║ 1▲║║   ║║ 2▲║ ║   ║
+            //10.4. ║░       ║ ╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝ ╚═══╝
+            //11.5. ║░-1♥/-2♦║ ╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗                  Carte edificio inf.
+            //12.   ╚════════╝ ║ A ║║│¤│║║ G ║║│§│║║ G ║║●3♥║                │ [gregrjyt][jyjetjru]
+            //13.              ║   ║║└─┘║║3♥ ║║└─┘║║3♥ ║║ 2♦║                │
+            //14.              ╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝
+            //15.▓[Mario118]: 3♥/5♦ |▓[Robertoni]: 3♥/5♦ |▓[RoxxoXxX]: 3♥/5♦
+            //16.▓[CaioSempronio]: 3♥/5♦ |▓[Marta]: 3♥/5♦
         }
     }
 }
