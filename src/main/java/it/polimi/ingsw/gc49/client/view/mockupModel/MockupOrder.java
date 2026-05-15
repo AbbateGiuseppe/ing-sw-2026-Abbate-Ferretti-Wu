@@ -65,7 +65,7 @@ public class MockupOrder implements Serializable, Rectangable {
         }else{
             //Add the food gain
             if(foodGain>0){
-                attributedString.append(" ").append(String.valueOf(foodGain)).append("♥");
+                attributedString.append(" ").append(String.valueOf(foodGain)).append("♥").append("    ");
             }
             //Add empty order slot
             else{

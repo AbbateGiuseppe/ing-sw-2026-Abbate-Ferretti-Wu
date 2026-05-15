@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.client.user_input_interfaces;
 import it.polimi.ingsw.gc49.client.ClientApplication;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
@@ -383,16 +384,16 @@ public class TextTerminal extends UserInputInterface {
         synchronized (cursorLock) {
 
             Cursor cursor = terminal.getCursorPosition(_ -> {});
-            int x = cursor.getX();
             int y = cursor.getY();
-            int width = rectangleAttributedString.width;
+            int x = cursor.getX();
             int height = rectangleAttributedString.height;
+            int width = rectangleAttributedString.width;
             for (int i = 0; i < height; i++) {
-                terminal.puts(InfoCmp.Capability.cursor_address, x, y+i);
+                terminal.puts(InfoCmp.Capability.cursor_address, y+i, x);
                 rectangleAttributedString.attributedString.subSequence(i * width, (width - 1) * (i + 1)).print(terminal);
             }
 
-            terminal.puts(InfoCmp.Capability.cursor_address, x, y);
+            terminal.puts(InfoCmp.Capability.cursor_address, y, x);
         }
     }
     private void printScroll(String toPrint){
@@ -507,19 +508,53 @@ public class TextTerminal extends UserInputInterface {
 
     private void printGame() {
         synchronized (cursorLock) {
+            MockupGame mockupGame = mockups.getGame();
             Cursor cursor = terminal.getCursorPosition(_ -> {});
             int startingCursorY = cursor.getY();
             int startingCursorX = cursor.getX();
-            int cursorY = startingCursorY;
-            int cursorX = startingCursorX;
-            cursorX = cursorX + 14;
+            int cursorY;
+            int cursorX;
+
+            /*//Draw upperLine
+            cursorY = startingCursorY;
+            cursorX = startingCursorX + 14;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
-            MockupGame mockupGame = mockups.getGame();
-            for(Card card : mockupGame.getUpperLine()){
-                printRectangleString(card.getRectangleAttributedString());
-                cursorX = cursorX + card.getRectangleAttributedString().width;
-                terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            if(mockupGame.getUpperLine() != null) {
+                for (Card card : mockupGame.getUpperLine()) {
+                    printRectangleString(card.getRectangleAttributedString());
+                    cursorX = cursorX + card.getRectangleAttributedString().width;
+                    terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+                }
+            }else{
+                terminal.writer().println("Non esiste la fila superiore");
+            }*/
+
+            //Draw orderSlots
+            cursorY = startingCursorY+4;
+            cursorX = startingCursorX+3;
+            terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            terminal.writer().print("Order");
+            terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
+            terminal.writer().print("╔════════╗");
+            int playerNum = 1;
+            cursorX = startingCursorX;
+            if(mockupGame.getOrderBoard() != null) {
+                for (MockupOrder mockupOrder : mockupGame.getOrderBoard()) {
+                    terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
+                    terminal.writer().print(playerNum + ". ║");
+                    printRectangleString(mockupOrder.getRectangleAttributedString());
+                    terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX+12);
+                    terminal.writer().print("║");
+                    playerNum++;
+                }
+            }else{
+                terminal.writer().println("Non esiste l'ordine");
             }
+            cursorX = startingCursorX+3;
+            terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
+            terminal.writer().print("╚════════╝");
+
+            //Draw player stats
             cursorY = startingCursorY + 14;
             cursorX = startingCursorX;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
