@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc49.client.user_input_interfaces;
 import it.polimi.ingsw.gc49.client.ClientApplication;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
-import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
 import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
@@ -538,17 +537,13 @@ public class TextTerminal extends UserInputInterface {
             terminal.writer().print("╔════════╗");
             int playerNum = 1;
             cursorX = startingCursorX;
-            if(mockupGame.getOrderBoard() != null) {
-                for (MockupOrder mockupOrder : mockupGame.getOrderBoard()) {
-                    terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
-                    terminal.writer().print(playerNum + ". ║");
-                    printRectangleString(mockupOrder.getRectangleAttributedString());
-                    terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX+12);
-                    terminal.writer().print("║");
-                    playerNum++;
-                }
-            }else{
-                terminal.writer().println("Non esiste l'ordine");
+            for (RectangleAttributedString rectangleAttributedString : mockupGame.getOrderBoardRectangleStrings()) {
+                terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
+                terminal.writer().print(playerNum + ". ║");
+                printRectangleString(rectangleAttributedString);
+                terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX+12);
+                terminal.writer().print("║");
+                playerNum++;
             }
             cursorX = startingCursorX+3;
             terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);

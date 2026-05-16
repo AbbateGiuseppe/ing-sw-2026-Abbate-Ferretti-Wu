@@ -7,8 +7,9 @@ import org.jline.utils.AttributedStringBuilder;
 import java.io.Serializable;
 
 public class MockupOrder implements Serializable, Rectangable {
+    private MockupGame game;
     /** The player currently assigned to the order slot*/
-    private MockupPlayer assignedPlayer;
+    private Integer assignedPlayerIndex;
     /** The food gained on non-setup occupation*/
     private final int foodGain;
     /** A boolean to know if this is a pay-demanding order slot.*/
@@ -18,24 +19,24 @@ public class MockupOrder implements Serializable, Rectangable {
     /** The points removed if the food wasn't paid on non-setup occupation*/
     private final int removedPointsOnStarvation;
 
-    public MockupOrder(int foodGain, boolean payFood, int foodToPay, int removedPointsOnStarvation, MockupPlayer assignedPlayer) {
+    public MockupOrder(int foodGain, boolean payFood, int foodToPay, int removedPointsOnStarvation, Integer assignedPlayerIndex) {
         this.foodGain = foodGain;
         this.payFood = payFood;
         this.foodToPay = foodToPay;
         this.removedPointsOnStarvation = removedPointsOnStarvation;
-        this.assignedPlayer = assignedPlayer;
+        this.assignedPlayerIndex = assignedPlayerIndex;
     }
 
 
     //###setters
-    /** MIGHT WANT TO USE AN INDEX!!*/
-    public void setAssignedPlayer(MockupPlayer assignedPlayer) {
-        this.assignedPlayer = assignedPlayer;
+    public void setAssignedPlayerIndex(Integer assignedPlayerIndex) {
+        this.assignedPlayerIndex = assignedPlayerIndex;
     }
+    public void setGame(MockupGame game) { this.game = game; }
 
     //###getters
-    public MockupPlayer getAssignedPlayer() {
-        return assignedPlayer;
+    public Integer getAssignedPlayerIndex() {
+        return assignedPlayerIndex;
     }
 
     /**
@@ -51,11 +52,11 @@ public class MockupOrder implements Serializable, Rectangable {
         AttributedStringBuilder attributedString = new AttributedStringBuilder();
 
         //Add the player totem
-        if(assignedPlayer == null) {
+        if(assignedPlayerIndex == null) {
             attributedString.append("░");
         }else{
             //Adds color based on player's totem color
-            attributedString.append(assignedPlayer.getTotem().getTotemAttributedString());
+            attributedString.append(game.getPlayer(assignedPlayerIndex).getTotem().getTotemAttributedString());
         }
 
         //Add the food to pay and the points to pay

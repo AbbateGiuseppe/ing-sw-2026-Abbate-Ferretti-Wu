@@ -25,12 +25,12 @@ public class TotemChoosing extends State {
         game.getTrack().randomizeStartingOrder(game.getPlayers()); //randomizes the starting order.
 
         StringBuilder actionInfo = new StringBuilder();
-        actionInfo.append("L'ordine di turno dei giocatori è stato mescolato:\n");
+        actionInfo.append("L'ordine di turno dei giocatori è stato mescolato: ");
         List<OrderSlot> orderSlotList = game.getTrack().getOrderBoard();
         for (int i = 0; i < orderSlotList.size(); i++) {
             Player player = orderSlotList.get(i).getAssignedPlayer();
             actionInfo.append(i).append(". ").
-                    append(player.getNickname()).append("(").append(player.getPlayerIndex()).append(");\n");
+                    append(player.getNickname()).append("(").append(player.getPlayerIndex()).append("); ");
         }
         game.queueUpdateModelElement(new OrderboardModelElement(
                 actionInfo.toString(),

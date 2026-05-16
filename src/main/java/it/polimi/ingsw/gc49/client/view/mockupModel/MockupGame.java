@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.client.view.mockupModel;
 
+import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.Era;
 
@@ -37,7 +38,13 @@ public class MockupGame implements Serializable {
         this.upperBuilding = upperBuilding;
         this.lowerBuilding = lowerBuilding;
         this.offerBoard = offerBoard;
+        for(MockupOffer offer : offerBoard) {
+            offer.setGame(this);
+        }
         this.orderBoard = orderBoard;
+        for(MockupOrder order : orderBoard) {
+            order.setGame(this);
+        }
     }
 
     //### setters
@@ -46,6 +53,53 @@ public class MockupGame implements Serializable {
     public void setCurrentPlayerIndex (int currentPlayerIndex) {
         this.currentPlayerIndex = currentPlayerIndex;
     }
+    //Cardboard
+    public void setDeckTopEra(Era deckTopEra) {
+        this.deckTopEra = deckTopEra;
+    }
+    public void setUpperLine(List<Card> upperLine) {
+        this.upperLine = upperLine;
+    }
+    public void setLowerLine(List<Card> lowerLine) {
+        this.lowerLine = lowerLine;
+    }
+    public void setUpperBuilding(List<Card> upperBuilding) {
+        this.upperBuilding = upperBuilding;
+    }
+    public void setLowerBuilding(List<Card> lowerBuilding) {
+        this.lowerBuilding = lowerBuilding;
+    }
+
+    /**
+     * Changes the player occupying an offer, can also assign null (deassign).
+     * @param offerIndex the index of the offer on the offerBoard
+     * @param playerIndex the index of the player to assign
+     */
+    public void setOfferPlayerIndex(int offerIndex, Integer playerIndex) {
+        if(offerBoard.get(offerIndex) != null){
+            offerBoard.get(offerIndex).setAssignedPlayerIndex(playerIndex);
+        }
+    }
+    /**
+     * Changes the player occupying an orderSlot, can also assign null (deassign).
+     * @param orderIndex the index of the orderSlot on the orderBoard
+     * @param playerIndex the index of the player to assign
+     */
+    public void setOrderPlayerIndex(int orderIndex, Integer playerIndex) {
+        if(orderBoard.get(orderIndex) != null){
+            orderBoard.get(orderIndex).setAssignedPlayerIndex(playerIndex);
+        }
+    }
+
+    //### getters
+    //Players
+    public int getCurrentPlayerIndex () {
+        return currentPlayerIndex;
+    }
+    public List<MockupPlayer> getPlayers () {
+        return players;
+    }
+    public MockupPlayer getPlayer(int i) {return players.get(i);}
     //Cardboard
     public List<Card> getDiscards() {
         return discards;
@@ -65,39 +119,19 @@ public class MockupGame implements Serializable {
     public List<Card> getLowerBuilding() {
         return lowerBuilding;
     }
-
-    //### getters
-    //Players
-    public int getCurrentPlayerIndex () {
-        return currentPlayerIndex;
-    }
-    public List<MockupPlayer> getPlayers () {
-        return players;
-    }
-    public MockupPlayer getPlayer(int i) {return players.get(i);}
-    //Cardboard
-    public void setDeckTopEra(Era deckTopEra) {
-        this.deckTopEra = deckTopEra;
-    }
-    public void setUpperLine(List<Card> upperLine) {
-        this.upperLine = upperLine;
-    }
-    public void setLowerLine(List<Card> lowerLine) {
-        this.lowerLine = lowerLine;
-    }
-    public void setUpperBuilding(List<Card> upperBuilding) {
-        this.upperBuilding = upperBuilding;
-    }
-    public void setLowerBuilding(List<Card> lowerBuilding) {
-        this.lowerBuilding = lowerBuilding;
-    }
     //Track
-    public List<MockupOffer> getOfferBoard() {
+    public List<RectangleAttributedString> getOrderBoardRectangleStrings(){
+        return orderBoard
+                .stream()
+                .map(MockupOrder::getRectangleAttributedString)
+                .toList();
+    }
+    /*public List<MockupOffer> getOfferBoard() {
         return offerBoard;
     }
     public List<MockupOrder> getOrderBoard() {
         return orderBoard;
-    }
+    }*/
 
     //### adders
     //Cardboard

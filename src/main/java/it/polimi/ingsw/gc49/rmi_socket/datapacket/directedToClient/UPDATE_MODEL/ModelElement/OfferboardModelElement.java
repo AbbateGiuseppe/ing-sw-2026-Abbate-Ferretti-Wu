@@ -17,7 +17,8 @@ public class OfferboardModelElement extends UpdateModelElement {
 
     @Override
     public void updateMockupModel ( MockupGame game ) {
-        game.getOfferBoard().clear();
-        game.getOfferBoard().addAll( offerBoard );
+        for(int i = 0; i < offerBoard.size(); i++) {
+            game.setOfferPlayerIndex(i, offerBoard.get(i).getAssignedPlayerIndex());
+        }
     }
 }

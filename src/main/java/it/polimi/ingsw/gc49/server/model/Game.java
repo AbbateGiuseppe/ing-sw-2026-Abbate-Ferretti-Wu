@@ -132,6 +132,11 @@ public class Game implements Serializable {
             broadcastGameUpdate();
         }
     }
+
+    /**
+     * Creates the mockup for the entire game, to send to the clients, usually for initialization.
+     * @return MockupGame
+     */
     public MockupGame giveMockupGame() {
         List<MockupPlayer> players = new ArrayList<>();
         for (Player player : this.players) {

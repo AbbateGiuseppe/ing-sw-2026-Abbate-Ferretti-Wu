@@ -8,8 +8,9 @@ import org.jline.utils.AttributedStyle;
 import java.io.Serializable;
 
 public class MockupOffer implements Serializable, Rectangable {
+    private MockupGame game;
     /** The player currently assigned to the offer.*/
-    private MockupPlayer assignedPlayer;
+    private Integer assignedPlayerIndex;
     /** The food gained on effect activation.*/
     private final int foodGain;
     /** The upper line drawable cards gained on effect activation.*/
@@ -17,23 +18,23 @@ public class MockupOffer implements Serializable, Rectangable {
     /** The lower line drawable cards on effect activation.*/
     private final int lowerDraw;
 
-    public MockupOffer(int foodGain, int upperDraw, int lowerDraw, MockupPlayer assignedPlayer) {
+    public MockupOffer(int foodGain, int upperDraw, int lowerDraw, Integer assignedPlayerIndex) {
         this.foodGain = foodGain;
         this.upperDraw = upperDraw;
         this.lowerDraw = lowerDraw;
-        this.assignedPlayer = assignedPlayer;
+        this.assignedPlayerIndex = assignedPlayerIndex;
     }
 
 
     //###setters
-    /** MIGHT WANT TO USE AN INDEX!!*/
-    public void setAssignedPlayer(MockupPlayer assignedPlayer) {
-        this.assignedPlayer = assignedPlayer;
+    public void setAssignedPlayerIndex(Integer assignedPlayerIndex) {
+        this.assignedPlayerIndex = assignedPlayerIndex;
     }
+    public void setGame(MockupGame game) { this.game = game; }
 
     //###getters
-    public MockupPlayer getAssignedPlayer() {
-        return assignedPlayer;
+    public Integer getAssignedPlayerIndex() {
+        return assignedPlayerIndex;
     }
 
     @Override
@@ -44,13 +45,13 @@ public class MockupOffer implements Serializable, Rectangable {
         AttributedStringBuilder attributedString = new AttributedStringBuilder().append("╔═══╗");
 
         //Next 1 player line
-        if(assignedPlayer == null) {
+        if(assignedPlayerIndex == null) {
             attributedString.append("║ ░ ║");
         }else{
             attributedString
                     .append("║ ")
                     //Adds color based on player's totem color
-                    .append(assignedPlayer.getTotem().getTotemAttributedString())
+                    .append(game.getPlayer(assignedPlayerIndex).getTotem().getTotemAttributedString())
                     .append(" ║");
         }
 

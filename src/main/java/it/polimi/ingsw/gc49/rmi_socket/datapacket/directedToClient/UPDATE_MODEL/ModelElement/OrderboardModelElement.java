@@ -16,7 +16,8 @@ public class OrderboardModelElement extends UpdateModelElement {
 
     @Override
     public void updateMockupModel ( MockupGame game ) {
-        game.getOrderBoard().clear();
-        game.getOrderBoard().addAll( orderBoard );
+        for(int i = 0; i < orderBoard.size(); i++) {
+            game.setOrderPlayerIndex(i, orderBoard.get(i).getAssignedPlayerIndex());
+        }
     }
 }

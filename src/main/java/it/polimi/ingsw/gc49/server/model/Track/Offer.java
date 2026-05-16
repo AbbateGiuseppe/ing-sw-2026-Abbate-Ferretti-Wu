@@ -63,7 +63,7 @@ public class Offer implements Serializable {
 
     public MockupOffer giveOfferMockup() {
         if(assignedPlayer != null) {
-            return new MockupOffer(foodGain, upperDraw, lowerDraw, assignedPlayer.giveMockupPlayer());
+            return new MockupOffer(foodGain, upperDraw, lowerDraw, assignedPlayer.getPlayerIndex());
         }else{
             return new MockupOffer(foodGain, upperDraw, lowerDraw, null);
         }

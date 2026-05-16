@@ -85,7 +85,7 @@ public class OrderSlot implements Serializable {
 
     public MockupOrder giveOrderMockup() {
         if(assignedPlayer != null) {
-            return new MockupOrder(foodGain, payFood, foodToPay, removedPointsOnStarvation, assignedPlayer.giveMockupPlayer());
+            return new MockupOrder(foodGain, payFood, foodToPay, removedPointsOnStarvation, assignedPlayer.getPlayerIndex());
         }else{
             return new MockupOrder(foodGain, payFood, foodToPay, removedPointsOnStarvation, null);
         }
