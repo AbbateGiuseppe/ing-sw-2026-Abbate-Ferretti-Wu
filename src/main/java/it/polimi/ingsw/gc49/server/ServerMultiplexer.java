@@ -71,8 +71,6 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
             e.printStackTrace();
         }
 
-
-
         try {
             InetAddress localHost = InetAddress.getLocalHost();
             System.out.println("Local IP Address: " + localHost.getHostAddress());
@@ -131,20 +129,25 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
             } else {
                 //finds the existing proxy and converts it to the newly chosen connection technology
-                PhasedProxyPlayer existingProxy = clients.get(nickname).convertToSocket();
+                PhasedProxyPlayer existingProxy = clients.get(nickname).convertToRmi();
                 clients.remove(nickname);
                 clients.put(nickname, existingProxy);
 
                 if (existingProxy.isConnected()) {
                     throw new RemoteException("A player with such a nickname is already connected. Please, change it.");
                 } else {
-                    existingProxy.reconnect(clientStub, null, null);
-                    System.out.println(existingProxy.nickname + " is reconnected");
-
-                    existingProxy.sendString(new StringPacket("Riconnessione riuscita."));
 
                     new Thread(() -> {
-                        runVirtualClient(existingProxy);
+                        try {
+                            Thread.sleep(200);
+
+                            existingProxy.reconnect(clientStub, null, null);
+                            runVirtualClient(existingProxy);
+
+                            existingProxy.sendString(new StringPacket("Riconnessione riuscita."));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }).start();
 
                     return (VirtualServer) UnicastRemoteObject.exportObject(existingProxy, port);

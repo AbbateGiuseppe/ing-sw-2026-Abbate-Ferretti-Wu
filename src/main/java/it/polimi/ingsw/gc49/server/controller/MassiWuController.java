@@ -11,7 +11,10 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGame
 
 import java.io.Serializable;
 
-public class MassiWuController implements VirtualGameClient{
+import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveState;
+import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveStateAsync;
+
+public class MassiWuController implements VirtualGameClient, Serializable{
     private Game game;
     private final int controllingPlayerIndex;
     private final PhasedProxyPlayer controllingPlayer;
@@ -29,6 +32,7 @@ public class MassiWuController implements VirtualGameClient{
 
     public void executeCommand ( CommandPacket command ) {
         PlayerActionEnum action = command.getAction();
+        saveStateAsync();
         switch ( action ) {
             case CHOOSE_TOTEM:
                 game.chooseTotem(controllingPlayerIndex, command.getTotem());

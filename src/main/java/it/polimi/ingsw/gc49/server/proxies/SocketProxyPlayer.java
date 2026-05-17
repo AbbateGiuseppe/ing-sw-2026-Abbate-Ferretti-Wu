@@ -18,9 +18,11 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.HALL_phase.HA
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.RoomCommandPacket;
+import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
+import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -90,6 +92,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
 
     //###################
     //### VirtualClient
+
     @Override
     public void changePhaseClient ( ChangePhasePacket changePhasePacket ) throws Exception {
         synchronized (writeLock) {
@@ -198,6 +201,20 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         super.disconnectProcedure(disconnectPacket);
     }
 
+    @Override
+    public void reconnect (VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput) throws Exception {
+        clientSide = newClientSide;
+        input = newInput;
+        output = newOutput;
+        if (controller != null) {
+            controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
+        }
+        changeLocalPhase(ApplicationPhase.GAME);
+        changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
+        serverSide.syncPlayer(this);
+    }
+
+
     ///-------------------------------
     // conversions methods
     @Override
@@ -212,7 +229,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     @Override
     public void resumeAfterServerCrash(ServerMultiplexer server) {
         super.resumeAfterServerCrash(server);
-        // Ricrea il lock per la sincronizzazione (se l'avevi messo transient)
         this.writeLock = new Object();
     }
+
 }
