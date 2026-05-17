@@ -126,12 +126,12 @@ public class MockupGame implements Serializable {
                 .map(MockupOrder::getRectangleAttributedString)
                 .toList();
     }
-    /*public List<MockupOffer> getOfferBoard() {
-        return offerBoard;
+    public List<RectangleAttributedString> getOfferBoardRectangleStrings(){
+        return offerBoard
+                .stream()
+                .map(MockupOffer::getRectangleAttributedString)
+                .toList();
     }
-    public List<MockupOrder> getOrderBoard() {
-        return orderBoard;
-    }*/
 
     //### adders
     //Cardboard

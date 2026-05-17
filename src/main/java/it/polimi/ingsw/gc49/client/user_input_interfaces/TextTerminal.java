@@ -383,16 +383,16 @@ public class TextTerminal extends UserInputInterface {
         synchronized (cursorLock) {
 
             Cursor cursor = terminal.getCursorPosition(_ -> {});
-            int y = cursor.getY();
-            int x = cursor.getX();
+            int initialY = cursor.getY();
+            int initialX = cursor.getX();
             int height = rectangleAttributedString.height;
             int width = rectangleAttributedString.width;
-            for (int i = 0; i < height; i++) {
-                terminal.puts(InfoCmp.Capability.cursor_address, y+i, x);
-                rectangleAttributedString.attributedString.subSequence(i * width, (width - 1) * (i + 1)).print(terminal);
+            for (int currentLine = 0; currentLine < height; currentLine++) {
+                terminal.puts(InfoCmp.Capability.cursor_address, initialY + currentLine, initialX);
+                rectangleAttributedString.attributedString.subSequence(currentLine * width, (currentLine * width) + width).print(terminal);
             }
 
-            terminal.puts(InfoCmp.Capability.cursor_address, y, x);
+            terminal.puts(InfoCmp.Capability.cursor_address, initialY, initialX);
         }
     }
     private void printScroll(String toPrint){
@@ -514,19 +514,20 @@ public class TextTerminal extends UserInputInterface {
             int cursorY;
             int cursorX;
 
-            /*//Draw upperLine
+            //Draw upperLine
             cursorY = startingCursorY;
             cursorX = startingCursorX + 14;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             if(mockupGame.getUpperLine() != null) {
                 for (Card card : mockupGame.getUpperLine()) {
+                    terminal.writer().print("O");
                     printRectangleString(card.getRectangleAttributedString());
                     cursorX = cursorX + card.getRectangleAttributedString().width;
                     terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
                 }
             }else{
                 terminal.writer().println("Non esiste la fila superiore");
-            }*/
+            }
 
             //Draw orderSlots
             cursorY = startingCursorY+4;
@@ -548,6 +549,18 @@ public class TextTerminal extends UserInputInterface {
             cursorX = startingCursorX+3;
             terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
             terminal.writer().print("╚════════╝");
+
+            //Draw offerBoard
+            cursorY = startingCursorY+4;
+            cursorX = startingCursorX+14;
+            terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            terminal.writer().print("Offers");
+            terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
+            for (RectangleAttributedString rectangleAttributedString : mockupGame.getOfferBoardRectangleStrings()) {
+                printRectangleString(rectangleAttributedString);
+                cursorX = cursorX + rectangleAttributedString.width;
+                terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            }
 
             //Draw player stats
             cursorY = startingCursorY + 14;
