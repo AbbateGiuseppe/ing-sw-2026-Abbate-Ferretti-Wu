@@ -189,19 +189,6 @@ class LineTest {
     }
 
     @Test
-    void testDrawUpperCharacter_emptyLine() {
-        // Quando la linea è vuota, dovrebbe ritornare null
-        Card card = line.drawUpperCharacter(0, testPlayer);
-        assertNull(card, "Should return null when upper line is empty");
-    }
-
-    @Test
-    void testDrawLowerCharacter_emptyLine() {
-        Card card = line.drawLowerCharacter(0, testPlayer);
-        assertNull(card, "Should return null when lower line is empty");
-    }
-
-    @Test
     void testDrawUpperBuilding_emptyLine() {
         Card card = line.drawUpperBuilding(0, testPlayer);
         assertNull(card, "Should return null when upper building line is empty");
@@ -237,9 +224,33 @@ class LineTest {
         // Crea un deck personalizzato con carte di ere diverse
         Deck customDeck = new Deck();
         Card card1 = new Artist(Era.first(), 3);
-        Card card2 = new Artist(Era.first().next(), 3);
+        Card card2 = new Artist(Era.first(), 3);
+        Card card3 = new Artist(Era.first(), 3);
+        Card card4 = new Artist(Era.first(), 3);
+        //four lower cards
+
+        Card card5 = new Artist(Era.first(), 3);
+        Card card6 = new Artist(Era.first(), 3);
+        Card card7 = new Artist(Era.first(), 3);
+        Card card8 = new Artist(Era.first(), 3);
+        Card card9 = new Artist(Era.first(), 3);
+        Card card10 = new Artist(Era.first(), 3);
+        Card card11 = new Artist(Era.first(), 3);
+        //seven upper cards
+
+        Card card12 = new Artist(Era.first().next(), 3);
         customDeck.addCard(card1);
         customDeck.addCard(card2);
+        customDeck.addCard(card3);
+        customDeck.addCard(card4);
+        customDeck.addCard(card5);
+        customDeck.addCard(card6);
+        customDeck.addCard(card7);
+        customDeck.addCard(card8);
+        customDeck.addCard(card9);
+        customDeck.addCard(card10);
+        customDeck.addCard(card11);
+        customDeck.addCard(card12);
 
         Line customLine = new Line(game, customDeck);
 

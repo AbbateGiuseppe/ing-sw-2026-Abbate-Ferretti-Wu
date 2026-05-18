@@ -520,7 +520,6 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             if(mockupGame.getUpperLine() != null) {
                 for (Card card : mockupGame.getUpperLine()) {
-                    terminal.writer().print("O");
                     printRectangleString(card.getRectangleAttributedString());
                     cursorX = cursorX + card.getRectangleAttributedString().width;
                     terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
@@ -528,6 +527,20 @@ public class TextTerminal extends UserInputInterface {
             }else{
                 terminal.writer().println("Non esiste la fila superiore");
             }
+            //Draw lowerLine
+            cursorY = startingCursorY + 10;
+            cursorX = startingCursorX + 14;
+            terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            if(mockupGame.getLowerLine() != null) {
+                for (Card card : mockupGame.getLowerLine()) {
+                    printRectangleString(card.getRectangleAttributedString());
+                    cursorX = cursorX + card.getRectangleAttributedString().width;
+                    terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+                }
+            }else{
+                terminal.writer().println("Non esiste la fila inferiore");
+            }
+
 
             //Draw orderSlots
             cursorY = startingCursorY+4;
