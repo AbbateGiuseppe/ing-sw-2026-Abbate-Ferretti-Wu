@@ -45,21 +45,31 @@ public class Line implements Serializable {
         this.upperBuilding = new ArrayList<>();
         this.lowerBuilding = new ArrayList<>();
 
-        for (int i = 0; i < numPlayers + 4; i++) {
+        int upperPlaced = 0;
+        int lowerPlaced = 0;
+
+        while (lowerPlaced < numPlayers + 1) {
+            Card drawn = deck.dealTribeCard();
+            if (drawn == null) break;
+
+            if(drawn.getClass().isInstance(EventCard.class)) {
+                upperLine.add(drawn);
+                upperPlaced++;
+            } else {
+                lowerLine.add(drawn);
+                lowerPlaced++;
+            }
+        }
+
+        while (upperPlaced < numPlayers + 4) {
             Card drawn = deck.dealTribeCard();
             if (drawn == null) break;
 
             upperLine.add(drawn);
+            upperPlaced++;
         }
 
-        for (int i = 0; i < numPlayers + 4; i++) {
-            Card drawn = deck.dealTribeCard();
-            if (drawn == null) break;
-
-            lowerLine.add(drawn);
-        }
-
-        int buildingsToPlace = deck.getBuildingsToPlace(numPlayers, newEra);
+        int buildingsToPlace = deck.getBuildingsToPlace(numPlayers, currentEra);
         for (int i = 0; i < buildingsToPlace; i++) {
             Card building = deck.dealBuildingCard();
             if (building == null) break;
