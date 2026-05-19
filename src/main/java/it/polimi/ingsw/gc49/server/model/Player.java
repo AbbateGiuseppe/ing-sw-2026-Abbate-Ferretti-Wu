@@ -122,7 +122,8 @@ public class Player implements Serializable {
                     nickname,
                     playerIndex,
                     food,
-                    points
+                    points,
+                    totem
         );
     }
 
