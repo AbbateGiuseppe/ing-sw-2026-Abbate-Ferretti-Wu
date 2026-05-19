@@ -220,7 +220,7 @@ public class TextTerminal extends UserInputInterface {
         legend.append(" ♦ points  | ▓ space occupied by totem          | ")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╬")
                 .style(AttributedStyle.DEFAULT).append(" character card\n");
-        legend.append(" ✶ stars   |__                                  | ")
+        legend.append(" * stars   |__                                  | ")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╬")
                 .style(AttributedStyle.DEFAULT).append(" building card\n");
         legend.append(" ≥ at end game|_________________________________| ")
@@ -514,20 +514,73 @@ public class TextTerminal extends UserInputInterface {
             int cursorY;
             int cursorX;
 
-            //Draw upperLine
+            //Draw upperLine (char.+build.)
             cursorY = startingCursorY;
             cursorX = startingCursorX + 14;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             if(mockupGame.getUpperLine() != null) {
                 for (Card card : mockupGame.getUpperLine()) {
-                    terminal.writer().print("O");
                     printRectangleString(card.getRectangleAttributedString());
                     cursorX = cursorX + card.getRectangleAttributedString().width;
+                    terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+                }
+                terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, ++cursorX);
+                terminal.writer().print("│");
+                terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
+                terminal.writer().print("│");
+                cursorY = startingCursorY;
+                cursorX = cursorX + 2;
+                terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+                int row_start = cursorX;
+                int MAX_ROW = 3;
+                int i = 0;
+                for (Card card : mockupGame.getUpperBuilding()) {
+                    printRectangleString(card.getRectangleAttributedString());
+                    cursorX = cursorX + card.getRectangleAttributedString().width;
+                    i++;
+                    if(i >= MAX_ROW) {
+                        cursorY = cursorY + card.getRectangleAttributedString().height;
+                        cursorX = row_start;
+                    }
                     terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
                 }
             }else{
                 terminal.writer().println("Non esiste la fila superiore");
             }
+            //Draw lowerLine (char.+build.)
+            cursorY = startingCursorY + 10;
+            cursorX = startingCursorX + 14;
+            terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            if(mockupGame.getLowerLine() != null) {
+                for (Card card : mockupGame.getLowerLine()) {
+                    printRectangleString(card.getRectangleAttributedString());
+                    cursorX = cursorX + card.getRectangleAttributedString().width;
+                    terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+                }
+                terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, ++cursorX);
+                terminal.writer().print("│");
+                terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
+                terminal.writer().print("│");
+                cursorY = startingCursorY + 10;
+                cursorX = cursorX + 2;
+                terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+                int row_start = cursorX;
+                int MAX_ROW = 3;
+                int i = 0;
+                for (Card card : mockupGame.getLowerBuilding()) {
+                    printRectangleString(card.getRectangleAttributedString());
+                    cursorX = cursorX + card.getRectangleAttributedString().width;
+                    i++;
+                    if(i >= MAX_ROW) {
+                        cursorY = cursorY + card.getRectangleAttributedString().height;
+                        cursorX = row_start;
+                    }
+                    terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+                }
+            }else{
+                terminal.writer().println("Non esiste la fila inferiore");
+            }
+
 
             //Draw orderSlots
             cursorY = startingCursorY+4;
