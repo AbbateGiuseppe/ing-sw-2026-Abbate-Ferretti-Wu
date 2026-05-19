@@ -27,12 +27,13 @@ public class MockupPlayer implements Serializable {
      * @param nickname the player's nickname;
      * @param playerIndex this player index in the model's array of players;
      */
-    public MockupPlayer ( String nickname, int playerIndex, int food, int points ) {
+    public MockupPlayer ( String nickname, int playerIndex, int food, int points, Totem totem ) {
         this.nickname = nickname;
         this.playerIndex = playerIndex;
 
         this.food = food;
         this.points = points;
+        this.totem = totem;
         characterCards = new ArrayList<>();
         buildingCards = new ArrayList<>();
 
