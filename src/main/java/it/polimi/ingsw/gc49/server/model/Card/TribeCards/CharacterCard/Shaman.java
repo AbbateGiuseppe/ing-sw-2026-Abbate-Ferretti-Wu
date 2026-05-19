@@ -43,7 +43,7 @@ public class Shaman extends CharacterCard {
                 .style(AttributedStyle.DEFAULT).append(" S ")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
                 .append("║")
-                .style(AttributedStyle.DEFAULT).append(String.valueOf(numStars)).append("✶ ")
+                .style(AttributedStyle.DEFAULT).append(String.valueOf(numStars)).append("* ")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
                 .append("╚═══╝").toAttributedString();
         int height = 4;
