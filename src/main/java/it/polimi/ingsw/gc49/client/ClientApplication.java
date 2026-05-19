@@ -201,6 +201,7 @@ public class ClientApplication implements VirtualClient {
         }
     }
 
+
     //### Client general methods
     @Override
     public void changePhaseClient ( ChangePhasePacket changePhasePacket ) throws Exception {

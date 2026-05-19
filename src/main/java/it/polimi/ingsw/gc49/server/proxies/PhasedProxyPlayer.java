@@ -171,7 +171,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
         if (controller != null) {
             controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
         }
-        this.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
+        changeLocalPhase(ApplicationPhase.GAME);
         serverSide.syncPlayer(this);
     }
 

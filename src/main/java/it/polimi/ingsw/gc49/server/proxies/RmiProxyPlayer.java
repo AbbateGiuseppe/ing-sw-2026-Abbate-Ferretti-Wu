@@ -19,7 +19,11 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.Heartbeatable;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualClient;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualServerAdapter;
+import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
+import it.polimi.ingsw.gc49.server.model.Game;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.rmi.NoSuchObjectException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -37,6 +41,7 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
         changeLocalPhase(changePhasePacket.newPhase);
         clientSide.changePhaseClient(changePhasePacket);
     }
+
     @Override
     public void sendString ( StringPacket stringPacket ) throws Exception {
         clientSide.sendString(stringPacket);
@@ -153,4 +158,19 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     public SocketProxyPlayer convertToSocket(){
         return new SocketProxyPlayer(server, nickname, currentPhase, serverSide, input, output);
     }
+
+    @Override
+    public void reconnect (VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput) throws Exception {
+        clientSide = newClientSide;
+        input = newInput;
+        output = newOutput;
+        if (controller != null) {
+            controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
+        }
+        changeLocalPhase(ApplicationPhase.GAME);
+        this.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
+        serverSide.syncPlayer(this);
+
+    }
+
 }
