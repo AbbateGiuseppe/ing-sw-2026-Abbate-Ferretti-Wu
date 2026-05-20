@@ -54,4 +54,9 @@ public abstract class BuildingCard extends Card implements BuildingEventListener
     public int getFoodPrice() {
         return foodPrice;
     }
+
+    @Override
+    public boolean isLowerLineOnSetup () {
+        return true;
+    }
 }

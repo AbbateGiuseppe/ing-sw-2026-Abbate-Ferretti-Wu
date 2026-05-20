@@ -30,4 +30,9 @@ public abstract class EventCard extends TribeCard implements Comparable<EventCar
 
     }
     public abstract void resolveEvent(List<Player> players);
+
+    @Override
+    public boolean isLowerLineOnSetup () {
+        return false;
+    }
 }

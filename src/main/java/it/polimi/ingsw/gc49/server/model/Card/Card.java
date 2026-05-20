@@ -47,4 +47,10 @@ public abstract class Card implements Rectangable, Serializable {
      * @return A simple one line String.
      */
     public abstract String simpleToString();
+
+    /**
+     * Distinguishes cards that can go in the lower line during the setup from cards that can't.
+     * @return true if this card can be placed on the lower line on setup
+     */
+    public abstract boolean isLowerLineOnSetup();
 }

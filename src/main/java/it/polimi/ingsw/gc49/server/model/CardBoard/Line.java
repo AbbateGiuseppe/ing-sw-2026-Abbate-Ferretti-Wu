@@ -52,12 +52,12 @@ public class Line implements Serializable {
             Card drawn = deck.dealTribeCard();
             if (drawn == null) break;
 
-            if(drawn instanceof EventCard) {
-                upperLine.add(drawn);
-                upperPlaced++;
-            } else {
+            if(drawn.isLowerLineOnSetup()) {
                 lowerLine.add(drawn);
                 lowerPlaced++;
+            } else {
+                upperLine.add(drawn);
+                upperPlaced++;
             }
         }
 

@@ -15,4 +15,9 @@ public abstract class CharacterCard extends TribeCard implements Serializable {
     public boolean canGet(Player player) {
         return true;
     }
+
+    @Override
+    public boolean isLowerLineOnSetup () {
+        return true;
+    }
 }
