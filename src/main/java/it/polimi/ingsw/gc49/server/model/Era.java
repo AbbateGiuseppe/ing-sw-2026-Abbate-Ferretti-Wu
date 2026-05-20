@@ -1,6 +1,11 @@
 package it.polimi.ingsw.gc49.server.model;
 
-public enum Era {
+import it.polimi.ingsw.gc49.client.view.Rectangable;
+import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import org.jline.utils.AttributedStringBuilder;
+import org.jline.utils.AttributedStyle;
+
+public enum Era implements Rectangable {
     FIRST,
     SECOND,
     THIRD,
@@ -47,5 +52,37 @@ public enum Era {
      */
     public boolean isFinal() {
         return next() == null;
+    }
+
+    @Override
+    public RectangleAttributedString getRectangleAttributedString () {
+        AttributedStringBuilder attributedString = new AttributedStringBuilder();
+
+
+        attributedString
+                .append("╔═══╗")
+                .append("║Era║");
+
+        switch(this){
+            case FIRST: attributedString
+                    .append("║ 1 ║");
+                break;
+            case SECOND: attributedString
+                    .append("║ 2 ║");
+                break;
+            case THIRD: attributedString
+                    .append("║ 3 ║");
+                break;
+            case THIRD_FINAL: attributedString
+                    .append("║fin║");
+                break;
+        }
+
+        attributedString
+                .append("╚═══╝");
+
+        int height = 4;
+        int width = 5;
+        return new RectangleAttributedString(height, width, attributedString.toAttributedString());
     }
 }

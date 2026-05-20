@@ -44,7 +44,7 @@ public class ShamanicThreeStarCard extends BuildingCard {
         AttributedString attributedString = new AttributedStringBuilder()
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
                 .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
-                .append("      ").append(String.valueOf(foodPrice)).append("♥")
+                .append("    ").append(String.valueOf(foodPrice)).append("♥")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
                 .style(AttributedStyle.DEFAULT).append("3*     §")
