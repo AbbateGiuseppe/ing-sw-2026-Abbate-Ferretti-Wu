@@ -21,7 +21,7 @@ public enum Totem {
                         .style(AttributedStyle.DEFAULT);
                 break;
             case WHITE:
-                attributedString.style(AttributedStyle.DEFAULT).append("▓")
+                attributedString.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("▓")
                         .style(AttributedStyle.DEFAULT);
                 break;
             case BLUE:

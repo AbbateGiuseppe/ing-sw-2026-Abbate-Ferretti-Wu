@@ -411,6 +411,7 @@ public class TextTerminal extends UserInputInterface {
     }
     private void printManual () {
         synchronized (cursorLock) {
+            cleanShowbox();
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 0);
             terminal.writer().println(manual);
             helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
@@ -418,6 +419,7 @@ public class TextTerminal extends UserInputInterface {
     }
     private void printLegend () {
         synchronized (cursorLock) {
+            cleanShowbox();
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 0);
             legend.toAttributedString().print(terminal);
             helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
@@ -471,14 +473,26 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.restore_cursor);
         }
     }
+    private void cleanShowbox() {
+        //Save cursor
+        Cursor cursor = terminal.getCursorPosition(_ -> {});
+        int initialY = cursor.getY();
+        int initialX = cursor.getX();
+
+        //Clean showbox
+        for( int i = LINE_SHOW; i < LINE_PREVIOUS_MESSAGE; i++ ) {
+            terminal.puts(InfoCmp.Capability.cursor_address, i, 0);
+            terminal.puts(InfoCmp.Capability.clr_eol);
+        }
+
+        //Restore cursor
+        terminal.puts(InfoCmp.Capability.cursor_address, initialY, initialX);
+    }
     @Override
     public void show(){
         synchronized (cursorLock) {
             terminal.puts(InfoCmp.Capability.save_cursor);
-            for( int i = LINE_SHOW; i < LINE_PREVIOUS_MESSAGE; i++ ) {
-                terminal.puts(InfoCmp.Capability.cursor_address, i, 0);
-                terminal.puts(InfoCmp.Capability.clr_eol);
-            }
+            cleanShowbox();
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 1);
             switch (currentPhase) {
                 case HALL:
