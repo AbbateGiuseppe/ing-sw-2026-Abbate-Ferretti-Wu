@@ -39,6 +39,9 @@ public class TextTerminal extends UserInputInterface {
     private static int columns = 130;
     private static final int SCROLL_REGION_HEIGHT = 12;
     private static final int LINE_SHOW = SCROLL_REGION_HEIGHT+1;
+    private static final int SHOW_FIRST_LINE = 0;
+    private static final int SHOW_SECOND_LINE = 4;
+    private static final int SHOW_THIRD_LINE = 10;
     private static final int LINE_PREVIOUS_MESSAGE = rows-6;
     private static final int LINE_ERROR = rows-4;
 
@@ -515,7 +518,7 @@ public class TextTerminal extends UserInputInterface {
             int cursorX;
 
             //Draw upperLine (char.+build.)
-            cursorY = startingCursorY;
+            cursorY = startingCursorY + SHOW_FIRST_LINE;
             cursorX = startingCursorX + 14;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             if(mockupGame.getUpperLine() != null) {
@@ -532,13 +535,13 @@ public class TextTerminal extends UserInputInterface {
                 cursorX = cursorX + 2;
                 terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
                 int row_start = cursorX;
-                int MAX_ROW = 3;
+                int MAX_EACH_ROW = 3;
                 int i = 0;
                 for (Card card : mockupGame.getUpperBuilding()) {
                     printRectangleString(card.getRectangleAttributedString());
                     cursorX = cursorX + card.getRectangleAttributedString().width;
                     i++;
-                    if(i >= MAX_ROW) {
+                    if(i >= MAX_EACH_ROW) {
                         cursorY = cursorY + card.getRectangleAttributedString().height;
                         cursorX = row_start;
                     }
@@ -548,7 +551,7 @@ public class TextTerminal extends UserInputInterface {
                 terminal.writer().println("Non esiste la fila superiore");
             }
             //Draw lowerLine (char.+build.)
-            cursorY = startingCursorY + 10;
+            cursorY = startingCursorY + SHOW_THIRD_LINE;
             cursorX = startingCursorX + 14;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             if(mockupGame.getLowerLine() != null) {
@@ -561,17 +564,17 @@ public class TextTerminal extends UserInputInterface {
                 terminal.writer().print("│");
                 terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
                 terminal.writer().print("│");
-                cursorY = startingCursorY + 10;
+                cursorY = startingCursorY + SHOW_THIRD_LINE;
                 cursorX = cursorX + 2;
                 terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
                 int row_start = cursorX;
-                int MAX_ROW = 3;
+                int MAX_EACH_ROW = 3;
                 int i = 0;
                 for (Card card : mockupGame.getLowerBuilding()) {
                     printRectangleString(card.getRectangleAttributedString());
                     cursorX = cursorX + card.getRectangleAttributedString().width;
                     i++;
-                    if(i >= MAX_ROW) {
+                    if(i >= MAX_EACH_ROW) {
                         cursorY = cursorY + card.getRectangleAttributedString().height;
                         cursorX = row_start;
                     }
@@ -583,7 +586,7 @@ public class TextTerminal extends UserInputInterface {
 
 
             //Draw orderSlots
-            cursorY = startingCursorY+4;
+            cursorY = startingCursorY + SHOW_SECOND_LINE;
             cursorX = startingCursorX+3;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             terminal.writer().print("Order");
@@ -604,7 +607,7 @@ public class TextTerminal extends UserInputInterface {
             terminal.writer().print("╚════════╝");
 
             //Draw offerBoard
-            cursorY = startingCursorY+4;
+            cursorY = startingCursorY + SHOW_SECOND_LINE;
             cursorX = startingCursorX+14;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             terminal.writer().print("Offers");
@@ -614,6 +617,14 @@ public class TextTerminal extends UserInputInterface {
                 cursorX = cursorX + rectangleAttributedString.width;
                 terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             }
+
+            //Draw current era
+            cursorY = startingCursorY + SHOW_SECOND_LINE;
+            cursorX = cursorX + 2;
+            terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            terminal.writer().print("Deck");
+            terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
+            printRectangleString(mockupGame.getDeckTopEra().getRectangleAttributedString());
 
             //Draw player stats
             cursorY = startingCursorY + 14;
