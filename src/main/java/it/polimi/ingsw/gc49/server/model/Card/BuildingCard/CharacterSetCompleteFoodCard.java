@@ -31,12 +31,12 @@ public class CharacterSetCompleteFoodCard extends BuildingCard {
 
     @Override
     public String toString() {
-        return "CharacterSetCompleteFoodCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=get 5 bonus food whenever completed a full set of character cards" +
-                '}';
+        return "CharacterSetCompleteFoodCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = get 5 bonus food whenever completed a full set of character cards" +
+                "\n}";
     }
 
     @Override

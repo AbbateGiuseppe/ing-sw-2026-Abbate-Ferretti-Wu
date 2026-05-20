@@ -27,12 +27,12 @@ public class SamePairInventionsCard extends BuildingCard {
 
     @Override
     public String toString() {
-        return "SamePairInventionsCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=get 3 bonus food whenever the player obtains a pair of same inventors" +
-                '}';
+        return "SamePairInventionsCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = get 3 bonus food whenever the player obtains a pair of same inventors" +
+                "\n}";
     }
 
     @Override

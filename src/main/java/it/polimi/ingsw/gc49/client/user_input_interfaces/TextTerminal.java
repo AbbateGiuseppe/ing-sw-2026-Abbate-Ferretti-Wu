@@ -29,12 +29,14 @@ public class TextTerminal extends UserInputInterface {
     /**The key of the commands is the string representing the command type, such as "help" or "draw",
      * the rest of the following strings are used as parameters to specify the behaviour in the function of the called TerminalCommand*/
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
-    private static final StringBuilder manual = new StringBuilder();
+    private static final Map<ApplicationPhase, AttributedStringBuilder> manual = new EnumMap<>(ApplicationPhase.class);
     private static final AttributedStringBuilder legend = new AttributedStringBuilder();
     private static final Terminal terminal = ClientApplication.terminal;
     private static final LineReader lineReader = ClientApplication.lineReader;
     private static final ScheduledExecutorService helpScheduler = Executors.newSingleThreadScheduledExecutor();
     private static final int HELP_TIMEOUT = 10;
+    private static final ScheduledExecutorService errorScheduler = Executors.newSingleThreadScheduledExecutor();
+    private static final int ERROR_TIMEOUT = 10;
     private static int rows = 35;
     private static int columns = 130;
     private static final int SCROLL_REGION_HEIGHT = 12;
@@ -53,8 +55,8 @@ public class TextTerminal extends UserInputInterface {
             rows = terminal.getHeight();
         });
     }
-    private String previousMessage = "";
-    private String message = "";
+    private String previousCommand = "";
+    private String lastCommand = "";
 
     private static final Map<String,Totem> totems = new HashMap<>();
     static {
@@ -137,16 +139,16 @@ public class TextTerminal extends UserInputInterface {
                 try {
                     int cardIndex = Integer.parseInt(terminalParameters[2]);
                     PlayerActionEnum action = null;
-                    if (terminalParameters[0].equalsIgnoreCase("lower")) {
-                        if (terminalParameters[1].equalsIgnoreCase("character")) {
+                    if (terminalParameters[0].equalsIgnoreCase("low")) {
+                        if (terminalParameters[1].equalsIgnoreCase("c")) {
                             action = PlayerActionEnum.DRAW_LOWER_CHARACTER;
-                        } else if (terminalParameters[1].equalsIgnoreCase("building")) {
+                        } else if (terminalParameters[1].equalsIgnoreCase("b")) {
                             action = PlayerActionEnum.DRAW_LOWER_BUILDING;
                         }
-                    } else if (terminalParameters[0].equalsIgnoreCase("upper")) {
-                        if (terminalParameters[1].equalsIgnoreCase("character")) {
+                    } else if (terminalParameters[0].equalsIgnoreCase("up")) {
+                        if (terminalParameters[1].equalsIgnoreCase("c")) {
                             action = PlayerActionEnum.DRAW_UPPER_CHARACTER;
-                        } else if (terminalParameters[1].equalsIgnoreCase("building")) {
+                        } else if (terminalParameters[1].equalsIgnoreCase("b")) {
                             action = PlayerActionEnum.DRAW_UPPER_BUILDING;
                         }
                     }
@@ -158,6 +160,29 @@ public class TextTerminal extends UserInputInterface {
                     }
                 } catch (NumberFormatException e) {
                     terminalMethods.printScroll("please, insert a valid number!");
+                }
+            }
+        });
+        // Legge una carta
+        commands.put("read", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
+            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
+                try {
+                    int cardIndex = Integer.parseInt(terminalParameters[2]);
+                    if (terminalParameters[0].equalsIgnoreCase("low")) {
+                        if (terminalParameters[1].equalsIgnoreCase("c")) {
+                            terminalMethods.printCardRead(terminalMockups.getGame().getLowerLine().get(cardIndex));
+                        } else if (terminalParameters[1].equalsIgnoreCase("b")) {
+                            terminalMethods.printCardRead(terminalMockups.getGame().getLowerBuilding().get(cardIndex));
+                        }
+                    } else if (terminalParameters[0].equalsIgnoreCase("up")) {
+                        if (terminalParameters[1].equalsIgnoreCase("c")) {
+                            terminalMethods.printCardRead(terminalMockups.getGame().getUpperLine().get(cardIndex));
+                        } else if (terminalParameters[1].equalsIgnoreCase("b")) {
+                            terminalMethods.printCardRead(terminalMockups.getGame().getUpperBuilding().get(cardIndex));
+                        }
+                    }
+                } catch (IndexOutOfBoundsException e) {
+                    terminalMethods.printScroll("index out of bounds!");
                 }
             }
         });
@@ -194,26 +219,41 @@ public class TextTerminal extends UserInputInterface {
     static {
         // Command entries
         //GENERAL/ANY commands
-        manual.append(String.format("%72s\n", "GENERAL commands:"));
-        manual.append(manualFormat("help", "Displays this help message for " + HELP_TIMEOUT + " seconds"));
-        manual.append(manualFormat("disconnect", "Disconnects you from the server and exits the application"));
-        //HALL commands
-        manual.append(manualSeparator()).append("\n");
-        manual.append(String.format("%70s\n", "HALL commands:"));
-        manual.append(manualFormat("create/join [\"your room name\"] (num. players)", "Creates/Joins a waiting room"));
-        //ROOM commands
-        manual.append(manualSeparator()).append("\n");
-        manual.append(String.format("%70s\n", "ROOM commands:"));
-        manual.append(manualFormat("leave", "Leaves the current room"));
-        //GAME commands
-        manual.append(manualSeparator()).append("\n");
-        manual.append(String.format("%70s\n", "GAME commands:"));
-        manual.append(manualFormat("totem [orange/white/blue/black/yellow]", "Choose the specified totem"));
-        manual.append(manualFormat("offer [offer index]", "Choose the specified offer"));
-        manual.append(manualFormat("cards [player index]", "Displays the cards of the specified player"));
-        manual.append(manualFormat("draw [lower/upper] [character/building] [card index]", "Draw the specified card"));
+        for(ApplicationPhase applicationPhase : ApplicationPhase.values()){
+            manual.put(applicationPhase, new AttributedStringBuilder()
+                    .append(String.format("%72s\n", "GENERAL commands:"))
+                    .append(manualFormat("help", "Displays this help message for " + HELP_TIMEOUT + " seconds"))
+                    .append(manualFormat("disconnect", "Disconnects you from the server and exits the application"))
+            );
+        }
 
-        manual.append(manualSeparator());
+        //HALL commands
+        manual.get(ApplicationPhase.HALL)
+                .append(manualSeparator()).append("\n")
+                .append(String.format("%70s\n", "HALL commands:"))
+                .append(manualFormat("create/join [\"your room name\"] (num. players)", "Creates/Joins a waiting room"));
+        //ROOM commands
+        manual.get(ApplicationPhase.ROOM)
+                .append(manualSeparator()).append("\n")
+                .append(String.format("%70s\n", "ROOM commands:"))
+                .append(manualFormat("leave", "Leaves the current room"));
+        //GAME commands
+        manual.get(ApplicationPhase.GAME)
+                .append(manualSeparator()).append("\n")
+                .append(String.format("%70s\n", "GAME commands:"))
+                .append(manualFormat("legend", "Displays a legend that explains game board's symbols"))
+                .append(manualFormat("totem [orange/white/blue/black/yellow]", "Choose the specified totem"))
+                .append(manualFormat("offer [offer index]", "Choose the specified offer"))
+                .append(manualFormat("draw [low/up] [c/b] [card index]", "Draw the specified card from upper or lower lines,"))
+                .append(manualFormat("", "from the character or the building line."))
+                .append(manualFormat("read [low/up] [c/b] [card index]", "Read the description of a card from upper or lower lines,"))
+                .append(manualFormat("", "from the character or the building line."))
+                .append(manualFormat("cards [player index]", "Displays the cards of the specified player"));
+
+
+        for(ApplicationPhase applicationPhase : ApplicationPhase.values()) {
+            manual.get(applicationPhase).append(manualSeparator());
+        }
     }
     private static String manualSeparator () { return " "+"-".repeat(127); }
     private static String manualFormat ( String command, String description) {return " " + String.format(" %60s | %s\n", command, description);}
@@ -411,48 +451,61 @@ public class TextTerminal extends UserInputInterface {
     }
     private void printManual () {
         synchronized (cursorLock) {
-            cleanShowbox();
-            terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 0);
-            terminal.writer().println(manual);
-            helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
+            showSomething(manual.get(currentPhase).toAttributedString());
         }
     }
     private void printLegend () {
         synchronized (cursorLock) {
+            showSomething(legend.toAttributedString());
+        }
+    }
+    private void printCardRead ( Card readCard ) {
+        synchronized (cursorLock) {
             cleanShowbox();
-            terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 0);
-            legend.toAttributedString().print(terminal);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW + 1, 2);
+            printRectangleString(readCard.getRectangleAttributedString());
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW + 6, 0);
+            terminal.writer().println(readCard);
             helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
         }
     }
     private void printMessage(String newMessage){
         synchronized (cursorLock) {
-            previousMessage = message;
-            message = newMessage;
+            previousCommand = lastCommand;
+            lastCommand = newMessage;
             terminal.puts(InfoCmp.Capability.save_cursor);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 1);
             terminal.puts(InfoCmp.Capability.clr_eol);
             new AttributedStringBuilder()
-                    .style(AttributedStyle.DEFAULT.underline()).append("Previous message")
-                    .style(AttributedStyle.DEFAULT).append(": ").append(previousMessage)
+                    .style(AttributedStyle.DEFAULT.underline()).append("Previous command")
+                    .style(AttributedStyle.DEFAULT).append(": ").append(previousCommand)
                     .toAttributedString().print(terminal);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 1);
             terminal.puts(InfoCmp.Capability.clr_eol);
             new AttributedStringBuilder()
-                    .style(AttributedStyle.DEFAULT.underline()).append("Last message")
-                    .style(AttributedStyle.DEFAULT).append(": ").append(message)
+                    .style(AttributedStyle.DEFAULT.underline()).append("Last command")
+                    .style(AttributedStyle.DEFAULT).append(": ").append(lastCommand)
                     .toAttributedString().print(terminal);
             terminal.puts(InfoCmp.Capability.restore_cursor);
         }
     }
     private void printError(ErrorPacket errorPacket) {
         synchronized (cursorLock) {
-            String errorString = new StringBuilder().append("error,").append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
+            String errorString = new StringBuilder().append("Error ").append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
             terminal.puts(InfoCmp.Capability.save_cursor);
-            terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 1);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 0);
             terminal.puts(InfoCmp.Capability.clr_eol);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 1);
             terminal.writer().print(errorString);
             terminal.puts(InfoCmp.Capability.restore_cursor);
+            errorScheduler.schedule(() -> {
+                synchronized (cursorLock) {
+                    terminal.puts(InfoCmp.Capability.save_cursor);
+                    terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 0);
+                    terminal.puts(InfoCmp.Capability.clr_eol);
+                    terminal.puts(InfoCmp.Capability.restore_cursor);
+                }
+            }, ERROR_TIMEOUT, TimeUnit.SECONDS);
             if (errorPacket.forceDisconnection) {
                 System.exit(-1);
             }
@@ -473,6 +526,7 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.restore_cursor);
         }
     }
+
     private void cleanShowbox() {
         //Save cursor
         Cursor cursor = terminal.getCursorPosition(_ -> {});
@@ -488,6 +542,15 @@ public class TextTerminal extends UserInputInterface {
         //Restore cursor
         terminal.puts(InfoCmp.Capability.cursor_address, initialY, initialX);
     }
+    private void showSomething(AttributedString shownString) {
+        synchronized (cursorLock) {
+            cleanShowbox();
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 0);
+            shownString.print(terminal);
+            helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
+        }
+    }
+
     @Override
     public void show(){
         synchronized (cursorLock) {
@@ -640,12 +703,24 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
             printRectangleString(mockupGame.getDeckTopEra().getRectangleAttributedString());
 
+            //Draw current turn
+            cursorY = startingCursorY + SHOW_SECOND_LINE + 4;
+            cursorX = cursorX + 7;
+            terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+            terminal.writer().print("..turn of ");
+            mockupGame.getPlayer(mockupGame.getCurrentPlayerIndex()).displayAttributedStringName().print(terminal);
+            terminal.writer().print("..");
+
+
             //Draw player stats
             cursorY = startingCursorY + 14;
             cursorX = startingCursorX;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             for(MockupPlayer mockupPlayer : mockupGame.getPlayers()){
-                mockupPlayer.displayAttributedString().print(terminal);
+                mockupPlayer.displayAttributedStringName().print(terminal);
+                terminal.writer().print(": ");
+                mockupPlayer.displayAttributedStringStats().print(terminal);
+                terminal.writer().print(" |");
             }
             //01.              ╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗   ╔hthtrhtr╗
             //02.              ║ I ║║B2♥║║ G ║║   ║║ S ║║ H ║║│%│║║│€│║║ H ║ │ ╚grgrgrgr╝[kuykyuky][hthgeqnz]
@@ -655,8 +730,8 @@ public class TextTerminal extends UserInputInterface {
             //06.   ╔════════╗ ╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗ ╔═══╗
             //07.1. ║░ 3♥    ║ ║ ░ ║║ ░ ║║ ░ ║║ ░ ║║ ░ ║║ ░ ║║ ░ ║ ║Era║
             //08.2. ║░ 1♥    ║ ║ 3♥║║ 1▼║║ 1▲║║ 2▼║║ 1▼║║ 2▲║║ 1▼║ ║ 3 ║
-            //09.3. ║░       ║ ║   ║║   ║║   ║║   ║║ 1▲║║   ║║ 2▲║ ║   ║
-            //10.4. ║░       ║ ╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝ ╚═══╝
+            //09.3. ║░       ║ ║   ║║   ║║   ║║   ║║ 1▲║║   ║║ 2▲║ ╚═══╝  ..turno di ▓[Mario118]..
+            //10.4. ║░       ║ ╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝╚═══╝
             //11.5. ║░-1♥/-2♦║ ╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗                  Carte edificio inf.
             //12.   ╚════════╝ ║ A ║║│¤│║║ G ║║│§│║║ G ║║●3♥║                │ [gregrjyt][jyjetjru]
             //13.              ║   ║║└─┘║║3♥ ║║└─┘║║3♥ ║║ 2♦║                │

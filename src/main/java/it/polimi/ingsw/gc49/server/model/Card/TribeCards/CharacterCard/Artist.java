@@ -20,9 +20,9 @@ public class Artist extends CharacterCard {
 
     @Override
     public String toString() {
-        return "Artist{" +
-                "era=" +  era +
-                '}';
+        return "Artist {\n" +
+                " era = " +  era +
+                "\n}";
     }
 
     @Override

@@ -19,12 +19,12 @@ public class OneMoreCardCard extends BuildingCard {
 
     @Override
     public String toString() {
-        return "OneMoreCardCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=the player gets to pick another card at the end of the round" +
-                '}';
+        return "OneMoreCardCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = the player gets to pick another card at the end of the round" +
+                "\n}";
     }
 
     @Override

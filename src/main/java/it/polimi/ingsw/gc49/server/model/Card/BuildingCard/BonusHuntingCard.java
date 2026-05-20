@@ -21,12 +21,12 @@ public class BonusHuntingCard extends BuildingCard {
 
     @Override
     public String toString() {
-        return "BonusHuntingCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=get bonus food and points equal to the number of hunters in possession during the hunting event" +
-                '}';
+        return "BonusHuntingCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = get bonus food and points equal to the number of hunters in possession during the hunting event" +
+                "\n}";
     }
 
     @Override

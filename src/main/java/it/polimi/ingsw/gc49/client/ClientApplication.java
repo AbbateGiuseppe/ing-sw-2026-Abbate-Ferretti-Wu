@@ -65,7 +65,7 @@ public class ClientApplication implements VirtualClient {
                 try {
                     host = lineReader.readLine("Inserire l'indirizzo IP del serviente (lasciare vuoto se in locale): ");
                     Registry registry = LocateRegistry.getRegistry(host, ServerMultiplexer.portRmi);
-                    if ( ((FactoryServiceRmi)registry.lookup(mainServer)).ping() ){
+                    if (((FactoryServiceRmi) registry.lookup(mainServer)).ping()) {
                         terminal.writer().println("Serviente esistente..");
                         break;
                     } else {
@@ -78,13 +78,13 @@ public class ClientApplication implements VirtualClient {
             }
 
             int connectionChoice;
-            while(true) {
+            while (true) {
                 try {
                     terminal.writer().println("Premere 1 per la connessione RMI, Premere 2 per la connessione socket");
                     connectionChoice = Integer.parseInt(lineReader.readLine("> "));
-                    if(connectionChoice == 1 || connectionChoice == 2) {
+                    if (connectionChoice == 1 || connectionChoice == 2) {
                         break;
-                    }else{
+                    } else {
                         terminal.writer().println("SCEGLI UN NUMERO TRA 1 e 2! Riprova");
                     }
                 } catch (NumberFormatException e) {
@@ -92,7 +92,15 @@ public class ClientApplication implements VirtualClient {
                 }
             }
             terminal.writer().println("Inserisci il tuo nomignolo");
-            String nickname = lineReader.readLine("> ");
+            String nickname;
+            while (true) {
+                nickname = lineReader.readLine("> ");
+                if ( nickname.length() <= 15 ) {
+                    break;
+                } else {
+                    terminal.writer().println("NOMIGNOLO TROPPO LUNGO! Usa un massimo di 15 caratteri");
+                }
+            }
             inputInterface.setNickname(nickname);
 
             try {

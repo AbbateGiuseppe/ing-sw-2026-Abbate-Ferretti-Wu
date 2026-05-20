@@ -26,12 +26,12 @@ public class ShamanicThreeStarCard extends BuildingCard {
 
     @Override
     public String toString() {
-        return "ShamanicThreeStarCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=get 3 virtual stars during the shamanic event" +
-                '}';
+        return "ShamanicThreeStarCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = get 3 virtual stars during the shamanic event" +
+                "\n}";
     }
 
     @Override

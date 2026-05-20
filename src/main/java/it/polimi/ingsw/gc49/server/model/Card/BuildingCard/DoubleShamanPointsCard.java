@@ -21,12 +21,12 @@ public class DoubleShamanPointsCard extends BuildingCard{
 
     @Override
     public String toString() {
-        return "DoubleShamanPointsCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=if the player is the unique winner,then double the reward points during the shamanic event" +
-                '}';
+        return "DoubleShamanPointsCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = if the player is the unique winner,then double the reward points during the shamanic event" +
+                "\n}";
     }
 
     @Override

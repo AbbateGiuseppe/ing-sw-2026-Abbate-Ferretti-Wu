@@ -40,6 +40,16 @@ public class PaintingEvent extends EventCard {
     }
 
     @Override
+    public String toString() {
+        return "Paintings {\n" +
+                " era = " + era +
+                ", threshold = " + threshold +
+                ", plusPoints = " + plusPoints +
+                ", minusPoints = " + minusPoints +
+                "\n}";
+    }
+
+    @Override
     public String simpleToString () {
         return "PITTURE RUPESTRI";
     }

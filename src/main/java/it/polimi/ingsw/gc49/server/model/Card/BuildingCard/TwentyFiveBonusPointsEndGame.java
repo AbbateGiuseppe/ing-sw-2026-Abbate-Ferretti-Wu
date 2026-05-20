@@ -19,12 +19,12 @@ public class TwentyFiveBonusPointsEndGame extends BuildingCard {
 
     @Override
     public String toString() {
-        return "TwentyFiveBonusPointsEndGame{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=get 25 bonus points at the end of the game" +
-                '}';
+        return "TwentyFiveBonusPointsEndGame {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = get 25 bonus points at the end of the game" +
+                "\n}";
     }
 
     @Override

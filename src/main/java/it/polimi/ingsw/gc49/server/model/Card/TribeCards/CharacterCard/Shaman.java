@@ -24,10 +24,10 @@ public class Shaman extends CharacterCard {
 
     @Override
     public String toString() {
-        return "Shaman{" +
-                "era=" + era +
-                ", numStars=" + numStars +
-                '}';
+        return "Shaman {\n" +
+                " era = " + era +
+                ", numStars = " + numStars +
+                "\n}";
     }
 
     @Override

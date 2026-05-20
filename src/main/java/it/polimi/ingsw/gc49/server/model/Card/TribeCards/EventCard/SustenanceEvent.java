@@ -41,6 +41,14 @@ public class SustenanceEvent extends EventCard {
     }
 
     @Override
+    public String toString() {
+        return "Sustenance {\n" +
+                " era = " + era +
+                ", minusPoints = " + minusPoints +
+                "\n}";
+    }
+
+    @Override
     public String simpleToString () {
         return "SOSTENTAMENTO";
     }

@@ -20,12 +20,12 @@ public class BonusPaintingCard extends BuildingCard {
 
     @Override
     public String toString() {
-        return "BonusPaintingCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=get bonus food equal to the number of artists in possession during the painting event" +
-                '}';
+        return "BonusPaintingCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = get bonus food equal to the number of artists in possession during the painting event" +
+                "\n}";
     }
 
     @Override

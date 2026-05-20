@@ -20,12 +20,12 @@ public class ShamanicImmunityCard extends BuildingCard {
     }
     @Override
     public String toString() {
-        return "ShamanicImmunityCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=if the player is the loser,then he doesn't get penalized during the shamanic event" +
-                '}';
+        return "ShamanicImmunityCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = if the player is the loser,then he doesn't get penalized during the shamanic event" +
+                "\n}";
     }
 
     @Override
