@@ -25,10 +25,10 @@ public class Inventor extends CharacterCard {
 
     @Override
     public String toString() {
-        return "Inventor{" +
-                "era=" + era +
-                ", invention=" + invention +
-                '}';
+        return "Inventor {\n" +
+                " era = " + era +
+                ", invention = " + invention +
+                "\n}";
     }
 
     @Override

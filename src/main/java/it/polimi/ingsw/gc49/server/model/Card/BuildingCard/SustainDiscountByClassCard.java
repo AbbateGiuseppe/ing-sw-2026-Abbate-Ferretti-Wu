@@ -23,12 +23,12 @@ public class SustainDiscountByClassCard extends BuildingCard {
 
     @Override
     public String toString() {
-        return "SustainDiscountByClassCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=get 1 food discount for each " + unit + " in possession during the sustenance event" +
-                '}';
+        return "SustainDiscountByClassCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = get 1 food discount for each " + unit + " in possession during the sustenance event" +
+                "\n}";
     }
 
     @Override

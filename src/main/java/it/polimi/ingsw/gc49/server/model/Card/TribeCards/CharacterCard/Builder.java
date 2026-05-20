@@ -27,11 +27,11 @@ public class Builder extends CharacterCard {
 
     @Override
     public String toString() {
-        return "Builder{" +
-                "era=" +  era +
-                "buildingDiscount=" + buildingDiscount +
-                ", numPoints=" + numPoints +
-                '}';
+        return "Builder {\n" +
+                " era = " +  era +
+                ", buildingDiscount = " + buildingDiscount +
+                ", numPoints = " + numPoints +
+                "\n}";
     }
 
     @Override

@@ -112,22 +112,25 @@ public class MockupPlayer implements Serializable {
             System.out.println(nickname + " has no cards.");
         }
     }
-    public AttributedString displayAttributedString() {
+    public AttributedString displayAttributedStringName() {
         if(totem != null) {
-            AttributedString attributedString = new AttributedStringBuilder().append(totem.getTotemAttributedString())
+            return new AttributedStringBuilder().append(totem.getTotemAttributedString())
                     .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
                     .append(nickname).style(AttributedStyle.DEFAULT)
-                    .append("]: ").append(String.valueOf(food)).append("♥/").append(String.valueOf(points)).append("♦ |")
+                    .append("]")
                     .toAttributedString();
-            return attributedString;
         }else{
-            AttributedString attributedString = new AttributedStringBuilder().append("░")
+            return new AttributedStringBuilder().append("░")
                     .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
                     .append(nickname).style(AttributedStyle.DEFAULT)
-                    .append("]: ").append(String.valueOf(food)).append("♥/").append(String.valueOf(points)).append("♦ |")
+                    .append("]")
                     .toAttributedString();
-            return attributedString;
         }
+    }
+    public AttributedString displayAttributedStringStats() {
+        return new AttributedStringBuilder()
+                .append(String.valueOf(food)).append("♥/").append(String.valueOf(points)).append("♦")
+                .toAttributedString();
     }
 
     @Override

@@ -33,6 +33,14 @@ public class HuntingEvent extends EventCard {
     }
 
     @Override
+    public String toString() {
+        return "Hunt {\n" +
+                " era = " + era +
+                ", pointsPerHunter = " + pointsPerHunter +
+                "\n}";
+    }
+
+    @Override
     public String simpleToString () {
         return "CACCIA";
     }

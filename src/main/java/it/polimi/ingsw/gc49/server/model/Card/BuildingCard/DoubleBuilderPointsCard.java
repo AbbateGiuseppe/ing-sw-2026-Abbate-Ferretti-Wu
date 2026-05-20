@@ -19,12 +19,12 @@ public class DoubleBuilderPointsCard extends BuildingCard {
 
     @Override
     public String toString() {
-        return "DoubleBuilderPointsCard{" +
-                "era=" + era +
-                ", foodPrice=" + foodPrice +
-                ", pointsEndgame=" + pointsEndgame +
-                ", effect=double the builder points at the end of the game" +
-                '}';
+        return "DoubleBuilderPointsCard {\n" +
+                " era = " + era +
+                ", foodPrice = " + foodPrice +
+                ", pointsEndgame = " + pointsEndgame +
+                ",\n effect = double the builder points at the end of the game" +
+                "\n}";
     }
 
     @Override

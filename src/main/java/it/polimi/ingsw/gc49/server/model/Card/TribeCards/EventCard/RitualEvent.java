@@ -72,6 +72,15 @@ public class RitualEvent extends EventCard {
     }
 
     @Override
+    public String toString() {
+        return "Shamanic ritual {\n" +
+                " era = " + era +
+                ", plusPoints = " + plusPoints +
+                ", minusPoints = " + minusPoints +
+                "\n}";
+    }
+
+    @Override
     public String simpleToString () {
         return "RITUALE SCIAMANICO";
     }
