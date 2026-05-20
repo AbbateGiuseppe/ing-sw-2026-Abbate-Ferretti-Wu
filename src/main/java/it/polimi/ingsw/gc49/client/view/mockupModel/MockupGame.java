@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc49.server.model.Era;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MockupGame implements Serializable {
@@ -97,34 +98,40 @@ public class MockupGame implements Serializable {
         return currentPlayerIndex;
     }
     public List<MockupPlayer> getPlayers () {
-        return players;
+        return Collections.unmodifiableList(players);
     }
     public MockupPlayer getPlayer(int i) {return players.get(i);}
     //Cardboard
     public List<Card> getDiscards() {
-        return discards;
+        return Collections.unmodifiableList(discards);
     }
     public Era getDeckTopEra() {
         return deckTopEra;
     }
     public List<Card> getUpperLine() {
-        return upperLine;
+        return Collections.unmodifiableList(upperLine);
     }
     public List<Card> getLowerLine() {
-        return lowerLine;
+        return Collections.unmodifiableList(lowerLine);
     }
     public List<Card> getUpperBuilding() {
-        return upperBuilding;
+        return Collections.unmodifiableList(upperBuilding);
     }
     public List<Card> getLowerBuilding() {
-        return lowerBuilding;
+        return Collections.unmodifiableList(lowerBuilding);
     }
     //Track
-    public List<RectangleAttributedString> getOrderBoardRectangleStrings(){
+    public List<MockupOrder> getOrderBoard () {
+        return Collections.unmodifiableList(orderBoard);
+    }
+    public List<RectangleAttributedString> getOrderBoardRectangleStrings() {
         return orderBoard
                 .stream()
                 .map(MockupOrder::getRectangleAttributedString)
                 .toList();
+    }
+    public List<MockupOffer> getOfferBoard() {
+        return Collections.unmodifiableList(offerBoard);
     }
     public List<RectangleAttributedString> getOfferBoardRectangleStrings(){
         return offerBoard
