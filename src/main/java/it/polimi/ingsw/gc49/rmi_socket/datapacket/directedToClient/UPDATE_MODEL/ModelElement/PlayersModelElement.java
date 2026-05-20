@@ -7,18 +7,15 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.
 import java.util.List;
 
 public class PlayersModelElement extends UpdateModelElement {
-    private final int currentPlayerIndex;
     private final List<MockupPlayer> players;
 
-    public PlayersModelElement ( String actionInfo, int currentPlayerIndex, List<MockupPlayer> players ) {
+    public PlayersModelElement ( String actionInfo, List<MockupPlayer> players ) {
         super(actionInfo);
-        this.currentPlayerIndex = currentPlayerIndex;
         this.players = players;
     }
 
     @Override
     public void updateMockupModel ( MockupGame game ) {
-        game.setCurrentPlayerIndex( currentPlayerIndex );
         game.setPlayers( players );
     }
 }

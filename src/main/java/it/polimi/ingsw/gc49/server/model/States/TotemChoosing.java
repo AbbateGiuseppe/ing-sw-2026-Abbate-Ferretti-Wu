@@ -1,12 +1,14 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
+import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OrderboardModelElement;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.PlayersModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;
 import it.polimi.ingsw.gc49.server.model.Track.OrderSlot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TotemChoosing extends State {
@@ -35,6 +37,14 @@ public class TotemChoosing extends State {
         game.queueUpdateModelElement(new OrderboardModelElement(
                 actionInfo.toString(),
                 game.getTrack().giveOrderBoardMockup()
+        ));
+        List<MockupPlayer> players = new ArrayList<>();
+        for (Player player : game.getPlayers()) {
+            players.add(player.giveMockupPlayer());
+        }
+        game.queueUpdateModelElement(new PlayersModelElement(
+                "E' stato distribuito il cibo ai giocatori",
+                players
         ));
         game.broadcastGameUpdate();
 

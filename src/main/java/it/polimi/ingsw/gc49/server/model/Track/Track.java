@@ -2,14 +2,12 @@ package it.polimi.ingsw.gc49.server.model.Track;
 
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOffer;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
-import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Track implements Serializable {
@@ -123,6 +121,11 @@ public class Track implements Serializable {
                 }));
         int orderSlotIterator = 0;
         for(Player player : randomizedPlayers) {
+            switch (orderSlotIterator){
+                case 0 -> player.setFood(2);
+                case 1, 2 -> player.setFood(3);
+                case 3, 4 -> player.setFood(4);
+            }
             orderBoard.get(orderSlotIterator).assignPlayer(player);
             orderSlotIterator++;
         }
