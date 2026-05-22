@@ -39,8 +39,8 @@ public class TextTerminal extends UserInputInterface {
     private static final int ERROR_TIMEOUT = 10;
     private static int rows = 35;
     private static int columns = 130;
-    private static final int SCROLL_REGION_HEIGHT = 12;
-    private static final int LINE_SHOW = SCROLL_REGION_HEIGHT+1;
+    private static final int SCROLL_REGION_HEIGHT = 11;
+    private static final int LINE_SHOW = SCROLL_REGION_HEIGHT+2;
     private static final int SHOW_FIRST_LINE = 0;
     private static final int SHOW_SECOND_LINE = 4;
     private static final int SHOW_THIRD_LINE = 10;
@@ -93,7 +93,10 @@ public class TextTerminal extends UserInputInterface {
                         }
                     }
                 } catch (NumberFormatException e) {
-                    terminalMethods.printScroll("please, specify correctly the number of players!");
+                    terminalMethods.printError( new ErrorPacket(
+                            "NumberFormatException",
+                            "please, specify correctly the number of players!", false)
+                    );
                 }
             }
         });
@@ -129,7 +132,10 @@ public class TextTerminal extends UserInputInterface {
                         throw new NumberFormatException();
                     }
                 } catch (NumberFormatException e) {
-                    terminalMethods.printScroll("please, insert a valid number!");
+                    terminalMethods.printError( new ErrorPacket(
+                            "NumberFormatException",
+                            "please, insert a valid number!", false)
+                    );
                 }
             }
         });
@@ -156,10 +162,16 @@ public class TextTerminal extends UserInputInterface {
                         CommandPacket commandPacket = new CommandPacket(action, cardIndex);
                         terminalVirtualServer.sendCommand(commandPacket);
                     }else{
-                        terminalMethods.printScroll("not a valid card choice!");
+                        terminalMethods.printError( new ErrorPacket(
+                                "Line misspelling",
+                                "not a valid card choice!", false)
+                        );
                     }
                 } catch (NumberFormatException e) {
-                    terminalMethods.printScroll("please, insert a valid number!");
+                    terminalMethods.printError( new ErrorPacket(
+                            "NumberFormatException",
+                            "please, insert a valid number!", false)
+                    );
                 }
             }
         });
@@ -182,7 +194,10 @@ public class TextTerminal extends UserInputInterface {
                         }
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    terminalMethods.printScroll("index out of bounds!");
+                    terminalMethods.printError( new ErrorPacket(
+                            "IndexOutOfBoundsException",
+                            "index out of bounds!", false)
+                    );
                 }
             }
         });
@@ -200,7 +215,10 @@ public class TextTerminal extends UserInputInterface {
                     CommandPacket commandPacket = new CommandPacket(PlayerActionEnum.CHOOSE_OFFER, offerIndex);
                     terminalVirtualServer.sendCommand(commandPacket);
                 } catch (NumberFormatException e) {
-                    terminalMethods.printScroll("please, insert a valid number!");
+                    terminalMethods.printError( new ErrorPacket(
+                            "NumberFormatException",
+                            "please, insert a valid number!", false)
+                    );
                 }
             }
         });
@@ -287,7 +305,7 @@ public class TextTerminal extends UserInputInterface {
     }
 
     public void printString ( String string ) {
-        printMessage(string);
+        printScroll(string);
     }
     public void printErrorPacket ( ErrorPacket errorPacket ) {
         printError(errorPacket);
@@ -299,15 +317,15 @@ public class TextTerminal extends UserInputInterface {
         super.setCurrentPhase(phase);
         switch (phase) {
             case GAME:
-                printMessage("The game started.");
+                printScroll("The game started.");
                 printStatus();
                 break;
             case HALL:
-                printMessage("You entered the hall.");
+                printScroll("You entered the hall.");
                 printStatus();
                 break;
             case ROOM:
-                printMessage("You entered a room.");
+                printScroll("You entered a room.");
                 printStatus();
                 break;
         }
@@ -321,14 +339,14 @@ public class TextTerminal extends UserInputInterface {
                 terminal.writer().println("Terminal started (type help for the list of commands):\n");
 
                 // Set scroll region from first to scrollRegionHeight
-                //the scroll region is where the previous user commands can be seen in
+                //the scroll region is where the messages received from the server can be seen in
                 terminal.puts(InfoCmp.Capability.change_scroll_region, 1, SCROLL_REGION_HEIGHT - 1);
 
                 // Draw the separators between the terminal's sections
                 terminal.puts(InfoCmp.Capability.cursor_address, rows - 3, 1);
                 AttributedString promptSeparator = new AttributedString("━".repeat(columns - 2), AttributedStyle.DEFAULT.foreground(AttributedStyle.BLUE));
                 promptSeparator.print(terminal);
-                terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT, 1);
+                terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW - 1, 1);
                 promptSeparator.print(terminal);
             }
 
@@ -344,9 +362,6 @@ public class TextTerminal extends UserInputInterface {
 
 
                 if (!inputLine.isEmpty()) {
-                    // Print the inserted input
-                    printScroll(inputLine);
-
 
                     // Split the string by whitespace
                     String[] parts = splitInput(inputLine);
@@ -359,11 +374,14 @@ public class TextTerminal extends UserInputInterface {
                     // Look up the terminal function and execute
                     TerminalCommand command = commands.get(action);
                     if (command != null) {
+                        // Print the inserted rightful input
+                        printCommand(inputLine);
+                        // Execute the command
                         command.execute(this, currentPhase, mockups, params, virtualServer);
                     } else {
-                        printScroll("Unknown command: " + action);
+                        // Print the wrongly inserted command
+                        printCommand(action + " [Unknown command]");
                     }
-                    printScroll("");
                 }
 
             }
@@ -441,10 +459,12 @@ public class TextTerminal extends UserInputInterface {
     private void printScroll(String toPrint){
         synchronized (cursorLock) {
             terminal.puts(InfoCmp.Capability.save_cursor);
-            // Move cursor to scroll region, where commands should print
+            // Go down
             terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT - 1, 1);
+            terminal.writer().println();
             // Print the string inserted
-            terminal.writer().println(toPrint);
+            terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT - 1, 1);
+            terminal.writer().print(toPrint);
             // Restores cursor position
             terminal.puts(InfoCmp.Capability.restore_cursor);
         }
@@ -469,19 +489,21 @@ public class TextTerminal extends UserInputInterface {
             helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
         }
     }
-    private void printMessage(String newMessage){
+    private void printCommand ( String newCommand){
         synchronized (cursorLock) {
             previousCommand = lastCommand;
-            lastCommand = newMessage;
+            lastCommand = newCommand;
             terminal.puts(InfoCmp.Capability.save_cursor);
-            terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 1);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 0);
             terminal.puts(InfoCmp.Capability.clr_eol);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 1);
             new AttributedStringBuilder()
                     .style(AttributedStyle.DEFAULT.underline()).append("Previous command")
                     .style(AttributedStyle.DEFAULT).append(": ").append(previousCommand)
                     .toAttributedString().print(terminal);
-            terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 1);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 0);
             terminal.puts(InfoCmp.Capability.clr_eol);
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 1);
             new AttributedStringBuilder()
                     .style(AttributedStyle.DEFAULT.underline()).append("Last command")
                     .style(AttributedStyle.DEFAULT).append(": ").append(lastCommand)

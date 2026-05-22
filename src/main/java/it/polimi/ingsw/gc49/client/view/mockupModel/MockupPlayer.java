@@ -22,6 +22,9 @@ public class MockupPlayer implements Serializable {
     private int drawableUpper;
     private int drawableLower;
 
+    /** set by the mockupGame at every change, it's used to highlight to the user this player if it's of turn*/
+    private boolean ofTurn = false;
+
     /**
      *
      * @param nickname the player's nickname;
@@ -114,17 +117,33 @@ public class MockupPlayer implements Serializable {
     }
     public AttributedString displayAttributedStringName() {
         if(totem != null) {
-            return new AttributedStringBuilder().append(totem.getTotemAttributedString())
-                    .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
-                    .append(nickname).style(AttributedStyle.DEFAULT)
-                    .append("]")
-                    .toAttributedString();
+            if(ofTurn){
+                return new AttributedStringBuilder().append(totem.getTotemAttributedString())
+                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED))
+                        .append(nickname).style(AttributedStyle.DEFAULT)
+                        .append("]")
+                        .toAttributedString();
+            } else {
+                return new AttributedStringBuilder().append(totem.getTotemAttributedString())
+                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
+                        .append(nickname).style(AttributedStyle.DEFAULT)
+                        .append("]")
+                        .toAttributedString();
+            }
         }else{
-            return new AttributedStringBuilder().append("░")
-                    .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
-                    .append(nickname).style(AttributedStyle.DEFAULT)
-                    .append("]")
-                    .toAttributedString();
+            if(ofTurn){
+                return new AttributedStringBuilder().append("░")
+                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED))
+                        .append(nickname).style(AttributedStyle.DEFAULT)
+                        .append("]")
+                        .toAttributedString();
+            } else {
+                return new AttributedStringBuilder().append("░")
+                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
+                        .append(nickname).style(AttributedStyle.DEFAULT)
+                        .append("]")
+                        .toAttributedString();
+            }
         }
     }
     public AttributedString displayAttributedStringStats() {
@@ -138,5 +157,9 @@ public class MockupPlayer implements Serializable {
         return playerIndex + ": " + nickname +
                 " (food=" + food +
                 ", points=" + points + ")";
+    }
+
+    public void setOfTurn ( boolean ofTurn ) {
+        this.ofTurn = ofTurn;
     }
 }

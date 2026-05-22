@@ -146,14 +146,16 @@ public class Track implements Serializable {
      */
     public void deassignCurrentOffer () {
         Player currentPlayer = offerBoard.get(selectedOffer).getAssignedPlayer();
-        offerBoard.get(selectedOffer).deassignPlayer(); //deassigns.
+        if ( currentPlayer != null ) {
+            offerBoard.get(selectedOffer).deassignPlayer(); //deassigns.
 
-        //assigns the current player to the next order slot and activates the order slot's effect.
-        orderBoard.get(selectedOrderSlot).assignPlayer(currentPlayer);
-        orderBoard.get(selectedOrderSlot).effectOnOccupation();
+            //assigns the current player to the next order slot and activates the order slot's effect.
+            orderBoard.get(selectedOrderSlot).assignPlayer(currentPlayer);
+            orderBoard.get(selectedOrderSlot).effectOnOccupation();
 
-        //increases the order slot iterator, it should automatically become overwritten at the first call of getNextPlayerOrderSlot().
-        selectedOrderSlot++;
+            //increases the order slot iterator, it should automatically become overwritten at the first call of getNextPlayerOrderSlot().
+            selectedOrderSlot++;
+        }
     }
 
     /**
