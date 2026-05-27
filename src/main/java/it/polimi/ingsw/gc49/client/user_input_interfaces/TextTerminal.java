@@ -141,43 +141,45 @@ public class TextTerminal extends UserInputInterface {
         });
         // Sceglie una carta
         commands.put("draw", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
-            if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
-                try {
-                    int cardIndex = Integer.parseInt(terminalParameters[2]);
-                    PlayerActionEnum action = null;
-                    if (terminalParameters[0].equalsIgnoreCase("low")) {
-                        if (terminalParameters[1].equalsIgnoreCase("c")) {
-                            action = PlayerActionEnum.DRAW_LOWER_CHARACTER;
-                        } else if (terminalParameters[1].equalsIgnoreCase("b")) {
-                            action = PlayerActionEnum.DRAW_LOWER_BUILDING;
+            if(terminalPhase == ApplicationPhase.GAME) {
+                if(terminalParameters.length >= 3){
+                    try {
+                        int cardIndex = Integer.parseInt(terminalParameters[2]);
+                        PlayerActionEnum action = null;
+                        if (terminalParameters[0].equalsIgnoreCase("low")) {
+                            if (terminalParameters[1].equalsIgnoreCase("c")) {
+                                action = PlayerActionEnum.DRAW_LOWER_CHARACTER;
+                            } else if (terminalParameters[1].equalsIgnoreCase("b")) {
+                                action = PlayerActionEnum.DRAW_LOWER_BUILDING;
+                            }
+                        } else if (terminalParameters[0].equalsIgnoreCase("up")) {
+                            if (terminalParameters[1].equalsIgnoreCase("c")) {
+                                action = PlayerActionEnum.DRAW_UPPER_CHARACTER;
+                            } else if (terminalParameters[1].equalsIgnoreCase("b")) {
+                                action = PlayerActionEnum.DRAW_UPPER_BUILDING;
+                            }
                         }
-                    } else if (terminalParameters[0].equalsIgnoreCase("up")) {
-                        if (terminalParameters[1].equalsIgnoreCase("c")) {
-                            action = PlayerActionEnum.DRAW_UPPER_CHARACTER;
-                        } else if (terminalParameters[1].equalsIgnoreCase("b")) {
-                            action = PlayerActionEnum.DRAW_UPPER_BUILDING;
+                        if (action != null) {
+                            CommandPacket commandPacket = new CommandPacket(action, cardIndex);
+                            terminalVirtualServer.sendCommand(commandPacket);
+                        }else{
+                            terminalMethods.printError( new ErrorPacket(
+                                    "Line misspelling",
+                                    "not a valid card choice!", false)
+                            );
                         }
-                    }
-                    if (action != null) {
-                        CommandPacket commandPacket = new CommandPacket(action, cardIndex);
-                        terminalVirtualServer.sendCommand(commandPacket);
-                    }else{
+                    } catch (NumberFormatException e) {
                         terminalMethods.printError( new ErrorPacket(
-                                "Line misspelling",
-                                "not a valid card choice!", false)
+                                "NumberFormatException",
+                                "please, insert a valid number!", false)
                         );
                     }
-                } catch (NumberFormatException e) {
+                } else {
                     terminalMethods.printError( new ErrorPacket(
-                            "NumberFormatException",
-                            "please, insert a valid number!", false)
-                    );
+                            "Missing parameters",
+                            "missed a few necessary parameters in your command", false
+                    ));
                 }
-            } else {
-                terminalMethods.printError( new ErrorPacket(
-                        "Missing parameters",
-                        "missed a few necessary parameters in your command", false
-                ));
             }
         });
         // Legge una carta

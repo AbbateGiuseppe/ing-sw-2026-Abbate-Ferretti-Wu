@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.server.model.Card.TribeCards.CharacterCard;
+package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
@@ -8,35 +8,31 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
-public class Builder extends CharacterCard {
-    private final int buildingDiscount;
-    private final int numPoints;
+public class Shaman extends CharacterCard {
+    private final int numStars;
 
-    public Builder(int buildingDiscount, int numPoints, Era era, int minNumPlayers ) {
+    public Shaman( int numStars, Era era, int minNumPlayers ) {
         super(era, minNumPlayers);
-        this.buildingDiscount = buildingDiscount;
-        this.numPoints = numPoints;
+        this.numStars = numStars;
     }
 
     @Override
     public void updateDataBank(DataBank dataBank) {
-        dataBank.addCharacterCount(CharacterType.Builder,1);
-        dataBank.addNumBuildingDiscount(buildingDiscount);
-        dataBank.addNumBuilderPoints(numPoints);
+        dataBank.addNumStar(numStars);
+        dataBank.addCharacterCount(CharacterType.Shaman,1);
     }
 
     @Override
     public String toString() {
-        return "Builder {\n" +
-                " era = " +  era +
-                ", buildingDiscount = " + buildingDiscount +
-                ", numPoints = " + numPoints +
+        return "Shaman {\n" +
+                " era = " + era +
+                ", numStars = " + numStars +
                 "\n}";
     }
 
     @Override
     public String simpleToString () {
-        return "COSTRUTTORE";
+        return "SCIAMANO";
     }
 
     @Override
@@ -44,10 +40,10 @@ public class Builder extends CharacterCard {
         AttributedString attributedString = new AttributedStringBuilder()
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
                 .append("║")
-                .style(AttributedStyle.DEFAULT).append("B").append(String.valueOf(buildingDiscount)).append("♥")
+                .style(AttributedStyle.DEFAULT).append(" S ")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
                 .append("║")
-                .style(AttributedStyle.DEFAULT).append(" ").append(String.valueOf(numPoints)).append("♦")
+                .style(AttributedStyle.DEFAULT).append(String.valueOf(numStars)).append("* ")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
                 .append("╚═══╝").toAttributedString();
         int height = 4;
