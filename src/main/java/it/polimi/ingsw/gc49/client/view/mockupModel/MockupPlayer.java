@@ -100,20 +100,23 @@ public class MockupPlayer implements Serializable {
         buildingCards.add(card);
     }
 
-    public void printCards() {
+    public AttributedString AllToAttributedString () {
+        AttributedStringBuilder stringBuilder = new AttributedStringBuilder();
         if(!characterCards.isEmpty() || !buildingCards.isEmpty()) {
+            stringBuilder.append(nickname).append(": \n");
 
             // Guarda toString() delle carte
             for (Card c : characterCards) {
-                System.out.println(c);
+                stringBuilder.append(c.toString());
             }
 
             for (Card c : buildingCards) {
-                System.out.println(c);
+                stringBuilder.append(c.toString());
             }
         }else{
-            System.out.println(nickname + " has no cards.");
+            stringBuilder.append(nickname).append(" has no cards.");
         }
+        return stringBuilder.toAttributedString();
     }
     public AttributedString displayAttributedStringName() {
         if(totem != null) {

@@ -50,4 +50,9 @@ public class TotemChoosing extends State {
 
         return new OfferChoosing(game);
     }
+
+    @Override
+    public String toString () {
+        return "Scelta del totem";
+    }
 }

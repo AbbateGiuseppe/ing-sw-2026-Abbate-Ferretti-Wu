@@ -96,7 +96,11 @@ public class ClientApplication implements VirtualClient {
             while (true) {
                 nickname = lineReader.readLine("> ");
                 if ( nickname.length() <= 15 ) {
-                    break;
+                    if (!nickname.isEmpty()) {
+                        break;
+                    } else {
+                        terminal.writer().println("IL NOMIGNOLO NON PUO' ESSERE VUOTO!");
+                    }
                 } else {
                     terminal.writer().println("NOMIGNOLO TROPPO LUNGO! Usa un massimo di 15 caratteri");
                 }

@@ -191,8 +191,8 @@ public class Track implements Serializable {
             selectedOrderSlot = incomingOrderSlot; //selects the incoming order slot as the order slot to be used.
             incomingOrderSlot++;
             OrderSlot currentOrderSlotObject = orderBoard.get(selectedOrderSlot);
-            if (currentOrderSlotObject.getAssignedPlayer() == null){ //logical exception used during disconnections
-                selectedOffer = 0;
+            if (currentOrderSlotObject.getAssignedPlayer() == null){ //logical exception used during disconnections, where there'd be some empty slots at the end
+                selectedOrderSlot = 0;
                 incomingOrderSlot = 0;
                 return null;
             }else{
@@ -205,6 +205,7 @@ public class Track implements Serializable {
                 return selectedPlayer;
             }
         }else{ //surpassed the end of the order board
+            selectedOrderSlot = 0;
             incomingOrderSlot = 0;
             return null;
         }

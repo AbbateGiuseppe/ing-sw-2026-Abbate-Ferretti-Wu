@@ -55,7 +55,7 @@ public class TextTerminal extends UserInputInterface {
             rows = terminal.getHeight();
         });
     }
-    private String previousCommand = "";
+
     private String lastCommand = "";
 
     private static final Map<String,Totem> totems = new HashMap<>();
@@ -122,12 +122,12 @@ public class TextTerminal extends UserInputInterface {
 
 
         // Mostra le carte di un giocatore dato il suo indice
-        commands.put("cards", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
+        commands.put("player", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int index = Integer.parseInt(terminalParameters[0]);
                     if(index < terminalMockups.getGame().getPlayers().size() && index >= 0) {
-                        terminalMockups.getGame().getPlayer(index).printCards();
+                        terminalMethods.printPlayerStats(index);
                     }else{
                         throw new NumberFormatException();
                     }
@@ -173,6 +173,11 @@ public class TextTerminal extends UserInputInterface {
                             "please, insert a valid number!", false)
                     );
                 }
+            } else {
+                terminalMethods.printError( new ErrorPacket(
+                        "Missing parameters",
+                        "missed a few necessary parameters in your command", false
+                ));
             }
         });
         // Legge una carta
@@ -266,7 +271,7 @@ public class TextTerminal extends UserInputInterface {
                 .append(manualFormat("", "from the character or the building line."))
                 .append(manualFormat("read [low/up] [c/b] [card index]", "Read the description of a card from upper or lower lines,"))
                 .append(manualFormat("", "from the character or the building line."))
-                .append(manualFormat("cards [player index]", "Displays the cards of the specified player"));
+                .append(manualFormat("player [player index]", "Displays the specified player's stats"));
 
 
         for(ApplicationPhase applicationPhase : ApplicationPhase.values()) {
@@ -336,7 +341,9 @@ public class TextTerminal extends UserInputInterface {
         try {
             synchronized (cursorLock) {
                 terminal.puts(InfoCmp.Capability.clear_screen);
-                terminal.writer().println("Terminal started (type help for the list of commands):\n");
+                new AttributedStringBuilder()
+                                .append("Terminal started (type help for the list of commands):\n").toAttributedString()
+                        .print(terminal);
 
                 // Set scroll region from first to scrollRegionHeight
                 //the scroll region is where the messages received from the server can be seen in
@@ -479,6 +486,14 @@ public class TextTerminal extends UserInputInterface {
             showSomething(legend.toAttributedString());
         }
     }
+    private void printPlayerStats ( int playerIndex ) {
+        synchronized (cursorLock) {
+            cleanShowbox();
+            terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW + 1, 2);
+            terminal.writer().println(mockups.getGame().getPlayer(playerIndex).AllToAttributedString());
+            helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
+        }
+    }
     private void printCardRead ( Card readCard ) {
         synchronized (cursorLock) {
             cleanShowbox();
@@ -489,20 +504,20 @@ public class TextTerminal extends UserInputInterface {
             helpScheduler.schedule(this::show, HELP_TIMEOUT, TimeUnit.SECONDS);
         }
     }
-    private void printCommand ( String newCommand){
+    private void printCommand ( String newCommand ){
         synchronized (cursorLock) {
-            previousCommand = lastCommand;
-            lastCommand = newCommand;
             terminal.puts(InfoCmp.Capability.save_cursor);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 0);
             terminal.puts(InfoCmp.Capability.clr_eol);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 1);
             new AttributedStringBuilder()
                     .style(AttributedStyle.DEFAULT.underline()).append("Previous command")
-                    .style(AttributedStyle.DEFAULT).append(": ").append(previousCommand)
+                    .style(AttributedStyle.DEFAULT).append(": ").append(lastCommand)
                     .toAttributedString().print(terminal);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 0);
             terminal.puts(InfoCmp.Capability.clr_eol);
+
+            lastCommand = newCommand;
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 1);
             new AttributedStringBuilder()
                     .style(AttributedStyle.DEFAULT.underline()).append("Last command")

@@ -55,4 +55,9 @@ public class InitialSetup extends State {
 
         return new TotemChoosing(game); //goes to the totem choosing state as the next state.
     }
+
+    @Override
+    public String toString () {
+        return "Preparazione";
+    }
 }
