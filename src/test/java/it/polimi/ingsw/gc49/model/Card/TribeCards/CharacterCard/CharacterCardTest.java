@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.model.Card.TribeCards.CharacterCard;
 
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.CharacterCard.*;
+import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.*;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.Invention;

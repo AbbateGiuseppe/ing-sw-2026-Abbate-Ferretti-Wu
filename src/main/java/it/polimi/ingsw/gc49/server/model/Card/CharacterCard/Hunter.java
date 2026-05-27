@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.server.model.Card.TribeCards.CharacterCard;
+package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.CharacterType;

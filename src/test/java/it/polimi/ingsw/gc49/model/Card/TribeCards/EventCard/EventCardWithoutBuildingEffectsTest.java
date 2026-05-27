@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.model.Card.TribeCards.EventCard;
 
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.*;
+import it.polimi.ingsw.gc49.server.model.Card.EventCard.*;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.EventManager;

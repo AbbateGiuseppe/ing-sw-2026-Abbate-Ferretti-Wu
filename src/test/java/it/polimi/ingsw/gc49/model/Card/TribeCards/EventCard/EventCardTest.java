@@ -1,12 +1,12 @@
 package it.polimi.ingsw.gc49.model.Card.TribeCards.EventCard;
 
 import it.polimi.ingsw.gc49.server.model.Card.Card;
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.CharacterCard.Gatherer;
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.CharacterCard.Hunter;
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.HuntingEvent;
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.PaintingEvent;
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.RitualEvent;
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.SustenanceEvent;
+import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.Gatherer;
+import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.Hunter;
+import it.polimi.ingsw.gc49.server.model.Card.EventCard.HuntingEvent;
+import it.polimi.ingsw.gc49.server.model.Card.EventCard.PaintingEvent;
+import it.polimi.ingsw.gc49.server.model.Card.EventCard.RitualEvent;
+import it.polimi.ingsw.gc49.server.model.Card.EventCard.SustenanceEvent;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.EventManager;

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.CardBoard;
 
 import it.polimi.ingsw.gc49.server.model.Card.Card;
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard.EventCard;
+import it.polimi.ingsw.gc49.server.model.Card.EventCard.EventCard;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Player;

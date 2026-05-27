@@ -33,6 +33,7 @@ class TrackTest {
         Track track = new Track(2);
         track.assignOffer(testPlayerOne, 0);
         track.assignOffer(testPlayerTwo, 1);
+        track.assignOffer(null, 2);
         //does the assigned offer activate?
         track.getNextPlayerOfferAndActivate();
         assertEquals(testPlayerOne.getDrawableLower(), 1);
@@ -40,6 +41,7 @@ class TrackTest {
         track.getNextPlayerOfferAndActivate();
         assertEquals(testPlayerTwo.getDrawableUpper(), 1);
         track.deassignCurrentOffer();
+        track.deassignCurrentOffer(); //null, does it exclude empty offers?
         //did the order board fill up?
         assertNotNull(track.getNextPlayerOrderSlot());
         assertNotNull(track.getNextPlayerOrderSlot());

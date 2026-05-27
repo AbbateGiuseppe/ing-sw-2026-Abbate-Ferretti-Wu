@@ -115,6 +115,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         synchronized (writeLock) {
             output.writeObject(initializeModelPacket);
             output.flush();
+            output.reset();
         }
     }
     @Override
@@ -122,6 +123,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         synchronized (writeLock) {
             output.writeObject(updateModelPacket);
             output.flush();
+            output.reset();
         }
     }
     @Override

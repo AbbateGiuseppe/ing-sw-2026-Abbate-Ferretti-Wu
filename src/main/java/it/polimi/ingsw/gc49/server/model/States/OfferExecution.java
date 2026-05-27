@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.ReturnModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;
@@ -22,6 +23,18 @@ public class OfferExecution extends State{
             }
             game.getTrack().deassignCurrentOffer(); //deassigning the player from the offer and placing him in the order slots.
             game.callTurnEndEvent(); //calls all the buildings that activate at a turn's end.
+
+            game.queueUpdateModelElement(
+                    new ReturnModelElement(
+                            currentPlayer.getNickname() + " è ritornato nelle caselle d'ordine",
+                            game.getTrack().giveOfferBoardMockup(),
+                            game.getTrack().giveOrderBoardMockup(),
+                            currentPlayer.getPlayerIndex(),
+                            currentPlayer.getFood(),
+                            currentPlayer.getPoints()
+                    )
+            );
+
             currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
         }
         game.callRoundEndEvent(); //calls all the buildings that activate at the end of a round.
@@ -31,5 +44,10 @@ public class OfferExecution extends State{
         }else {
             return new RoundEnd(game); //goes to RoundEnd.
         }
+    }
+
+    @Override
+    public String toString () {
+        return "Eseguimento delle offerte";
     }
 }

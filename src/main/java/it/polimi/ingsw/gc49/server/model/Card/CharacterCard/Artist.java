@@ -1,39 +1,33 @@
-package it.polimi.ingsw.gc49.server.model.Card.TribeCards.CharacterCard;
+package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.DataBank;
 import it.polimi.ingsw.gc49.server.model.Era;
-import it.polimi.ingsw.gc49.server.model.Invention;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
-public class Inventor extends CharacterCard {
-    private final Invention invention;
-
-    public Inventor( Invention invention, Era era, int minNumPlayers ) {
+public class Artist extends CharacterCard {
+    public Artist ( Era era, int minNumPlayers ) {
         super(era, minNumPlayers);
-        this.invention = invention;
     }
 
     @Override
-    public void updateDataBank( DataBank dataBank) {
-         dataBank.addCharacterCount(CharacterType.Inventor,1);
-         dataBank.addInvention(invention);
+    public void updateDataBank(DataBank dataBank) {
+        dataBank.addCharacterCount(CharacterType.Artist,1);
     }
 
     @Override
     public String toString() {
-        return "Inventor {\n" +
-                " era = " + era +
-                ", invention = " + invention +
+        return "Artist {\n" +
+                " era = " +  era +
                 "\n}";
     }
 
     @Override
     public String simpleToString () {
-        return "INVENTORE";
+        return "ARTISTA";
     }
 
     @Override
@@ -41,10 +35,10 @@ public class Inventor extends CharacterCard {
         AttributedString attributedString = new AttributedStringBuilder()
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
                 .append("║")
-                .style(AttributedStyle.DEFAULT).append(" I ")
+                .style(AttributedStyle.DEFAULT).append(" A ")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
                 .append("║")
-                .style(AttributedStyle.DEFAULT).append("(").append(String.valueOf(invention.ordinal())).append(")")
+                .style(AttributedStyle.DEFAULT).append("   ")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
                 .append("╚═══╝").toAttributedString();
         int height = 4;

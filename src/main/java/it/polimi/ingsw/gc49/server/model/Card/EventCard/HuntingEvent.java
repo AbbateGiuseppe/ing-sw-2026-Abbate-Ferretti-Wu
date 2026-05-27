@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard;
+package it.polimi.ingsw.gc49.server.model.Card.EventCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.*;
@@ -8,32 +8,25 @@ import org.jline.utils.AttributedStyle;
 
 import java.util.List;
 
-public class PaintingEvent extends EventCard {
-    // threshold is the minimum number of the Artist cards in order to get plusPoints,otherwise the player gets minusPooints
-    private final int threshold;
-    private final int plusPoints;
-    private final int minusPoints;
+public class HuntingEvent extends EventCard {
+    private final int pointsPerHunter;
 
-    public PaintingEvent( int threshold, int plusPoints, int minusPoints, EventManager eventManager, Era era, int minNumPlayers ) {
+    public HuntingEvent( int pointsPerHunter, EventManager eventManager, Era era, int minNumPlayers ) {
         super(eventManager, era, minNumPlayers);
-        this.threshold = threshold;
-        this.plusPoints = plusPoints;
-        this.minusPoints = minusPoints;
+        this.pointsPerHunter = pointsPerHunter;
     }
 
     @Override
     public void resolveEvent(List<Player> players) {
+        // Setup the initial amount of food and points each player gets during the event
         for(Player player : players) {
-            player.setFoodToPay(0);
-            if (player.data.getCharacterCount(CharacterType.Artist) < threshold) {
-                player.setPointsToPay(minusPoints);
-            } else {
-                player.setPointsToPay(-plusPoints * player.data.getCharacterCount(CharacterType.Artist));
-            }
+            player.setFoodToPay(-player.data.getCharacterCount(CharacterType.Hunter));
+            player.setPointsToPay(-player.data.getCharacterCount(CharacterType.Hunter) * pointsPerHunter);
         }
-        // Effect num 10
-        eventManager.invokeEvent(BuildingEvent.PAINTING_EVENT);
-
+        // Trigger the effect(effect number 8) of the building card,
+        // the building card modifies foodToPay and pointsToPay of the player
+        eventManager.invokeEvent(BuildingEvent.HUNTING_EVENT);
+        // Finalize the change on food and points of the player
         for(Player player : players) {
             player.confirmToPay();
         }
@@ -41,17 +34,15 @@ public class PaintingEvent extends EventCard {
 
     @Override
     public String toString() {
-        return "Paintings {\n" +
+        return "Hunt {\n" +
                 " era = " + era +
-                ", threshold = " + threshold +
-                ", plusPoints = " + plusPoints +
-                ", minusPoints = " + minusPoints +
+                ", pointsPerHunter = " + pointsPerHunter +
                 "\n}";
     }
 
     @Override
     public String simpleToString () {
-        return "PITTURE RUPESTRI";
+        return "CACCIA";
     }
 
     @Override
@@ -59,7 +50,7 @@ public class PaintingEvent extends EventCard {
         AttributedString attributedString = new AttributedStringBuilder()
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("╔═══╗")
                 .append("║")
-                .style(AttributedStyle.DEFAULT).append("│¤│")
+                .style(AttributedStyle.DEFAULT).append("│%│")
                 .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("║")
                 .append("║")
                 .style(AttributedStyle.DEFAULT).append("└─┘")

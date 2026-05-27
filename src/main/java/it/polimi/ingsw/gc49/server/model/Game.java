@@ -6,6 +6,9 @@ import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.*;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.LowerDrawModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.UpperDrawModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OrderboardModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.BuildingCard;
@@ -48,7 +51,7 @@ public class Game implements Serializable {
 
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
             synchronized (Locks.playerInput) {
-                System.out.println("Entrando in un nuovo stato di gioco...");
+                System.out.println("Entrando in un stato [" + currentState.toString() + "]...");
                 executeCurrentState();
                 System.out.println("Finito lo stato di gioco precedente.");
             }
@@ -122,7 +125,7 @@ public class Game implements Serializable {
     public void broadcastCurrentPlayerTurn() {
         synchronized (broadcastLock) {
             queueUpdateModelElement(new CurrentPlayerModelElement(
-                    "TOCCA A " + currentPlayer.getNickname() + "...",
+                    "tocca a " + currentPlayer.getNickname() + "...",
                     currentPlayerIndex
                     )
             );
@@ -198,12 +201,24 @@ public class Game implements Serializable {
                 if(drawingPlayer.getDrawableUpper() > 0){
                     Card drawnCard = cardBoard.drawUpperCharacter(cardIndex, drawingPlayer);
                     if (drawnCard != null) {
-                        //TODO: PROSSIMO UPDATE!!
                         drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
                         drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
+
+                        queueUpdateModelElement(
+                                new UpperDrawModelElement(
+                                        players.get(playerIndex).getNickname() + " ha pescato " + drawnCard.simpleToString() + " dalla fila superiore",
+                                        cardBoard.getLine().getUpperLine(),
+                                        cardBoard.getLine().getUpperBuilding(),
+                                        playerIndex,
+                                        drawnCard,
+                                        true
+                                )
+                        );
+                        broadcastGameUpdate();
+
+                        Locks.playerInput.notify();
                     }
-                    Locks.playerInput.notify();
                 }
             }
         }
@@ -219,8 +234,21 @@ public class Game implements Serializable {
                         drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
                         drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
+
+                        queueUpdateModelElement(
+                                new LowerDrawModelElement(
+                                        players.get(playerIndex).getNickname() + " ha pescato " + drawnCard.simpleToString() + " dalla fila inferiore",
+                                        cardBoard.getLine().getLowerLine(),
+                                        cardBoard.getLine().getLowerBuilding(),
+                                        playerIndex,
+                                        drawnCard,
+                                        true
+                                )
+                        );
+                        broadcastGameUpdate();
+
+                        Locks.playerInput.notify();
                     }
-                    Locks.playerInput.notify();
                 }
             }
         }
@@ -237,8 +265,21 @@ public class Game implements Serializable {
                         drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager); //adds the building as a listener.
                         drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
+
+                        queueUpdateModelElement(
+                                new UpperDrawModelElement(
+                                        players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila superiore",
+                                        cardBoard.getLine().getUpperLine(),
+                                        cardBoard.getLine().getUpperBuilding(),
+                                        playerIndex,
+                                        drawnBuildingCard,
+                                        false
+                                )
+                        );
+                        broadcastGameUpdate();
+
+                        Locks.playerInput.notify();
                     }
-                    Locks.playerInput.notify();
                 }
             }
         }
@@ -255,8 +296,21 @@ public class Game implements Serializable {
                         drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager);
                         drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
                         callDrawEvent();
+
+                        queueUpdateModelElement(
+                                new LowerDrawModelElement(
+                                        players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila inferiore",
+                                        cardBoard.getLine().getLowerLine(),
+                                        cardBoard.getLine().getLowerBuilding(),
+                                        playerIndex,
+                                        drawnBuildingCard,
+                                        false
+                                )
+                        );
+                        broadcastGameUpdate();
+
+                        Locks.playerInput.notify();
                     }
-                    Locks.playerInput.notify();
                 }
             }
         }

@@ -1,6 +1,6 @@
-package it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard;
+package it.polimi.ingsw.gc49.server.model.Card.EventCard;
 
-import it.polimi.ingsw.gc49.server.model.Card.TribeCards.TribeCard;
+import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.EventManager;
 import it.polimi.ingsw.gc49.server.model.Player;
@@ -8,7 +8,7 @@ import it.polimi.ingsw.gc49.server.model.Player;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class EventCard extends TribeCard implements Comparable<EventCard>, Serializable {
+public abstract class EventCard extends Card implements Comparable<EventCard>, Serializable {
     protected final EventManager eventManager;
 
     public EventCard ( EventManager eventManager, Era era, int minNumPlayers ) {

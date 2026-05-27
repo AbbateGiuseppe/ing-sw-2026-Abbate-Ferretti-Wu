@@ -26,4 +26,9 @@ public class OfferChoosing extends State {
 
         return new OfferExecution(game); //goes to OfferExecution
     }
+
+    @Override
+    public String toString () {
+        return "Scelta delle offerte";
+    }
 }

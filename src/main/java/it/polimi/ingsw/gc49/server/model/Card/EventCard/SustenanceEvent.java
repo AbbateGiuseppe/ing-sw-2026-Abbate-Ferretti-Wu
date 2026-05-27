@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.server.model.Card.TribeCards.EventCard;
+package it.polimi.ingsw.gc49.server.model.Card.EventCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;

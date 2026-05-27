@@ -38,4 +38,9 @@ public class GameEnd extends State {
 
         return null;
     }
+
+    @Override
+    public String toString () {
+        return "Fine della partita";
+    }
 }

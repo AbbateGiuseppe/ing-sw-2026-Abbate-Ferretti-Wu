@@ -52,7 +52,9 @@ public class MockupGame implements Serializable {
     //Players
     public void setPlayers (List<MockupPlayer> players) { this.players = players; }
     public void setCurrentPlayerIndex (int currentPlayerIndex) {
+        players.get(this.currentPlayerIndex).setOfTurn(false);
         this.currentPlayerIndex = currentPlayerIndex;
+        players.get(this.currentPlayerIndex).setOfTurn(true);
     }
     //Cardboard
     public void setDeckTopEra(Era deckTopEra) {
