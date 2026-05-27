@@ -164,20 +164,24 @@ public class Track implements Serializable {
      * @return next player reference or a null if there is no next player.
      */
     public Player getNextPlayerOfferAndActivate () {
-        while(offerBoard.get(incomingOffer).getAssignedPlayer() == null && incomingOffer < offerBoard.size()-1) { //cycles out all the empty offers
+        while( incomingOffer < offerBoard.size()-1 && offerBoard.get(incomingOffer).getAssignedPlayer() == null ) { //cycles out all the empty offers
             incomingOffer++;
         }
-        selectedOffer = incomingOffer;
-        incomingOffer++;
-        Offer currentOfferObject = offerBoard.get(selectedOffer);
+        if ( incomingOffer <= offerBoard.size()-1 && offerBoard.get(incomingOffer).getAssignedPlayer() != null ) { //if a player was found
+            selectedOffer = incomingOffer;
+            incomingOffer++;
 
-        if (currentOfferObject.getAssignedPlayer() == null) { //reached the end and there is no player
+            Offer currentOfferObject = offerBoard.get(selectedOffer);
+
+            //found a player and gives him the offer effects.
+            currentOfferObject.activate();
+            return currentOfferObject.getAssignedPlayer();
+
+        } else {
+            //reached the end
             selectedOffer = 0;
             incomingOffer = 0;
             return null;
-        }else{ //found a player and gives him the offer effects.
-            currentOfferObject.activate();
-            return currentOfferObject.getAssignedPlayer();
         }
     }
 
@@ -188,9 +192,12 @@ public class Track implements Serializable {
      */
     public Player getNextPlayerOrderSlot () {
         if(incomingOrderSlot <= orderBoard.size()-1) {
+
             selectedOrderSlot = incomingOrderSlot; //selects the incoming order slot as the order slot to be used.
             incomingOrderSlot++;
+
             OrderSlot currentOrderSlotObject = orderBoard.get(selectedOrderSlot);
+
             if (currentOrderSlotObject.getAssignedPlayer() == null){ //logical exception used during disconnections, where there'd be some empty slots at the end
                 selectedOrderSlot = 0;
                 incomingOrderSlot = 0;
