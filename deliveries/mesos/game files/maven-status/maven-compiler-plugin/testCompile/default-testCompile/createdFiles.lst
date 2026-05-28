@@ -1,0 +1,17 @@
+it\polimi\ingsw\gc49\model\Card\BuildingCard\BuildingCardTest.class
+it\polimi\ingsw\gc49\model\Card\TribeCards\EventCard\EventCardWithoutBuildingEffectsTest.class
+it\polimi\ingsw\gc49\model\Track\OrderSlotTest.class
+it\polimi\ingsw\gc49\model\Card\TribeCards\EventCard\EventCardWithBuildingEffectsTest.class
+it\polimi\ingsw\gc49\model\Card\BuildingCard\SamePairInventionsCardTest.class
+it\polimi\ingsw\gc49\model\CardBoard\CardBoardTest.class
+it\polimi\ingsw\gc49\model\Card\TribeCards\EventCard\EventCardTest.class
+it\polimi\ingsw\gc49\model\Card\TribeCards\CharacterCard\CharacterCardTest.class
+it\polimi\ingsw\gc49\model\States\InitialSetupTest.class
+it\polimi\ingsw\gc49\model\Track\TrackTest.class
+it\polimi\ingsw\gc49\model\EraTest.class
+it\polimi\ingsw\gc49\model\Card\BuildingCard\CharacterSetCompleteFoodCardTest.class
+it\polimi\ingsw\gc49\model\CardBoard\LineTest.class
+it\polimi\ingsw\gc49\model\PlayerTest.class
+it\polimi\ingsw\gc49\model\Card\TribeCards\CharacterCard\CharacterCardTest2.class
+it\polimi\ingsw\gc49\model\CardBoard\DeckTest.class
+it\polimi\ingsw\gc49\model\States\EraEndTest.class

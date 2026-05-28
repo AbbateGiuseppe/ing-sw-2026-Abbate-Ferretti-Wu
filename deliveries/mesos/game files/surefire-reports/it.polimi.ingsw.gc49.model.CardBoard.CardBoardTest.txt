@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: it.polimi.ingsw.gc49.model.CardBoard.CardBoardTest
+-------------------------------------------------------------------------------
+Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.216 s -- in it.polimi.ingsw.gc49.model.CardBoard.CardBoardTest
