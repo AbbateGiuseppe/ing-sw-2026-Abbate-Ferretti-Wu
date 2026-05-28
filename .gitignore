@@ -34,3 +34,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+
+### local created files ###
+/deliveries/mesos/server_state.ser
