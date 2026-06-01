@@ -5,7 +5,8 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.CHANGE_PHASE.
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualGameServerAdapter;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
-import it.polimi.ingsw.gc49.server.controller.MassiWuController;
+import it.polimi.ingsw.gc49.server.controller.MassiWuPeppeController;
+import it.polimi.ingsw.gc49.server.controller.MassiWuPeppeController;
 import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.Datapacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
@@ -33,7 +34,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
     public final String nickname;
     protected ApplicationPhase currentPhase;
     protected VirtualServerAdapter serverSide;
-    protected transient MassiWuController controller;
+    protected transient MassiWuPeppeController controller;
     protected transient VirtualClient clientSide;
     protected transient ObjectInputStream input;
     protected transient ObjectOutputStream output;
@@ -72,7 +73,7 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
     public void setServerSideObject ( VirtualServerAdapter serverSide ) {
         this.serverSide = serverSide;
     }
-    public void setController ( MassiWuController controller ){
+    public void setController ( MassiWuPeppeController controller ){
         this.controller = controller;
     }
     public VirtualServerAdapter getServerSide(){

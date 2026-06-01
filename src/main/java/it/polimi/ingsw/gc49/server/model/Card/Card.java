@@ -7,50 +7,107 @@ import it.polimi.ingsw.gc49.server.model.DataBank;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 import java.io.Serializable;
-
+/**
+ * Represents an abstract base class for all cards in the game.
+ * <p>
+ * This class implements {@link Rectangable} //TODO spiega utilizzo rectangable
+ * and {@link Serializable}. It holds common
+ * properties such as the {@link Era} it belongs to and the minimum number of players
+ * required to use it. Subclasses must define specific acquisition rules and behaviors.
+ */
 public abstract class Card implements Rectangable, Serializable {
+    /** The era this card belongs to. */
     protected final Era era;
+    /** The minimum number of players required for this card to be included in the game. */
     private final int minNumPlayers;
 
+
+    /**
+     * Constructs a new {@code Card} with the specified era and minimum number of players.
+     *
+     * @param era           the {@link Era} this card belongs to
+     * @param minNumPlayers the minimum number of players required to play with this card
+     */
     public Card(Era era, int minNumPlayers) {
         this.era = era;
         this.minNumPlayers = minNumPlayers;
     }
 
-    public Era getEra() {return era;}
-    public int getMinNumPlayers() {return minNumPlayers;}
     /**
+     * Retrieves the era of this card.
      *
-     * When the player picks a card,this method is called to check whether he can get it
-     * it returns always true for charactercards and always false for eventcards,whereas for buildingcards
-     * it compares the food and the building discount of the player with the foodprice of the card
-     * if it returns true,the player calls updateDataBank() of the card
-      */
+     * @return the {@link Era} of the card
+     */
+    public Era getEra() {return era;}
+
+
+
+    /**
+     * Retrieves the minimum number of players required for this card.
+     *
+     * @return the minimum number of players
+     */
+    public int getMinNumPlayers() {return minNumPlayers;}
+
+
+
+    /**
+     * Checks whether the specified player is eligible to acquire this card.
+     * <p>
+     * Implementation specifics typically follow these rules:
+     * <ul>
+     * <li><b>Character Cards:</b> always return {@code true}.</li>
+     * <li><b>Event Cards:</b> always return {@code false}.</li>
+     * <li><b>Building Cards:</b> evaluate the player's food and building discounts against the card's food price.</li>
+     * </ul>
+     * If this method returns {@code true}, the player is expected to subsequently call {@link #updateDataBank(DataBank)}.
+     *
+     * @param player the {@link Player} attempting to acquire the card
+     * @return {@code true} if the player can get the card, {@code false} otherwise
+     */
+
     public abstract boolean canGet(Player player);
 
-    /**updates the values of the drawing player's databank during a draw.*/
+    /**
+     * Updates the values of the drawing player's databank during a draw.
+     * <p>
+     * This method provides a default empty implementation and should be overridden
+     * by subclass cards that actually need to modify the player's databank.
+     * * @param dataBank the {@link DataBank} of the player drawing the card
+     */
     public void updateDataBank( DataBank dataBank ) {
         // will be overridden by the subclass card when it has to actually modify the player's databank.
     }
 
     /**
-     * Should be called AFTER updating the databank.
-     * It handles the special effects applied by the card after it has been drawn.
-     * @param player the drawing player
+     * Handles any special effects applied by the card after it has been drawn.
+     * <p>
+     * This method should be called <b>after</b> {@link #updateDataBank(DataBank)}.
+     * * @param player the drawing {@link Player} receiving the card's effects
      */
     public void onDraw( Player player ) {
 
     }
 
     /**
-     * Used to have a simple identifiable name for the card to print, instead of the entire description that is present in the toString method,
-     * @return A simple one line String.
+     * Provides a simple, identifiable name for the card.
+     * <p>
+     * This is intended to be used for printing a concise, one-line string instead of
+     * the detailed description typically returned by the {@code toString()} method.
+     *
+     * @return a simple one-line {@link String} representing the card's name or type
      */
     public abstract String simpleToString();
 
     /**
-     * Distinguishes cards that can go in the lower line during the setup from cards that can't.
-     * @return true if this card can be placed on the lower line on setup
+     * Determines if this card can be placed on the lower line during the game setup.
+     *Implementation specifics typically follow these rules:
+     * <ul>
+     * <li><b>Character Cards:</b> always return {@code true}.</li>
+     * <li><b>Event Cards:</b> always return {@code false}.</li>
+     * <li><b>Building Cards:</b> always return {@code false}.</li>
+     * </ul>
+     * @return {@code true} if this card can be placed on the lower line on setup, {@code false} otherwise
      */
     public abstract boolean isLowerLineOnSetup();
 }
