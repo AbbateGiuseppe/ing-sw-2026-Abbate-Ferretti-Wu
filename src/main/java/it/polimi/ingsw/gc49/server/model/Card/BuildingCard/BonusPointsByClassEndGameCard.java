@@ -8,21 +8,58 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
+
+/**
+ * Represents a specific type of {@link BuildingCard} that awards endgame bonus points.
+ * <p>
+ * When its corresponding event is triggered (typically at the end of the game),
+ * this building calculates a point bonus based on the amount of a specific
+ * {@link CharacterType} the owner possesses. The player receives a fixed number
+ * of points for every unit of that chosen character class in their databank.
+ */
+
 public class BonusPointsByClassEndGameCard extends BuildingCard {
+    /** The specific class of character (e.g., Artist, Hunter) this building counts for the bonus. */
     private final CharacterType unit;
+
+    /** The amount of bonus points awarded for each character of the specified type. */
     private final int pointsPerUnit;
 
+    /**
+     * Constructs a new {@code BonusPointsByClassEndGameCard}.
+     *
+     * @param unit          the {@link CharacterType} to be counted for the bonus
+     * @param pointsPerUnit the number of points awarded per unit of the specified character
+     * @param buildingEvent the {@link BuildingEvent} that triggers this card's effect (usually Endgame)
+     * @param pointsEndgame the base points awarded at the end of the game
+     * @param foodPrice     the base food cost to acquire this building
+     * @param era           the {@link Era} this card belongs to
+     * @param minNumPlayers the minimum number of players required to include this card
+     */
     public BonusPointsByClassEndGameCard( CharacterType unit, int pointsPerUnit, BuildingEvent buildingEvent, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
         super(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
         this.unit = unit;
         this.pointsPerUnit = pointsPerUnit;
     }
 
+
+    /**
+     * Executes the special effect of this building.
+     * <p>
+     * This method is invoked by the {@link it.polimi.ingsw.gc49.server.model.EventManager}. It counts the total number of
+     * characters matching the specified {@link #unit} owned by the player, multiplies that
+     * count by {@link #pointsPerUnit}, and adds the resulting points to the player's score.
+     */
     @Override
     public void onEventEffect() {
         owner.addPoints(pointsPerUnit * owner.data.getCharacterCount(unit));
     }
 
+    /**
+     * Provides a detailed string representation of the card, including its stats and effect description.
+     *
+     * @return a multi-line {@link String} describing the card's attributes and the dynamic multiplier effect
+     */
     @Override
     public String toString() {
         return "BonusPointsByClassEndGameCard {\n" +
@@ -33,11 +70,27 @@ public class BonusPointsByClassEndGameCard extends BuildingCard {
                 "\n}";
     }
 
+
+    /**
+     * Provides a localized, concise name for this specific building card.
+     *
+     * @return a simple one-line {@link String} ("EDIFICIO (strapunti da classe)")
+     */
     @Override
     public String simpleToString () {
         return "EDIFICIO (strapunti da classe)";
     }
 
+
+    /**
+     * Generates a visually formatted ASCII-art representation of the card for the terminal UI.
+     * <p>
+     * The generated drawing has a fixed height of 2 and a width of 10. It dynamically
+     * appends a specific letter based on the {@link #unit} type (e.g., 'A' for Artist,
+     * 'H' for Hunter) to visually indicate which character class grants the bonus.
+     *
+     * @return a {@link RectangleAttributedString} containing the colored terminal UI graphics
+     */
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
         AttributedStringBuilder attributedString = new AttributedStringBuilder()
