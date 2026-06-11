@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.client.view.Rectangable;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.DataBank;
 import it.polimi.ingsw.gc49.server.model.Player;
+import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
 
 import java.io.Serializable;
 /**
@@ -20,6 +21,8 @@ public abstract class Card implements Rectangable, Serializable {
     protected final Era era;
     /** The minimum number of players required for this card to be included in the game. */
     private final int minNumPlayers;
+    /** The update queue, where updates can be queued at the card activation. */
+    protected final QueueUpdatable queueUpdater;
 
 
     /**
@@ -28,9 +31,10 @@ public abstract class Card implements Rectangable, Serializable {
      * @param era           the {@link Era} this card belongs to
      * @param minNumPlayers the minimum number of players required to play with this card
      */
-    public Card(Era era, int minNumPlayers) {
+    public Card( Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
         this.era = era;
         this.minNumPlayers = minNumPlayers;
+        this.queueUpdater = queueUpdater;
     }
 
     /**

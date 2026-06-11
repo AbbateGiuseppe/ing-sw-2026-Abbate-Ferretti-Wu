@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.DataBank;
 import it.polimi.ingsw.gc49.server.model.Era;
+import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
@@ -11,8 +12,8 @@ import org.jline.utils.AttributedStyle;
 public class Shaman extends CharacterCard {
     private final int numStars;
 
-    public Shaman( int numStars, Era era, int minNumPlayers ) {
-        super(era, minNumPlayers);
+    public Shaman( int numStars, Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
+        super(era, minNumPlayers, queueUpdater);
         this.numStars = numStars;
     }
 

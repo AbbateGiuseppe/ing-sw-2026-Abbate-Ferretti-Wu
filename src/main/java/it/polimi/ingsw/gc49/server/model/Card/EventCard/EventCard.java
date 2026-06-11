@@ -26,7 +26,6 @@ public abstract class EventCard extends Card implements Comparable<EventCard>, S
      * to the players who own them.
      */
     protected final EventManager eventManager;
-    protected final QueueUpdatable queueUpdater;
 
     /**
      * Constructs a new {@code EventCard}.
@@ -38,9 +37,8 @@ public abstract class EventCard extends Card implements Comparable<EventCard>, S
 
 
     public EventCard ( EventManager eventManager, Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
-        super(era, minNumPlayers);
+        super(era, minNumPlayers, queueUpdater);
         this.eventManager = eventManager;
-        this.queueUpdater = queueUpdater;
     }
 
     /**

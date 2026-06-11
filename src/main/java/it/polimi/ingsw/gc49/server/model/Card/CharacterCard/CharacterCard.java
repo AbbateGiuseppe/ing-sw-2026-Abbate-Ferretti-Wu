@@ -3,12 +3,13 @@ package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.Player;
+import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
 
 import java.io.Serializable;
 
 public abstract class CharacterCard extends Card implements Serializable {
-    public CharacterCard ( Era era, int minNumPlayers ) {
-        super(era, minNumPlayers);
+    public CharacterCard ( Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
+        super(era, minNumPlayers, queueUpdater);
     }
 
     @Override

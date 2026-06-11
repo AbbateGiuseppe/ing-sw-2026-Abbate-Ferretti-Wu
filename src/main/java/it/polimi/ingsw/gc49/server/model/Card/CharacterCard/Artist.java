@@ -4,13 +4,14 @@ import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.DataBank;
 import it.polimi.ingsw.gc49.server.model.Era;
+import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
 public class Artist extends CharacterCard {
-    public Artist ( Era era, int minNumPlayers ) {
-        super(era, minNumPlayers);
+    public Artist ( Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
+        super(era, minNumPlayers, queueUpdater);
     }
 
     @Override

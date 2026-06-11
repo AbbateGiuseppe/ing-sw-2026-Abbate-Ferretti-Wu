@@ -302,27 +302,27 @@ public class Deck implements Serializable {
         switch (type) {
             case "Hunter" -> {
                 boolean drumstick = cardJson.get("drumstick").getAsBoolean();
-                card = new Hunter(drumstick, era, minNumPlayers);
+                card = new Hunter(drumstick, era, minNumPlayers, queueUpdater);
             }
             case "Gatherer" -> {
-                card = new Gatherer(era, minNumPlayers);
+                card = new Gatherer(era, minNumPlayers, queueUpdater);
             }
             case "Shaman" -> {
                 int numStars = cardJson.get("numStars").getAsInt();
-                card = new Shaman(numStars, era, minNumPlayers);
+                card = new Shaman(numStars, era, minNumPlayers, queueUpdater);
             }
             case "Inventor" -> {
                 String inventionStr = cardJson.get("invention").getAsString();
                 Invention invention = Invention.valueOf(inventionStr);
-                card = new Inventor(invention, era, minNumPlayers);
+                card = new Inventor(invention, era, minNumPlayers, queueUpdater);
             }
             case "Builder" -> {
                 int buildingDiscount = cardJson.get("buildingDiscount").getAsInt();
                 int numPoints = cardJson.get("numPoints").getAsInt();
-                card = new Builder(buildingDiscount, numPoints, era, minNumPlayers);
+                card = new Builder(buildingDiscount, numPoints, era, minNumPlayers, queueUpdater);
             }
             case "Artist" -> {
-                card = new Artist(era, minNumPlayers);
+                card = new Artist(era, minNumPlayers, queueUpdater);
             }
             case "HuntingEvent" -> {
                 int pointsPerHunter = cardJson.get("pointsPerHunter").getAsInt();
@@ -401,51 +401,51 @@ public class Deck implements Serializable {
         // Switch sul tipo per creare la carta appropriata
         switch (type) {
             case "BonusFoodEndTurnCard" -> {
-                card = new BonusFoodEndTurnCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new BonusFoodEndTurnCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "BonusHuntingCard" -> {
-                card = new BonusHuntingCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new BonusHuntingCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "BonusPaintingCard" -> {
-                card = new BonusPaintingCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new BonusPaintingCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "BonusPointsByClassEndGameCard" -> {
                 String unitStr = cardJson.get("unit").getAsString();
                 CharacterType unit = CharacterType.valueOf(unitStr);
                 int pointsPerUnit = cardJson.get("pointsPerUnit").getAsInt();
-                card = new BonusPointsByClassEndGameCard(unit, pointsPerUnit, buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new BonusPointsByClassEndGameCard(unit, pointsPerUnit, buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "CharacterSetCompleteFoodCard" -> {
-                card = new CharacterSetCompleteFoodCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new CharacterSetCompleteFoodCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "CharacterSetCompletePointEndGameCard" -> {
-                card = new CharacterSetCompletePointEndGameCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new CharacterSetCompletePointEndGameCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "DoubleBuilderPointsCard" -> {
-                card = new DoubleBuilderPointsCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new DoubleBuilderPointsCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "DoubleShamanPointsCard" -> {
-                card = new DoubleShamanPointsCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new DoubleShamanPointsCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "OneMoreCardCard" -> {
-                card = new OneMoreCardCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new OneMoreCardCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "SamePairInventionsCard" -> {
-                card = new SamePairInventionsCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new SamePairInventionsCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "ShamanicImmunityCard" -> {
-                card = new ShamanicImmunityCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new ShamanicImmunityCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "ShamanicThreeStarCard" -> {
-                card = new ShamanicThreeStarCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new ShamanicThreeStarCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "SustainDiscountByClassCard" -> {
                 String unitStr = cardJson.get("unit").getAsString();
                 CharacterType unit = CharacterType.valueOf(unitStr);
-                card = new SustainDiscountByClassCard(unit, buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new SustainDiscountByClassCard(unit, buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             case "TwentyFiveBonusPointsEndGame" -> {
-                card = new TwentyFiveBonusPointsEndGame(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers);
+                card = new TwentyFiveBonusPointsEndGame(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
             }
             default -> {
                 System.err.println("Tipo carta edificio non riconosciuto: " + type);

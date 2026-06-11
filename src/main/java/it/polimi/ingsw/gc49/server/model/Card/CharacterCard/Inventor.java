@@ -1,10 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.server.model.CharacterType;
-import it.polimi.ingsw.gc49.server.model.DataBank;
-import it.polimi.ingsw.gc49.server.model.Era;
-import it.polimi.ingsw.gc49.server.model.Invention;
+import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
@@ -12,8 +9,8 @@ import org.jline.utils.AttributedStyle;
 public class Inventor extends CharacterCard {
     private final Invention invention;
 
-    public Inventor( Invention invention, Era era, int minNumPlayers ) {
-        super(era, minNumPlayers);
+    public Inventor( Invention invention, Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
+        super(era, minNumPlayers, queueUpdater);
         this.invention = invention;
     }
 

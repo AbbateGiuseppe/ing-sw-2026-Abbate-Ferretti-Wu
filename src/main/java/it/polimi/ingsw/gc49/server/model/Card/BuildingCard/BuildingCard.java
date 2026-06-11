@@ -39,8 +39,8 @@ public abstract class BuildingCard extends Card implements BuildingEventListener
      * @param era           the {@link Era} this card belongs to
      * @param minNumPlayers the minimum number of players required to include this card
      */
-    public BuildingCard ( BuildingEvent buildingEvent, int pointsEndgame, int foodPrice, Era era, int minNumPlayers ) {
-        super(era, minNumPlayers);
+    public BuildingCard ( BuildingEvent buildingEvent, int pointsEndgame, int foodPrice, Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
+        super(era, minNumPlayers, queueUpdater);
         this.buildingEvent = buildingEvent;
         this.pointsEndgame = pointsEndgame;
         this.foodPrice = foodPrice;
