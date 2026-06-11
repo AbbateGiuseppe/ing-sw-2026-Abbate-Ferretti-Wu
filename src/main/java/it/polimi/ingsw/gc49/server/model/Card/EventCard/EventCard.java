@@ -1,10 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.EventCard;
 
-import it.polimi.ingsw.gc49.server.model.BuildingEvent;
+import it.polimi.ingsw.gc49.server.model.*;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
-import it.polimi.ingsw.gc49.server.model.Era;
-import it.polimi.ingsw.gc49.server.model.EventManager;
-import it.polimi.ingsw.gc49.server.model.Player;
 
 import java.io.Serializable;
 import java.util.List;
@@ -29,6 +26,7 @@ public abstract class EventCard extends Card implements Comparable<EventCard>, S
      * to the players who own them.
      */
     protected final EventManager eventManager;
+    protected final QueueUpdatable queueUpdater;
 
     /**
      * Constructs a new {@code EventCard}.
@@ -39,9 +37,10 @@ public abstract class EventCard extends Card implements Comparable<EventCard>, S
      */
 
 
-    public EventCard ( EventManager eventManager, Era era, int minNumPlayers ) {
+    public EventCard ( EventManager eventManager, Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
         super(era, minNumPlayers);
         this.eventManager = eventManager;
+        this.queueUpdater = queueUpdater;
     }
 
     /**

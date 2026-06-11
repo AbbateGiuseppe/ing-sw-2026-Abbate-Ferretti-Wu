@@ -143,7 +143,7 @@ class CardBoardTest {
         // Questo test dipende dallo stato del deck e della line
         // Potrebbe lanciare EraEndedException se l'era cambia
         try {
-            cardBoard.endRound(3);
+            cardBoard.endRound();
         } catch (EraEndedException e) {
             assertTrue(cardBoard.hasEraChanged(), "Era should have changed when exception is thrown");
         }

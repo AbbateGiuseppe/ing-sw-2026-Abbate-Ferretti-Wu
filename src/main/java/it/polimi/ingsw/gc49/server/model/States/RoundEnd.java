@@ -8,7 +8,7 @@ public class RoundEnd extends State {
 
     public State executeState () {
         try {
-            game.getCardBoard().endRound(game.getNumOfPlayers());
+            game.getCardBoard().endRound();
             game.queueUpdateModelElement(
                     new FullCardboardModelElement(
                             "-Il round si è concluso, le carte in gioco sono state rinnovate-",

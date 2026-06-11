@@ -27,7 +27,7 @@ import java.util.List;
 
 import static it.polimi.ingsw.gc49.server.model.Locks.broadcastLock;
 
-public class Game implements Serializable {
+public class Game implements Serializable, QueueUpdatable {
     private final List<VirtualGameClient> controllersListeners = new ArrayList<>();
     private List<Player> players;
     private EventManager eventManager;
@@ -83,6 +83,7 @@ public class Game implements Serializable {
     public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }
 
     //### controller communication
+    @Override
     public void queueUpdateModelElement ( UpdateModelElement updateModelElement ) {
         updatesQueue.addUpdateElement(updateModelElement);
     }

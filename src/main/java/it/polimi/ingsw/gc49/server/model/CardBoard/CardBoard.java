@@ -19,7 +19,7 @@ public class CardBoard implements Serializable {
     private final List<Card> discards;
     private final Deck deck;
     private final Game game;
-    private int numPlayers;
+    private final int numPlayers;
 /// chiedere come mettere playerlist
 
 
@@ -93,7 +93,7 @@ public class CardBoard implements Serializable {
         line.endGame();
         // eventuale logica extra legata agli scarti o al deck
     }
-    public void endRound (int numPlayers) throws EraEndedException {
+    public void endRound() throws EraEndedException {
         try {
             line.endRound(numPlayers);
         } catch ( EraEndedException e ) {

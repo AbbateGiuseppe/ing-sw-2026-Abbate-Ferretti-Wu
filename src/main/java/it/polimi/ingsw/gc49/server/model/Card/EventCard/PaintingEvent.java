@@ -14,8 +14,8 @@ public class PaintingEvent extends EventCard {
     private final int plusPoints;
     private final int minusPoints;
 
-    public PaintingEvent( int threshold, int plusPoints, int minusPoints, EventManager eventManager, Era era, int minNumPlayers ) {
-        super(eventManager, era, minNumPlayers);
+    public PaintingEvent( int threshold, int plusPoints, int minusPoints, EventManager eventManager, Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
+        super(eventManager, era, minNumPlayers, queueUpdater);
         this.threshold = threshold;
         this.plusPoints = plusPoints;
         this.minusPoints = minusPoints;

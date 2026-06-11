@@ -146,13 +146,13 @@ public class TextTerminal extends UserInputInterface {
                     try {
                         int cardIndex = Integer.parseInt(terminalParameters[2]);
                         PlayerActionEnum action = null;
-                        if (terminalParameters[0].equalsIgnoreCase("low")) {
+                        if (terminalParameters[0].equalsIgnoreCase("l")) {
                             if (terminalParameters[1].equalsIgnoreCase("c")) {
                                 action = PlayerActionEnum.DRAW_LOWER_CHARACTER;
                             } else if (terminalParameters[1].equalsIgnoreCase("b")) {
                                 action = PlayerActionEnum.DRAW_LOWER_BUILDING;
                             }
-                        } else if (terminalParameters[0].equalsIgnoreCase("up")) {
+                        } else if (terminalParameters[0].equalsIgnoreCase("u")) {
                             if (terminalParameters[1].equalsIgnoreCase("c")) {
                                 action = PlayerActionEnum.DRAW_UPPER_CHARACTER;
                             } else if (terminalParameters[1].equalsIgnoreCase("b")) {
@@ -187,13 +187,13 @@ public class TextTerminal extends UserInputInterface {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
                 try {
                     int cardIndex = Integer.parseInt(terminalParameters[2]);
-                    if (terminalParameters[0].equalsIgnoreCase("low")) {
+                    if (terminalParameters[0].equalsIgnoreCase("l")) {
                         if (terminalParameters[1].equalsIgnoreCase("c")) {
                             terminalMethods.printCardRead(terminalMockups.getGame().getLowerLine().get(cardIndex));
                         } else if (terminalParameters[1].equalsIgnoreCase("b")) {
                             terminalMethods.printCardRead(terminalMockups.getGame().getLowerBuilding().get(cardIndex));
                         }
-                    } else if (terminalParameters[0].equalsIgnoreCase("up")) {
+                    } else if (terminalParameters[0].equalsIgnoreCase("u")) {
                         if (terminalParameters[1].equalsIgnoreCase("c")) {
                             terminalMethods.printCardRead(terminalMockups.getGame().getUpperLine().get(cardIndex));
                         } else if (terminalParameters[1].equalsIgnoreCase("b")) {
@@ -269,10 +269,10 @@ public class TextTerminal extends UserInputInterface {
                 .append(manualFormat("legend", "Displays a legend that explains game board's symbols"))
                 .append(manualFormat("totem [orange/white/blue/black/yellow]", "Choose the specified totem"))
                 .append(manualFormat("offer [offer index]", "Choose the specified offer"))
-                .append(manualFormat("draw [low/up] [c/b] [card index]", "Draw the specified card from upper or lower lines,"))
-                .append(manualFormat("", "from the character or the building line."))
-                .append(manualFormat("read [low/up] [c/b] [card index]", "Read the description of a card from upper or lower lines,"))
-                .append(manualFormat("", "from the character or the building line."))
+                .append(manualFormat("draw [l/u] [c/b] [card index]", "Draw from upper or lower lines,"))
+                .append(manualFormatSecondLine("", "the indexed card from the character or the building line."))
+                .append(manualFormat("read [l/u] [c/b] [card index]", "Read the description from upper or lower lines,"))
+                .append(manualFormatSecondLine("", "of the indexed card from the character or the building line."))
                 .append(manualFormat("player [player index]", "Displays the specified player's stats"));
 
 
@@ -281,7 +281,8 @@ public class TextTerminal extends UserInputInterface {
         }
     }
     private static String manualSeparator () { return " "+"-".repeat(127); }
-    private static String manualFormat ( String command, String description) {return " " + String.format(" %60s | %s\n", command, description);}
+    private static String manualFormat ( String command, String description ) {return " " + String.format(" %60s | %s\n", command, description);}
+    private static String manualFormatSecondLine ( String command, String description ) {return " " + String.format(" %60s \\ %s\n", command, description);}
     static {
         legend.append(" Symbols meaning:\n");
         legend.append(" ♥ food    | ░ free space                       | card types by color:\n");

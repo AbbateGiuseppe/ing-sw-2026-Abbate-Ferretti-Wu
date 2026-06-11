@@ -1,10 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.EventCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.server.model.BuildingEvent;
-import it.polimi.ingsw.gc49.server.model.Era;
-import it.polimi.ingsw.gc49.server.model.EventManager;
-import it.polimi.ingsw.gc49.server.model.Player;
+import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
@@ -16,8 +13,8 @@ public class RitualEvent extends EventCard {
     private final int plusPoints;
     private final int minusPoints;
 
-    public RitualEvent( int plusPoints, int minusPoints, EventManager eventManager, Era era, int minNumPlayers ) {
-        super(eventManager, era, minNumPlayers);
+    public RitualEvent( int plusPoints, int minusPoints, EventManager eventManager, Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
+        super(eventManager, era, minNumPlayers, queueUpdater);
         this.plusPoints = plusPoints;
         this.minusPoints = minusPoints;
     }

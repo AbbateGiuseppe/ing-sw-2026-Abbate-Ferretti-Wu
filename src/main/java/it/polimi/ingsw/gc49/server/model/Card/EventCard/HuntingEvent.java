@@ -11,8 +11,8 @@ import java.util.List;
 public class HuntingEvent extends EventCard {
     private final int pointsPerHunter;
 
-    public HuntingEvent( int pointsPerHunter, EventManager eventManager, Era era, int minNumPlayers ) {
-        super(eventManager, era, minNumPlayers);
+    public HuntingEvent( int pointsPerHunter, EventManager eventManager, Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
+        super(eventManager, era, minNumPlayers, queueUpdater);
         this.pointsPerHunter = pointsPerHunter;
     }
 

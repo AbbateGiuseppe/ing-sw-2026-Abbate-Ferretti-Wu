@@ -4,19 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import it.polimi.ingsw.gc49.server.model.*;
 import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.*;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
-import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.*;
 import it.polimi.ingsw.gc49.server.model.Card.EventCard.HuntingEvent;
 import it.polimi.ingsw.gc49.server.model.Card.EventCard.PaintingEvent;
 import it.polimi.ingsw.gc49.server.model.Card.EventCard.RitualEvent;
 import it.polimi.ingsw.gc49.server.model.Card.EventCard.SustenanceEvent;
-import it.polimi.ingsw.gc49.server.model.CharacterType;
-import it.polimi.ingsw.gc49.server.model.Era;
-import it.polimi.ingsw.gc49.server.model.EventManager;
-import it.polimi.ingsw.gc49.server.model.Game;
-import it.polimi.ingsw.gc49.server.model.Invention;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,11 +24,13 @@ public class Deck implements Serializable {
     private final ArrayList<Card> tribeDeck;
     private final ArrayList<Card> buildingDeck;
     private final EventManager gameEventManager;
+    private final QueueUpdatable queueUpdater;
 
     public Deck( Game game ) {
         this.tribeDeck = new ArrayList<>();
         this.buildingDeck = new ArrayList<>();
         this.gameEventManager = game.getEventManager();
+        this.queueUpdater = game;
 
         // qui costruisci fisicamente i mazzi in base al numero di giocatori
         TribeDeck(game.getNumOfPlayers());
@@ -44,6 +41,7 @@ public class Deck implements Serializable {
         this.tribeDeck = new ArrayList<>();
         this.buildingDeck = new ArrayList<>();
         this.gameEventManager = null;
+        this.queueUpdater = null;
     }
 
     // pesca la prossima carta Tribù (Personaggio/Eventi) dal mazzo
@@ -328,22 +326,22 @@ public class Deck implements Serializable {
             }
             case "HuntingEvent" -> {
                 int pointsPerHunter = cardJson.get("pointsPerHunter").getAsInt();
-                card = new HuntingEvent(pointsPerHunter, gameEventManager, era, minNumPlayers);
+                card = new HuntingEvent(pointsPerHunter, gameEventManager, era, minNumPlayers, queueUpdater);
             }
             case "SustenanceEvent" -> {
                 int minusPoints = cardJson.get("minusPoints").getAsInt();
-                card = new SustenanceEvent(minusPoints, gameEventManager, era, minNumPlayers);
+                card = new SustenanceEvent(minusPoints, gameEventManager, era, minNumPlayers, queueUpdater);
             }
             case "PaintingEvent" -> {
                 int threshold = cardJson.get("threshold").getAsInt();
                 int plusPoints = cardJson.get("plusPoints").getAsInt();
                 int minusPoints = cardJson.get("minusPoints").getAsInt();
-                card = new PaintingEvent(threshold, plusPoints, minusPoints, gameEventManager, era, minNumPlayers);
+                card = new PaintingEvent(threshold, plusPoints, minusPoints, gameEventManager, era, minNumPlayers, queueUpdater);
             }
             case "RitualEvent" -> {
                 int plusPoints = cardJson.get("plusPoints").getAsInt();
                 int minusPoints = cardJson.get("minusPoints").getAsInt();
-                card = new RitualEvent(plusPoints, minusPoints, gameEventManager, era, minNumPlayers);
+                card = new RitualEvent(plusPoints, minusPoints, gameEventManager, era, minNumPlayers, queueUpdater);
             }
             default -> {
                 // Se il tipo non è riconosciuto, stampa un errore e ritorna null
