@@ -21,7 +21,7 @@ class BuildingCardTest {
     @Test
     void testBonusHuntingCard_canGet_withEnoughFood() {
         player.addFood(10);
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2, null);
 
         assertTrue(card.canGet(player), "Player with enough food should be able to get the card");
     }
@@ -29,7 +29,7 @@ class BuildingCardTest {
     @Test
     void testBonusHuntingCard_cannotGet_withoutEnoughFood() {
         player.addFood(2);
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 5, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 5, Era.FIRST, 2, null);
 
         assertFalse(card.canGet(player), "Player without enough food should not be able to get the card");
     }
@@ -38,14 +38,14 @@ class BuildingCardTest {
     void testBonusHuntingCard_canGet_withBuildingDiscount() {
         player.addFood(5);
         player.data.addNumBuildingDiscount(2);
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 7, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 7, Era.FIRST, 2, null);
 
         assertTrue(card.canGet(player), "Player with discount should be able to get the card");
     }
 
     @Test
     void testBonusHuntingCard_updateDataBank_addsPoints() {
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 10, 3, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 10, 3, Era.FIRST, 2, null);
 
         card.updateDataBank(player.data);
 
@@ -55,7 +55,7 @@ class BuildingCardTest {
     @Test
     void testBonusHuntingCard_onDraw_subtractsFood() {
         player.addFood(10);
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2, null);
 
         card.onDraw(player);
 
@@ -65,7 +65,7 @@ class BuildingCardTest {
     @Test
     void testBonusHuntingCard_onDraw_setsOwner() {
         player.addFood(10);
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2, null);
 
         card.onDraw(player);
 
@@ -76,7 +76,7 @@ class BuildingCardTest {
     void testBonusHuntingCard_onDraw_withDiscount() {
         player.addFood(10);
         player.data.addNumBuildingDiscount(2);
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 5, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 5, Era.FIRST, 2, null);
 
         card.onDraw(player);
 
@@ -90,7 +90,7 @@ class BuildingCardTest {
         player.setFoodToPay(10);
         player.setPointsToPay(10);
 
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2, null);
         card.onDraw(player);
         card.onEventEffect();
 
@@ -115,7 +115,7 @@ class BuildingCardTest {
     void testBonusPaintingCard_onEventEffect() {
         player.data.addCharacterCount(CharacterType.Artist, 2);
 
-        BonusPaintingCard card = new BonusPaintingCard(BuildingEvent.PAINTING_EVENT, 10, 4, Era.SECOND, 2);
+        BonusPaintingCard card = new BonusPaintingCard(BuildingEvent.PAINTING_EVENT, 10, 4, Era.SECOND, 2, null);
         card.onDraw(player);
         card.onEventEffect();
 
@@ -124,7 +124,7 @@ class BuildingCardTest {
 
     @Test
     void testOneMoreCardCard_onEventEffect() {
-        OneMoreCardCard card = new OneMoreCardCard(BuildingEvent.TURN_END, 7, 5, Era.FIRST, 2);
+        OneMoreCardCard card = new OneMoreCardCard(BuildingEvent.TURN_END, 7, 5, Era.FIRST, 2, null);
         card.onDraw(player);
 
         assertDoesNotThrow(() -> {
@@ -137,7 +137,7 @@ class BuildingCardTest {
         player.setPointsToPay(10);
         player.data.addCharacterCount(CharacterType.Shaman, 2);
 
-        ShamanicImmunityCard card = new ShamanicImmunityCard(BuildingEvent.RITUAL_EVENT, 6, 4, Era.SECOND, 3);
+        ShamanicImmunityCard card = new ShamanicImmunityCard(BuildingEvent.RITUAL_EVENT, 6, 4, Era.SECOND, 3, null);
         card.onDraw(player);
         card.onEventEffect();
 
@@ -151,7 +151,7 @@ class BuildingCardTest {
         player.data.addCharacterCount(CharacterType.Builder, 4);
         player.setPointsToPay(-8);
 
-        DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 15, 8, Era.THIRD_FINAL, 3);
+        DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 15, 8, Era.THIRD_FINAL, 3, null);
         card.onDraw(player);
         card.onEventEffect();
 
@@ -163,7 +163,7 @@ class BuildingCardTest {
         player.data.addCharacterCount(CharacterType.Shaman, 2);
         player.setPointsToPay(-4);
 
-        DoubleShamanPointsCard card = new DoubleShamanPointsCard(BuildingEvent.GAME_END, 13, 7, Era.THIRD_FINAL, 2);
+        DoubleShamanPointsCard card = new DoubleShamanPointsCard(BuildingEvent.GAME_END, 13, 7, Era.THIRD_FINAL, 2, null);
         card.onDraw(player);
         card.onEventEffect();
 
@@ -172,7 +172,7 @@ class BuildingCardTest {
 
     @Test
     void testCardEraAndMinPlayers() {
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.SECOND, 3);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.SECOND, 3, null);
 
         assertEquals(Era.SECOND, card.getEra(), "Card should have correct era");
         assertEquals(3, card.getMinNumPlayers(), "Card should have correct min players");
@@ -180,14 +180,14 @@ class BuildingCardTest {
 
     @Test
     void testFoodPriceGetter() {
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 7, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 7, Era.FIRST, 2, null);
 
         assertEquals(7, card.getFoodPrice(), "Card should return correct food price");
     }
 
     @Test
     void testAddBuildingToManager() {
-        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2);
+        BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2, null);
         card.onDraw(player);
 
         assertDoesNotThrow(() -> {

@@ -33,7 +33,7 @@ public class EventCardWithoutBuildingEffectsTest {
     @Test
     public void testHuntingEvent(){
         int pointsPerHunter = 2;
-        EventCard card = new HuntingEvent(pointsPerHunter,eventManager,era,minNumPlayers);
+        EventCard card = new HuntingEvent(pointsPerHunter,eventManager,era,minNumPlayers, null);
         int[] numHunters = {3, 5, 0};
         ls.forEach(p -> p.data.addCharacterCount(CharacterType.Hunter,numHunters[p.getPlayerIndex()]));
         int[] expectedFood = ls.stream().mapToInt(p -> p.getFood() + numHunters[p.getPlayerIndex()]).toArray();
@@ -50,7 +50,7 @@ public class EventCardWithoutBuildingEffectsTest {
         int threshold = 2;
         int plusPoints = 2;
         int minusPoints = 3;
-        EventCard card = new PaintingEvent(threshold,plusPoints,minusPoints,eventManager,era,minNumPlayers);
+        EventCard card = new PaintingEvent(threshold,plusPoints,minusPoints,eventManager,era,minNumPlayers, null);
         int[] numArtist = {3, 2, 1};
         ls.forEach(p -> p.data.addCharacterCount(CharacterType.Artist,numArtist[p.getPlayerIndex()]));
         int[] expectedPoints = ls.stream().mapToInt(p -> numArtist[p.getPlayerIndex()] >= threshold ? p.getPoints() + plusPoints * numArtist[p.getPlayerIndex()] : p.getPoints() - minusPoints).toArray();
@@ -62,7 +62,7 @@ public class EventCardWithoutBuildingEffectsTest {
     @Test
     public void testSustenanceEvent(){
         int minusPoints = 2;
-        EventCard card = new SustenanceEvent(minusPoints,eventManager,era,minNumPlayers);
+        EventCard card = new SustenanceEvent(minusPoints,eventManager,era,minNumPlayers, null);
         int[] foods = {10,5,2};
         ls.forEach(p -> p.addFood(foods[p.getPlayerIndex()]));
         int[] numGatherers = {1,3,0};
@@ -82,7 +82,7 @@ public class EventCardWithoutBuildingEffectsTest {
     public void testRitualEvent() {
         int plusPoints = 10;
         int minusPoints = 5;
-        EventCard card = new RitualEvent(plusPoints,minusPoints,eventManager,era,minNumPlayers);
+        EventCard card = new RitualEvent(plusPoints,minusPoints,eventManager,era,minNumPlayers, null);
         List<Integer> numStars = List.of(1,3,3);
         int maxStar = Collections.max(numStars);
         int minStar = Collections.min(numStars);

@@ -23,7 +23,7 @@ class CharacterCardTest2 {
 
     @Test
     public void testArtist() {
-        CharacterCard card = new Artist(era,minNumPlayers);
+        CharacterCard card = new Artist(era,minNumPlayers, null);
         int oldCount = player.data.getCharacterCount(CharacterType.Artist);
         card.updateDataBank(player.data);
         int newCount = player.data.getCharacterCount(CharacterType.Artist);
@@ -34,7 +34,7 @@ class CharacterCardTest2 {
     public void testBuilder() {
         int buildingDiscount = 2;
         int numPoints = 3;
-        CharacterCard card = new Builder(buildingDiscount,numPoints,era,minNumPlayers);
+        CharacterCard card = new Builder(buildingDiscount,numPoints,era,minNumPlayers, null);
         int oldCount = player.data.getCharacterCount(CharacterType.Builder);
         int oldBuildingDiscount = player.data.getNumBuildingDiscount();
         int oldBuilderPoints = player.data.getNumBuilderPoints();
@@ -49,7 +49,7 @@ class CharacterCardTest2 {
 
     @Test
     public void testGatherer() {
-        CharacterCard card = new Gatherer(era,minNumPlayers);
+        CharacterCard card = new Gatherer(era,minNumPlayers, null);
         int oldCount = player.data.getCharacterCount(CharacterType.Gatherer);
         int oldSustenanceDiscount = player.data.getNumSustenanceDiscount();
         card.updateDataBank(player.data);
@@ -61,7 +61,7 @@ class CharacterCardTest2 {
 
     @Test
     public void testHunterWithoutDrumstick() {
-        CharacterCard card = new Hunter(false,era,minNumPlayers);
+        CharacterCard card = new Hunter(false,era,minNumPlayers, null);
         int oldCount = player.data.getCharacterCount(CharacterType.Hunter);
         card.updateDataBank(player.data);
         int newCount = player.data.getCharacterCount(CharacterType.Hunter);
@@ -72,7 +72,7 @@ class CharacterCardTest2 {
     public void testHunterWithDrumstick() {
         int initialCount = 9;
         player.data.addCharacterCount(CharacterType.Hunter,initialCount);
-        CharacterCard card = new Hunter(true,era,minNumPlayers);
+        CharacterCard card = new Hunter(true,era,minNumPlayers, null);
         int oldCount = player.data.getCharacterCount(CharacterType.Hunter);
         int oldFood = player.getFood();
         card.updateDataBank(player.data);
@@ -85,7 +85,7 @@ class CharacterCardTest2 {
 
     @Test
     public void testInventor() {
-        CharacterCard card = new Inventor(Invention.ARROWHEAD,era,minNumPlayers);
+        CharacterCard card = new Inventor(Invention.ARROWHEAD,era,minNumPlayers, null);
         int oldCount = player.data.getCharacterCount(CharacterType.Inventor);
         assertFalse(player.data.getInventions().contains(Invention.ARROWHEAD));
         card.updateDataBank(player.data);
@@ -97,7 +97,7 @@ class CharacterCardTest2 {
     @Test
     public void testShaman() {
         int numStars = 3;
-        CharacterCard card = new Shaman(numStars,era,minNumPlayers);
+        CharacterCard card = new Shaman(numStars,era,minNumPlayers, null);
         int oldCount = player.data.getCharacterCount(CharacterType.Shaman);
         int oldNumStars = player.data.getNumStars();
         card.updateDataBank(player.data);

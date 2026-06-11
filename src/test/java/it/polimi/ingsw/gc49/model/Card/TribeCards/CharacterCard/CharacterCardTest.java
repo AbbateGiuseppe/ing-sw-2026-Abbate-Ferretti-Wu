@@ -21,13 +21,13 @@ class CharacterCardTest {
 
     @Test
     void testHunter_canGet_alwaysTrue() {
-        Hunter hunter = new Hunter(false, Era.FIRST, 2);
+        Hunter hunter = new Hunter(false, Era.FIRST, 2, null);
         assertTrue(hunter.canGet(player), "Hunter card should always be drawable");
     }
 
     @Test
     void testHunter_updateDataBank_addsHunterCount() {
-        Hunter hunter = new Hunter(false, Era.FIRST, 2);
+        Hunter hunter = new Hunter(false, Era.FIRST, 2, null);
         hunter.updateDataBank(player.data);
 
         assertEquals(1, player.data.getCharacterCount(CharacterType.Hunter), "DataBank should have 1 hunter");
@@ -37,7 +37,7 @@ class CharacterCardTest {
     void testHunter_onDraw_withoutDrumstick_noFoodAdded() {
         player.data.addCharacterCount(CharacterType.Hunter, 2);
         player.addFood(5);
-        Hunter hunter = new Hunter(false, Era.FIRST, 2);
+        Hunter hunter = new Hunter(false, Era.FIRST, 2, null);
 
         hunter.onDraw(player);
 
@@ -48,7 +48,7 @@ class CharacterCardTest {
     void testHunter_onDraw_withDrumstick_addsFood() {
         player.data.addCharacterCount(CharacterType.Hunter, 3);
         player.addFood(5);
-        Hunter hunter = new Hunter(true, Era.FIRST, 2);
+        Hunter hunter = new Hunter(true, Era.FIRST, 2, null);
 
         hunter.onDraw(player);
 
@@ -57,13 +57,13 @@ class CharacterCardTest {
 
     @Test
     void testArtist_canGet_alwaysTrue() {
-        Artist artist = new Artist(Era.SECOND, 3);
+        Artist artist = new Artist(Era.SECOND, 3, null);
         assertTrue(artist.canGet(player), "Artist card should always be drawable");
     }
 
     @Test
     void testArtist_updateDataBank_addsArtistCount() {
-        Artist artist = new Artist(Era.SECOND, 3);
+        Artist artist = new Artist(Era.SECOND, 3, null);
         artist.updateDataBank(player.data);
 
         assertEquals(1, player.data.getCharacterCount(CharacterType.Artist), "DataBank should have 1 artist");
@@ -71,13 +71,13 @@ class CharacterCardTest {
 
     @Test
     void testBuilder_canGet_alwaysTrue() {
-        Builder builder = new Builder(2, 3, Era.FIRST, 2);
+        Builder builder = new Builder(2, 3, Era.FIRST, 2, null);
         assertTrue(builder.canGet(player), "Builder card should always be drawable");
     }
 
     @Test
     void testBuilder_updateDataBank_addsBuilderCount() {
-        Builder builder = new Builder(2, 3, Era.FIRST, 2);
+        Builder builder = new Builder(2, 3, Era.FIRST, 2, null);
         builder.updateDataBank(player.data);
 
         assertEquals(1, player.data.getCharacterCount(CharacterType.Builder), "DataBank should have 1 builder");
@@ -85,7 +85,7 @@ class CharacterCardTest {
 
     @Test
     void testBuilder_updateDataBank_addsBuildingDiscount() {
-        Builder builder = new Builder(2, 3, Era.FIRST, 2);
+        Builder builder = new Builder(2, 3, Era.FIRST, 2, null);
         builder.updateDataBank(player.data);
 
         assertEquals(2, player.data.getNumBuildingDiscount(), "DataBank should have building discount of 2");
@@ -93,7 +93,7 @@ class CharacterCardTest {
 
     @Test
     void testBuilder_updateDataBank_addsBuilderPoints() {
-        Builder builder = new Builder(2, 5, Era.SECOND, 3);
+        Builder builder = new Builder(2, 5, Era.SECOND, 3, null);
         builder.updateDataBank(player.data);
 
         assertEquals(5, player.data.getNumBuilderPoints(), "DataBank should have 5 builder points");
@@ -101,13 +101,13 @@ class CharacterCardTest {
 
     @Test
     void testGatherer_canGet_alwaysTrue() {
-        Gatherer gatherer = new Gatherer(Era.FIRST, 2);
+        Gatherer gatherer = new Gatherer(Era.FIRST, 2, null);
         assertTrue(gatherer.canGet(player), "Gatherer card should always be drawable");
     }
 
     @Test
     void testGatherer_updateDataBank_addsGathererCount() {
-        Gatherer gatherer = new Gatherer(Era.FIRST, 2);
+        Gatherer gatherer = new Gatherer(Era.FIRST, 2, null);
         gatherer.updateDataBank(player.data);
 
         assertEquals(1, player.data.getCharacterCount(CharacterType.Gatherer), "DataBank should have 1 gatherer");
@@ -115,7 +115,7 @@ class CharacterCardTest {
 
     @Test
     void testGatherer_updateDataBank_addsSustenanceDiscount() {
-        Gatherer gatherer = new Gatherer(Era.FIRST, 2);
+        Gatherer gatherer = new Gatherer(Era.FIRST, 2, null);
         gatherer.updateDataBank(player.data);
 
         assertEquals(3, player.data.getNumSustenanceDiscount(), "DataBank should have sustenance discount of 3");
@@ -123,13 +123,13 @@ class CharacterCardTest {
 
     @Test
     void testInventor_canGet_alwaysTrue() {
-        Inventor inventor = new Inventor(Invention.CANOE, Era.SECOND, 2);
+        Inventor inventor = new Inventor(Invention.CANOE, Era.SECOND, 2, null);
         assertTrue(inventor.canGet(player), "Inventor card should always be drawable");
     }
 
     @Test
     void testInventor_updateDataBank_addsInventorCount() {
-        Inventor inventor = new Inventor(Invention.CANOE, Era.SECOND, 3);
+        Inventor inventor = new Inventor(Invention.CANOE, Era.SECOND, 3, null);
         inventor.updateDataBank(player.data);
 
         assertEquals(1, player.data.getCharacterCount(CharacterType.Inventor), "DataBank should have 1 inventor");
@@ -137,7 +137,7 @@ class CharacterCardTest {
 
     @Test
     void testInventor_updateDataBank_addsInvention() {
-        Inventor inventor = new Inventor(Invention.BOWL, Era.THIRD_FINAL, 2);
+        Inventor inventor = new Inventor(Invention.BOWL, Era.THIRD_FINAL, 2, null);
         inventor.updateDataBank(player.data);
 
         assertTrue(player.data.getInventions().contains(Invention.BOWL), "DataBank should have BOWL invention");
@@ -145,8 +145,8 @@ class CharacterCardTest {
 
     @Test
     void testInventor_multipleInventions() {
-        Inventor inventor1 = new Inventor(Invention.ARROWHEAD, Era.FIRST, 2);
-        Inventor inventor2 = new Inventor(Invention.CANOE, Era.SECOND, 2);
+        Inventor inventor1 = new Inventor(Invention.ARROWHEAD, Era.FIRST, 2, null);
+        Inventor inventor2 = new Inventor(Invention.CANOE, Era.SECOND, 2, null);
 
         inventor1.updateDataBank(player.data);
         inventor2.updateDataBank(player.data);
@@ -158,13 +158,13 @@ class CharacterCardTest {
 
     @Test
     void testShaman_canGet_alwaysTrue() {
-        Shaman shaman = new Shaman(3, Era.FIRST, 2);
+        Shaman shaman = new Shaman(3, Era.FIRST, 2, null);
         assertTrue(shaman.canGet(player), "Shaman card should always be drawable");
     }
 
     @Test
     void testShaman_updateDataBank_addsShamanCount() {
-        Shaman shaman = new Shaman(2, Era.SECOND, 3);
+        Shaman shaman = new Shaman(2, Era.SECOND, 3, null);
         shaman.updateDataBank(player.data);
 
         assertEquals(1, player.data.getCharacterCount(CharacterType.Shaman), "DataBank should have 1 shaman");
@@ -172,7 +172,7 @@ class CharacterCardTest {
 
     @Test
     void testShaman_updateDataBank_addsStars() {
-        Shaman shaman = new Shaman(3, Era.THIRD_FINAL, 2);
+        Shaman shaman = new Shaman(3, Era.THIRD_FINAL, 2, null);
         shaman.updateDataBank(player.data);
 
         assertEquals(3, player.data.getNumStars(), "DataBank should have 3 stars");
@@ -180,8 +180,8 @@ class CharacterCardTest {
 
     @Test
     void testShaman_multipleCards_accumulateStars() {
-        Shaman shaman1 = new Shaman(2, Era.FIRST, 2);
-        Shaman shaman2 = new Shaman(3, Era.SECOND, 2);
+        Shaman shaman1 = new Shaman(2, Era.FIRST, 2, null);
+        Shaman shaman2 = new Shaman(3, Era.SECOND, 2, null);
 
         shaman1.updateDataBank(player.data);
         shaman2.updateDataBank(player.data);
@@ -192,7 +192,7 @@ class CharacterCardTest {
 
     @Test
     void testCharacterCard_eraAndMinPlayers() {
-        Hunter hunter = new Hunter(true, Era.THIRD_FINAL, 4);
+        Hunter hunter = new Hunter(true, Era.THIRD_FINAL, 4, null);
 
         assertEquals(Era.THIRD_FINAL, hunter.getEra(), "Card should have correct era");
         assertEquals(4, hunter.getMinNumPlayers(), "Card should have correct min players");
@@ -200,10 +200,10 @@ class CharacterCardTest {
 
     @Test
     void testMultipleCharacterCards_integration() {
-        Hunter hunter = new Hunter(false, Era.FIRST, 2);
-        Artist artist = new Artist(Era.FIRST, 2);
-        Builder builder = new Builder(1, 2, Era.FIRST, 2);
-        Gatherer gatherer = new Gatherer(Era.FIRST, 2);
+        Hunter hunter = new Hunter(false, Era.FIRST, 2, null);
+        Artist artist = new Artist(Era.FIRST, 2, null);
+        Builder builder = new Builder(1, 2, Era.FIRST, 2, null);
+        Gatherer gatherer = new Gatherer(Era.FIRST, 2, null);
 
         hunter.updateDataBank(player.data);
         artist.updateDataBank(player.data);

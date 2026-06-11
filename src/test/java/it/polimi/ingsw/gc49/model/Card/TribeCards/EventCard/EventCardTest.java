@@ -43,7 +43,7 @@ class EventCardTest {
 
     @Test
     void testHuntingEvent_canGet_alwaysFalse() {
-        HuntingEvent event = new HuntingEvent(2, eventManager, Era.FIRST, 2);
+        HuntingEvent event = new HuntingEvent(2, eventManager, Era.FIRST, 2, null);
         assertFalse(event.canGet(player1), "Event cards should never be drawable by players");
     }
 
@@ -52,7 +52,7 @@ class EventCardTest {
         player1.data.addCharacterCount(CharacterType.Hunter, 3);
         player2.data.addCharacterCount(CharacterType.Hunter, 1);
 
-        HuntingEvent event = new HuntingEvent(2, eventManager, Era.FIRST, 2);
+        HuntingEvent event = new HuntingEvent(2, eventManager, Era.FIRST, 2, null);
         event.resolveEvent(players);
 
         assertEquals(3, player1.getFood(), "Player1 should gain food equal to hunter count");
@@ -65,7 +65,7 @@ class EventCardTest {
         player1.data.addCharacterCount(CharacterType.Hunter, 3);
         player2.data.addCharacterCount(CharacterType.Hunter, 2);
 
-        HuntingEvent event = new HuntingEvent(5, eventManager, Era.SECOND, 2);
+        HuntingEvent event = new HuntingEvent(5, eventManager, Era.SECOND, 2, null);
         event.resolveEvent(players);
 
         assertEquals(15, player1.getPoints(), "Player1 should gain 3 hunters * 5 points = 15");
@@ -75,7 +75,7 @@ class EventCardTest {
 
     @Test
     void testPaintingEvent_canGet_alwaysFalse() {
-        PaintingEvent event = new PaintingEvent(2, 3, 4, eventManager, Era.SECOND, 2);
+        PaintingEvent event = new PaintingEvent(2, 3, 4, eventManager, Era.SECOND, 2, null);
         assertFalse(event.canGet(player1), "Event cards should never be drawable by players");
     }
 
@@ -84,7 +84,7 @@ class EventCardTest {
         player1.data.addCharacterCount(CharacterType.Artist, 1);
         player2.data.addCharacterCount(CharacterType.Artist, 0);
 
-        PaintingEvent event = new PaintingEvent(2, 3, 4, eventManager, Era.SECOND, 2);
+        PaintingEvent event = new PaintingEvent(2, 3, 4, eventManager, Era.SECOND, 2, null);
         event.resolveEvent(players);
 
         assertEquals(-4, player1.getPoints(), "Player1 below threshold should lose 4 points");
@@ -96,7 +96,7 @@ class EventCardTest {
         player1.data.addCharacterCount(CharacterType.Artist, 3);
         player2.data.addCharacterCount(CharacterType.Artist, 2);
 
-        PaintingEvent event = new PaintingEvent(2, 5, 10, eventManager, Era.SECOND, 2);
+        PaintingEvent event = new PaintingEvent(2, 5, 10, eventManager, Era.SECOND, 2, null);
         event.resolveEvent(players);
 
         assertEquals(15, player1.getPoints(), "Player1 with 3 artists should gain 3*5=15 points");
@@ -107,7 +107,7 @@ class EventCardTest {
     void testPaintingEvent_exactThreshold_gainsPoints() {
         player1.data.addCharacterCount(CharacterType.Artist, 2);
 
-        PaintingEvent event = new PaintingEvent(2, 4, 6, eventManager, Era.SECOND, 2);
+        PaintingEvent event = new PaintingEvent(2, 4, 6, eventManager, Era.SECOND, 2, null);
         event.resolveEvent(players);
 
         assertEquals(8, player1.getPoints(), "Player1 at threshold should gain points (2*4=8)");
@@ -115,7 +115,7 @@ class EventCardTest {
 
     @Test
     void testRitualEvent_canGet_alwaysFalse() {
-        RitualEvent event = new RitualEvent(10, 5, eventManager, Era.FIRST, 2);
+        RitualEvent event = new RitualEvent(10, 5, eventManager, Era.FIRST, 2, null);
         assertFalse(event.canGet(player1), "Event cards should never be drawable by players");
     }
 
@@ -125,7 +125,7 @@ class EventCardTest {
         player2.data.addNumStar(2);
         player3.data.addNumStar(1);
 
-        RitualEvent event = new RitualEvent(10, 3, eventManager, Era.FIRST, 2);
+        RitualEvent event = new RitualEvent(10, 3, eventManager, Era.FIRST, 2, null);
         event.resolveEvent(players);
 
         assertEquals(10, player1.getPoints(), "Winner should gain 10 points");
@@ -138,7 +138,7 @@ class EventCardTest {
         player2.data.addNumStar(5);
         player3.data.addNumStar(2);
 
-        RitualEvent event = new RitualEvent(10, 3, eventManager, Era.SECOND, 2);
+        RitualEvent event = new RitualEvent(10, 3, eventManager, Era.SECOND, 2, null);
         event.resolveEvent(players);
 
         assertEquals(10, player1.getPoints(), "Winner should gain 10 points");
@@ -153,7 +153,7 @@ class EventCardTest {
         player2.data.addNumStar(1);
         player3.data.addNumStar(1);
 
-        RitualEvent event = new RitualEvent(8, 6, eventManager, Era.THIRD_FINAL, 2);
+        RitualEvent event = new RitualEvent(8, 6, eventManager, Era.THIRD_FINAL, 2, null);
         event.resolveEvent(players);
 
         assertEquals(8, player1.getPoints(), "Winner should gain 8 points");
@@ -163,7 +163,7 @@ class EventCardTest {
 
     @Test
     void testSustenanceEvent_canGet_alwaysFalse() {
-        SustenanceEvent event = new SustenanceEvent(3, eventManager, Era.FIRST, 2);
+        SustenanceEvent event = new SustenanceEvent(3, eventManager, Era.FIRST, 2, null);
         assertFalse(event.canGet(player1), "Event cards should never be drawable by players");
     }
 
@@ -173,7 +173,7 @@ class EventCardTest {
         player1.data.addCharacterCount(CharacterType.Hunter, 2);
         player1.data.addCharacterCount(CharacterType.Artist, 1);
 
-        SustenanceEvent event = new SustenanceEvent(3, eventManager, Era.FIRST, 2);
+        SustenanceEvent event = new SustenanceEvent(3, eventManager, Era.FIRST, 2, null);
         event.resolveEvent(players);
 
         assertEquals(7, player1.getFood(), "Player should pay 3 food (3 characters - 0 discount)");
@@ -183,14 +183,14 @@ class EventCardTest {
     @Test
     void testSustenanceEvent_withGathererDiscount() {
         player1.addFood(10);
-        Card hunter = new Hunter(false, Era.FIRST, 2);
+        Card hunter = new Hunter(false, Era.FIRST, 2, null);
         player1.addCharacterCard(hunter);
         player1.addCharacterCard(hunter);
         player1.addCharacterCard(hunter);
-        Card gatherer = new Gatherer(Era.FIRST, 2);
+        Card gatherer = new Gatherer(Era.FIRST, 2, null);
         player1.addCharacterCard(gatherer);
 
-        SustenanceEvent event = new SustenanceEvent(2, eventManager, Era.FIRST, 2);
+        SustenanceEvent event = new SustenanceEvent(2, eventManager, Era.FIRST, 2, null);
         event.resolveEvent(players);
 
         assertEquals(9, player1.getFood(), "Player should pay 1 food (4 characters - 3 discount)");
@@ -201,7 +201,7 @@ class EventCardTest {
         player1.addFood(2);
         player1.data.addCharacterCount(CharacterType.Hunter, 5);
 
-        SustenanceEvent event = new SustenanceEvent(3, eventManager, Era.SECOND, 2);
+        SustenanceEvent event = new SustenanceEvent(3, eventManager, Era.SECOND, 2, null);
         event.resolveEvent(players);
 
         assertEquals(0, player1.getFood(), "Player should spend all available food");
@@ -212,7 +212,7 @@ class EventCardTest {
     void testSustenanceEvent_noCharacters_paysNothing() {
         player1.addFood(10);
 
-        SustenanceEvent event = new SustenanceEvent(3, eventManager, Era.FIRST, 2);
+        SustenanceEvent event = new SustenanceEvent(3, eventManager, Era.FIRST, 2, null);
         event.resolveEvent(players);
 
         assertEquals(10, player1.getFood(), "Player with no characters should not pay food");
@@ -221,8 +221,8 @@ class EventCardTest {
 
     @Test
     void testEventCard_compareTo_byEra() {
-        HuntingEvent event1 = new HuntingEvent(2, eventManager, Era.FIRST, 2);
-        PaintingEvent event2 = new PaintingEvent(2, 3, 4, eventManager, Era.SECOND, 2);
+        HuntingEvent event1 = new HuntingEvent(2, eventManager, Era.FIRST, 2, null);
+        PaintingEvent event2 = new PaintingEvent(2, 3, 4, eventManager, Era.SECOND, 2, null);
 
         assertTrue(event1.compareTo(event2) < 0, "FIRST era should come before SECOND era");
         assertTrue(event2.compareTo(event1) > 0, "SECOND era should come after FIRST era");
@@ -230,8 +230,8 @@ class EventCardTest {
 
     @Test
     void testEventCard_compareTo_sustenanceEventLast() {
-        HuntingEvent hunting = new HuntingEvent(2, eventManager, Era.FIRST, 2);
-        SustenanceEvent sustenance = new SustenanceEvent(3, eventManager, Era.FIRST, 2);
+        HuntingEvent hunting = new HuntingEvent(2, eventManager, Era.FIRST, 2, null);
+        SustenanceEvent sustenance = new SustenanceEvent(3, eventManager, Era.FIRST, 2, null);
 
         assertTrue(hunting.compareTo(sustenance) < 0, "Non-sustenance events should come before sustenance");
         assertTrue(sustenance.compareTo(hunting) > 0, "Sustenance event should come last");
@@ -239,7 +239,7 @@ class EventCardTest {
 
     @Test
     void testEventCard_eraAndMinPlayers() {
-        HuntingEvent event = new HuntingEvent(2, eventManager, Era.THIRD_FINAL, 4);
+        HuntingEvent event = new HuntingEvent(2, eventManager, Era.THIRD_FINAL, 4, null);
 
         assertEquals(Era.THIRD_FINAL, event.getEra(), "Event should have correct era");
         assertEquals(4, event.getMinNumPlayers(), "Event should have correct min players");
@@ -252,13 +252,13 @@ class EventCardTest {
         player1.data.addCharacterCount(CharacterType.Artist, 2);
         player1.data.addNumStar(5);
 
-        HuntingEvent hunting = new HuntingEvent(2, eventManager, Era.FIRST, 2);
+        HuntingEvent hunting = new HuntingEvent(2, eventManager, Era.FIRST, 2, null);
         hunting.resolveEvent(players);
 
         assertEquals(23, player1.getFood(), "After hunting: 20 + 3 food");
         assertEquals(6, player1.getPoints(), "After hunting: 3 hunters * 2 points");
 
-        PaintingEvent painting = new PaintingEvent(2, 3, 5, eventManager, Era.FIRST, 2);
+        PaintingEvent painting = new PaintingEvent(2, 3, 5, eventManager, Era.FIRST, 2, null);
         painting.resolveEvent(players);
 
         assertEquals(12, player1.getPoints(), "After painting: 6 + (2 artists * 3 points)");

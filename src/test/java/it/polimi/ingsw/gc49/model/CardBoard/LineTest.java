@@ -223,22 +223,22 @@ class LineTest {
     void testEraChangeException_setsEraChangedFlag() {
         // Crea un deck personalizzato con carte di ere diverse
         Deck customDeck = new Deck();
-        Card card1 = new Artist(Era.first(), 3);
-        Card card2 = new Artist(Era.first(), 3);
-        Card card3 = new Artist(Era.first(), 3);
-        Card card4 = new Artist(Era.first(), 3);
+        Card card1 = new Artist(Era.first(), 3, null);
+        Card card2 = new Artist(Era.first(), 3, null);
+        Card card3 = new Artist(Era.first(), 3, null);
+        Card card4 = new Artist(Era.first(), 3, null);
         //four lower cards
 
-        Card card5 = new Artist(Era.first(), 3);
-        Card card6 = new Artist(Era.first(), 3);
-        Card card7 = new Artist(Era.first(), 3);
-        Card card8 = new Artist(Era.first(), 3);
-        Card card9 = new Artist(Era.first(), 3);
-        Card card10 = new Artist(Era.first(), 3);
-        Card card11 = new Artist(Era.first(), 3);
+        Card card5 = new Artist(Era.first(), 3, null);
+        Card card6 = new Artist(Era.first(), 3, null);
+        Card card7 = new Artist(Era.first(), 3, null);
+        Card card8 = new Artist(Era.first(), 3, null);
+        Card card9 = new Artist(Era.first(), 3, null);
+        Card card10 = new Artist(Era.first(), 3, null);
+        Card card11 = new Artist(Era.first(), 3, null);
         //seven upper cards
 
-        Card card12 = new Artist(Era.first().next(), 3);
+        Card card12 = new Artist(Era.first().next(), 3, null);
         customDeck.addCard(card1);
         customDeck.addCard(card2);
         customDeck.addCard(card3);

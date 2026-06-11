@@ -23,7 +23,7 @@ public class CharacterSetCompleteFoodCardTest {
         int PPReward = 0;
         int foodPrice = 0;
 
-        BuildingCard bcard = new CharacterSetCompleteFoodCard(BuildingEvent.DRAW_EVENT, PPReward, foodPrice, Era.FIRST,3);
+        BuildingCard bcard = new CharacterSetCompleteFoodCard(BuildingEvent.DRAW_EVENT, PPReward, foodPrice, Era.FIRST,3, null);
         bcard.updateDataBank(p.data);
         bcard.onDraw(p);
         bcard.addBuildingToManager(p, eventManager);
