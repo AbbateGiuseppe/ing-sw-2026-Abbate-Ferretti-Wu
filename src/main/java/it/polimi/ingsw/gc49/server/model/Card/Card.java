@@ -22,7 +22,7 @@ public abstract class Card implements Rectangable, Serializable {
     /** The minimum number of players required for this card to be included in the game. */
     private final int minNumPlayers;
     /** The update queue, where updates can be queued at the card activation. */
-    protected final QueueUpdatable queueUpdater;
+    protected final transient QueueUpdatable queueUpdater;
 
 
     /**
