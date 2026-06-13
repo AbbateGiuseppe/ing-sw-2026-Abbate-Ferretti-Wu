@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.EventCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -26,9 +27,17 @@ public class HuntingEvent extends EventCard {
         // Trigger the effect(effect number 8) of the building card,
         // the building card modifies foodToPay and pointsToPay of the player
         eventManager.invokeEvent(BuildingEvent.HUNTING_EVENT);
+
         // Finalize the change on food and points of the player
         for(Player player : players) {
             player.confirmToPay();
+        }
+
+        if(queueUpdater != null) {
+            queueUpdater.queueUpdateModelElement(new TextModelElement(
+                    "La carta evento " + simpleToString() + " si è attivata fornendo "
+                            + pointsPerHunter + " di punti per ogni cacciatore"
+            ));
         }
     }
 

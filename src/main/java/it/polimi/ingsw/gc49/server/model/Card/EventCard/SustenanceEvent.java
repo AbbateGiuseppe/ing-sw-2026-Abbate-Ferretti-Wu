@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.EventCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -34,6 +35,13 @@ public class SustenanceEvent extends EventCard {
                   player.setFoodToPay(player.getFood());
             }
             player.confirmToPay();
+        }
+
+        if(queueUpdater != null) {
+            queueUpdater.queueUpdateModelElement(new TextModelElement(
+                    "La carta evento " + simpleToString() + " si è attivata togliendo "
+                            + minusPoints + " per ogni personaggio non sostentato"
+            ));
         }
     }
 

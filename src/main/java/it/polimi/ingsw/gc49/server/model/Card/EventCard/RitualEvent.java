@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.EventCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -43,6 +44,13 @@ public class RitualEvent extends EventCard {
 
         for(Player player : players) {
             player.confirmToPay();
+        }
+
+        if(queueUpdater != null) {
+            queueUpdater.queueUpdateModelElement(new TextModelElement(
+                    "La carta evento " + simpleToString() + " si è attivata fornendo "
+                            + plusPoints + " al primario di stelle, -" + minusPoints + " all'ultimo"
+            ));
         }
     }
 

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.FoodAndPointsModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
@@ -43,6 +44,15 @@ public class BonusHuntingCard extends BuildingCard {
     public void onEventEffect() {
         owner.setFoodToPay(owner.getFoodToPay() - owner.data.getCharacterCount(CharacterType.Hunter));
         owner.setPointsToPay(owner.getPointsToPay() - owner.data.getCharacterCount(CharacterType.Hunter));
+        if(queueUpdater != null) {
+            queueUpdater.queueUpdateModelElement(new FoodAndPointsModelElement(
+                    "La carta " + simpleToString() + " si è attivata fornendo 1 di cibo e punti a " + owner.getNickname() +
+                            " per ogni suo cacciatore",
+                    owner.getPlayerIndex(),
+                    owner.getFood(),
+                    owner.getPoints()
+            ));
+        }
     }
 
     /**
