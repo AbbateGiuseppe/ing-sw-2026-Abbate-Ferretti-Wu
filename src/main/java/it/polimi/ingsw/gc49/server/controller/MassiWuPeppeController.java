@@ -5,7 +5,8 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MO
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.server.model.Game;
-import it.polimi.ingsw.gc49.server.model.Track.NotValidOfferException;
+import it.polimi.ingsw.gc49.server.model.playerExceptions.NotValidOfferException;
+import it.polimi.ingsw.gc49.server.model.playerExceptions.PlayerException;
 import it.polimi.ingsw.gc49.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
 
@@ -32,41 +33,41 @@ public class MassiWuPeppeController implements VirtualGameClient, Serializable{
     public void executeCommand ( CommandPacket command ) {
         PlayerActionEnum action = command.getAction();
         saveStateAsync();
-        switch ( action ) {
-            case CHOOSE_TOTEM:
-                game.chooseTotem(controllingPlayerIndex, command.getTotem());
-                break;
-            case DRAW_UPPER_CHARACTER:
-                game.drawUpperCharacter(controllingPlayerIndex, command.getIndex());
-                break;
-            case DRAW_LOWER_CHARACTER:
-                game.drawLowerCharacter(controllingPlayerIndex, command.getIndex());
-                break;
-            case DRAW_UPPER_BUILDING:
-                game.drawUpperBuilding(controllingPlayerIndex, command.getIndex());
-                break;
-            case DRAW_LOWER_BUILDING:
-                game.drawLowerBuilding(controllingPlayerIndex, command.getIndex());
-                break;
-            case CHOOSE_OFFER:
-                try {
+        try {
+            switch (action) {
+                case CHOOSE_TOTEM:
+                    game.chooseTotem(controllingPlayerIndex, command.getTotem());
+                    break;
+                case DRAW_UPPER_CHARACTER:
+                    game.drawUpperCharacter(controllingPlayerIndex, command.getIndex());
+                    break;
+                case DRAW_LOWER_CHARACTER:
+                    game.drawLowerCharacter(controllingPlayerIndex, command.getIndex());
+                    break;
+                case DRAW_UPPER_BUILDING:
+                    game.drawUpperBuilding(controllingPlayerIndex, command.getIndex());
+                    break;
+                case DRAW_LOWER_BUILDING:
+                    game.drawLowerBuilding(controllingPlayerIndex, command.getIndex());
+                    break;
+                case CHOOSE_OFFER:
                     game.chooseOffer(controllingPlayerIndex, command.getIndex());
-                } catch (NotValidOfferException e) {
-                    reportError(new ErrorPacket("Offerta non valida", e.getMessage(), false));
-                }
-                break;
-            case PASS_TURN:
-                game.passYourTurn(controllingPlayerIndex);
-                break;
-            case DISCONNECT:
-                game.disconnectPlayer(controllingPlayerIndex);
-                break;
-            case CONNECT:
-                game.connectPlayer(controllingPlayerIndex);
-                break;
-            default:
-                // !ERROR!
-                break;
+                    break;
+                case PASS_TURN:
+                    game.passYourTurn(controllingPlayerIndex);
+                    break;
+                case DISCONNECT:
+                    game.disconnectPlayer(controllingPlayerIndex);
+                    break;
+                case CONNECT:
+                    game.connectPlayer(controllingPlayerIndex);
+                    break;
+                default:
+                    // !ERROR!
+                    break;
+            }
+        } catch (PlayerException e) {
+            reportError(new ErrorPacket(e.getTitle(), e.getMessage(), false));
         }
     }
 

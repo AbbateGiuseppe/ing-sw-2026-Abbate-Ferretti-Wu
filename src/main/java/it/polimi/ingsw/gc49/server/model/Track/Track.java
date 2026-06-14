@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.server.model.Track;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOffer;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
 import it.polimi.ingsw.gc49.server.model.Player;
+import it.polimi.ingsw.gc49.server.model.playerExceptions.NotValidOfferException;
 
 import java.io.Serializable;
 import java.util.ArrayList;

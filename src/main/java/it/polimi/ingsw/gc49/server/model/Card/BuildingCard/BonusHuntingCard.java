@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;

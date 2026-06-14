@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OrderboardModelElement;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.PlayersModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.OrderboardModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.PlayersModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.ReturnModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.ReturnModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;

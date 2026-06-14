@@ -5,10 +5,12 @@ import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOffer;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.*;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.LowerDrawModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.UpperDrawModelElement;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OrderboardModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.OfferOrderboardModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.ConnectionModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.CurrentPlayerModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.TotemModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.BuildingCard;
@@ -16,9 +18,11 @@ import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.CardBoard.CardBoard;
 import it.polimi.ingsw.gc49.server.model.States.InitialSetup;
 import it.polimi.ingsw.gc49.server.model.States.State;
-import it.polimi.ingsw.gc49.server.model.Track.NotValidOfferException;
 import it.polimi.ingsw.gc49.server.model.Track.Track;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
+import it.polimi.ingsw.gc49.server.model.playerExceptions.InvalidTotem;
+import it.polimi.ingsw.gc49.server.model.playerExceptions.NotYourTurnException;
+import it.polimi.ingsw.gc49.server.model.playerExceptions.PlayerException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -175,165 +179,194 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     //### Players' actions
-    public void chooseTotem ( int playerIndex, Totem chosenTotem ) {
+    public void chooseTotem ( int playerIndex, Totem chosenTotem ) throws PlayerException {
         synchronized (Locks.playerInput) {
-            if (players.get(playerIndex).getTotem() == null && !usedTotems.contains(chosenTotem) && currentState.getCurrentStateType().equals(State.States.TOTEM_CHOOSING) ) {
-                usedTotems.add(chosenTotem);
-                players.get(playerIndex).setTotem(chosenTotem);
-
-                queueUpdateModelElement(
-                        new TotemModelElement(
-                                players.get(playerIndex).getNickname() + " ha scelto il totem " + chosenTotem.toString(),
-                                playerIndex,
-                                chosenTotem
-                        )
-                );
-                broadcastGameUpdate();
-
-                Locks.playerInput.notify();
-            }
-        }
-    }
-
-    public void drawUpperCharacter ( int playerIndex, int cardIndex ) {
-        synchronized (Locks.playerInput) {
-            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
-                Player drawingPlayer = players.get(playerIndex);
-                if(drawingPlayer.getDrawableUpper() > 0){
-                    Card drawnCard = cardBoard.drawUpperCharacter(cardIndex, drawingPlayer);
-                    if (drawnCard != null) {
-                        drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
-                        drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
-                        callDrawEvent();
+            if (players.get(playerIndex).getTotem() == null) {
+                if (!usedTotems.contains(chosenTotem)) {
+                    if (currentState.getCurrentStateType().equals(State.States.TOTEM_CHOOSING)) {
+                        usedTotems.add(chosenTotem);
+                        players.get(playerIndex).setTotem(chosenTotem);
 
                         queueUpdateModelElement(
-                                new UpperDrawModelElement(
-                                        players.get(playerIndex).getNickname() + " ha pescato " + drawnCard.simpleToString() + " dalla fila superiore",
-                                        cardBoard.getLine().getUpperLine(),
-                                        cardBoard.getLine().getUpperBuilding(),
+                                new TotemModelElement(
+                                        players.get(playerIndex).getNickname() + " ha scelto il totem " + chosenTotem.toString(),
                                         playerIndex,
-                                        drawnCard,
-                                        true
+                                        chosenTotem
                                 )
                         );
                         broadcastGameUpdate();
 
                         Locks.playerInput.notify();
                     }
+                } else {
+                    throw new InvalidTotem("Questo totem è già stato preso da un altro giocatore.");
                 }
+            } else {
+                throw new InvalidTotem("Hai già scelto un totem.");
             }
         }
     }
 
-    public void drawLowerCharacter ( int playerIndex, int cardIndex ) {
+    public void drawUpperCharacter ( int playerIndex, int cardIndex ) throws PlayerException {
         synchronized (Locks.playerInput) {
-            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
-                Player drawingPlayer = players.get(playerIndex);
-                if(drawingPlayer.getDrawableLower() > 0) {
-                    Card drawnCard = cardBoard.drawLowerCharacter(cardIndex, drawingPlayer);
-                    if (drawnCard != null) {
-                        drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
-                        drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
-                        callDrawEvent();
+            if( playerIndex == currentPlayerIndex ) {
+                if (currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
+                    Player drawingPlayer = players.get(playerIndex);
+                    if (drawingPlayer.getDrawableUpper() > 0) {
+                        Card drawnCard = cardBoard.drawUpperCharacter(cardIndex, drawingPlayer);
+                        if (drawnCard != null) {
+                            drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                            drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
+                            callDrawEvent();
 
-                        queueUpdateModelElement(
-                                new LowerDrawModelElement(
-                                        players.get(playerIndex).getNickname() + " ha pescato " + drawnCard.simpleToString() + " dalla fila inferiore",
-                                        cardBoard.getLine().getLowerLine(),
-                                        cardBoard.getLine().getLowerBuilding(),
-                                        playerIndex,
-                                        drawnCard,
-                                        true
-                                )
-                        );
-                        broadcastGameUpdate();
+                            queueUpdateModelElement(
+                                    new UpperDrawModelElement(
+                                            players.get(playerIndex).getNickname() + " ha pescato " + drawnCard.simpleToString() + " dalla fila superiore"
+                                                    + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() + " sup, " + players.get(playerIndex).getDrawableLower() + " inf",
+                                            cardBoard.getLine().getUpperLine(),
+                                            cardBoard.getLine().getUpperBuilding(),
+                                            playerIndex,
+                                            drawnCard,
+                                            true
+                                    )
+                            );
+                            broadcastGameUpdate();
 
-                        Locks.playerInput.notify();
+                            Locks.playerInput.notify();
+                        }
                     }
                 }
+            } else {
+                throw new NotYourTurnException("Non è il tuo turno.");
             }
         }
     }
 
-    public void drawUpperBuilding ( int playerIndex, int cardIndex ) {
+    public void drawLowerCharacter ( int playerIndex, int cardIndex ) throws PlayerException {
         synchronized (Locks.playerInput) {
-            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
-                Player drawingPlayer = players.get(playerIndex);
-                if(drawingPlayer.getDrawableUpper() > 0) {
-                    BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawUpperBuilding(cardIndex, drawingPlayer);
-                    if (drawnBuildingCard != null) {
-                        drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
-                        drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager); //adds the building as a listener.
-                        drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
-                        callDrawEvent();
+            if( playerIndex == currentPlayerIndex ) {
+                if (currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
+                    Player drawingPlayer = players.get(playerIndex);
+                    if(drawingPlayer.getDrawableLower() > 0) {
+                        Card drawnCard = cardBoard.drawLowerCharacter(cardIndex, drawingPlayer);
+                        if (drawnCard != null) {
+                            drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                            drawingPlayer.addCharacterCard(drawnCard); //adds the drawn card to the player, if it's drawable by him.
+                            callDrawEvent();
 
-                        queueUpdateModelElement(
-                                new UpperDrawModelElement(
-                                        players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila superiore",
-                                        cardBoard.getLine().getUpperLine(),
-                                        cardBoard.getLine().getUpperBuilding(),
-                                        playerIndex,
-                                        drawnBuildingCard,
-                                        false
-                                )
-                        );
-                        broadcastGameUpdate();
+                            queueUpdateModelElement(
+                                    new LowerDrawModelElement(
+                                            players.get(playerIndex).getNickname() + " ha pescato " + drawnCard.simpleToString() + " dalla fila inferiore"
+                                                    + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf",
+                                            cardBoard.getLine().getLowerLine(),
+                                            cardBoard.getLine().getLowerBuilding(),
+                                            playerIndex,
+                                            drawnCard,
+                                            true
+                                    )
+                            );
+                            broadcastGameUpdate();
 
-                        Locks.playerInput.notify();
+                            Locks.playerInput.notify();
+                        }
                     }
                 }
+            } else {
+                throw new NotYourTurnException("Non è il tuo turno.");
             }
         }
     }
 
-    public void drawLowerBuilding ( int playerIndex, int cardIndex ) {
+    public void drawUpperBuilding ( int playerIndex, int cardIndex ) throws PlayerException {
         synchronized (Locks.playerInput) {
-            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
-                Player drawingPlayer = players.get(playerIndex);
-                if(drawingPlayer.getDrawableLower() > 0){
-                    BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawLowerBuilding(cardIndex, drawingPlayer);
-                    if (drawnBuildingCard != null) {
-                        drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
-                        drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager);
-                        drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
-                        callDrawEvent();
+            if( playerIndex == currentPlayerIndex ) {
+                if( currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
+                    Player drawingPlayer = players.get(playerIndex);
+                    if(drawingPlayer.getDrawableUpper() > 0) {
+                        BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawUpperBuilding(cardIndex, drawingPlayer);
+                        if (drawnBuildingCard != null) {
+                            drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
+                            drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager); //adds the building as a listener.
+                            drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
+                            callDrawEvent();
 
-                        queueUpdateModelElement(
-                                new LowerDrawModelElement(
-                                        players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila inferiore",
-                                        cardBoard.getLine().getLowerLine(),
-                                        cardBoard.getLine().getLowerBuilding(),
-                                        playerIndex,
-                                        drawnBuildingCard,
-                                        false
-                                )
-                        );
-                        broadcastGameUpdate();
+                            queueUpdateModelElement(
+                                    new UpperDrawModelElement(
+                                            players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila superiore"
+                                                    + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf",
+                                            cardBoard.getLine().getUpperLine(),
+                                            cardBoard.getLine().getUpperBuilding(),
+                                            playerIndex,
+                                            drawnBuildingCard,
+                                            false
+                                    )
+                            );
+                            broadcastGameUpdate();
 
-                        Locks.playerInput.notify();
+                            Locks.playerInput.notify();
+                        }
                     }
                 }
+            } else {
+                throw new NotYourTurnException("Non è il tuo turno.");
             }
         }
     }
 
-    public void chooseOffer ( int playerIndex, int offerIndex ) throws NotValidOfferException {
+    public void drawLowerBuilding ( int playerIndex, int cardIndex ) throws PlayerException {
         synchronized (Locks.playerInput) {
-            if( playerIndex == currentPlayerIndex && currentState.getCurrentStateType().equals(State.States.OFFER_CHOOSING) ) {
-                Player callingPlayer = players.get(playerIndex);
+            if( playerIndex == currentPlayerIndex ) {
+                if(currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
+                    Player drawingPlayer = players.get(playerIndex);
+                    if(drawingPlayer.getDrawableLower() > 0){
+                        BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawLowerBuilding(cardIndex, drawingPlayer);
+                        if (drawnBuildingCard != null) {
+                            drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
+                            drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager);
+                            drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
+                            callDrawEvent();
 
-                track.assignOffer(callingPlayer, offerIndex); //throws NotValidOfferException
-                queueUpdateModelElement(new OfferboardModelElement(
-                        callingPlayer.getNickname() + " ha scelto l'offerta[" + (offerIndex) + "].",
-                        track.giveOfferBoardMockup()
-                ));
-                queueUpdateModelElement(new OrderboardModelElement(
-                        "Tocca al prossimo",
-                        track.giveOrderBoardMockup()
-                ));
-                broadcastGameUpdate();
-                callingPlayer.setChoseAnOffer(true);
-                Locks.playerInput.notify();
+                            queueUpdateModelElement(
+                                    new LowerDrawModelElement(
+                                            players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila inferiore"
+                                            + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf",
+                                            cardBoard.getLine().getLowerLine(),
+                                            cardBoard.getLine().getLowerBuilding(),
+                                            playerIndex,
+                                            drawnBuildingCard,
+                                            false
+                                    )
+                            );
+                            broadcastGameUpdate();
+
+                            Locks.playerInput.notify();
+                        }
+                    }
+                }
+            } else {
+                throw new NotYourTurnException("Non è il tuo turno.");
+            }
+        }
+    }
+
+    public void chooseOffer ( int playerIndex, int offerIndex ) throws PlayerException {
+        synchronized (Locks.playerInput) {
+            if( playerIndex == currentPlayerIndex ) {
+                if (currentState.getCurrentStateType().equals(State.States.OFFER_CHOOSING)) {
+                    Player callingPlayer = players.get(playerIndex);
+
+                    track.assignOffer(callingPlayer, offerIndex); //throws NotValidOfferException
+                    queueUpdateModelElement(new OfferOrderboardModelElement(
+                            callingPlayer.getNickname() + " ha scelto l'offerta[" + (offerIndex) + "].",
+                            track.giveOfferBoardMockup(),
+                            track.giveOrderBoardMockup()
+                    ));
+                    broadcastGameUpdate();
+                    callingPlayer.setChoseAnOffer(true);
+                    Locks.playerInput.notify();
+                }
+            } else {
+                throw new NotYourTurnException("Non è il tuo turno.");
             }
         }
     }
