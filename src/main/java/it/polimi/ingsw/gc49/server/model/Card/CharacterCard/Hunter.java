@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.FoodAndPointsModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -26,7 +26,7 @@ public class Hunter extends CharacterCard {
         if (drumstick) {
             player.addFood(player.data.getCharacterCount(CharacterType.Hunter));
             if(queueUpdater != null) {
-                queueUpdater.queueUpdateModelElement(new FoodAndPointsModelElement(
+                queueUpdater.queueUpdateModelElement(new FoodAndPointsOneModelElement(
                         "La carta " + simpleToString() + " si è attivata alla pesca fornendo "
                                 + player.data.getCharacterCount(CharacterType.Hunter) + " di cibo a " + player.getNickname(),
                         player.getPlayerIndex(),

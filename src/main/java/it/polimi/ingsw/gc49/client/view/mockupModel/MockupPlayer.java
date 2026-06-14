@@ -91,6 +91,9 @@ public class MockupPlayer implements Serializable {
     public boolean isConnected () {
         return connected;
     }
+    public boolean isOfTurn () {
+        return ofTurn;
+    }
 
     //### adders
     public void addCharacterCard ( Card card ) {

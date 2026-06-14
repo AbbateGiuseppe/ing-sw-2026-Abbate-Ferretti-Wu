@@ -270,9 +270,9 @@ public class TextTerminal extends UserInputInterface {
                 .append(manualFormat("totem [orange/white/blue/black/yellow]", "Choose the specified totem"))
                 .append(manualFormat("offer [offer index]", "Choose the specified offer"))
                 .append(manualFormat("draw [l/u] [c/b] [card index]", "Draw from upper or lower lines,"))
-                .append(manualFormatSecondLine("", "the indexed card from the character or the building line."))
+                .append(manualFormatSecondLine("the indexed card from the character or the building line."))
                 .append(manualFormat("read [l/u] [c/b] [card index]", "Read the description from upper or lower lines,"))
-                .append(manualFormatSecondLine("", "of the indexed card from the character or the building line."))
+                .append(manualFormatSecondLine("of the indexed card from the character or the building line."))
                 .append(manualFormat("player [player index]", "Displays the specified player's stats"));
 
 
@@ -282,7 +282,7 @@ public class TextTerminal extends UserInputInterface {
     }
     private static String manualSeparator () { return " "+"-".repeat(127); }
     private static String manualFormat ( String command, String description ) {return " " + String.format(" %60s | %s\n", command, description);}
-    private static String manualFormatSecondLine ( String command, String description ) {return " " + String.format(" %60s \\ %s\n", command, description);}
+    private static String manualFormatSecondLine ( String description ) {return " " + String.format(" %60s \\ %s\n", "", description);}
     static {
         legend.append(" Symbols meaning:\n");
         legend.append(" ♥ food    | ░ free space                       | card types by color:\n");
@@ -326,15 +326,15 @@ public class TextTerminal extends UserInputInterface {
         switch (phase) {
             case GAME:
                 printScroll("The game started.");
-                printStatus();
+                displayStatus();
                 break;
             case HALL:
                 printScroll("You entered the hall.");
-                printStatus();
+                displayStatus();
                 break;
             case ROOM:
                 printScroll("You entered a room.");
-                printStatus();
+                displayStatus();
                 break;
         }
     }
@@ -360,7 +360,7 @@ public class TextTerminal extends UserInputInterface {
                 promptSeparator.print(terminal);
             }
 
-            printStatus();
+            displayStatus();
             show();
 
             // Initialization finished, start the input loop
@@ -551,19 +551,33 @@ public class TextTerminal extends UserInputInterface {
             }
         }
     }
-    private void printStatus() {
+    private void displayStatus () {
         synchronized (cursorLock) {
-            AttributedString status = new AttributedStringBuilder()
-                    .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append(nickname)
-                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("]")
+            AttributedStringBuilder status = new AttributedStringBuilder();
+
+            if(ofTurn){
+                status
+                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)).append(nickname)
+                        .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("]");
+            }else{
+                status
+                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append(nickname)
+                        .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("]");
+            }
+            status
                     .append(" | position: ").style(AttributedStyle.DEFAULT.bold().foreground(AttributedStyle.RED))
-                    .append(currentPhase.toString())
-                    .toAttributedString();
-            terminal.puts(InfoCmp.Capability.save_cursor);
+                    .append(currentPhase.toString());
+
+            //Save cursor
+            Cursor cursor = terminal.getCursorPosition(_ -> {});
+            int initialY = cursor.getY();
+            int initialX = cursor.getX();
+            //Print
             terminal.puts(InfoCmp.Capability.cursor_address, rows-1, 1);
             terminal.puts(InfoCmp.Capability.clr_eol);
             status.print(terminal);
-            terminal.puts(InfoCmp.Capability.restore_cursor);
+            //Restore cursor
+            terminal.puts(InfoCmp.Capability.cursor_address, initialY, initialX);
         }
     }
 
@@ -616,6 +630,7 @@ public class TextTerminal extends UserInputInterface {
                 case GAME:
                     if(mockups.getGame() != null) {
                         printGame();
+                        displayStatus();
                     }else{
                         terminal.writer().println("Game not yet loaded.");
                     }
@@ -761,6 +776,9 @@ public class TextTerminal extends UserInputInterface {
                 terminal.writer().print(": ");
                 mockupPlayer.displayAttributedStringStats().print(terminal);
                 terminal.writer().print(" |");
+                if(mockupPlayer.getNickname().equals(nickname)){
+                    ofTurn = mockupPlayer.isOfTurn();
+                }
             }
             //01.              ╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗╔═══╗   ╔hthtrhtr╗
             //02.              ║ I ║║B2♥║║ G ║║   ║║ S ║║ H ║║│%│║║│€│║║ H ║ │ ╚grgrgrgr╝[kuykyuky][hthgeqnz]

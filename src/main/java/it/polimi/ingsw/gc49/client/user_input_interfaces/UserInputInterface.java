@@ -11,6 +11,7 @@ public abstract class UserInputInterface {
     protected static Mockup mockups;
     protected static ApplicationPhase currentPhase;
     protected String nickname;
+    protected boolean ofTurn = false;
 
     public UserInputInterface (VirtualServer virtualServer, ApplicationPhase phase ) {
         this.virtualServer = virtualServer;
