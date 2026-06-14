@@ -23,7 +23,7 @@ class DeckTest {
         nicknames.add("Player1");
         nicknames.add("Player2");
         nicknames.add("Player3");
-        game = new Game(3, nicknames);
+        game = new Game(3, nicknames, "testGame");
         deck = new Deck(game);
     }
 
@@ -119,7 +119,7 @@ class DeckTest {
         nicknames.add("Player1");
         nicknames.add("Player2");
         // Test con 2 giocatori
-        Game game2 = new Game(2, nicknames);
+        Game game2 = new Game(2, nicknames, "testGame");
         Deck deck2 = new Deck(game2);
         assertNotNull(deck2.dealTribeCard());
 
@@ -128,7 +128,7 @@ class DeckTest {
         nicknames.add("Player4");
         nicknames.add("Player5");
         // Test con 5 giocatori
-        Game game5 = new Game(5, nicknames);
+        Game game5 = new Game(5, nicknames, "testGame");
         Deck deck5 = new Deck(game5);
         assertNotNull(deck5.dealTribeCard());
     }

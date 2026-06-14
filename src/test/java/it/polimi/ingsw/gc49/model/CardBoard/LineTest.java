@@ -29,7 +29,7 @@ class LineTest {
         nicknames.add("Player1");
         nicknames.add("Player2");
         nicknames.add("Player3");
-        game = new Game(3, nicknames);
+        game = new Game(3, nicknames, "testGame");
 
         // Crea la lista di giocatori
         List<Player> players = new ArrayList<>();

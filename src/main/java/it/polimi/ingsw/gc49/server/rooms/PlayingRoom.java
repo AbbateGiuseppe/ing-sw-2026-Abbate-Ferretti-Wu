@@ -29,7 +29,7 @@ public class PlayingRoom extends Room implements VirtualGameServer {
 
     public void createGame() throws Exception {
         //creates the game
-        game = new Game(maxNumOfPlayers, getListPlayerNicknames());
+        game = new Game(maxNumOfPlayers, getListPlayerNicknames(), roomName);
 
         //creates the controllers and connects them
         int playerIndex = 0;

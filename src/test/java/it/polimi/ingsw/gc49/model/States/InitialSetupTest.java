@@ -13,6 +13,6 @@ class InitialSetupTest {
         List<String> nicknames = new ArrayList<>();
         nicknames.add("pinco");
         nicknames.add("palo");
-        new Game(2, nicknames);
+        new Game(2, nicknames, "testGame");
     }
 }

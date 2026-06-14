@@ -32,6 +32,7 @@ import java.util.List;
 import static it.polimi.ingsw.gc49.server.model.Locks.broadcastLock;
 
 public class Game implements Serializable, QueueUpdatable {
+    private final String roomName;
     private final List<VirtualGameClient> controllersListeners = new ArrayList<>();
     private List<Player> players;
     private EventManager eventManager;
@@ -45,7 +46,8 @@ public class Game implements Serializable, QueueUpdatable {
     private UpdateModelPacket updatesQueue = new UpdateModelPacket();
 
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
-    public Game ( int numOfPlayers, List<String> playersNicknames ) {
+    public Game ( int numOfPlayers, List<String> playersNicknames, String roomName ) {
+        this.roomName = roomName;
         currentState = new InitialSetup(this, numOfPlayers, playersNicknames);
         executeCurrentState();
     }
@@ -55,9 +57,9 @@ public class Game implements Serializable, QueueUpdatable {
 
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
             synchronized (Locks.playerInput) {
-                System.out.println("Entrando in un stato [" + currentState.toString() + "]...");
+                System.out.println("\"" + roomName + "\": " + "Entrando in un stato [" + currentState.toString() + "]...");
                 executeCurrentState();
-                System.out.println("Finito lo stato di gioco precedente.");
+                System.out.println("\"" + roomName + "\": " + "Finito lo stato di gioco precedente.");
             }
         }
     }
@@ -222,7 +224,7 @@ public class Game implements Serializable, QueueUpdatable {
                             queueUpdateModelElement(
                                     new UpperDrawModelElement(
                                             players.get(playerIndex).getNickname() + " ha pescato " + drawnCard.simpleToString() + " dalla fila superiore"
-                                                    + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() + " sup, " + players.get(playerIndex).getDrawableLower() + " inf",
+                                                    + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() + " sup, " + players.get(playerIndex).getDrawableLower() + " inf)",
                                             cardBoard.getLine().getUpperLine(),
                                             cardBoard.getLine().getUpperBuilding(),
                                             playerIndex,
@@ -257,7 +259,7 @@ public class Game implements Serializable, QueueUpdatable {
                             queueUpdateModelElement(
                                     new LowerDrawModelElement(
                                             players.get(playerIndex).getNickname() + " ha pescato " + drawnCard.simpleToString() + " dalla fila inferiore"
-                                                    + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf",
+                                                    + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf)",
                                             cardBoard.getLine().getLowerLine(),
                                             cardBoard.getLine().getLowerBuilding(),
                                             playerIndex,
@@ -293,7 +295,7 @@ public class Game implements Serializable, QueueUpdatable {
                             queueUpdateModelElement(
                                     new UpperDrawModelElement(
                                             players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila superiore"
-                                                    + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf",
+                                                    + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf)",
                                             cardBoard.getLine().getUpperLine(),
                                             cardBoard.getLine().getUpperBuilding(),
                                             playerIndex,
@@ -329,7 +331,7 @@ public class Game implements Serializable, QueueUpdatable {
                             queueUpdateModelElement(
                                     new LowerDrawModelElement(
                                             players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila inferiore"
-                                            + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf",
+                                            + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf)",
                                             cardBoard.getLine().getLowerLine(),
                                             cardBoard.getLine().getLowerBuilding(),
                                             playerIndex,
