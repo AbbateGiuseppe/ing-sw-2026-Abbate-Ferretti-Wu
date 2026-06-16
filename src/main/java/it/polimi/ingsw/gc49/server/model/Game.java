@@ -62,6 +62,9 @@ public class Game implements Serializable, QueueUpdatable {
                 System.out.println("\"" + roomName + "\": " + "Finito lo stato di gioco precedente.");
             }
         }
+
+        //send standings (last updates)
+        broadcastGameUpdate();
     }
 
     //### getters
@@ -132,7 +135,7 @@ public class Game implements Serializable, QueueUpdatable {
     public void broadcastCurrentPlayerTurn() {
         synchronized (broadcastLock) {
             queueUpdateModelElement(new CurrentPlayerModelElement(
-                    "tocca a " + currentPlayer.getNickname() + "...",
+                    "...tocca a " + currentPlayer.getNickname() + "...",
                     currentPlayerIndex
                     )
             );

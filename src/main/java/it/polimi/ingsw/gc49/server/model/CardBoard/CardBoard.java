@@ -18,14 +18,10 @@ public class CardBoard implements Serializable {
     private final Line line;
     private final List<Card> discards;
     private final Deck deck;
-    private final Game game;
     private final int numPlayers;
-/// chiedere come mettere playerlist
-
 
 
     public CardBoard( Game game ) {
-        this.game = game;
         this.numPlayers = game.getNumOfPlayers();
         this.deck = new Deck(game);   // costruisci il mazzo completo
         this.line = new Line(game, deck);   // se vuoi, puoi passare deck nel costruttore
@@ -33,25 +29,20 @@ public class CardBoard implements Serializable {
     }
 
     public Card drawUpperCharacter(int cardIndex, Player drawingPlayer) {
-        Card drawn = line.drawUpperCharacter(cardIndex, drawingPlayer);
-        // niente gestione scarti qui: la carta viene presa dal giocatore
-        return drawn;
+        return line.drawUpperCharacter(cardIndex, drawingPlayer);
     }
 
     public Card drawLowerCharacter(int cardIndex, Player drawingPlayer) {
-        Card drawn = line.drawLowerCharacter(cardIndex, drawingPlayer);
-        return drawn;
+        return line.drawLowerCharacter(cardIndex, drawingPlayer);
     }
 
 
     public Card drawUpperBuilding(int cardIndex, Player drawingPlayer) {
-        Card drawn = line.drawUpperBuilding(cardIndex, drawingPlayer);
-        return drawn;
+        return line.drawUpperBuilding(cardIndex, drawingPlayer);
     }
 
     public Card drawLowerBuilding(int cardIndex, Player drawingPlayer) {
-        Card drawn = line.drawLowerBuilding(cardIndex, drawingPlayer);
-        return drawn;
+        return line.drawLowerBuilding(cardIndex, drawingPlayer);
     }
 
 
@@ -85,6 +76,9 @@ public class CardBoard implements Serializable {
 
     public Era getNextEra() {
         return line.getNewEra();
+    }
+    public Era getCurrentEra() {
+        return line.getCurrentEra();
     }
 
 

@@ -261,6 +261,7 @@ class LineTest {
         // Verifica che eraChanged sia true dopo l'eccezione
         assertTrue(customLine.hasEraChanged(), "eraChanged should be true when era changes");
         assertEquals(Era.SECOND, customLine.getNewEra(), "newEra should be SECOND");
+        customLine.endEra();
         assertEquals(Era.SECOND, customLine.getCurrentEra(), "currentEra should be updated to SECOND");
     }
 

@@ -24,7 +24,7 @@ public class Inventor extends CharacterCard {
     public String toString() {
         return "Inventor {\n" +
                 " era = " + era +
-                ", invention = " + invention +
+                ", invention = " + invention.ordinal() +
                 "\n}";
     }
 

@@ -1,12 +1,13 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsAllModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GameEnd extends State {
     private static final int NUMBER_OF_ARTISTS_FOR_POINTS = 2;
@@ -33,8 +34,27 @@ public class GameEnd extends State {
         //forming the standings based on each of the players' points
         List<Player> standings = players.stream()
                 .sorted(Comparator.comparingInt(Player::getPoints).reversed().thenComparingInt(Player::getFood).reversed()) //sorts the standings based on the descending order of points. breaks the ties with a descending order of food.
-                .collect(Collectors.toList()); //puts the results to list.
+                .toList(); //puts the results to list.
         // !!! THERE STILL MIGHT BE SOME TIED PLAYERS, THEY SHOULD BE CONSIDERED AT THE SAME STANDING !!!
+
+        //send the standings to the players
+        StringBuilder standingsMessage = new StringBuilder();
+        for(int i=0; i<standings.size(); i++){
+            standingsMessage.append(i+1).append(".").append(standings.get(i).getNickname()).append("(").append(standings.get(i).getPoints()).append("), ");
+        }
+        game.queueUpdateModelElement(
+                new FoodAndPointsAllModelElement(
+                        "Classifica: " + standingsMessage,
+                        FoodAndPointsAllModelElement.getNewFood(players),
+                        FoodAndPointsAllModelElement.getNewPoints(players)
+                )
+        );
+
+        //send the winner
+        String winner = standings.getFirst().getNickname();
+        game.queueUpdateModelElement(
+                new TextModelElement("HA VINTO " + winner + "!!!")
+        );
 
         return null;
     }

@@ -42,7 +42,7 @@ public class PaintingEvent extends EventCard {
         if(queueUpdater != null) {
             queueUpdater.queueUpdateModelElement(new FoodAndPointsAllModelElement(
                     "La carta evento " + simpleToString() + " si è attivata fornendo "
-                            + plusPoints + " punti, altrimenti -" + minusPoints + ", a chi possiede almeno " + threshold + " artisti",
+                            + plusPoints + " punti per artista, a chi possiede almeno " + (threshold+1) + " artisti, altrimenti -" + minusPoints,
                     FoodAndPointsAllModelElement.getNewFood(players),
                     FoodAndPointsAllModelElement.getNewPoints(players)
             ));

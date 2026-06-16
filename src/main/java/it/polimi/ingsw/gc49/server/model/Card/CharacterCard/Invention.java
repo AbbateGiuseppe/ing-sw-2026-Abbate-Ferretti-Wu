@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc49.server.model;
+package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
 public enum Invention {
     CANOE,

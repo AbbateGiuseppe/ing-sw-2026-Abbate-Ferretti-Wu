@@ -41,7 +41,7 @@ public class OfferExecution extends State{
 
         if(game.isLastRound()){
             return new GameEnd(game); //goes to GameEnd.
-        }else {
+        } else {
             return new RoundEnd(game); //goes to RoundEnd.
         }
     }

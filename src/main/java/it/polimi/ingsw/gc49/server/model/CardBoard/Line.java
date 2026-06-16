@@ -19,9 +19,8 @@ public class Line implements Serializable {
     private Era currentEra = Era.first(); //chiedi
     private boolean eraChanged = false;
     private Era newEra = currentEra.next();
-    private Game game;
-    private int numPlayers;
-    private List<Player> playerList;
+    private final int numPlayers;
+    private final List<Player> playerList;
 
 
     /// file sopra e sotto
@@ -36,7 +35,6 @@ public class Line implements Serializable {
 
     /// Costruttore
     public Line( Game game, Deck deck) {
-        this.game = game;
         this.numPlayers = game.getNumOfPlayers();
         this.playerList = game.getPlayers();
         this.deck = deck;
@@ -160,7 +158,7 @@ public class Line implements Serializable {
 /// tutti gli end
 
     public void endRound(int numPlayers) throws EraEndedException {
-        resolveEvent(lowerLine, playerList);   ///parlare a Max
+        resolveEvent(lowerLine, playerList);
         lowerLine.clear();
         lowerLine.addAll(upperLine);
         upperLine.clear();
@@ -178,7 +176,6 @@ public class Line implements Serializable {
         }
         if (!lastCardEra.equals(previousEra)) {
             // segna che c'è stato un cambio era, ma NON fai ancora endEra
-            currentEra = lastCardEra;
             eraChanged = true;
             newEra = lastCardEra;
             throw new EraEndedException("Era ended");

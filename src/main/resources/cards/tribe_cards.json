@@ -507,7 +507,7 @@
     },
     {
     "type": "SustenanceEvent",
-    "era": "THIRD",
+    "era": "THIRD_FINAL",
     "minNumPlayers": 2,
     "minusPoints": 3
     },
@@ -527,7 +527,7 @@
     },
     {
     "type": "RitualEvent",
-    "era": "THIRD",
+    "era": "THIRD_FINAL",
     "minNumPlayers": 2,
     "plusPoints": 15,
     "minusPoints": 7

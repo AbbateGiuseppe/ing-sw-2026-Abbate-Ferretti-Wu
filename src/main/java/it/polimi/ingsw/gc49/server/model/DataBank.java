@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc49.server.model;
 
+import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.Invention;
+
 import java.io.Serializable;
 import java.util.*;
 
