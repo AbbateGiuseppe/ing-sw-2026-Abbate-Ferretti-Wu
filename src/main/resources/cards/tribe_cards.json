@@ -554,7 +554,7 @@
     "type": "PaintingEvent",
     "era": "FIRST",
     "minNumPlayers": 2,
-    "threshold": 0,
+    "threshold": 1,
     "plusPoints": 1,
     "minusPoints": 2
     },
@@ -562,7 +562,7 @@
     "type": "PaintingEvent",
     "era": "SECOND",
     "minNumPlayers": 2,
-    "threshold": 1,
+    "threshold": 2,
     "plusPoints": 2,
     "minusPoints": 2
     },
@@ -570,7 +570,7 @@
     "type": "PaintingEvent",
     "era": "THIRD",
     "minNumPlayers": 2,
-    "threshold": 2,
+    "threshold": 3,
     "plusPoints": 3,
     "minusPoints": 2
     }

@@ -83,12 +83,24 @@ class EventCardTest {
     void testPaintingEvent_belowThreshold_losesPoints() {
         player1.data.addCharacterCount(CharacterType.Artist, 1);
         player2.data.addCharacterCount(CharacterType.Artist, 0);
+        int previousPoints1 = player1.getPoints();
+        int previousPoints2 = player2.getPoints();
+        int previousPoints3 = player3.getPoints();
+        int penalisationPoints = 4;
 
-        PaintingEvent event = new PaintingEvent(2, 3, 4, eventManager, Era.SECOND, 2, null);
+        PaintingEvent event = new PaintingEvent(2, 3, penalisationPoints, eventManager, Era.SECOND, 2, null);
         event.resolveEvent(players);
 
-        assertEquals(-4, player1.getPoints(), "Player1 below threshold should lose 4 points");
-        assertEquals(-4, player2.getPoints(), "Player2 below threshold should lose 4 points");
+        assertEquals(previousPoints1-penalisationPoints, player1.getPoints(), "Player1 below threshold should lose 4 points");
+        assertEquals(previousPoints2-penalisationPoints, player2.getPoints(), "Player2 below threshold should lose 4 points");
+        assertEquals(previousPoints3-penalisationPoints, player3.getPoints(), "Player3 below threshold should lose 4 points");
+
+        previousPoints3 = player3.getPoints();
+
+        PaintingEvent minimumThresholdEvent = new PaintingEvent(0, 0, penalisationPoints, eventManager, Era.FIRST, 2, null);
+        minimumThresholdEvent.resolveEvent(players);
+
+        assertEquals(previousPoints3, player3.getPoints(), "Player3 below threshold should not lose 4 points");
     }
 
     @Test
