@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
@@ -39,6 +41,11 @@ public class TwentyFiveBonusPointsEndGame extends BuildingCard {
     @Override
     public void onEventEffect() {
         owner.addPoints(25);
+        if(queueUpdater != null) {
+            queueUpdater.queueUpdateModelElement(new TextModelElement(
+                    "La carta " + simpleToString() + " si è attivata fornendo 25 punti a " + owner.getNickname()
+            ));
+        }
     }
 
     /**

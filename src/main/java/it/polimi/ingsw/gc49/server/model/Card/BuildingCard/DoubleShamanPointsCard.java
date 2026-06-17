@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.Player;
@@ -42,6 +44,11 @@ public class DoubleShamanPointsCard extends BuildingCard{
     public void onEventEffect() {
         if (owner.isUniqueWinner() && owner.getPointsToPay() < 0) {
             owner.setPointsToPay(2 * owner.getPointsToPay());
+            if(queueUpdater != null) {
+                queueUpdater.queueUpdateModelElement(new TextModelElement(
+                        "La carta " + simpleToString() + " si è attivata raddoppiando i punti ottenuti da " + owner.getNickname()
+                ));
+            }
         }
     }
 

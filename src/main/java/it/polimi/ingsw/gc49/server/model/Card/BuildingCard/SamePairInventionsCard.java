@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -41,6 +42,14 @@ public class SamePairInventionsCard extends BuildingCard {
     @Override
     public void onEventEffect() {
         owner.addFood(3 * owner.data.getCharacterCount(CharacterType.SamePairInventions));
+        if(queueUpdater != null) {
+            queueUpdater.queueUpdateModelElement(new FoodAndPointsOneModelElement(
+                    "La carta " + simpleToString() + " si è attivata fornendo 3 di cibo a " + owner.getNickname(),
+                    owner.getPlayerIndex(),
+                    owner.getFood(),
+                    owner.getPoints()
+            ));
+        }
     }
 
     /**

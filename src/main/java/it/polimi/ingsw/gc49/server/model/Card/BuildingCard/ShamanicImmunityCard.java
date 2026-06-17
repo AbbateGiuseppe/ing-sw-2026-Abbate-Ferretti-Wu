@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
@@ -42,6 +44,11 @@ public class ShamanicImmunityCard extends BuildingCard {
     public void onEventEffect() {
         if (owner.getPointsToPay() > 0) {
             owner.setPointsToPay(0);
+            if(queueUpdater != null) {
+                queueUpdater.queueUpdateModelElement(new TextModelElement(
+                        "La carta " + simpleToString() + " si è attivata fornendo l'immunità sciamanica a " + owner.getNickname()
+                ));
+            }
         }
     }
 

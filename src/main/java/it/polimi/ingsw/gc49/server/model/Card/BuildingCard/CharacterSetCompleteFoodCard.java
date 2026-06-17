@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -40,6 +41,15 @@ public class CharacterSetCompleteFoodCard extends BuildingCard {
         if (owner.data.getCharacterCount(CharacterType.CompleteSet) > owner.data.getCurrentNumCompleteCharacterSets()) {
             owner.addFood(5);
             owner.data.incrementCurrentNumCompleteCharacterSets();
+            if(queueUpdater != null) {
+                queueUpdater.queueUpdateModelElement(new FoodAndPointsOneModelElement(
+                        "La carta " + simpleToString() + " si è attivata fornendo 5 di cibo a " + owner.getNickname() +
+                                " per aver completato un set",
+                        owner.getPlayerIndex(),
+                        owner.getFood(),
+                        owner.getPoints()
+                ));
+            }
         }
     }
 

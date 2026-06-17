@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
@@ -38,6 +40,11 @@ public class OneMoreCardCard extends BuildingCard {
     @Override
     public void onEventEffect() {
         owner.setDrawableUpper(owner.getDrawableUpper()  + 1);
+        if(queueUpdater != null) {
+            queueUpdater.queueUpdateModelElement(new TextModelElement(
+                    "La carta " + simpleToString() + " si è attivata fornendo un ulteriore pesca superiore a " + owner.getNickname()
+            ));
+        }
     }
 
     /**

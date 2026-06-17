@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
@@ -40,6 +41,15 @@ public class BonusPaintingCard extends BuildingCard {
     @Override
     public void onEventEffect() {
         owner.setFoodToPay(owner.getFoodToPay() - owner.data.getCharacterCount(CharacterType.Artist));
+        if(queueUpdater != null) {
+            queueUpdater.queueUpdateModelElement(new FoodAndPointsOneModelElement(
+                    "La carta " + simpleToString() + " si è attivata fornendo 1 di cibo a " + owner.getNickname() +
+                            " per ogni suo artista",
+                    owner.getPlayerIndex(),
+                    owner.getFood(),
+                    owner.getPoints()
+            ));
+        }
     }
 
 
