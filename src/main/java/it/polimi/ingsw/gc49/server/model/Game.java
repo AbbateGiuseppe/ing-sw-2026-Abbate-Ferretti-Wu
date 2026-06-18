@@ -8,9 +8,11 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MO
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.LowerDrawModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.UpperDrawModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.OfferOrderboardModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.OrderboardModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.ConnectionModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.CurrentPlayerModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.TotemModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.BuildingCard;
@@ -43,6 +45,7 @@ public class Game implements Serializable, QueueUpdatable {
     private int currentPlayerIndex;
     private final EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
     private boolean lastRound;
+    private boolean paused = false;
     private UpdateModelPacket updatesQueue = new UpdateModelPacket();
 
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
@@ -78,6 +81,7 @@ public class Game implements Serializable, QueueUpdatable {
     public EnumSet<Totem> getUsedTotems () { return usedTotems; }
 
     public boolean isLastRound () { return lastRound; }
+    public boolean isPaused () { return paused; }
 
     //### setters
     public void addControllerListener ( VirtualGameClient listener ) { this.controllersListeners.add(listener); }
@@ -90,6 +94,7 @@ public class Game implements Serializable, QueueUpdatable {
     public void setCurrentPlayer ( Player currentPlayer ) { this.currentPlayer = currentPlayer; }
     public void setCurrentPlayerIndex ( int currentPlayerIndex ) { this.currentPlayerIndex = currentPlayerIndex; }
     public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }
+    public void setPaused ( boolean paused ) { this.paused = paused; }
 
     //### controller communication
     @Override
@@ -186,6 +191,7 @@ public class Game implements Serializable, QueueUpdatable {
     //### Players' actions
     public void chooseTotem ( int playerIndex, Totem chosenTotem ) throws PlayerException {
         synchronized (Locks.playerInput) {
+            if(isPaused()) return;
             if (players.get(playerIndex).getTotem() == null) {
                 if (!usedTotems.contains(chosenTotem)) {
                     if (currentState.getCurrentStateType().equals(State.States.TOTEM_CHOOSING)) {
@@ -214,6 +220,7 @@ public class Game implements Serializable, QueueUpdatable {
 
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) throws PlayerException {
         synchronized (Locks.playerInput) {
+            if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if (currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                     Player drawingPlayer = players.get(playerIndex);
@@ -249,6 +256,7 @@ public class Game implements Serializable, QueueUpdatable {
 
     public void drawLowerCharacter ( int playerIndex, int cardIndex ) throws PlayerException {
         synchronized (Locks.playerInput) {
+            if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if (currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                     Player drawingPlayer = players.get(playerIndex);
@@ -284,6 +292,7 @@ public class Game implements Serializable, QueueUpdatable {
 
     public void drawUpperBuilding ( int playerIndex, int cardIndex ) throws PlayerException {
         synchronized (Locks.playerInput) {
+            if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if( currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                     Player drawingPlayer = players.get(playerIndex);
@@ -320,6 +329,7 @@ public class Game implements Serializable, QueueUpdatable {
 
     public void drawLowerBuilding ( int playerIndex, int cardIndex ) throws PlayerException {
         synchronized (Locks.playerInput) {
+            if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if(currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                     Player drawingPlayer = players.get(playerIndex);
@@ -356,6 +366,7 @@ public class Game implements Serializable, QueueUpdatable {
 
     public void chooseOffer ( int playerIndex, int offerIndex ) throws PlayerException {
         synchronized (Locks.playerInput) {
+            if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if (currentState.getCurrentStateType().equals(State.States.OFFER_CHOOSING)) {
                     Player callingPlayer = players.get(playerIndex);
@@ -378,6 +389,7 @@ public class Game implements Serializable, QueueUpdatable {
 
     public void passYourTurn ( int playerIndex ) {
         synchronized (Locks.playerInput) {
+            if(isPaused()) return;
             if( playerIndex == currentPlayerIndex && !currentState.getCurrentStateType().equals(State.States.OTHER) ) {
                 players.get(playerIndex).cleanRemainingActions();
                 Locks.playerInput.notify();
@@ -387,28 +399,62 @@ public class Game implements Serializable, QueueUpdatable {
 
     //### Connection methods
     public void disconnectPlayer( int playerIndex ) {
-        queueUpdateModelElement(new ConnectionModelElement(
-                players.get(playerIndex).getNickname() + " si è disconnesso",
-                playerIndex,
-                false
-        ));
-        players.get(playerIndex).setConnected(false);
-        //TODO: finish these two disconnection methods and implement the symbiosis with the state-machine's states
         synchronized (Locks.playerInput) {
+            queueUpdateModelElement(
+                    new ConnectionModelElement(
+                        players.get(playerIndex).getNickname() + " si è disconnesso",
+                        playerIndex,
+                        false
+                    )
+            );
+            players.get(playerIndex).setConnected(false);
+
+            //remove the player, temporarily
+
+            if( getNumOfConnectedPlayers() == 1 ){
+                //pause the game
+                setPaused(true);
+                queueUpdateModelElement(
+                        new TextModelElement(
+                            "La partita è messa in pausa, il giocatore rimanente vincerà tra un minuto, è iniziato il conto alla rovescia"
+                        )
+                );
+            }else if( getNumOfConnectedPlayers() == 0 ){
+                //TODO: close the game
+            }
+
+            broadcastGameUpdate();
+
             Locks.playerInput.notify();
         }
 
     }
 
     public void connectPlayer( int playerIndex ) {
-        queueUpdateModelElement(new ConnectionModelElement(
-                players.get(playerIndex).getNickname() + " si è riconnesso",
-                playerIndex,
-                true
-        ));
-        players.get(playerIndex).setConnected(true);
-
         synchronized (Locks.playerInput) {
+            queueUpdateModelElement(
+                    new ConnectionModelElement(
+                        players.get(playerIndex).getNickname() + " si è riconnesso",
+                        playerIndex,
+                        true
+                    )
+            );
+            players.get(playerIndex).setConnected(true);
+
+            if( players.get(playerIndex).isRemovedFromTrack() ){
+                //put the player back on the track, last position
+                track.getOrderBoard().get(getNumOfConnectedPlayers() - 1).assignPlayer(players.get(playerIndex));
+                players.get(playerIndex).setRemovedFromTrack(false);
+                queueUpdateModelElement(
+                        new OrderboardModelElement(
+                            currentPlayer.getNickname() + " è riposto sulla plancia",
+                            track.giveOrderBoardMockup()
+                        )
+                );
+            }
+
+            broadcastGameUpdate();
+
             Locks.playerInput.notify();
         }
     }
