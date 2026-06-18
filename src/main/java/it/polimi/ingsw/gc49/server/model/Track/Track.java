@@ -218,4 +218,11 @@ public class Track implements Serializable {
             return null;
         }
     }
+
+    public void deassignCurrentOrderSlot ( Player deassignedPlayer ) {
+        if ( deassignedPlayer != null ) {
+            deassignedPlayer.setAssignedOrderSlot(null);
+            orderBoard.get(selectedOrderSlot).assignPlayer(null);
+        }
+    }
 }
