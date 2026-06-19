@@ -151,6 +151,7 @@ public class Track implements Serializable {
             offerBoard.get(selectedOffer).deassignPlayer(); //deassigns.
 
             //assigns the current player to the next order slot and activates the order slot's effect.
+            while(orderBoard.get(selectedOrderSlot).getAssignedPlayer() != null) selectedOrderSlot++; //special case for skipping reconnected players sitting on the orderBoard
             orderBoard.get(selectedOrderSlot).assignPlayer(currentPlayer);
             orderBoard.get(selectedOrderSlot).effectOnOccupation();
 

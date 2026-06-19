@@ -129,9 +129,15 @@ public class MockupPlayer implements Serializable {
                         .append(nickname).style(AttributedStyle.DEFAULT)
                         .append("]")
                         .toAttributedString();
-            } else {
+            } else if (connected){
                 return new AttributedStringBuilder().append(totem.getTotemAttributedString())
                         .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
+                        .append(nickname).style(AttributedStyle.DEFAULT)
+                        .append("]")
+                        .toAttributedString();
+            } else {
+                return new AttributedStringBuilder().append(totem.getTotemAttributedString())
+                        .append("[").style(AttributedStyle.BOLD.foreground(AttributedStyle.BLACK))
                         .append(nickname).style(AttributedStyle.DEFAULT)
                         .append("]")
                         .toAttributedString();
@@ -143,13 +149,20 @@ public class MockupPlayer implements Serializable {
                         .append(nickname).style(AttributedStyle.DEFAULT)
                         .append("]")
                         .toAttributedString();
-            } else {
+            } else if (connected) {
                 return new AttributedStringBuilder().append("░")
                         .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
                         .append(nickname).style(AttributedStyle.DEFAULT)
                         .append("]")
                         .toAttributedString();
+            } else {
+                return new AttributedStringBuilder().append("░")
+                        .append("[").style(AttributedStyle.BOLD.foreground(AttributedStyle.BLACK))
+                        .append(nickname).style(AttributedStyle.DEFAULT)
+                        .append("]")
+                        .toAttributedString();
             }
+
         }
     }
     public AttributedString displayAttributedStringStats() {

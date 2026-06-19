@@ -32,7 +32,17 @@ public class OfferChoosing extends State {
                                 game.getTrack().giveOrderBoardMockup()
                         )
                 );
+                game.broadcastGameUpdate();
             }
+            //if the game was paused, wait before selecting the following player
+            while( game.isPaused() ) {
+                try {
+                    Locks.playerInput.wait();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
             currentPlayer = game.getTrack().getNextPlayerOrderSlot();
         }
 

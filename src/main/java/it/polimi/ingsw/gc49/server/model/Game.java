@@ -442,13 +442,29 @@ public class Game implements Serializable, QueueUpdatable {
             players.get(playerIndex).setConnected(true);
 
             if( players.get(playerIndex).isRemovedFromTrack() ){
-                //put the player back on the track, last position
-                track.getOrderBoard().get(getNumOfConnectedPlayers() - 1).assignPlayer(players.get(playerIndex));
+                //put the player back on the track, last possible position
+
+                //iterates from the last slot until it finds an open one
+                int goBack = 0;
+                while( track.getOrderBoard().get(getNumOfConnectedPlayers() - 1 + goBack).getAssignedPlayer() != null ) goBack--;
+                //put the player back on the slot
+                System.out.println(getNumOfConnectedPlayers() - 1 + goBack);
+                track.getOrderBoard().get(getNumOfConnectedPlayers() - 1 + goBack).assignPlayer(players.get(playerIndex));
                 players.get(playerIndex).setRemovedFromTrack(false);
                 queueUpdateModelElement(
                         new OrderboardModelElement(
                             currentPlayer.getNickname() + " è riposto sulla plancia",
                             track.giveOrderBoardMockup()
+                        )
+                );
+            }
+
+            if( getNumOfConnectedPlayers() == 2 ){
+                //unpause the game
+                setPaused(false);
+                queueUpdateModelElement(
+                        new TextModelElement(
+                                "La partita è tornata in esecuzione"
                         )
                 );
             }
