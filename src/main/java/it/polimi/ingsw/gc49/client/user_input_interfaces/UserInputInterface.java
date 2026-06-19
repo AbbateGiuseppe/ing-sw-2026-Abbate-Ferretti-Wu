@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.client.user_input_interfaces;
 
+import it.polimi.ingsw.gc49.ItaEngString;
 import it.polimi.ingsw.gc49.client.ClientApplication;
 import it.polimi.ingsw.gc49.client.view.Mockup;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.ERROR.ErrorPacket;
@@ -10,6 +11,7 @@ public abstract class UserInputInterface {
     protected VirtualServer virtualServer;
     protected static Mockup mockups;
     protected static ApplicationPhase currentPhase;
+    protected static ItaEngString.Language localLanguage;
     protected String nickname;
     protected boolean ofTurn = false;
 
@@ -30,6 +32,7 @@ public abstract class UserInputInterface {
     public void setVirtualServer ( VirtualServer virtualServer ) {
         this.virtualServer = virtualServer;
     }
+    public void setLocalLanguage ( ItaEngString.Language localLanguage ) { UserInputInterface.localLanguage = localLanguage; }
 
     public abstract void printString ( String string );
     public abstract void printErrorPacket ( ErrorPacket errorPacket );
