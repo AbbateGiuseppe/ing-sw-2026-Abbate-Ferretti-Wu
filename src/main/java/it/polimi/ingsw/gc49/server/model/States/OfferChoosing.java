@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 public class OfferChoosing extends State {
-    public OfferChoosing ( Game game ) { super(game, States.OFFER_CHOOSING); }
+    public OfferChoosing ( Game game, Locks locks ) { super(game, States.OFFER_CHOOSING, locks); }
 
     public State executeState () {
         Player currentPlayer = game.getTrack().getNextPlayerOrderSlot();
@@ -17,7 +17,7 @@ public class OfferChoosing extends State {
             game.broadcastCurrentPlayerTurn();
             while (!currentPlayer.hasChosenAnOffer() && currentPlayer.isConnected()){ //waits until the current player has chosen an offer.
                 try {
-                    Locks.playerInput.wait();
+                    locks.playerInput.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -37,7 +37,7 @@ public class OfferChoosing extends State {
             //if the game was paused, wait before selecting the following player
             while( game.isPaused() ) {
                 try {
-                    Locks.playerInput.wait();
+                    locks.playerInput.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -46,7 +46,7 @@ public class OfferChoosing extends State {
             currentPlayer = game.getTrack().getNextPlayerOrderSlot();
         }
 
-        return new OfferExecution(game); //goes to OfferExecution
+        return new OfferExecution(game, locks); //goes to OfferExecution
     }
 
     @Override

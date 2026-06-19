@@ -31,10 +31,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import static it.polimi.ingsw.gc49.server.model.Locks.broadcastLock;
-
 public class Game implements Serializable, QueueUpdatable {
     private final String roomName;
+    private final Locks locks = new Locks();
     private final List<VirtualGameClient> controllersListeners = new ArrayList<>();
     private List<Player> players;
     private EventManager eventManager;
@@ -51,7 +50,7 @@ public class Game implements Serializable, QueueUpdatable {
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
     public Game ( int numOfPlayers, List<String> playersNicknames, String roomName ) {
         this.roomName = roomName;
-        currentState = new InitialSetup(this, numOfPlayers, playersNicknames);
+        currentState = new InitialSetup(this, locks, numOfPlayers, playersNicknames);
         executeCurrentState();
     }
 
@@ -59,7 +58,7 @@ public class Game implements Serializable, QueueUpdatable {
         broadcastMockupGame();
 
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
-            synchronized (Locks.playerInput) {
+            synchronized (locks.playerInput) {
                 System.out.println("\"" + roomName + "\": " + "Entrando in un stato [" + currentState.toString() + "]...");
                 executeCurrentState();
                 System.out.println("\"" + roomName + "\": " + "Finito lo stato di gioco precedente.");
@@ -102,7 +101,7 @@ public class Game implements Serializable, QueueUpdatable {
         updatesQueue.addUpdateElement(updateModelElement);
     }
     private void broadcastMockupGame () {
-        synchronized (broadcastLock) {
+        synchronized (locks.broadcastLock) {
             try{
                 InitializeModelPacket initializeModel = new InitializeModelPacket(giveMockupGame());
 
@@ -120,7 +119,7 @@ public class Game implements Serializable, QueueUpdatable {
         }
     }
     public void broadcastGameUpdate () {
-        synchronized (broadcastLock) {
+        synchronized (locks.broadcastLock) {
             try {
                 //iterates through all the controllers but only updates the ones connected
                 int i = 0;
@@ -138,7 +137,7 @@ public class Game implements Serializable, QueueUpdatable {
         }
     }
     public void broadcastCurrentPlayerTurn() {
-        synchronized (broadcastLock) {
+        synchronized (locks.broadcastLock) {
             queueUpdateModelElement(new CurrentPlayerModelElement(
                     "...tocca a " + currentPlayer.getNickname() + "...",
                     currentPlayerIndex
@@ -190,7 +189,7 @@ public class Game implements Serializable, QueueUpdatable {
 
     //### Players' actions
     public void chooseTotem ( int playerIndex, Totem chosenTotem ) throws PlayerException {
-        synchronized (Locks.playerInput) {
+        synchronized (locks.playerInput) {
             if(isPaused()) return;
             if (players.get(playerIndex).getTotem() == null) {
                 if (!usedTotems.contains(chosenTotem)) {
@@ -207,7 +206,7 @@ public class Game implements Serializable, QueueUpdatable {
                         );
                         broadcastGameUpdate();
 
-                        Locks.playerInput.notify();
+                        locks.playerInput.notify();
                     }
                 } else {
                     throw new InvalidTotem("Questo totem è già stato preso da un altro giocatore.");
@@ -219,7 +218,7 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) throws PlayerException {
-        synchronized (Locks.playerInput) {
+        synchronized (locks.playerInput) {
             if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if (currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
@@ -244,7 +243,7 @@ public class Game implements Serializable, QueueUpdatable {
                             );
                             broadcastGameUpdate();
 
-                            Locks.playerInput.notify();
+                            locks.playerInput.notify();
                         }
                     }
                 }
@@ -255,7 +254,7 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void drawLowerCharacter ( int playerIndex, int cardIndex ) throws PlayerException {
-        synchronized (Locks.playerInput) {
+        synchronized (locks.playerInput) {
             if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if (currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
@@ -280,7 +279,7 @@ public class Game implements Serializable, QueueUpdatable {
                             );
                             broadcastGameUpdate();
 
-                            Locks.playerInput.notify();
+                            locks.playerInput.notify();
                         }
                     }
                 }
@@ -291,7 +290,7 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void drawUpperBuilding ( int playerIndex, int cardIndex ) throws PlayerException {
-        synchronized (Locks.playerInput) {
+        synchronized (locks.playerInput) {
             if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if( currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
@@ -317,7 +316,7 @@ public class Game implements Serializable, QueueUpdatable {
                             );
                             broadcastGameUpdate();
 
-                            Locks.playerInput.notify();
+                            locks.playerInput.notify();
                         }
                     }
                 }
@@ -328,7 +327,7 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void drawLowerBuilding ( int playerIndex, int cardIndex ) throws PlayerException {
-        synchronized (Locks.playerInput) {
+        synchronized (locks.playerInput) {
             if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if(currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
@@ -354,7 +353,7 @@ public class Game implements Serializable, QueueUpdatable {
                             );
                             broadcastGameUpdate();
 
-                            Locks.playerInput.notify();
+                            locks.playerInput.notify();
                         }
                     }
                 }
@@ -365,7 +364,7 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void chooseOffer ( int playerIndex, int offerIndex ) throws PlayerException {
-        synchronized (Locks.playerInput) {
+        synchronized (locks.playerInput) {
             if(isPaused()) return;
             if( playerIndex == currentPlayerIndex ) {
                 if (currentState.getCurrentStateType().equals(State.States.OFFER_CHOOSING)) {
@@ -379,7 +378,7 @@ public class Game implements Serializable, QueueUpdatable {
                     ));
                     broadcastGameUpdate();
                     callingPlayer.setChoseAnOffer(true);
-                    Locks.playerInput.notify();
+                    locks.playerInput.notify();
                 }
             } else {
                 throw new NotYourTurnException("Non è il tuo turno.");
@@ -388,18 +387,18 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void passYourTurn ( int playerIndex ) {
-        synchronized (Locks.playerInput) {
+        synchronized (locks.playerInput) {
             if(isPaused()) return;
             if( playerIndex == currentPlayerIndex && !currentState.getCurrentStateType().equals(State.States.OTHER) ) {
                 players.get(playerIndex).cleanRemainingActions();
-                Locks.playerInput.notify();
+                locks.playerInput.notify();
             }
         }
     }
 
     //### Connection methods
     public void disconnectPlayer( int playerIndex ) {
-        synchronized (Locks.playerInput) {
+        synchronized (locks.playerInput) {
             queueUpdateModelElement(
                     new ConnectionModelElement(
                         players.get(playerIndex).getNickname() + " si è disconnesso",
@@ -425,13 +424,13 @@ public class Game implements Serializable, QueueUpdatable {
 
             broadcastGameUpdate();
 
-            Locks.playerInput.notify();
+            locks.playerInput.notify();
         }
 
     }
 
     public void connectPlayer( int playerIndex ) {
-        synchronized (Locks.playerInput) {
+        synchronized (locks.playerInput) {
             queueUpdateModelElement(
                     new ConnectionModelElement(
                         players.get(playerIndex).getNickname() + " si è riconnesso",
@@ -471,7 +470,7 @@ public class Game implements Serializable, QueueUpdatable {
 
             broadcastGameUpdate();
 
-            Locks.playerInput.notify();
+            locks.playerInput.notify();
         }
     }
 }

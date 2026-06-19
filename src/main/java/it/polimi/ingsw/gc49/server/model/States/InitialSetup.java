@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.server.model.States;
 import it.polimi.ingsw.gc49.server.model.CardBoard.CardBoard;
 import it.polimi.ingsw.gc49.server.model.EventManager;
 import it.polimi.ingsw.gc49.server.model.Game;
+import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;
 import it.polimi.ingsw.gc49.server.model.Track.Track;
 
@@ -13,8 +14,8 @@ public class InitialSetup extends State {
     private final int numOfPlayers;
     private final List<String> playersNicknames;
 
-    public InitialSetup ( Game game, int numOfPlayers, List<String> playersNicknames ) {
-        super(game, States.OTHER);
+    public InitialSetup ( Game game, Locks locks, int numOfPlayers, List<String> playersNicknames ) {
+        super(game, States.OTHER, locks);
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
     }
@@ -53,7 +54,7 @@ public class InitialSetup extends State {
         game.setTrack(new Track(numOfPlayers));
         game.setCardBoard(new CardBoard(game));
 
-        return new TotemChoosing(game); //goes to the totem choosing state as the next state.
+        return new TotemChoosing(game, locks); //goes to the totem choosing state as the next state.
     }
 
     @Override

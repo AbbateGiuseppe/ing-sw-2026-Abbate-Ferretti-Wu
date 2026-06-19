@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 public class OfferExecution extends State{
-    public OfferExecution ( Game game ) { super(game, States.OFFER_EXECUTION);}
+    public OfferExecution ( Game game, Locks locks ) { super(game, States.OFFER_EXECUTION, locks);}
 
     public State executeState () {
         Player currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
@@ -16,7 +16,7 @@ public class OfferExecution extends State{
             game.broadcastCurrentPlayerTurn();
             while (currentPlayer.hasActionsLeft() && currentPlayer.isConnected()){ //waits until the current player has no actions left.
                 try {
-                    Locks.playerInput.wait();
+                    locks.playerInput.wait();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -40,9 +40,9 @@ public class OfferExecution extends State{
         game.callRoundEndEvent(); //calls all the buildings that activate at the end of a round.
 
         if(game.isLastRound()){
-            return new GameEnd(game); //goes to GameEnd.
+            return new GameEnd(game, locks); //goes to GameEnd.
         } else {
-            return new RoundEnd(game); //goes to RoundEnd.
+            return new RoundEnd(game, locks); //goes to RoundEnd.
         }
     }
 

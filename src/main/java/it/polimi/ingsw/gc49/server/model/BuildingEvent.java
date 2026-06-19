@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc49.server.model;
 
-// The moments in which the listeners are triggered
+/** The moments in which the listeners are triggered */
 public enum BuildingEvent {
     HUNTING_EVENT,      //called by the hunting event card
     PAINTING_EVENT,     //called by the painting event card

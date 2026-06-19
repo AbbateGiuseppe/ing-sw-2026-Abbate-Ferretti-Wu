@@ -12,13 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TotemChoosing extends State {
-    public TotemChoosing ( Game game ) { super(game, States.TOTEM_CHOOSING); }
+    public TotemChoosing ( Game game, Locks locks ) { super(game, States.TOTEM_CHOOSING, locks); }
 
     public State executeState () {
         int numOfPlayers = game.getNumOfPlayers();
         while (game.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
             try {
-                Locks.playerInput.wait();
+                locks.playerInput.wait();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -48,7 +48,7 @@ public class TotemChoosing extends State {
         ));
         game.broadcastGameUpdate();
 
-        return new OfferChoosing(game);
+        return new OfferChoosing(game, locks);
     }
 
     @Override

@@ -2,9 +2,10 @@ package it.polimi.ingsw.gc49.server.model.States;
 
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.FullCardboardModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
+import it.polimi.ingsw.gc49.server.model.Locks;
 
 public class EraEnd extends State {
-    public EraEnd ( Game game ) { super(game, States.OTHER); }
+    public EraEnd ( Game game, Locks locks ) { super(game, States.OTHER, locks); }
 
     public State executeState () {
         try {
@@ -35,7 +36,7 @@ public class EraEnd extends State {
             );
         }
 
-        return new OfferChoosing(game); //goes to OfferChoosing.
+        return new OfferChoosing(game, locks); //goes to OfferChoosing.
     }
 
     @Override

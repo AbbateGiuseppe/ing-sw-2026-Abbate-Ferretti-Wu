@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Game;
+import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 import java.util.Comparator;
@@ -13,7 +14,7 @@ public class GameEnd extends State {
     private static final int NUMBER_OF_ARTISTS_FOR_POINTS = 2;
     private static final int POINTS_PER_NUMBER_OF_ARTISTS = 10;
 
-    public GameEnd ( Game game ) { super(game, States.OTHER);}
+    public GameEnd ( Game game, Locks locks ) { super(game, States.OTHER, locks);}
 
     public State executeState () {
         //solving the last events
