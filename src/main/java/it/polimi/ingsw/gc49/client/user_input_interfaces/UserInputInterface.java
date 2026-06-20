@@ -11,11 +11,11 @@ public abstract class UserInputInterface {
     protected VirtualServer virtualServer;
     protected static Mockup mockups;
     protected static ApplicationPhase currentPhase;
-    protected static ItaEngString.Language localLanguage;
+    protected static ItaEngString.Language localLanguage = ClientApplication.localLanguage;
     protected String nickname;
     protected boolean ofTurn = false;
 
-    public UserInputInterface (VirtualServer virtualServer, ApplicationPhase phase ) {
+    public UserInputInterface ( VirtualServer virtualServer, ApplicationPhase phase ) {
         this.virtualServer = virtualServer;
         mockups = ClientApplication.mockups;
         currentPhase = phase;
@@ -32,7 +32,6 @@ public abstract class UserInputInterface {
     public void setVirtualServer ( VirtualServer virtualServer ) {
         this.virtualServer = virtualServer;
     }
-    public void setLocalLanguage ( ItaEngString.Language localLanguage ) { UserInputInterface.localLanguage = localLanguage; }
 
     public abstract void printString ( String string );
     public abstract void printErrorPacket ( ErrorPacket errorPacket );

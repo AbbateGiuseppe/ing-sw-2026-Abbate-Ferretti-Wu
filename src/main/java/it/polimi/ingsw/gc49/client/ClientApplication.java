@@ -42,6 +42,7 @@ public class ClientApplication implements VirtualClient {
     public static final Mockup mockups = new Mockup();
     private static final String mainServer = ServerMultiplexer.mainServer;
     private static UserInputInterface inputInterface;
+    public static ItaEngString.Language localLanguage;
     public static final Terminal terminal;
     /** 'r' stands for reply, 'e' stands for error */
     private final static ItaEngString CONNECTION_01, CONNECTION_01_r, CONNECTION_01_e_01, CONNECTION_01_e_02;
@@ -77,7 +78,6 @@ public class ClientApplication implements VirtualClient {
 
         String host;
 
-        ItaEngString.Language localLanguage;
         while (true) {
             try {
                 String localLanguageChoice = lineReader.readLine("Scegli la lingua/Choose the language [ITA/ENG]: ").toUpperCase();
@@ -239,7 +239,6 @@ public class ClientApplication implements VirtualClient {
                 if (interfaceChoice == 1) {
                     terminal.writer().println("");
                     inputInterface = new TextTerminal(server, ApplicationPhase.ANY); //connect interface to server proxy
-                    inputInterface.setLocalLanguage(localLanguage);
                     return inputInterface;
                 } else if (interfaceChoice == 2) {
                     terminal.writer().println(CHOOSE_INTERFACE_02.print(localLanguage));

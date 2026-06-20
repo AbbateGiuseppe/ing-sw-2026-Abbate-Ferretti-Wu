@@ -29,14 +29,14 @@ public class TextTerminal extends UserInputInterface {
     /**The key of the commands is the string representing the command type, such as "help" or "draw",
      * the rest of the following strings are used as parameters to specify the behaviour in the function of the called TerminalCommand*/
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
-    private static final Map<ApplicationPhase, AttributedStringBuilder> manual = new EnumMap<>(ApplicationPhase.class);
-    private static final AttributedStringBuilder legend = new AttributedStringBuilder();
+    private static final Manual manual = new Manual();
+    private static final Legend legend = new Legend();
     private static final Terminal terminal = ClientApplication.terminal;
     private static final LineReader lineReader = ClientApplication.lineReader;
     private static final ScheduledExecutorService helpScheduler = Executors.newSingleThreadScheduledExecutor();
-    private static final int HELP_TIMEOUT = 10;
+    public static final int HELP_TIMEOUT = 10;
     private static final ScheduledExecutorService errorScheduler = Executors.newSingleThreadScheduledExecutor();
-    private static final int ERROR_TIMEOUT = 10;
+    public static final int ERROR_TIMEOUT = 10;
     private static int rows = 35;
     private static int columns = 130;
     private static final int SCROLL_REGION_HEIGHT = 11;
@@ -66,21 +66,21 @@ public class TextTerminal extends UserInputInterface {
     }
 
     static {
-        // Mostra la manuale di istruzioni per il gioco
-        commands.put("help", ( terminalMethods, _, _, _, _ ) -> terminalMethods.printManual());
+        // Mostra il manuale di istruzioni per il gioco
+        commands.put(CommandsList.HELP.print(localLanguage), ( terminalMethods, _, _, _, _ ) -> terminalMethods.printManual());
 
         //Chiude l'applicazione e si disconnette dal serviente
-        commands.put("disconnect", ( terminalMethods, _, _, _, terminalVirtualServer ) -> {
-            terminalMethods.printScroll("| Are you sure you want disconnect from the server? You'll have to restart the application to reconnect |");
-            terminalMethods.printScroll("|                                     Type YES to confirm                                               |");
-            if (terminalMethods.readInput().equalsIgnoreCase("yes")) {
+        commands.put(CommandsList.DISCONNECT.print(localLanguage), ( terminalMethods, _, _, _, terminalVirtualServer ) -> {
+            terminalMethods.printScroll(CommandsList.DISCONNECT_r_01.print(localLanguage));
+            terminalMethods.printScroll(CommandsList.DISCONNECT_r_02.print(localLanguage));
+            if (terminalMethods.readInput().equalsIgnoreCase(CommandsList.DISCONNECT_p_01.print(localLanguage)) || terminalMethods.readInput().equalsIgnoreCase(CommandsList.DISCONNECT_p_02.print(localLanguage))) {
                 terminalVirtualServer.disconnect(new DisconnectPacket());
                 System.exit(0);
             }
         });
 
         // Creare una stanza
-        commands.put("create", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
+        commands.put(CommandsList.CREATE.print(localLanguage), ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 2) {
                 String roomName = terminalParameters[0];
                 try {
@@ -94,14 +94,14 @@ public class TextTerminal extends UserInputInterface {
                     }
                 } catch (NumberFormatException e) {
                     terminalMethods.printError( new ErrorPacket(
-                            "NumberFormatException",
-                            "please, specify correctly the number of players!", false)
+                            CommandsList.CREATE_et.print(localLanguage),
+                            CommandsList.CREATE_em.print(localLanguage), false)
                     );
                 }
             }
         });
         // Entrare una stanza
-        commands.put("join", ( _, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
+        commands.put(CommandsList.JOIN.print(localLanguage), ( _, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 1) {
                 String roomName = terminalParameters[0];
                 // Controlla se la stanza esiste
@@ -114,7 +114,7 @@ public class TextTerminal extends UserInputInterface {
 
 
         // Uscire da una stanza
-        commands.put("leave", ( _, terminalPhase, _, _, terminalVirtualServer ) -> {
+        commands.put(CommandsList.LEAVE.print(localLanguage), ( _, terminalPhase, _, _, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.ROOM) {
                 terminalVirtualServer.leaveRoom(new RoomLeavePacket());
             }
@@ -122,7 +122,7 @@ public class TextTerminal extends UserInputInterface {
 
 
         // Mostra le carte di un giocatore dato il suo indice
-        commands.put("player", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
+        commands.put(CommandsList.PLAYER.print(localLanguage), ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int index = Integer.parseInt(terminalParameters[0]);
@@ -133,29 +133,29 @@ public class TextTerminal extends UserInputInterface {
                     }
                 } catch (NumberFormatException e) {
                     terminalMethods.printError( new ErrorPacket(
-                            "NumberFormatException",
-                            "please, insert a valid number!", false)
+                            CommandsList.PLAYER_et.print(localLanguage),
+                            CommandsList.PLAYER_em.print(localLanguage), false)
                     );
                 }
             }
         });
         // Sceglie una carta
-        commands.put("draw", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put(CommandsList.DRAW.print(localLanguage), ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
                 if(terminalParameters.length >= 3){
                     try {
                         int cardIndex = Integer.parseInt(terminalParameters[2]);
                         PlayerActionEnum action = null;
-                        if (terminalParameters[0].equalsIgnoreCase("l")) {
-                            if (terminalParameters[1].equalsIgnoreCase("c")) {
+                        if (terminalParameters[0].equalsIgnoreCase(CommandsList.DRAW_p_01.print(localLanguage))) {
+                            if (terminalParameters[1].equalsIgnoreCase(CommandsList.DRAW_p_03.print(localLanguage))) {
                                 action = PlayerActionEnum.DRAW_LOWER_CHARACTER;
-                            } else if (terminalParameters[1].equalsIgnoreCase("b")) {
+                            } else if (terminalParameters[1].equalsIgnoreCase(CommandsList.DRAW_p_04.print(localLanguage))) {
                                 action = PlayerActionEnum.DRAW_LOWER_BUILDING;
                             }
-                        } else if (terminalParameters[0].equalsIgnoreCase("u")) {
-                            if (terminalParameters[1].equalsIgnoreCase("c")) {
+                        } else if (terminalParameters[0].equalsIgnoreCase(CommandsList.DRAW_p_02.print(localLanguage))) {
+                            if (terminalParameters[1].equalsIgnoreCase(CommandsList.DRAW_p_03.print(localLanguage))) {
                                 action = PlayerActionEnum.DRAW_UPPER_CHARACTER;
-                            } else if (terminalParameters[1].equalsIgnoreCase("b")) {
+                            } else if (terminalParameters[1].equalsIgnoreCase(CommandsList.DRAW_p_04.print(localLanguage))) {
                                 action = PlayerActionEnum.DRAW_UPPER_BUILDING;
                             }
                         }
@@ -164,58 +164,58 @@ public class TextTerminal extends UserInputInterface {
                             terminalVirtualServer.sendCommand(commandPacket);
                         }else{
                             terminalMethods.printError( new ErrorPacket(
-                                    "Line misspelling",
-                                    "not a valid card choice!", false)
+                                    CommandsList.DRAW_et_01.print(localLanguage),
+                                    CommandsList.DRAW_em_01.print(localLanguage), false)
                             );
                         }
                     } catch (NumberFormatException e) {
                         terminalMethods.printError( new ErrorPacket(
-                                "NumberFormatException",
-                                "please, insert a valid number!", false)
+                                CommandsList.DRAW_et_02.print(localLanguage),
+                                CommandsList.DRAW_em_02.print(localLanguage), false)
                         );
                     }
                 } else {
                     terminalMethods.printError( new ErrorPacket(
-                            "Missing parameters",
-                            "missed a few necessary parameters in your command", false
+                            CommandsList.DRAW_et_03.print(localLanguage),
+                            CommandsList.DRAW_em_03.print(localLanguage), false
                     ));
                 }
             }
         });
         // Legge una carta
-        commands.put("read", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
+        commands.put(CommandsList.READ.print(localLanguage), ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
                 try {
                     int cardIndex = Integer.parseInt(terminalParameters[2]);
-                    if (terminalParameters[0].equalsIgnoreCase("l")) {
-                        if (terminalParameters[1].equalsIgnoreCase("c")) {
+                    if (terminalParameters[0].equalsIgnoreCase(CommandsList.READ_p_01.print(localLanguage))) {
+                        if (terminalParameters[1].equalsIgnoreCase(CommandsList.READ_p_03.print(localLanguage))) {
                             terminalMethods.printCardRead(terminalMockups.getGame().getLowerLine().get(cardIndex));
-                        } else if (terminalParameters[1].equalsIgnoreCase("b")) {
+                        } else if (terminalParameters[1].equalsIgnoreCase(CommandsList.READ_p_04.print(localLanguage))) {
                             terminalMethods.printCardRead(terminalMockups.getGame().getLowerBuilding().get(cardIndex));
                         }
-                    } else if (terminalParameters[0].equalsIgnoreCase("u")) {
-                        if (terminalParameters[1].equalsIgnoreCase("c")) {
+                    } else if (terminalParameters[0].equalsIgnoreCase(CommandsList.READ_p_02.print(localLanguage))) {
+                        if (terminalParameters[1].equalsIgnoreCase(CommandsList.READ_p_03.print(localLanguage))) {
                             terminalMethods.printCardRead(terminalMockups.getGame().getUpperLine().get(cardIndex));
-                        } else if (terminalParameters[1].equalsIgnoreCase("b")) {
+                        } else if (terminalParameters[1].equalsIgnoreCase(CommandsList.READ_p_04.print(localLanguage))) {
                             terminalMethods.printCardRead(terminalMockups.getGame().getUpperBuilding().get(cardIndex));
                         }
                     }
                 } catch (IndexOutOfBoundsException e) {
                     terminalMethods.printError( new ErrorPacket(
-                            "IndexOutOfBoundsException",
-                            "index out of bounds!", false)
+                            CommandsList.READ_et_01.print(localLanguage),
+                            CommandsList.READ_em_01.print(localLanguage), false)
                     );
                 }
             }
         });
-        // Sceglie un totem
-        commands.put("legend", ( terminalMethods, terminalPhase, _, _, _ ) -> {
+        // Mostra la legenda dei simboli in partita
+        commands.put(CommandsList.LEGEND.print(localLanguage), ( terminalMethods, terminalPhase, _, _, _ ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
                 terminalMethods.printLegend();
             }
         });
         // Sceglie una offerta
-        commands.put("offer", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put(CommandsList.OFFER.print(localLanguage), ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int offerIndex = Integer.parseInt(terminalParameters[0]);
@@ -223,14 +223,14 @@ public class TextTerminal extends UserInputInterface {
                     terminalVirtualServer.sendCommand(commandPacket);
                 } catch (NumberFormatException e) {
                     terminalMethods.printError( new ErrorPacket(
-                            "NumberFormatException",
-                            "please, insert a valid number!", false)
+                            CommandsList.OFFER_et_01.print(localLanguage),
+                            CommandsList.OFFER_em_01.print(localLanguage), false)
                     );
                 }
             }
         });
         // Sceglie un totem
-        commands.put("totem", ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put(CommandsList.TOTEM.print(localLanguage), ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 if (totems.containsKey(terminalParameters[0].toLowerCase())) {
                     Totem totem = totems.get(terminalParameters[0].toLowerCase());
@@ -241,75 +241,10 @@ public class TextTerminal extends UserInputInterface {
         });
     }
 
-    static {
-        // Command entries
-        //GENERAL/ANY commands
-        for(ApplicationPhase applicationPhase : ApplicationPhase.values()){
-            manual.put(applicationPhase, new AttributedStringBuilder()
-                    .append(String.format("%72s\n", "GENERAL commands:"))
-                    .append(manualFormat("help", "Displays this help message for " + HELP_TIMEOUT + " seconds"))
-                    .append(manualFormat("disconnect", "Disconnects you from the server and exits the application"))
-            );
-        }
-
-        //HALL commands
-        manual.get(ApplicationPhase.HALL)
-                .append(manualSeparator()).append("\n")
-                .append(String.format("%70s\n", "HALL commands:"))
-                .append(manualFormat("create/join [\"your room name\"] (num. players)", "Creates/Joins a waiting room"));
-        //ROOM commands
-        manual.get(ApplicationPhase.ROOM)
-                .append(manualSeparator()).append("\n")
-                .append(String.format("%70s\n", "ROOM commands:"))
-                .append(manualFormat("leave", "Leaves the current room"));
-        //GAME commands
-        manual.get(ApplicationPhase.GAME)
-                .append(manualSeparator()).append("\n")
-                .append(String.format("%70s\n", "GAME commands:"))
-                .append(manualFormat("legend", "Displays a legend that explains game board's symbols"))
-                .append(manualFormat("totem [orange/white/blue/black/yellow]", "Choose the specified totem"))
-                .append(manualFormat("offer [offer index]", "Choose the specified offer"))
-                .append(manualFormat("draw [l/u] [c/b] [card index]", "Draw from upper or lower lines,"))
-                .append(manualFormatSecondLine("the indexed card from the character or the building line."))
-                .append(manualFormat("read [l/u] [c/b] [card index]", "Read the description from upper or lower lines,"))
-                .append(manualFormatSecondLine("of the indexed card from the character or the building line."))
-                .append(manualFormat("player [player index]", "Displays the specified player's stats"));
 
 
-        for(ApplicationPhase applicationPhase : ApplicationPhase.values()) {
-            manual.get(applicationPhase).append(manualSeparator());
-        }
-    }
-    private static String manualSeparator () { return " "+"-".repeat(127); }
-    private static String manualFormat ( String command, String description ) {return " " + String.format(" %60s | %s\n", command, description);}
-    private static String manualFormatSecondLine ( String description ) {return " " + String.format(" %60s \\ %s\n", "", description);}
-    static {
-        legend.append(" Symbols meaning:\n");
-        legend.append(" ♥ food    | ░ free space                       | card types by color:\n");
-        legend.append(" ♦ points  | ▓ space occupied by totem          | ")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╬")
-                .style(AttributedStyle.DEFAULT).append(" character card\n");
-        legend.append(" * stars   |__                                  | ")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╬")
-                .style(AttributedStyle.DEFAULT).append(" building card\n");
-        legend.append(" ≥ at end game|_________________________________| ")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("╬")
-                .style(AttributedStyle.DEFAULT).append(" event card\n");
-        legend.append(" ● at set completion   |  character types:      |\n");
-        legend.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)).append(" ▼")
-                .style(AttributedStyle.DEFAULT).append(" drawable lower cards|  A = artist            |\n");
-        legend.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.CYAN)).append(" ▲")
-                .style(AttributedStyle.DEFAULT).append(" drawable upper cards|  B = builder           |\n");
-        legend.append(" ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|  G = gatherer          |\n");
-        legend.append(" event types:          |  H = hunter            |\n");
-        legend.append(" ¤ painting            |  I = inventor          |\n");
-        legend.append(" § ritual              |  S = shaman            |\n");
-        legend.append(" % hunt                |\n");
-        legend.append(" € sustenance          |\n");
-    }
-
-    public TextTerminal (VirtualServer virtualServer, ApplicationPhase currentPhase) {
-        super( virtualServer, currentPhase);
+    public TextTerminal ( VirtualServer virtualServer, ApplicationPhase currentPhase ) {
+        super( virtualServer, currentPhase );
     }
 
     public void printString ( String string ) {
@@ -481,12 +416,12 @@ public class TextTerminal extends UserInputInterface {
     }
     private void printManual () {
         synchronized (cursorLock) {
-            showSomething(manual.get(currentPhase).toAttributedString());
+            showSomething(manual.print(currentPhase, localLanguage));
         }
     }
     private void printLegend () {
         synchronized (cursorLock) {
-            showSomething(legend.toAttributedString());
+            showSomething(legend.print(localLanguage));
         }
     }
     private void printPlayerStats ( int playerIndex ) {
