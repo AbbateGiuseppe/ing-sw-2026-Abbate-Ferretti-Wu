@@ -250,6 +250,36 @@ public class TextTerminal extends UserInputInterface {
                 }
             }
         });
+
+        //???
+        commands.put(CommandsList.IDIOT.print(localLanguage), ( terminalMethods, _, _, _, _ ) -> {
+            Random rand = new Random();
+            boolean ah = true;
+            StringBuilder ahahString = new StringBuilder();
+            for(int ahahLenght = rand.nextInt(45) + 15; ahahLenght > 0; ahahLenght--) {
+                boolean caps = rand.nextBoolean();
+                if(ah){
+                    if(caps) {
+                        ahahString.append("a".toUpperCase());
+                    }else{
+                        ahahString.append("a".toLowerCase());
+                    }
+                }else{
+                    if(caps) {
+                        ahahString.append("h".toUpperCase());
+                    }else{
+                        ahahString.append("h".toLowerCase());
+                    }
+                }
+                ah = !ah;
+            }
+            ahahString.append("!");
+            terminalMethods.printError( new ErrorPacket(
+                    CommandsList.IDIOT_et_01.print(localLanguage),
+                    CommandsList.IDIOT_em_01.print(localLanguage) + ahahString,
+                    false)
+            );
+        });
     }
 
 
@@ -479,7 +509,7 @@ public class TextTerminal extends UserInputInterface {
     }
     private void printError(ErrorPacket errorPacket) {
         synchronized (cursorLock) {
-            String errorString = new StringBuilder().append(new ItaEngString("Errore ", "Error ")).append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
+            String errorString = new StringBuilder().append(new ItaEngString("Errore ", "Error ").print(localLanguage)).append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
             terminal.puts(InfoCmp.Capability.save_cursor);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 0);
             terminal.puts(InfoCmp.Capability.clr_eol);
