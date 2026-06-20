@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
+import it.polimi.ingsw.gc49.client.view.ItaEngRectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.DataBank;
@@ -54,5 +55,32 @@ public class Builder extends CharacterCard {
         int height = 4;
         int width = 5;
         return new RectangleAttributedString(height, width, attributedString);
+    }
+
+    @Override
+    public ItaEngRectangleAttributedString getItaEngRectangleAttributedString () {
+        AttributedString itaAttributedString = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
+                .append("║")
+                .style(AttributedStyle.DEFAULT).append("Co").append("♥")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                .append("║")
+                .style(AttributedStyle.DEFAULT).append(String.valueOf(numPoints)).append("♦").append(String.valueOf(buildingDiscount))
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                .append("╚═══╝").toAttributedString();
+        AttributedString engAttributedString = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
+                .append("║")
+                .style(AttributedStyle.DEFAULT).append("B").append(String.valueOf(buildingDiscount)).append("♥")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                .append("║")
+                .style(AttributedStyle.DEFAULT).append(" ").append(String.valueOf(numPoints)).append("♦")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                .append("╚═══╝").toAttributedString();
+        int height = 4;
+        int width = 5;
+        return new ItaEngRectangleAttributedString(
+                height, width, itaAttributedString,
+                height, width, engAttributedString);
     }
 }

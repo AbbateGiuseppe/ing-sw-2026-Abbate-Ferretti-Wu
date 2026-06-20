@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
+import it.polimi.ingsw.gc49.client.view.ItaEngRectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.*;
 import org.jline.utils.AttributedString;
@@ -47,5 +48,23 @@ public class Inventor extends CharacterCard {
         int height = 4;
         int width = 5;
         return new RectangleAttributedString(height, width, attributedString);
+    }
+
+    @Override
+    public ItaEngRectangleAttributedString getItaEngRectangleAttributedString () {
+        AttributedString itaAttributedString = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
+                .append("║")
+                .style(AttributedStyle.DEFAULT).append(" I ")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                .append("║")
+                .style(AttributedStyle.DEFAULT).append("(").append(String.valueOf(invention.ordinal())).append(")")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                .append("╚═══╝").toAttributedString();
+        int height = 4;
+        int width = 5;
+        return new ItaEngRectangleAttributedString(
+                height, width, itaAttributedString,
+                height, width, itaAttributedString);
     }
 }

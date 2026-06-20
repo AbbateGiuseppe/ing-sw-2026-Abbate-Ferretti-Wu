@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card;
 
 
+import it.polimi.ingsw.gc49.client.view.ItaEngRectangable;
 import it.polimi.ingsw.gc49.client.view.Rectangable;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.DataBank;
@@ -16,7 +17,7 @@ import java.io.Serializable;
  * properties such as the {@link Era} it belongs to and the minimum number of players
  * required to use it. Subclasses must define specific acquisition rules and behaviors.
  */
-public abstract class Card implements Rectangable, Serializable {
+public abstract class Card implements Rectangable, Serializable, ItaEngRectangable {
     /** The era this card belongs to. */
     protected final Era era;
     /** The minimum number of players required for this card to be included in the game. */

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
+import it.polimi.ingsw.gc49.client.view.ItaEngRectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
@@ -119,5 +120,13 @@ public class CharacterSetCompleteFoodCard extends BuildingCard {
         int height = 2;
         int width = 10;
         return new RectangleAttributedString(height, width, attributedString);
+    }
+
+    @Override
+    public ItaEngRectangleAttributedString getItaEngRectangleAttributedString () {
+        RectangleAttributedString globalRectangle = getRectangleAttributedString();
+        return new ItaEngRectangleAttributedString(
+                globalRectangle.height, globalRectangle.width, globalRectangle.attributedString,
+                globalRectangle.height, globalRectangle.width, globalRectangle.attributedString);
     }
 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.Card.CharacterCard;
 
+import it.polimi.ingsw.gc49.client.view.ItaEngRectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
@@ -77,5 +78,55 @@ public class Hunter extends CharacterCard {
         int height = 4;
         int width = 5;
         return new RectangleAttributedString(height, width, attributedString);
+    }
+
+    @Override
+    public ItaEngRectangleAttributedString getItaEngRectangleAttributedString () {
+        AttributedString itaAttributedString;
+        AttributedString engAttributedString;
+        if(drumstick) {
+            itaAttributedString = new AttributedStringBuilder()
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
+                    .append("║")
+                    .style(AttributedStyle.DEFAULT).append(" Ca")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                    .append("║")
+                    .style(AttributedStyle.DEFAULT).append("♥♥♥")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                    .append("╚═══╝").toAttributedString();
+            engAttributedString = new AttributedStringBuilder()
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
+                    .append("║")
+                    .style(AttributedStyle.DEFAULT).append(" H ")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                    .append("║")
+                    .style(AttributedStyle.DEFAULT).append("♥♥♥")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                    .append("╚═══╝").toAttributedString();
+        } else {
+            itaAttributedString = new AttributedStringBuilder()
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
+                    .append("║")
+                    .style(AttributedStyle.DEFAULT).append(" Ca")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                    .append("║")
+                    .style(AttributedStyle.DEFAULT).append("   ")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                    .append("╚═══╝").toAttributedString();
+            engAttributedString = new AttributedStringBuilder()
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
+                    .append("║")
+                    .style(AttributedStyle.DEFAULT).append(" H ")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                    .append("║")
+                    .style(AttributedStyle.DEFAULT).append("   ")
+                    .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
+                    .append("╚═══╝").toAttributedString();
+        }
+        int height = 4;
+        int width = 5;
+        return new ItaEngRectangleAttributedString(
+                height, width, itaAttributedString,
+                height, width, engAttributedString);
     }
 }

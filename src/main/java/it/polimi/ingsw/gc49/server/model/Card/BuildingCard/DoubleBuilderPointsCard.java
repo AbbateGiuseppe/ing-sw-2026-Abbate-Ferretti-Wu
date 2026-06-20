@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
+import it.polimi.ingsw.gc49.client.view.ItaEngRectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Era;
@@ -101,5 +101,32 @@ public class DoubleBuilderPointsCard extends BuildingCard {
         int height = 2;
         int width = 10;
         return new RectangleAttributedString(height, width, attributedString);
+    }
+
+    @Override
+    public ItaEngRectangleAttributedString getItaEngRectangleAttributedString () {
+        AttributedString itaAttributedString = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
+                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
+                .append("    ").append(String.valueOf(foodPrice)).append("♥")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
+                .style(AttributedStyle.DEFAULT).append("x2Co♦  ≥")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝")
+                .toAttributedString();
+        AttributedString engAttributedString = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
+                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
+                .append("    ").append(String.valueOf(foodPrice)).append("♥")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
+                .style(AttributedStyle.DEFAULT).append("x2B♦   ≥")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝")
+                .toAttributedString();
+        int height = 2;
+        int width = 10;
+        return new ItaEngRectangleAttributedString(
+                height, width, itaAttributedString,
+                height, width, engAttributedString);
     }
 }

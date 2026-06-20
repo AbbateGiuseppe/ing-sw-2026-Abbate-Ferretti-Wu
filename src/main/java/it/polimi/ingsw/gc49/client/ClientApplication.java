@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.client;
 
+import it.polimi.ingsw.gc49.ItaEngString;
 import it.polimi.ingsw.gc49.client.view.Mockup;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.STRING.StringPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
@@ -41,13 +42,31 @@ public class ClientApplication implements VirtualClient {
     public static final Mockup mockups = new Mockup();
     private static final String mainServer = ServerMultiplexer.mainServer;
     private static UserInputInterface inputInterface;
+    public static ItaEngString.Language localLanguage;
     public static final Terminal terminal;
+    /** 'r' stands for reply, 'e' stands for error */
+    private final static ItaEngString CONNECTION_01, CONNECTION_01_r, CONNECTION_01_e_01, CONNECTION_01_e_02;
+    private final static ItaEngString CONNECTION_02, CONNECTION_02_e_01, CONNECTION_02_e_02;
+    private final static ItaEngString CONNECTION_03, CONNECTION_03_e_01, CONNECTION_03_e_02;
+    private final static ItaEngString CONNECTION_04_e;
     static {
         try {
             terminal = TerminalBuilder.builder().system(true).provider("ffm").build();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        CONNECTION_01 = new ItaEngString("Inserire l'indirizzo IP del serviente (lasciare vuoto se in locale): ", "Insert the IP address of the server (leave empty if it's local): ");
+        CONNECTION_01_r = new ItaEngString("Serviente esistente..", "Server found..");
+        CONNECTION_01_e_01 = new ItaEngString("??? COME HAI FFATTO?!", "??? HOW DID YOU DDO THAT?!");
+        CONNECTION_01_e_02 = new ItaEngString("Serviente non trovato. Ritenta", "Server not found. Try again");
+        CONNECTION_02 = new ItaEngString("Premere 1 per la connessione RMI, Premere 2 per la connessione socket", "Press 1 for RMI connection, Press 2 for socket connection");
+        CONNECTION_02_e_01 = new ItaEngString("SCEGLI UN NUMERO TRA 1 e 2! Riprova", "CHOOSE A NUMBER BETWEEN 1 and 2! Try again");
+        CONNECTION_02_e_02 = new ItaEngString("NUMERO NON VALIDO! Riprova", "INVALID NUMBER! Try again");
+        CONNECTION_03 = new ItaEngString("Inserisci il tuo nomignolo", "Insert your nickname");
+        CONNECTION_03_e_01 = new ItaEngString("IL NOMIGNOLO NON PUO' ESSERE VUOTO!", "THE NICKNAME CANNOT BE EMPTY!");
+        CONNECTION_03_e_02 = new ItaEngString("NOMIGNOLO TROPPO LUNGO! Usa un massimo di 15 caratteri", "NICKNAME TOO LONG! Use a maximum of 15 characters");
+        CONNECTION_04_e = new ItaEngString("Connessione fallita.", "Connection failed.");
     }
     public static final LineReader lineReader = LineReaderBuilder.builder().terminal(terminal).build();
 
@@ -58,40 +77,55 @@ public class ClientApplication implements VirtualClient {
     public static void main ( String[] args ) {
 
         String host;
-        inputInterface = chooseInputInterface();
+
+        while (true) {
+            try {
+                String localLanguageChoice = lineReader.readLine("Scegli la lingua/Choose the language [ITA/ENG]: ").toUpperCase();
+                if (localLanguageChoice.equals("ITA") || localLanguageChoice.equals("ENG")) {
+                    localLanguage = ItaEngString.Language.valueOf(localLanguageChoice);
+                    break;
+                } else {
+                   throw new RuntimeException("Lingua inesistente");
+                }
+            } catch (Exception e) {
+                terminal.writer().println("Scelta non valida/Invalid choice");
+            }
+        }
+
+        inputInterface = chooseInputInterface(localLanguage);
         if (inputInterface != null) {
 
             while (true) {
                 try {
-                    host = lineReader.readLine("Inserire l'indirizzo IP del serviente (lasciare vuoto se in locale): ");
+                    host = lineReader.readLine(CONNECTION_01.print(localLanguage));
                     Registry registry = LocateRegistry.getRegistry(host, ServerMultiplexer.portRmi);
                     if (((FactoryServiceRmi) registry.lookup(mainServer)).ping()) {
-                        terminal.writer().println("Serviente esistente..");
+                        terminal.writer().println(CONNECTION_01_r.print(localLanguage));
                         break;
                     } else {
-                        terminal.writer().println("??? COME HAI FFATTO?!");
+                        terminal.writer().println(CONNECTION_01_e_01.print(localLanguage));
                         throw new RuntimeException("???");
                     }
                 } catch (Exception e) {
-                    terminal.writer().println("Serviente non trovato. Ritenta");
+                    terminal.writer().println(CONNECTION_01_e_02.print(localLanguage));
                 }
             }
 
             int connectionChoice;
             while (true) {
                 try {
-                    terminal.writer().println("Premere 1 per la connessione RMI, Premere 2 per la connessione socket");
+                    terminal.writer().println(CONNECTION_02.print(localLanguage));
                     connectionChoice = Integer.parseInt(lineReader.readLine("> "));
                     if (connectionChoice == 1 || connectionChoice == 2) {
                         break;
                     } else {
-                        terminal.writer().println("SCEGLI UN NUMERO TRA 1 e 2! Riprova");
+                        terminal.writer().println(CONNECTION_02_e_01.print(localLanguage));
                     }
                 } catch (NumberFormatException e) {
-                    terminal.writer().println("NUMERO NON VALIDO! Riprova");
+                    terminal.writer().println(CONNECTION_02_e_02.print(localLanguage));
                 }
             }
-            terminal.writer().println("Inserisci il tuo nomignolo");
+            terminal.writer().println(CONNECTION_03.print(localLanguage));
             String nickname;
             while (true) {
                 nickname = lineReader.readLine("> ");
@@ -99,10 +133,10 @@ public class ClientApplication implements VirtualClient {
                     if (!nickname.isEmpty()) {
                         break;
                     } else {
-                        terminal.writer().println("IL NOMIGNOLO NON PUO' ESSERE VUOTO!");
+                        terminal.writer().println(CONNECTION_03_e_01.print(localLanguage));
                     }
                 } else {
-                    terminal.writer().println("NOMIGNOLO TROPPO LUNGO! Usa un massimo di 15 caratteri");
+                    terminal.writer().println(CONNECTION_03_e_02.print(localLanguage));
                 }
             }
             inputInterface.setNickname(nickname);
@@ -162,7 +196,7 @@ public class ClientApplication implements VirtualClient {
 
                 }
             } catch (Exception e) {
-                terminal.writer().println("Connessione fallita.");
+                terminal.writer().println(CONNECTION_04_e.print(localLanguage));
             }
         }
 
@@ -189,26 +223,33 @@ public class ClientApplication implements VirtualClient {
         this.server = server;
     }
 
-    private static UserInputInterface chooseInputInterface() {
+    private static UserInputInterface chooseInputInterface( ItaEngString.Language localLanguage ) {
+        ItaEngString CHOOSE_INTERFACE_01 = new ItaEngString("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica", "Press 1 for the textual interface, Press 2 for the graphical interface");
+        ItaEngString CHOOSE_INTERFACE_02 = new ItaEngString("Avvio dell'interfaccia testuale...", "Launching the textual interface...");
+        ItaEngString CHOOSE_INTERFACE_03 = new ItaEngString("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...", "ERROR: INTERFACE NOT YET IMPLEMENTED! Closure imminent...");
+        ItaEngString CHOOSE_INTERFCAE_04 = new ItaEngString("SCEGLI UN NUMERO TRA 1 e 2! Riprova", "CHOOSE A NUMBER BETWEEN 1 and 2! Try again");
+        ItaEngString CHOOSE_INTERFACE_05 = new ItaEngString("NUMERO NON VALIDO! Riprova", "INVALID NUMBER! Try again");
+
 
         while(true) {
             try{
-                terminal.writer().println("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica");
+                terminal.writer().println(CHOOSE_INTERFACE_01.print(localLanguage));
                 int interfaceChoice = Integer.parseInt(lineReader.readLine("> "));
 
                 if (interfaceChoice == 1) {
-                    terminal.writer().println("Avvio dell'interfaccia testuale...");
-                    return inputInterface = new TextTerminal(server, ApplicationPhase.ANY); //connect interface to server proxy
+                    terminal.writer().println("");
+                    inputInterface = new TextTerminal(server, ApplicationPhase.ANY); //connect interface to server proxy
+                    return inputInterface;
                 } else if (interfaceChoice == 2) {
-                    terminal.writer().println("Avvio dell'interfaccia grafica...");
-                    terminal.writer().println("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...");
+                    terminal.writer().println(CHOOSE_INTERFACE_02.print(localLanguage));
+                    terminal.writer().println(CHOOSE_INTERFACE_03.print(localLanguage));
                     System.exit(0);
                     return null;
                 } else {
-                    terminal.writer().println("SCEGLI UN NUMERO TRA 1 e 2! Riprova");
+                    terminal.writer().println(CHOOSE_INTERFCAE_04.print(localLanguage));
                 }
             } catch (NumberFormatException e) {
-                terminal.writer().println("NUMERO NON VALIDO! Riprova");
+                terminal.writer().println(CHOOSE_INTERFACE_05.print(localLanguage));
             }
         }
     }
