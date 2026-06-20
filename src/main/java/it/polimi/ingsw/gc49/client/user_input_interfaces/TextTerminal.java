@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.client.user_input_interfaces;
 
+import it.polimi.ingsw.gc49.ItaEngString;
 import it.polimi.ingsw.gc49.client.ClientApplication;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
@@ -46,9 +47,9 @@ public class TextTerminal extends UserInputInterface {
     private static final int SHOW_THIRD_LINE = 10;
     private static final int LINE_PREVIOUS_MESSAGE = rows-6;
     private static final int LINE_ERROR = rows-4;
-
     private static final Object cursorLock = new Object();
 
+    //not really used
     static {
         terminal.handle(Terminal.Signal.WINCH, _ -> {
             columns = terminal.getWidth();
@@ -57,14 +58,24 @@ public class TextTerminal extends UserInputInterface {
     }
 
     private String lastCommand = "";
+    private static final ItaEngString UNKOWN_COMMAND = new ItaEngString(" [Comando ignoto]", " [Unknown command]");
+    private static final ItaEngString PREVIOUS_COMMAND = new ItaEngString("Comando precedente", "Previous command");
+    private static final ItaEngString LAST_COMMAND = new ItaEngString("Ultimo comando", "Last command");
+    private static final ItaEngString PHASE_GAME = new ItaEngString("La partita è iniziata.", "The game started.");
+    private static final ItaEngString PHASE_HALL = new ItaEngString("Sei entrato nell'atrio.", "You entered the hall.");
+    private static final ItaEngString PHASE_ROOM = new ItaEngString("Sei entrato in una sala", "You entered a room.");
+    private static final ItaEngString POSITION = new ItaEngString(" | posizione: ", " | position: ");
+    private static final ItaEngString ORDER = new ItaEngString("Ordine", "Order");
+    private static final ItaEngString OFFERS = new ItaEngString("Offerte", "Offers");
+    private static final ItaEngString DECK = new ItaEngString("Mazzo", "Deck");
+    private static final ItaEngString TURN_OF = new ItaEngString("..turno di ", "..turn of ");
 
     private static final Map<String,Totem> totems = new HashMap<>();
     static {
-        for(Totem totem : Totem.values()){
+        for (Totem totem : Totem.values()) {
             totems.put(totem.name().toLowerCase(), totem); //for example, totems.put("orange", Totem.ORANGE);
         }
     }
-
     static {
         // Mostra il manuale di istruzioni per il gioco
         commands.put(CommandsList.HELP.print(localLanguage), ( terminalMethods, _, _, _, _ ) -> terminalMethods.printManual());
@@ -260,15 +271,15 @@ public class TextTerminal extends UserInputInterface {
         super.setCurrentPhase(phase);
         switch (phase) {
             case GAME:
-                printScroll("The game started.");
+                printScroll(PHASE_GAME.print(localLanguage));
                 displayStatus();
                 break;
             case HALL:
-                printScroll("You entered the hall.");
+                printScroll(PHASE_HALL.print(localLanguage));
                 displayStatus();
                 break;
             case ROOM:
-                printScroll("You entered a room.");
+                printScroll(PHASE_ROOM.print(localLanguage));
                 displayStatus();
                 break;
         }
@@ -279,8 +290,9 @@ public class TextTerminal extends UserInputInterface {
         try {
             synchronized (cursorLock) {
                 terminal.puts(InfoCmp.Capability.clear_screen);
+                ItaEngString terminalHeader = new ItaEngString("Terminale avviato (digita aiuto per la lista dei comandi):\n", "Terminal started (type help for the list of commands):\n");
                 new AttributedStringBuilder()
-                                .append("Terminal started (type help for the list of commands):\n").toAttributedString()
+                                .append(terminalHeader.print(localLanguage)).toAttributedString()
                         .print(terminal);
 
                 // Set scroll region from first to scrollRegionHeight
@@ -325,14 +337,15 @@ public class TextTerminal extends UserInputInterface {
                         command.execute(this, currentPhase, mockups, params, virtualServer);
                     } else {
                         // Print the wrongly inserted command
-                        printCommand(action + " [Unknown command]");
+                        printCommand(action + UNKOWN_COMMAND.print(localLanguage));
                     }
                 }
 
             }
 
         } catch (Exception e) {
-            printScroll("Client exception: " + e);
+            ItaEngString clientException = new ItaEngString("Eccezione d'ospite: ", "Client exception: ");
+            printScroll(clientException.print(localLanguage) + e);
             e.printStackTrace();
         }
     }
@@ -449,7 +462,7 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.clr_eol);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 1);
             new AttributedStringBuilder()
-                    .style(AttributedStyle.DEFAULT.underline()).append("Previous command")
+                    .style(AttributedStyle.DEFAULT.underline()).append(PREVIOUS_COMMAND.print(localLanguage))
                     .style(AttributedStyle.DEFAULT).append(": ").append(lastCommand)
                     .toAttributedString().print(terminal);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 0);
@@ -458,7 +471,7 @@ public class TextTerminal extends UserInputInterface {
             lastCommand = newCommand;
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE+1, 1);
             new AttributedStringBuilder()
-                    .style(AttributedStyle.DEFAULT.underline()).append("Last command")
+                    .style(AttributedStyle.DEFAULT.underline()).append(LAST_COMMAND.print(localLanguage))
                     .style(AttributedStyle.DEFAULT).append(": ").append(lastCommand)
                     .toAttributedString().print(terminal);
             terminal.puts(InfoCmp.Capability.restore_cursor);
@@ -466,7 +479,7 @@ public class TextTerminal extends UserInputInterface {
     }
     private void printError(ErrorPacket errorPacket) {
         synchronized (cursorLock) {
-            String errorString = new StringBuilder().append("Error ").append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
+            String errorString = new StringBuilder().append(new ItaEngString("Errore ", "Error ")).append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
             terminal.puts(InfoCmp.Capability.save_cursor);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 0);
             terminal.puts(InfoCmp.Capability.clr_eol);
@@ -500,8 +513,8 @@ public class TextTerminal extends UserInputInterface {
                         .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.WHITE)).append("]");
             }
             status
-                    .append(" | position: ").style(AttributedStyle.DEFAULT.bold().foreground(AttributedStyle.RED))
-                    .append(currentPhase.toString());
+                    .append(POSITION.print(localLanguage)).style(AttributedStyle.DEFAULT.bold().foreground(AttributedStyle.RED))
+                    .append(currentPhase.print(localLanguage));
 
             //Save cursor
             Cursor cursor = terminal.getCursorPosition(_ -> {});
@@ -656,7 +669,7 @@ public class TextTerminal extends UserInputInterface {
             cursorY = startingCursorY + SHOW_SECOND_LINE;
             cursorX = startingCursorX+3;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
-            terminal.writer().print("Order");
+            terminal.writer().print(ORDER.print(localLanguage));
             terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
             terminal.writer().print("╔════════╗");
             int playerNum = 1;
@@ -677,7 +690,7 @@ public class TextTerminal extends UserInputInterface {
             cursorY = startingCursorY + SHOW_SECOND_LINE;
             cursorX = startingCursorX+14;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
-            terminal.writer().print("Offers");
+            terminal.writer().print(OFFERS.print(localLanguage));
             terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
             for (RectangleAttributedString rectangleAttributedString : mockupGame.getOfferBoardRectangleStrings()) {
                 printRectangleString(rectangleAttributedString);
@@ -689,7 +702,7 @@ public class TextTerminal extends UserInputInterface {
             cursorY = startingCursorY + SHOW_SECOND_LINE;
             cursorX = cursorX + 2;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
-            terminal.writer().print("Deck");
+            terminal.writer().print(DECK.print(localLanguage));
             terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, cursorX);
             printRectangleString(mockupGame.getDeckTopEra().getRectangleAttributedString());
 
@@ -697,7 +710,7 @@ public class TextTerminal extends UserInputInterface {
             cursorY = startingCursorY + SHOW_SECOND_LINE + 4;
             cursorX = cursorX + 7;
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
-            terminal.writer().print("..turn of ");
+            terminal.writer().print(TURN_OF.print(localLanguage));
             mockupGame.getPlayer(mockupGame.getCurrentPlayerIndex()).displayAttributedStringName().print(terminal);
             terminal.writer().print("..");
 
