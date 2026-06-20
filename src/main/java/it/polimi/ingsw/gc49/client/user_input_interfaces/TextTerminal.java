@@ -603,8 +603,8 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             if(mockupGame.getUpperLine() != null) {
                 for (Card card : mockupGame.getUpperLine()) {
-                    printRectangleString(card.getRectangleAttributedString());
-                    cursorX = cursorX + card.getRectangleAttributedString().width;
+                    printRectangleString(card.getItaEngRectangleAttributedString().localize(localLanguage));
+                    cursorX = cursorX + card.getItaEngRectangleAttributedString().localize(localLanguage).width;
                     terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
                 }
                 terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, ++cursorX);
@@ -618,11 +618,11 @@ public class TextTerminal extends UserInputInterface {
                 int MAX_EACH_ROW = 3;
                 int i = 0;
                 for (Card card : mockupGame.getUpperBuilding()) {
-                    printRectangleString(card.getRectangleAttributedString());
-                    cursorX = cursorX + card.getRectangleAttributedString().width;
+                    printRectangleString(card.getItaEngRectangleAttributedString().localize(localLanguage));
+                    cursorX = cursorX + card.getItaEngRectangleAttributedString().localize(localLanguage).width;
                     i++;
                     if(i >= MAX_EACH_ROW) {
-                        cursorY = cursorY + card.getRectangleAttributedString().height;
+                        cursorY = cursorY + card.getItaEngRectangleAttributedString().localize(localLanguage).height;
                         cursorX = row_start;
                     }
                     terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
@@ -636,8 +636,8 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
             if(mockupGame.getLowerLine() != null) {
                 for (Card card : mockupGame.getLowerLine()) {
-                    printRectangleString(card.getRectangleAttributedString());
-                    cursorX = cursorX + card.getRectangleAttributedString().width;
+                    printRectangleString(card.getItaEngRectangleAttributedString().localize(localLanguage));
+                    cursorX = cursorX + card.getItaEngRectangleAttributedString().localize(localLanguage).width;
                     terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
                 }
                 terminal.puts(InfoCmp.Capability.cursor_address, ++cursorY, ++cursorX);
@@ -651,11 +651,11 @@ public class TextTerminal extends UserInputInterface {
                 int MAX_EACH_ROW = 3;
                 int i = 0;
                 for (Card card : mockupGame.getLowerBuilding()) {
-                    printRectangleString(card.getRectangleAttributedString());
-                    cursorX = cursorX + card.getRectangleAttributedString().width;
+                    printRectangleString(card.getItaEngRectangleAttributedString().localize(localLanguage));
+                    cursorX = cursorX + card.getItaEngRectangleAttributedString().localize(localLanguage).width;
                     i++;
                     if(i >= MAX_EACH_ROW) {
-                        cursorY = cursorY + card.getRectangleAttributedString().height;
+                        cursorY = cursorY + card.getItaEngRectangleAttributedString().localize(localLanguage).height;
                         cursorX = row_start;
                     }
                     terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);

@@ -1,22 +1,22 @@
 package it.polimi.ingsw.gc49.client.view;
 
+import it.polimi.ingsw.gc49.ItaEngString;
 import org.jline.utils.AttributedString;
 
 public class ItaEngRectangleAttributedString {
-    public final int itaHeight;
-    public final int itaWidth;
-    public final AttributedString itaAttributedString;
-    public final int engHeight;
-    public final int engWidth;
-    public final AttributedString engAttributedString;
+    public final RectangleAttributedString itaRectangleAttributedString;
+    public final RectangleAttributedString engRectangleAttributedString;
 
     public ItaEngRectangleAttributedString(int itaHeight, int itaWidth, AttributedString itaAttributedString,
                                      int engHeight, int engWidth, AttributedString engAttributedString) {
-        this.itaHeight = itaHeight;
-        this.itaWidth = itaWidth;
-        this.itaAttributedString = itaAttributedString;
-        this.engHeight = engHeight;
-        this.engWidth = engWidth;
-        this.engAttributedString = engAttributedString;
+        this.itaRectangleAttributedString = new RectangleAttributedString(itaHeight, itaWidth, itaAttributedString);
+        this.engRectangleAttributedString = new RectangleAttributedString(engHeight, engWidth, engAttributedString);
+    }
+
+    public RectangleAttributedString localize ( ItaEngString.Language language ) {
+        return switch (language) {
+            case ITA -> itaRectangleAttributedString;
+            case ENG -> engRectangleAttributedString;
+        };
     }
 }

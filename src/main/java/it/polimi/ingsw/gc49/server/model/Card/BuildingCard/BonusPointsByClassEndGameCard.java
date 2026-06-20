@@ -1,13 +1,12 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
+import it.polimi.ingsw.gc49.client.view.ItaEngRectangleAttributedString;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
-import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
@@ -122,5 +121,47 @@ public class BonusPointsByClassEndGameCard extends BuildingCard {
         int height = 2;
         int width = 10;
         return new RectangleAttributedString(height, width, attributedString.toAttributedString());
+    }
+
+    @Override
+    public ItaEngRectangleAttributedString getItaEngRectangleAttributedString () {
+        AttributedStringBuilder itaAttributedString = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
+                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
+                .append("    ").append(String.valueOf(foodPrice)).append("♥")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
+                .style(AttributedStyle.DEFAULT).append("3♦x");
+        switch(unit){
+            case Artist -> itaAttributedString.append("A   ≥");
+            case Builder -> itaAttributedString.append("Co  ≥");
+            case Gatherer -> itaAttributedString.append("R   ≥");
+            case Hunter -> itaAttributedString.append("Ca  ≥");
+            case Inventor -> itaAttributedString.append("I   ≥");
+            case Shaman -> itaAttributedString.append("S   ≥");
+        }
+        itaAttributedString.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝");
+
+        AttributedStringBuilder engAttributedString = new AttributedStringBuilder()
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
+                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
+                .append("    ").append(String.valueOf(foodPrice)).append("♥")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
+                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
+                .style(AttributedStyle.DEFAULT).append("3♦x");
+        switch(unit){
+            case Artist -> engAttributedString.append("A");
+            case Builder -> engAttributedString.append("B");
+            case Gatherer -> engAttributedString.append("G");
+            case Hunter -> engAttributedString.append("H");
+            case Inventor -> engAttributedString.append("I");
+            case Shaman -> engAttributedString.append("S");
+        }
+        engAttributedString.append("   ≥").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝");
+        int height = 2;
+        int width = 10;
+        return new ItaEngRectangleAttributedString(
+                height, width, itaAttributedString.toAttributedString(),
+                height, width, engAttributedString.toAttributedString());
     }
 }
