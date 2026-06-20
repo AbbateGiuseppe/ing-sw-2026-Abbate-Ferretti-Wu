@@ -46,7 +46,7 @@ public class BonusHuntingCard extends BuildingCard {
         owner.setPointsToPay(owner.getPointsToPay() - owner.data.getCharacterCount(CharacterType.Hunter));
         if(queueUpdater != null) {
             queueUpdater.queueUpdateModelElement(new FoodAndPointsOneModelElement(
-                    "La carta " + simpleToString() + " si è attivata fornendo 1 di cibo e punti a " + owner.getNickname() +
+                    "La carta " + simpleToString() + " si e' attivata fornendo 1 di cibo e punti a " + owner.getNickname() +
                             " per ogni suo cacciatore",
                     owner.getPlayerIndex(),
                     owner.getFood(),
@@ -88,24 +88,15 @@ public class BonusHuntingCard extends BuildingCard {
      * Generates a visually formatted ASCII-art representation of the card for the TUI.
      * <p>
      * The generated drawing has a fixed height of 2 and a width of 10. It uses green styling
-     * for the borders and includes symbols to represent the endgame points (♦), food cost (♥),
-     * and the specific hunter multiplier effect (♥♦xH).
+     * for the borders and includes symbols to represent the endgame points (閳?, food cost (閳?,
+     * and the specific hunter multiplier effect (閳俱儮娅恱H).
      *
      * @return a {@link RectangleAttributedString} containing the colored terminal UI graphics
      */
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
-        AttributedString attributedString = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
-                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
-                .append("    ").append(String.valueOf(foodPrice)).append("♥")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
-                .style(AttributedStyle.DEFAULT).append("♥♦xH   %")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝")
-                .toAttributedString();
-        int height = 2;
-        int width = 10;
-        return new RectangleAttributedString(height, width, attributedString);
+        return it.polimi.ingsw.gc49.client.view.TextCardRenderer.render(simpleToString(), era);
     }
 }
+
+

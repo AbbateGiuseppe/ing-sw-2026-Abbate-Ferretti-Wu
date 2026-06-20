@@ -1,8 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
@@ -10,6 +8,8 @@ import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 
 /**
  * Represents a specific type of {@link BuildingCard} that awards endgame bonus points for completed character sets.
@@ -44,7 +44,7 @@ public class CharacterSetCompletePointEndGameCard extends BuildingCard {
     @Override
     public void onEventEffect() {
          owner.addPoints(6 * owner.data.getCharacterCount(CharacterType.CompleteSet));
-        if(queueUpdater != null) {
+         if(queueUpdater != null) {
             queueUpdater.queueUpdateModelElement(new TextModelElement(
                     "La carta " + simpleToString() + " si è attivata fornendo 6 di punti a " + owner.getNickname() +
                             " per ogni suo set"
@@ -84,24 +84,14 @@ public class CharacterSetCompletePointEndGameCard extends BuildingCard {
      * Generates a visually formatted ASCII-art representation of the card for the terminal UI.
      * <p>
      * The generated drawing has a fixed height of 2 and a width of 10. It uses green styling
-     * for the borders and includes symbols to represent the endgame points (♦), food cost (♥),
-     * and the specific bonus multiplier for sets (6♦x●).
+     * for the borders and includes symbols to represent the endgame points (鈾?, food cost (鈾?,
+     * and the specific bonus multiplier for sets (6鈾鈼?.
      *
      * @return a {@link RectangleAttributedString} containing the colored terminal UI graphics
      */
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
-        AttributedString attributedString = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
-                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
-                .append("    ").append(String.valueOf(foodPrice)).append("♥")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
-                .style(AttributedStyle.DEFAULT).append("6♦x●   ≥")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝")
-                .toAttributedString();
-        int height = 2;
-        int width = 10;
-        return new RectangleAttributedString(height, width, attributedString);
+        return it.polimi.ingsw.gc49.client.view.TextCardRenderer.render(simpleToString(), era);
     }
 }
+

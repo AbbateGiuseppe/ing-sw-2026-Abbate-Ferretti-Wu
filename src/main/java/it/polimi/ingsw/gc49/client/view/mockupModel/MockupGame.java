@@ -10,28 +10,25 @@ import java.util.Collections;
 import java.util.List;
 
 public class MockupGame implements Serializable {
-    private int currentPlayerIndex;
+    private int currentPlayerIndex = -1;
     private List<MockupPlayer> players;
-
-    /**List that keeps count of the discarded cards, adds new ones everytime.*/
     private final List<Card> discards = new ArrayList<>();
-    /**Stores the era on the back of the card on top of the deck*/
     private Era deckTopEra;
-    /**Gets replaced with a new List at every line update*/
     private List<Card> upperLine;
-    /**Gets replaced with a new List at every line update*/
     private List<Card> lowerLine;
-    /**Gets replaced with a new List at every line update*/
     private List<Card> upperBuilding;
-    /**Gets replaced with a new List at every line update*/
     private List<Card> lowerBuilding;
-
     private final List<MockupOffer> offerBoard;
     private final List<MockupOrder> orderBoard;
+    private String phaseName = "Setup";
+    private String latestAction = "";
+    private String finalStandings = "";
+    private int tribeDeckRemaining;
+    private int buildingDeckRemaining;
 
-    /**[constructor] Should be initialized AFTER the real game has been initialized on the server!*/
-    public MockupGame (List<MockupPlayer> players, Era deckTopEra, List<Card> upperLine, List<Card> lowerLine
-    , List<Card> upperBuilding, List<Card> lowerBuilding, List<MockupOffer> offerBoard, List<MockupOrder> orderBoard) {
+    public MockupGame(List<MockupPlayer> players, Era deckTopEra, List<Card> upperLine, List<Card> lowerLine,
+                      List<Card> upperBuilding, List<Card> lowerBuilding, List<MockupOffer> offerBoard,
+                      List<MockupOrder> orderBoard) {
         this.players = players;
         this.deckTopEra = deckTopEra;
         this.upperLine = upperLine;
@@ -39,112 +36,161 @@ public class MockupGame implements Serializable {
         this.upperBuilding = upperBuilding;
         this.lowerBuilding = lowerBuilding;
         this.offerBoard = offerBoard;
-        for(MockupOffer offer : offerBoard) {
+        for (MockupOffer offer : offerBoard) {
             offer.setGame(this);
         }
         this.orderBoard = orderBoard;
-        for(MockupOrder order : orderBoard) {
+        for (MockupOrder order : orderBoard) {
             order.setGame(this);
         }
     }
 
-    //### setters
-    //Players
-    public void setPlayers (List<MockupPlayer> players) { this.players = players; }
-    public void setCurrentPlayerIndex (int currentPlayerIndex) {
-        players.get(this.currentPlayerIndex).setOfTurn(false);
-        this.currentPlayerIndex = currentPlayerIndex;
-        players.get(this.currentPlayerIndex).setOfTurn(true);
+    public void setPlayers(List<MockupPlayer> players) {
+        this.players = players;
     }
-    //Cardboard
+
+    public void setCurrentPlayerIndex(int currentPlayerIndex) {
+        if (this.currentPlayerIndex >= 0 && this.currentPlayerIndex < players.size()) {
+            players.get(this.currentPlayerIndex).setOfTurn(false);
+        }
+        this.currentPlayerIndex = currentPlayerIndex;
+        if (currentPlayerIndex >= 0 && currentPlayerIndex < players.size()) {
+            players.get(currentPlayerIndex).setOfTurn(true);
+        }
+    }
+
+    public void setDiscards(List<Card> discards) {
+        this.discards.clear();
+        if (discards != null) {
+            this.discards.addAll(discards);
+        }
+    }
+
     public void setDeckTopEra(Era deckTopEra) {
         this.deckTopEra = deckTopEra;
     }
+
     public void setUpperLine(List<Card> upperLine) {
         this.upperLine = upperLine;
     }
+
     public void setLowerLine(List<Card> lowerLine) {
         this.lowerLine = lowerLine;
     }
+
     public void setUpperBuilding(List<Card> upperBuilding) {
         this.upperBuilding = upperBuilding;
     }
+
     public void setLowerBuilding(List<Card> lowerBuilding) {
         this.lowerBuilding = lowerBuilding;
     }
 
-    /**
-     * Changes the player occupying an offer, can also assign null (deassign).
-     * @param offerIndex the index of the offer on the offerBoard
-     * @param playerIndex the index of the player to assign
-     */
     public void setOfferPlayerIndex(int offerIndex, Integer playerIndex) {
-        if(offerBoard.get(offerIndex) != null){
+        if (offerIndex >= 0 && offerIndex < offerBoard.size()) {
             offerBoard.get(offerIndex).setAssignedPlayerIndex(playerIndex);
         }
     }
-    /**
-     * Changes the player occupying an orderSlot, can also assign null (deassign).
-     * @param orderIndex the index of the orderSlot on the orderBoard
-     * @param playerIndex the index of the player to assign
-     */
+
     public void setOrderPlayerIndex(int orderIndex, Integer playerIndex) {
-        if(orderBoard.get(orderIndex) != null){
+        if (orderIndex >= 0 && orderIndex < orderBoard.size()) {
             orderBoard.get(orderIndex).setAssignedPlayerIndex(playerIndex);
         }
     }
 
-    //### getters
-    //Players
-    public int getCurrentPlayerIndex () {
+    public void setPhaseName(String phaseName) {
+        this.phaseName = phaseName == null ? "" : phaseName;
+    }
+
+    public void setLatestAction(String latestAction) {
+        this.latestAction = latestAction == null ? "" : latestAction;
+    }
+
+    public void setFinalStandings(String finalStandings) {
+        this.finalStandings = finalStandings == null ? "" : finalStandings;
+    }
+
+    public void setTribeDeckRemaining(int tribeDeckRemaining) {
+        this.tribeDeckRemaining = tribeDeckRemaining;
+    }
+
+    public void setBuildingDeckRemaining(int buildingDeckRemaining) {
+        this.buildingDeckRemaining = buildingDeckRemaining;
+    }
+
+    public int getCurrentPlayerIndex() {
         return currentPlayerIndex;
     }
-    public List<MockupPlayer> getPlayers () {
+
+    public List<MockupPlayer> getPlayers() {
         return Collections.unmodifiableList(players);
     }
-    public MockupPlayer getPlayer(int i) {return players.get(i);}
-    //Cardboard
+
+    public MockupPlayer getPlayer(int i) {
+        return players.get(i);
+    }
+
     public List<Card> getDiscards() {
         return Collections.unmodifiableList(discards);
     }
+
     public Era getDeckTopEra() {
         return deckTopEra;
     }
+
     public List<Card> getUpperLine() {
         return Collections.unmodifiableList(upperLine);
     }
+
     public List<Card> getLowerLine() {
         return Collections.unmodifiableList(lowerLine);
     }
+
     public List<Card> getUpperBuilding() {
         return Collections.unmodifiableList(upperBuilding);
     }
+
     public List<Card> getLowerBuilding() {
         return Collections.unmodifiableList(lowerBuilding);
     }
-    //Track
-    public List<MockupOrder> getOrderBoard () {
+
+    public List<MockupOrder> getOrderBoard() {
         return Collections.unmodifiableList(orderBoard);
     }
+
     public List<RectangleAttributedString> getOrderBoardRectangleStrings() {
-        return orderBoard
-                .stream()
-                .map(MockupOrder::getRectangleAttributedString)
-                .toList();
+        return orderBoard.stream().map(MockupOrder::getRectangleAttributedString).toList();
     }
+
     public List<MockupOffer> getOfferBoard() {
         return Collections.unmodifiableList(offerBoard);
     }
-    public List<RectangleAttributedString> getOfferBoardRectangleStrings(){
-        return offerBoard
-                .stream()
-                .map(MockupOffer::getRectangleAttributedString)
-                .toList();
+
+    public List<RectangleAttributedString> getOfferBoardRectangleStrings() {
+        return offerBoard.stream().map(MockupOffer::getRectangleAttributedString).toList();
     }
 
-    //### adders
-    //Cardboard
+    public String getPhaseName() {
+        return phaseName;
+    }
+
+    public String getLatestAction() {
+        return latestAction;
+    }
+
+    public String getFinalStandings() {
+        return finalStandings;
+    }
+
+    public int getTribeDeckRemaining() {
+        return tribeDeckRemaining;
+    }
+
+    public int getBuildingDeckRemaining() {
+        return buildingDeckRemaining;
+    }
+
     public void addDiscards(List<Card> discards) {
-        this.discards.addAll(discards);
+        setDiscards(discards);
     }
 }

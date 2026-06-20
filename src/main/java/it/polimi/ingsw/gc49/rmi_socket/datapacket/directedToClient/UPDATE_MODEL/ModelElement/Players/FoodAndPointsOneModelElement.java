@@ -15,6 +15,18 @@ public class FoodAndPointsOneModelElement extends UpdateModelElement {
         this.newPoints = newPoints;
     }
 
+    public int getPlayerIndex () {
+        return playerIndex;
+    }
+
+    public int getNewFood () {
+        return newFood;
+    }
+
+    public int getNewPoints () {
+        return newPoints;
+    }
+
     @Override
     public void updateMockupModel ( MockupGame game ) {
         game.getPlayer(playerIndex).setFood(newFood);

@@ -118,13 +118,23 @@ public class Player implements Serializable {
         return drawableLower;
     }
     public MockupPlayer giveMockupPlayer() {
-        return new MockupPlayer(
+        MockupPlayer mockupPlayer = new MockupPlayer(
                     nickname,
                     playerIndex,
                     food,
                     points,
                     totem
         );
+        mockupPlayer.setConnected(connected);
+        mockupPlayer.setDrawableUpper(drawableUpper);
+        mockupPlayer.setDrawableLower(drawableLower);
+        for (Card card : characterCards) {
+            mockupPlayer.addCharacterCard(card);
+        }
+        for (Card card : buildingCards) {
+            mockupPlayer.addBuildingCard(card);
+        }
+        return mockupPlayer;
     }
 
     // Event Management
@@ -185,5 +195,4 @@ public class Player implements Serializable {
         return choseAnOffer;
     }
 }
-
 

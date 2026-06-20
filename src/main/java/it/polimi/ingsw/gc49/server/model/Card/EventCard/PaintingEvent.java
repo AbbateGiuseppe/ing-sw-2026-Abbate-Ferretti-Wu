@@ -26,7 +26,7 @@ public class PaintingEvent extends EventCard {
     public void resolveEvent(List<Player> players) {
         for(Player player : players) {
             player.setFoodToPay(0);
-            if (player.data.getCharacterCount(CharacterType.Artist) < threshold) {
+            if (player.data.getCharacterCount(CharacterType.Artist) <= threshold) {
                 player.setPointsToPay(minusPoints);
             } else {
                 player.setPointsToPay(-plusPoints * player.data.getCharacterCount(CharacterType.Artist));
@@ -41,7 +41,7 @@ public class PaintingEvent extends EventCard {
 
         if(queueUpdater != null) {
             queueUpdater.queueUpdateModelElement(new FoodAndPointsAllModelElement(
-                    "La carta evento " + simpleToString() + " si è attivata fornendo "
+                    "La carta evento " + simpleToString() + " si e' attivata fornendo "
                             + plusPoints + " punti per artista, a chi possiede almeno " + (threshold+1) + " artisti, altrimenti -" + minusPoints,
                     FoodAndPointsAllModelElement.getNewFood(players),
                     FoodAndPointsAllModelElement.getNewPoints(players)
@@ -66,17 +66,8 @@ public class PaintingEvent extends EventCard {
 
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
-        AttributedString attributedString = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("╔═══╗")
-                .append("║")
-                .style(AttributedStyle.DEFAULT).append("│¤│")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("║")
-                .append("║")
-                .style(AttributedStyle.DEFAULT).append("└─┘")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("║")
-                .append("╚═══╝").toAttributedString();
-        int height = 4;
-        int width = 5;
-        return new RectangleAttributedString(height, width, attributedString);
+        return it.polimi.ingsw.gc49.client.view.TextCardRenderer.render(simpleToString(), era);
     }
 }
+
+

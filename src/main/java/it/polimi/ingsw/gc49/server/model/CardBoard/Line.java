@@ -69,7 +69,7 @@ public class Line implements Serializable {
 
         int buildingsToPlace = deck.getBuildingsToPlace(numPlayers, currentEra);
         for (int i = 0; i < buildingsToPlace; i++) {
-            Card building = deck.dealBuildingCard();
+            Card building = deck.dealBuildingCard(currentEra);
             if (building == null) break;
             upperBuilding.add(building);
         }
@@ -198,7 +198,7 @@ public class Line implements Serializable {
 
         int buildingsToPlace = deck.getBuildingsToPlace(numPlayers, newEra);
         for (int i = 0; i < buildingsToPlace; i++) {
-            Card building = deck.dealBuildingCard();
+            Card building = deck.dealBuildingCard(newEra);
             if (building == null) break;       // nessuna carta edificio rimasta
             upperBuilding.add(building);
         }

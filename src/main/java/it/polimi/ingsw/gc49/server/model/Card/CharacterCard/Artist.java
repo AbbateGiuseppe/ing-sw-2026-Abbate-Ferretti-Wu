@@ -33,17 +33,7 @@ public class Artist extends CharacterCard {
 
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
-        AttributedString attributedString = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("╔═══╗")
-                .append("║")
-                .style(AttributedStyle.DEFAULT).append(" A ")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
-                .append("║")
-                .style(AttributedStyle.DEFAULT).append("   ")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("║")
-                .append("╚═══╝").toAttributedString();
-        int height = 4;
-        int width = 5;
-        return new RectangleAttributedString(height, width, attributedString);
+        return it.polimi.ingsw.gc49.client.view.TextCardRenderer.render(simpleToString(), era);
     }
 }
+

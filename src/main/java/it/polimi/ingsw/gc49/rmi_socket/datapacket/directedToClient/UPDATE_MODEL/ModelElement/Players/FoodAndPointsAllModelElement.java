@@ -17,6 +17,14 @@ public class FoodAndPointsAllModelElement extends UpdateModelElement {
         this.newPoints = newPoints;
     }
 
+    public List<Integer> getNewFood () {
+        return newFood;
+    }
+
+    public List<Integer> getNewPoints () {
+        return newPoints;
+    }
+
     @Override
     public void updateMockupModel ( MockupGame game ) {
         for(int i = 0; i < newFood.size(); i++) {

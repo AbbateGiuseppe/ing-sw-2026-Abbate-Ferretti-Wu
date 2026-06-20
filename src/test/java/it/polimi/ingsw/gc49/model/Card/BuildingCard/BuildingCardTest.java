@@ -1,9 +1,15 @@
 package it.polimi.ingsw.gc49.model.Card.BuildingCard;
 
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelElement;
 import it.polimi.ingsw.gc49.server.model.*;
 import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.*;
+import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.Invention;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -186,6 +192,50 @@ class BuildingCardTest {
     }
 
     @Test
+    void characterSetCompleteFoodCardQueuesFoodAndPointsUpdateWhenTriggered() {
+        CapturingQueue queue = new CapturingQueue();
+        CharacterSetCompleteFoodCard card =
+                new CharacterSetCompleteFoodCard(BuildingEvent.DRAW_EVENT, 0, 0, Era.FIRST, 2, queue);
+        card.onDraw(player);
+
+        player.data.addCharacterCount(CharacterType.Hunter, 1);
+        player.data.addCharacterCount(CharacterType.Shaman, 1);
+        player.data.addCharacterCount(CharacterType.Inventor, 1);
+        player.data.addCharacterCount(CharacterType.Gatherer, 1);
+        player.data.addCharacterCount(CharacterType.Builder, 1);
+        player.data.addCharacterCount(CharacterType.Artist, 1);
+        card.onEventEffect();
+
+        assertEquals(5, player.getFood());
+        assertEquals(1, queue.updates.size());
+        assertInstanceOf(FoodAndPointsOneModelElement.class, queue.updates.get(0));
+        FoodAndPointsOneModelElement update = (FoodAndPointsOneModelElement) queue.updates.get(0);
+        assertEquals(player.getPlayerIndex(), update.getPlayerIndex());
+        assertEquals(5, update.getNewFood());
+        assertEquals(0, update.getNewPoints());
+    }
+
+    @Test
+    void samePairInventionsCardQueuesFoodAndPointsUpdateWhenTriggered() {
+        CapturingQueue queue = new CapturingQueue();
+        SamePairInventionsCard card =
+                new SamePairInventionsCard(BuildingEvent.DRAW_EVENT, 0, 0, Era.FIRST, 2, queue);
+        card.onDraw(player);
+
+        player.data.addInvention(Invention.CANOE);
+        player.data.addInvention(Invention.CANOE);
+        card.onEventEffect();
+
+        assertEquals(3, player.getFood());
+        assertEquals(1, queue.updates.size());
+        assertInstanceOf(FoodAndPointsOneModelElement.class, queue.updates.get(0));
+        FoodAndPointsOneModelElement update = (FoodAndPointsOneModelElement) queue.updates.get(0);
+        assertEquals(player.getPlayerIndex(), update.getPlayerIndex());
+        assertEquals(3, update.getNewFood());
+        assertEquals(0, update.getNewPoints());
+    }
+
+    @Test
     void testAddBuildingToManager() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2, null);
         card.onDraw(player);
@@ -193,5 +243,14 @@ class BuildingCardTest {
         assertDoesNotThrow(() -> {
             card.addBuildingToManager(player, eventManager);
         }, "Adding building to manager should not throw exception");
+    }
+
+    private static class CapturingQueue implements QueueUpdatable {
+        private final List<UpdateModelElement> updates = new ArrayList<>();
+
+        @Override
+        public void queueUpdateModelElement(UpdateModelElement updateModelElement) {
+            updates.add(updateModelElement);
+        }
     }
 }

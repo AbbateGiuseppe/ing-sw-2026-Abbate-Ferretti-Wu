@@ -18,8 +18,10 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 
 public class Deck implements Serializable {
+    private static final long serialVersionUID = 747542213000174168L;
 
     private final ArrayList<Card> tribeDeck;
     private final ArrayList<Card> buildingDeck;
@@ -50,7 +52,7 @@ public class Deck implements Serializable {
             return null;
         }
         // top of deck = last element
-        return tribeDeck.removeFirst();
+        return tribeDeck.remove(0);
     }
 
     // pesca la prossima carta Edificio dal mazzo
@@ -60,7 +62,41 @@ public class Deck implements Serializable {
         if (buildingDeck.isEmpty()) {
             return null;
         }
-        return buildingDeck.removeFirst();
+        return buildingDeck.remove(0);
+    }
+
+    public Card dealBuildingCard(Era era) {
+        if (era == null || buildingDeck.isEmpty()) {
+            return dealBuildingCard();
+        }
+
+        Iterator<Card> iterator = buildingDeck.iterator();
+        while (iterator.hasNext()) {
+            Card card = iterator.next();
+            Era cardEra = card.getEra();
+
+            if (cardEra.ordinal() < era.ordinal()) {
+                iterator.remove();
+                continue;
+            }
+
+            if (cardEra == era) {
+                iterator.remove();
+                return card;
+            }
+
+            return null;
+        }
+
+        return null;
+    }
+
+    public int getTribeDeckRemaining() {
+        return tribeDeck.size();
+    }
+
+    public int getBuildingDeckRemaining() {
+        return buildingDeck.size();
     }
 
 

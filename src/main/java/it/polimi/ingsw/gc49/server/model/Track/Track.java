@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Track implements Serializable {
+    private static final long serialVersionUID = -1396450182245053759L;
+
     private final List<Offer> offerBoard = new ArrayList<>();
     private final List<OrderSlot> orderBoard = new ArrayList<>();
     private int selectedOffer;
@@ -112,6 +114,33 @@ public class Track implements Serializable {
         return mockupOrders;
     }
 
+    public void restoreRemovedPlayerToOrderBoard(Player player) {
+        if (player == null || !player.isRemovedFromTrack() || isPlayerOnTrack(player)) {
+            return;
+        }
+        for (OrderSlot orderSlot : orderBoard) {
+            if (orderSlot.getAssignedPlayer() == null) {
+                orderSlot.assignPlayer(player);
+                player.setRemovedFromTrack(false);
+                return;
+            }
+        }
+    }
+
+    private boolean isPlayerOnTrack(Player player) {
+        for (OrderSlot orderSlot : orderBoard) {
+            if (orderSlot.getAssignedPlayer() == player) {
+                return true;
+            }
+        }
+        for (Offer offer : offerBoard) {
+            if (offer.getAssignedPlayer() == player) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //### logic
 
     public void randomizeStartingOrder ( List<Player> players ) {
@@ -151,7 +180,6 @@ public class Track implements Serializable {
             offerBoard.get(selectedOffer).deassignPlayer(); //deassigns.
 
             //assigns the current player to the next order slot and activates the order slot's effect.
-            while(orderBoard.get(selectedOrderSlot).getAssignedPlayer() != null) selectedOrderSlot++; //special case for skipping reconnected players sitting on the orderBoard
             orderBoard.get(selectedOrderSlot).assignPlayer(currentPlayer);
             orderBoard.get(selectedOrderSlot).effectOnOccupation();
 
@@ -217,13 +245,6 @@ public class Track implements Serializable {
             selectedOrderSlot = 0;
             incomingOrderSlot = 0;
             return null;
-        }
-    }
-
-    public void deassignCurrentOrderSlot ( Player deassignedPlayer ) {
-        if ( deassignedPlayer != null ) {
-            deassignedPlayer.setAssignedOrderSlot(null);
-            orderBoard.get(selectedOrderSlot).assignPlayer(null);
         }
     }
 }

@@ -1,8 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.Player;
@@ -10,6 +8,8 @@ import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 
 /**
  * Represents a specific type of {@link BuildingCard} that enhances the rewards of a Shamanic Ritual event.
@@ -83,24 +83,14 @@ public class DoubleShamanPointsCard extends BuildingCard{
      * Generates a visually formatted ASCII-art representation of the card for the terminal UI.
      * <p>
      * The generated drawing has a fixed height of 2 and a width of 10. It uses green styling
-     * for the borders and includes symbols to represent the endgame points (♦), food cost (♥),
-     * and the specific multiplier for shamanic ritual points (x2♦).
+     * for the borders and includes symbols to represent the endgame points (鈾?, food cost (鈾?,
+     * and the specific multiplier for shamanic ritual points (x2鈾?.
      *
      * @return a {@link RectangleAttributedString} containing the colored terminal UI graphics
      */
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
-        AttributedString attributedString = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
-                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
-                .append("    ").append(String.valueOf(foodPrice)).append("♥")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
-                .style(AttributedStyle.DEFAULT).append("x2♦    §")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝")
-                .toAttributedString();
-        int height = 2;
-        int width = 10;
-        return new RectangleAttributedString(height, width, attributedString);
+        return it.polimi.ingsw.gc49.client.view.TextCardRenderer.render(simpleToString(), era);
     }
 }
+

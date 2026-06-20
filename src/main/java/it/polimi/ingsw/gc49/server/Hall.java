@@ -25,6 +25,8 @@ import java.util.Map;
 import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveState;
 
 public class Hall implements VirtualHallServer, Serializable {
+    private static final long serialVersionUID = 3007125211622637856L;
+
     private transient ServerMultiplexer server;
     private final Map<String, Room> rooms = new HashMap<>();
     private final Map<String, PhasedProxyPlayer> PlayersInHall = new HashMap<>();
@@ -82,6 +84,7 @@ public class Hall implements VirtualHallServer, Serializable {
 
                     //broadcasts the new hall
                     broadcastMockupHall();
+                    startRoomIfReady(joiningRoom);
                 } else {
                     throw new RuntimeException("Giocatore non presente nell'atrio");
                 }
@@ -106,9 +109,16 @@ public class Hall implements VirtualHallServer, Serializable {
 
                 //broadcasts the new hall
                 broadcastMockupHall();
+                startRoomIfReady(newRoom);
             } else {
                 throw new RuntimeException("Giocatore non presente nell'atrio");
             }
+        }
+    }
+
+    private void startRoomIfReady(Room room) throws Exception {
+        if (room instanceof WaitingRoom waitingRoom) {
+            waitingRoom.startGameIfReady();
         }
     }
 
@@ -160,6 +170,13 @@ public class Hall implements VirtualHallServer, Serializable {
             //starts the new game with its own thread.
             new Thread(playingRoom::runGame).start();
         }
+    }
+
+    public void removeRoom(String roomName) throws Exception {
+        synchronized (rooms) {
+            rooms.remove(roomName);
+        }
+        broadcastMockupHall();
     }
 
     public Map<String, Room> getRooms(){return rooms;}

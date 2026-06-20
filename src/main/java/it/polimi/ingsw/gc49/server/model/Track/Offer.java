@@ -46,8 +46,7 @@ public class Offer implements Serializable {
      * Removes the assignedPlayer from the offer.
      */
     public void deassignPlayer () {
-        assignedPlayer.cleanRemainingActions();
-        assignedPlayer = null;
+        this.assignedPlayer = null;
     }
 
     /**

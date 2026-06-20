@@ -11,34 +11,15 @@ public enum Totem {
     BLACK,
     YELLOW;
 
-
-    public AttributedString getTotemAttributedString(){
+    public AttributedString getTotemAttributedString() {
         AttributedStringBuilder attributedString = new AttributedStringBuilder();
-
-        switch(this){
-            case ORANGE:
-                attributedString.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED)).append("▓")
-                        .style(AttributedStyle.DEFAULT);
-                break;
-            case WHITE:
-                attributedString.style(AttributedStyle.DEFAULT.bold().foreground(AttributedStyle.WHITE)).append("▓")
-                        .style(AttributedStyle.DEFAULT);
-                break;
-            case BLUE:
-                attributedString.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.BLUE)).append("▓")
-                        .style(AttributedStyle.DEFAULT);
-                break;
-            case BLACK:
-                attributedString.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.BLACK).background(AttributedStyle.WHITE)).append("▓")
-                        .style(AttributedStyle.DEFAULT);
-                break;
-            case YELLOW:
-                attributedString.style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW)).append("▓")
-                        .style(AttributedStyle.DEFAULT);
-                break;
-        }
-
-        return attributedString.toAttributedString();
+        AttributedStyle style = switch (this) {
+            case ORANGE -> AttributedStyle.DEFAULT.foreground(AttributedStyle.RED);
+            case WHITE -> AttributedStyle.DEFAULT.bold().foreground(AttributedStyle.WHITE);
+            case BLUE -> AttributedStyle.DEFAULT.foreground(AttributedStyle.BLUE);
+            case BLACK -> AttributedStyle.DEFAULT.foreground(AttributedStyle.BLACK).background(AttributedStyle.WHITE);
+            case YELLOW -> AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW);
+        };
+        return attributedString.style(style).append("#").style(AttributedStyle.DEFAULT).toAttributedString();
     }
-
 }

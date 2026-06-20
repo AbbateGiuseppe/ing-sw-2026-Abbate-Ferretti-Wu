@@ -55,6 +55,19 @@ class CharacterCardTest {
     }
 
     @Test
+    void testHunter_onDraw_withDrumstick_ignoresOtherCharacterCounts() {
+        player.data.addCharacterCount(CharacterType.Hunter, 2);
+        player.data.addCharacterCount(CharacterType.Artist, 4);
+        player.data.addCharacterCount(CharacterType.Builder, 3);
+        player.addFood(5);
+        Hunter hunter = new Hunter(true, Era.FIRST, 2, null);
+
+        hunter.onDraw(player);
+
+        assertEquals(7, player.getFood(), "Drumstick hunters should add food using only the hunter count");
+    }
+
+    @Test
     void testArtist_canGet_alwaysTrue() {
         Artist artist = new Artist(Era.SECOND, 3, null);
         assertTrue(artist.canGet(player), "Artist card should always be drawable");

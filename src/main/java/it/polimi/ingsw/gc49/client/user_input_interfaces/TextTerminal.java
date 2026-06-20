@@ -31,8 +31,8 @@ public class TextTerminal extends UserInputInterface {
     private static final Map<String, TerminalCommand> commands = new HashMap<>();
     private static final Map<ApplicationPhase, AttributedStringBuilder> manual = new EnumMap<>(ApplicationPhase.class);
     private static final AttributedStringBuilder legend = new AttributedStringBuilder();
-    private static final Terminal terminal = ClientApplication.terminal;
-    private static final LineReader lineReader = ClientApplication.lineReader;
+    private static final Terminal terminal = ClientApplication.terminal();
+    private static final LineReader lineReader = ClientApplication.lineReader();
     private static final ScheduledExecutorService helpScheduler = Executors.newSingleThreadScheduledExecutor();
     private static final int HELP_TIMEOUT = 10;
     private static final ScheduledExecutorService errorScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -50,7 +50,7 @@ public class TextTerminal extends UserInputInterface {
     private static final Object cursorLock = new Object();
 
     static {
-        terminal.handle(Terminal.Signal.WINCH, _ -> {
+        terminal.handle(Terminal.Signal.WINCH, signal -> {
             columns = terminal.getWidth();
             rows = terminal.getHeight();
         });
@@ -67,10 +67,10 @@ public class TextTerminal extends UserInputInterface {
 
     static {
         // Mostra la manuale di istruzioni per il gioco
-        commands.put("help", ( terminalMethods, _, _, _, _ ) -> terminalMethods.printManual());
+        commands.put("help", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> terminalMethods.printManual());
 
         //Chiude l'applicazione e si disconnette dal serviente
-        commands.put("disconnect", ( terminalMethods, _, _, _, terminalVirtualServer ) -> {
+        commands.put("disconnect", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             terminalMethods.printScroll("| Are you sure you want disconnect from the server? You'll have to restart the application to reconnect |");
             terminalMethods.printScroll("|                                     Type YES to confirm                                               |");
             if (terminalMethods.readInput().equalsIgnoreCase("yes")) {
@@ -101,7 +101,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Entrare una stanza
-        commands.put("join", ( _, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("join", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.HALL && terminalParameters.length >= 1) {
                 String roomName = terminalParameters[0];
                 // Controlla se la stanza esiste
@@ -114,7 +114,7 @@ public class TextTerminal extends UserInputInterface {
 
 
         // Uscire da una stanza
-        commands.put("leave", ( _, terminalPhase, _, _, terminalVirtualServer ) -> {
+        commands.put("leave", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.ROOM) {
                 terminalVirtualServer.leaveRoom(new RoomLeavePacket());
             }
@@ -122,7 +122,7 @@ public class TextTerminal extends UserInputInterface {
 
 
         // Mostra le carte di un giocatore dato il suo indice
-        commands.put("player", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
+        commands.put("player", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int index = Integer.parseInt(terminalParameters[0]);
@@ -140,7 +140,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Sceglie una carta
-        commands.put("draw", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("draw", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
                 if(terminalParameters.length >= 3){
                     try {
@@ -183,7 +183,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Legge una carta
-        commands.put("read", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, _ ) -> {
+        commands.put("read", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 3) {
                 try {
                     int cardIndex = Integer.parseInt(terminalParameters[2]);
@@ -209,13 +209,13 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Sceglie un totem
-        commands.put("legend", ( terminalMethods, terminalPhase, _, _, _ ) -> {
+        commands.put("legend", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME) {
                 terminalMethods.printLegend();
             }
         });
         // Sceglie una offerta
-        commands.put("offer", ( terminalMethods, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("offer", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 try {
                     int offerIndex = Integer.parseInt(terminalParameters[0]);
@@ -230,7 +230,7 @@ public class TextTerminal extends UserInputInterface {
             }
         });
         // Sceglie un totem
-        commands.put("totem", ( _, terminalPhase, _, terminalParameters, terminalVirtualServer ) -> {
+        commands.put("totem", ( terminalMethods, terminalPhase, terminalMockups, terminalParameters, terminalVirtualServer ) -> {
             if(terminalPhase == ApplicationPhase.GAME && terminalParameters.length >= 1) {
                 if (totems.containsKey(terminalParameters[0].toLowerCase())) {
                     Totem totem = totems.get(terminalParameters[0].toLowerCase());
@@ -453,7 +453,7 @@ public class TextTerminal extends UserInputInterface {
     private void printRectangleString( RectangleAttributedString rectangleAttributedString ){
         synchronized (cursorLock) {
 
-            Cursor cursor = terminal.getCursorPosition(_ -> {});
+            Cursor cursor = terminal.getCursorPosition(ignored -> {});
             int initialY = cursor.getY();
             int initialX = cursor.getX();
             int height = rectangleAttributedString.height;
@@ -569,7 +569,7 @@ public class TextTerminal extends UserInputInterface {
                     .append(currentPhase.toString());
 
             //Save cursor
-            Cursor cursor = terminal.getCursorPosition(_ -> {});
+            Cursor cursor = terminal.getCursorPosition(ignored -> {});
             int initialY = cursor.getY();
             int initialX = cursor.getX();
             //Print
@@ -583,7 +583,7 @@ public class TextTerminal extends UserInputInterface {
 
     private void cleanShowbox() {
         //Save cursor
-        Cursor cursor = terminal.getCursorPosition(_ -> {});
+        Cursor cursor = terminal.getCursorPosition(ignored -> {});
         int initialY = cursor.getY();
         int initialX = cursor.getX();
 
@@ -643,7 +643,7 @@ public class TextTerminal extends UserInputInterface {
     private void printGame() {
         synchronized (cursorLock) {
             MockupGame mockupGame = mockups.getGame();
-            Cursor cursor = terminal.getCursorPosition(_ -> {});
+            Cursor cursor = terminal.getCursorPosition(ignored -> {});
             int startingCursorY = cursor.getY();
             int startingCursorX = cursor.getX();
             int cursorY;

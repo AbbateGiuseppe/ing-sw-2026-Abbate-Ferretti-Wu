@@ -8,6 +8,7 @@ import org.jline.utils.AttributedStyle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MockupPlayer implements Serializable {
@@ -21,153 +22,138 @@ public class MockupPlayer implements Serializable {
     private final List<Card> buildingCards;
     private int drawableUpper;
     private int drawableLower;
-
-    /** set by the mockupGame at every change, it's used to highlight to the user this player if it's of turn*/
     private boolean ofTurn = false;
 
-    /**
-     *
-     * @param nickname the player's nickname;
-     * @param playerIndex this player index in the model's array of players;
-     */
-    public MockupPlayer ( String nickname, int playerIndex, int food, int points, Totem totem ) {
+    public MockupPlayer(String nickname, int playerIndex, int food, int points, Totem totem) {
         this.nickname = nickname;
         this.playerIndex = playerIndex;
-
         this.food = food;
         this.points = points;
         this.totem = totem;
-        characterCards = new ArrayList<>();
-        buildingCards = new ArrayList<>();
-
-        connected = true;
-
-        drawableUpper = 0;
-        drawableLower = 0;
+        this.characterCards = new ArrayList<>();
+        this.buildingCards = new ArrayList<>();
+        this.connected = true;
+        this.drawableUpper = 0;
+        this.drawableLower = 0;
     }
 
-    //### setters
-    public void setFood (int food) {
+    public void setFood(int food) {
         this.food = food;
     }
-    public void setPoints (int points) {
+
+    public void setPoints(int points) {
         this.points = points;
     }
-    public void setDrawableUpper (int drawableUpper) {
+
+    public void setDrawableUpper(int drawableUpper) {
         this.drawableUpper = drawableUpper;
     }
-    public void setDrawableLower (int drawableLower) {
+
+    public void setDrawableLower(int drawableLower) {
         this.drawableLower = drawableLower;
     }
-    public void setTotem (Totem totem) {
+
+    public void setTotem(Totem totem) {
         this.totem = totem;
     }
-    public void setConnected (boolean connected) {
+
+    public void setConnected(boolean connected) {
         this.connected = connected;
     }
 
-    //### getters
-    public String getNickname () {
+    public void setOfTurn(boolean ofTurn) {
+        this.ofTurn = ofTurn;
+    }
+
+    public String getNickname() {
         return nickname;
     }
-    public int getPlayerIndex () {
+
+    public int getPlayerIndex() {
         return playerIndex;
     }
+
     public Totem getTotem() {
         return totem;
     }
-    public int getFood () {
+
+    public int getFood() {
         return food;
     }
-    public int getPoints () {
+
+    public int getPoints() {
         return points;
     }
-    public int getDrawableUpper () {
+
+    public int getDrawableUpper() {
         return drawableUpper;
     }
-    public int getDrawableLower () {
+
+    public int getDrawableLower() {
         return drawableLower;
     }
-    public boolean isConnected () {
+
+    public boolean isConnected() {
         return connected;
     }
-    public boolean isOfTurn () {
+
+    public boolean isOfTurn() {
         return ofTurn;
     }
 
-    //### adders
-    public void addCharacterCard ( Card card ) {
+    public List<Card> getCharacterCards() {
+        return Collections.unmodifiableList(characterCards);
+    }
+
+    public List<Card> getBuildingCards() {
+        return Collections.unmodifiableList(buildingCards);
+    }
+
+    public void addCharacterCard(Card card) {
         characterCards.add(card);
     }
-    public void addBuildingCard ( Card card ) {
+
+    public void addBuildingCard(Card card) {
         buildingCards.add(card);
     }
 
-    public AttributedString AllToAttributedString () {
+    public AttributedString AllToAttributedString() {
         AttributedStringBuilder stringBuilder = new AttributedStringBuilder();
-        if(!characterCards.isEmpty() || !buildingCards.isEmpty()) {
+        if (!characterCards.isEmpty() || !buildingCards.isEmpty()) {
             stringBuilder.append(nickname).append(": \n");
-
-            // Guarda toString() delle carte
-            for (Card c : characterCards) {
-                stringBuilder.append(c.toString());
+            for (Card card : characterCards) {
+                stringBuilder.append(card.toString()).append("\n");
             }
-
-            for (Card c : buildingCards) {
-                stringBuilder.append(c.toString());
+            for (Card card : buildingCards) {
+                stringBuilder.append(card.toString()).append("\n");
             }
-        }else{
+        } else {
             stringBuilder.append(nickname).append(" has no cards.");
         }
         return stringBuilder.toAttributedString();
     }
-    public AttributedString displayAttributedStringName() {
-        if(totem != null) {
-            if(ofTurn){
-                return new AttributedStringBuilder().append(totem.getTotemAttributedString())
-                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED))
-                        .append(nickname).style(AttributedStyle.DEFAULT)
-                        .append("]")
-                        .toAttributedString();
-            } else if (connected){
-                return new AttributedStringBuilder().append(totem.getTotemAttributedString())
-                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
-                        .append(nickname).style(AttributedStyle.DEFAULT)
-                        .append("]")
-                        .toAttributedString();
-            } else {
-                return new AttributedStringBuilder().append(totem.getTotemAttributedString())
-                        .append("[").style(AttributedStyle.BOLD.foreground(AttributedStyle.BLACK))
-                        .append(nickname).style(AttributedStyle.DEFAULT)
-                        .append("]")
-                        .toAttributedString();
-            }
-        }else{
-            if(ofTurn){
-                return new AttributedStringBuilder().append("░")
-                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.RED))
-                        .append(nickname).style(AttributedStyle.DEFAULT)
-                        .append("]")
-                        .toAttributedString();
-            } else if (connected) {
-                return new AttributedStringBuilder().append("░")
-                        .append("[").style(AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW))
-                        .append(nickname).style(AttributedStyle.DEFAULT)
-                        .append("]")
-                        .toAttributedString();
-            } else {
-                return new AttributedStringBuilder().append("░")
-                        .append("[").style(AttributedStyle.BOLD.foreground(AttributedStyle.BLACK))
-                        .append(nickname).style(AttributedStyle.DEFAULT)
-                        .append("]")
-                        .toAttributedString();
-            }
 
+    public AttributedString displayAttributedStringName() {
+        AttributedStringBuilder builder = new AttributedStringBuilder();
+        if (totem != null) {
+            builder.append(totem.getTotemAttributedString());
+        } else {
+            builder.append("#");
         }
+        builder.append("[")
+                .style(AttributedStyle.DEFAULT.foreground(ofTurn ? AttributedStyle.RED : AttributedStyle.YELLOW))
+                .append(nickname)
+                .style(AttributedStyle.DEFAULT)
+                .append("]");
+        return builder.toAttributedString();
     }
+
     public AttributedString displayAttributedStringStats() {
         return new AttributedStringBuilder()
-                .append(String.valueOf(food)).append("♥/").append(String.valueOf(points)).append("♦")
+                .append(String.valueOf(food))
+                .append(" food ")
+                .append(String.valueOf(points))
+                .append(" pts")
                 .toAttributedString();
     }
 
@@ -176,9 +162,5 @@ public class MockupPlayer implements Serializable {
         return playerIndex + ": " + nickname +
                 " (food=" + food +
                 ", points=" + points + ")";
-    }
-
-    public void setOfTurn ( boolean ofTurn ) {
-        this.ofTurn = ofTurn;
     }
 }

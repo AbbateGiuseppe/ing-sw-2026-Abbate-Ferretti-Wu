@@ -65,7 +65,9 @@ public class SocketProxyServer extends PhasedProxyServer {
                 }
             }
         } catch (SocketException e) {
-            throw new SocketException(e);
+            SocketException socketException = new SocketException(e.getMessage());
+            socketException.initCause(e);
+            throw socketException;
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {

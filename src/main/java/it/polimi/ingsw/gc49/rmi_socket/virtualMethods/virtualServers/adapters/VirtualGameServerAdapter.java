@@ -10,10 +10,12 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.HALL_phase.HA
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.HALL_phase.HALL_COMMAND.JOIN.HallJoinPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.ROOM_phase.ROOM_COMMAND.LEAVE.RoomLeavePacket;
 import it.polimi.ingsw.gc49.server.proxies.PhasedProxyPlayer;
+import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.rooms.PlayingRoom;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
 
+import static it.polimi.ingsw.gc49.server.model.Locks.broadcastLock;
 import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveStateAsync;
 
 public class VirtualGameServerAdapter extends VirtualServerAdapter {
@@ -51,9 +53,14 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
     public void syncPlayer(PhasedProxyPlayer proxy) throws Exception {
 
         PlayingRoom playingRoom = (PlayingRoom) adaptee;
-        proxy.initializeClientRoom( new InitializeRoomPacket(playingRoom.giveMockupRoom()) );
-        MockupGame gameSnapshot = playingRoom.getGame().giveMockupGame();
-        proxy.initializeClientModel( new InitializeModelPacket(gameSnapshot) );
+        synchronized (Locks.playerInput) {
+            synchronized (broadcastLock) {
+                proxy.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
+                proxy.initializeClientRoom(new InitializeRoomPacket(playingRoom.giveMockupRoom()));
+                MockupGame gameSnapshot = playingRoom.getGame().giveMockupGame();
+                proxy.initializeClientModel(new InitializeModelPacket(gameSnapshot));
+            }
+        }
 
         System.out.println("[GAME-SYNC] Synchronizing Completed " + proxy.nickname);
     }

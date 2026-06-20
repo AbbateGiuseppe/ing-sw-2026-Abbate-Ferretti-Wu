@@ -36,7 +36,7 @@ public class RitualEvent extends EventCard {
 
         // If there is only one winner then set the flag to true for effect num 7
         if(winners.size() == 1) {
-             winners.getFirst().setUniqueWinner(true);
+             winners.get(0).setUniqueWinner(true);
         }
 
         // Effect num 3 and 7
@@ -48,7 +48,7 @@ public class RitualEvent extends EventCard {
 
         if(queueUpdater != null) {
             queueUpdater.queueUpdateModelElement(new FoodAndPointsAllModelElement(
-                    "La carta evento " + simpleToString() + " si è attivata fornendo "
+                    "La carta evento " + simpleToString() + " si e' attivata fornendo "
                             + plusPoints + " punti al primario di stelle, -" + minusPoints + " all'ultimo",
                     FoodAndPointsAllModelElement.getNewFood(players),
                     FoodAndPointsAllModelElement.getNewPoints(players)
@@ -94,17 +94,7 @@ public class RitualEvent extends EventCard {
 
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
-        AttributedString attributedString = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("╔═══╗")
-                .append("║")
-                .style(AttributedStyle.DEFAULT).append("│§│")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("║")
-                .append("║")
-                .style(AttributedStyle.DEFAULT).append("└─┘")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.MAGENTA)).append("║")
-                .append("╚═══╝").toAttributedString();
-        int height = 4;
-        int width = 5;
-        return new RectangleAttributedString(height, width, attributedString);
+        return it.polimi.ingsw.gc49.client.view.TextCardRenderer.render(simpleToString(), era);
     }
 }
+

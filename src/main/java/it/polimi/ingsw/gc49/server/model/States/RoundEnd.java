@@ -2,12 +2,12 @@ package it.polimi.ingsw.gc49.server.model.States;
 
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.FullCardboardModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
-import it.polimi.ingsw.gc49.server.model.Locks;
 
 public class RoundEnd extends State {
-    public RoundEnd ( Game game, Locks locks ) { super(game, States.OTHER, locks); }
+    public RoundEnd ( Game game ) { super(game, States.OTHER); }
 
     public State executeState () {
+        game.setPhaseStatus("Round End");
         try {
             game.getCardBoard().endRound();
             game.queueUpdateModelElement(
@@ -21,11 +21,12 @@ public class RoundEnd extends State {
                             game.getCardBoard().getLine().getLowerBuilding()
                     )
             );
+            game.queueStatusUpdate("");
         } catch (EraEndedException e) {
-            return new EraEnd(game, locks); //goes to EraEnd.
+            return new EraEnd(game); //goes to EraEnd.
         }
 
-        return new OfferChoosing(game, locks); //goes to OfferChoosing.
+        return new OfferChoosing(game); //goes to OfferChoosing.
     }
 
     @Override

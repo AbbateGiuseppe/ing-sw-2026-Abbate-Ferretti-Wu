@@ -78,7 +78,9 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
                 }
             }
         } catch (SocketException e) {
-            throw new SocketException(e);
+            SocketException socketException = new SocketException(e.getMessage());
+            socketException.initCause(e);
+            throw socketException;
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -136,8 +138,15 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     //### VirtualGameServer
     @Override
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
-        //executes the command on the controller
-        controller.executeCommand(commandPacket);
+        if (isRoomLevelGameCommand(commandPacket.getAction())) {
+            serverSide.sendCommand(commandPacket);
+        } else if (controller != null) {
+            controller.executeCommand(commandPacket);
+        }
+    }
+
+    private boolean isRoomLevelGameCommand(PlayerActionEnum action) {
+        return action == PlayerActionEnum.NEW_GAME || action == PlayerActionEnum.RETURN_TO_HALL;
     }
 
     //### VirtualHallClient
@@ -208,11 +217,10 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         clientSide = newClientSide;
         input = newInput;
         output = newOutput;
+        markConnected();
         if (controller != null) {
             controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
         }
-        changeLocalPhase(ApplicationPhase.GAME);
-        changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
         serverSide.syncPlayer(this);
     }
 

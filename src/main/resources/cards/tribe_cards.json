@@ -535,26 +535,26 @@
     {
     "type": "HuntingEvent",
     "era": "FIRST",
-    "minNumPlayers": 3,
+    "minNumPlayers": 2,
     "pointsPerHunter": 1
     },
     {
     "type": "HuntingEvent",
     "era": "SECOND",
-    "minNumPlayers": 3,
+    "minNumPlayers": 2,
     "pointsPerHunter": 2
     },
     {
     "type": "HuntingEvent",
     "era": "THIRD",
-    "minNumPlayers": 3,
+    "minNumPlayers": 2,
     "pointsPerHunter": 3
     },
     {
     "type": "PaintingEvent",
     "era": "FIRST",
     "minNumPlayers": 2,
-    "threshold": 1,
+    "threshold": 0,
     "plusPoints": 1,
     "minusPoints": 2
     },
@@ -562,7 +562,7 @@
     "type": "PaintingEvent",
     "era": "SECOND",
     "minNumPlayers": 2,
-    "threshold": 2,
+    "threshold": 1,
     "plusPoints": 2,
     "minusPoints": 2
     },
@@ -570,7 +570,7 @@
     "type": "PaintingEvent",
     "era": "THIRD",
     "minNumPlayers": 2,
-    "threshold": 3,
+    "threshold": 2,
     "plusPoints": 3,
     "minusPoints": 2
     }

@@ -30,6 +30,8 @@ import java.util.concurrent.TimeUnit;
 import static it.polimi.ingsw.gc49.client.view.mockupHall.MockupRoom.RoomType.PLAYING;
 
 public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer, Heartbeatable, Serializable {
+    private static final long serialVersionUID = 3305693863268735459L;
+
     protected transient ServerMultiplexer server;
     public final String nickname;
     protected ApplicationPhase currentPhase;
@@ -94,10 +96,16 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
         return connected;
     }
 
+    public void markConnected() {
+        connected = true;
+        lastCheckIn = System.currentTimeMillis();
+    }
+
     ///----------------------------------
     // HEARTBEAT
     @Override
     public void startHeartbeating() {
+        markConnected();
         // sending heartbeat for each interval
         if (this.scheduler == null || this.scheduler.isShutdown()) {
             this.scheduler = Executors.newScheduledThreadPool(1);
@@ -172,7 +180,6 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
         if (controller != null) {
             controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
         }
-        changeLocalPhase(ApplicationPhase.GAME);
         serverSide.syncPlayer(this);
     }
 

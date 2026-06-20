@@ -54,6 +54,7 @@ public class VirtualRoomServerAdapter extends VirtualServerAdapter {
         proxy.initializeClientRoom( new InitializeRoomPacket(waitingRoom.giveMockupRoom()) );
 
         System.out.println("[REJOIN] Sync completed for " + proxy.nickname);
+        waitingRoom.startGameIfReady();
     }
 
 }

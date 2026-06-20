@@ -8,6 +8,8 @@ public enum PlayerActionEnum {
     DRAW_LOWER_BUILDING,
     CHOOSE_OFFER,
     PASS_TURN,
+    NEW_GAME,
+    RETURN_TO_HALL,
     DISCONNECT,
     CONNECT
 }

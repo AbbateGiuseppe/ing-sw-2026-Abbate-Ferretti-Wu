@@ -1,14 +1,14 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 
 /**
  * Represents a specific type of {@link BuildingCard} that grants immunity during Shamanic events.
@@ -71,11 +71,11 @@ public class ShamanicImmunityCard extends BuildingCard {
     /**
      * Provides a localized, concise name for this specific building card.
      *
-     * @return a simple one-line {@link String} ("EDIFICIO (immunità sciamanica)")
+     * @return a simple one-line {@link String} ("EDIFICIO (immunit脿 sciamanica)")
      */
     @Override
     public String simpleToString () {
-        return "EDIFICIO (immunità sciamanica)";
+        return "EDIFICIO (immunit脿 sciamanica)";
     }
 
 
@@ -83,24 +83,14 @@ public class ShamanicImmunityCard extends BuildingCard {
      * Generates a visually formatted ASCII-art representation of the card for the terminal UI.
      * <p>
      * The generated drawing has a fixed height of 2 and a width of 10. It uses green styling
-     * for the borders and includes symbols to represent the endgame points (♦), food cost (♥),
-     * and the specific tag ("imm.") indicating immunity for the shamanic event (§).
+     * for the borders and includes symbols to represent the endgame points (鈾?, food cost (鈾?,
+     * and the specific tag ("imm.") indicating immunity for the shamanic event (搂).
      *
      * @return a {@link RectangleAttributedString} containing the colored terminal UI graphics
      */
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
-        AttributedString attributedString = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
-                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
-                .append("    ").append(String.valueOf(foodPrice)).append("♥")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
-                .style(AttributedStyle.DEFAULT).append("imm.   §")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝")
-                .toAttributedString();
-        int height = 2;
-        int width = 10;
-        return new RectangleAttributedString(height, width, attributedString);
+        return it.polimi.ingsw.gc49.client.view.TextCardRenderer.render(simpleToString(), era);
     }
 }
+

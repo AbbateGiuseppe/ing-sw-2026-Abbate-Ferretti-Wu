@@ -12,35 +12,34 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualRoomServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualRoomServerAdapter;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveState;
-
 public class WaitingRoom extends Room implements VirtualRoomServer {
-    private static final int TIME_BEFORE_GAME_START = 10;
+    private static final long serialVersionUID = 500718342815703961L;
 
-    private transient final ScheduledExecutorService startingGameScheduler = Executors.newSingleThreadScheduledExecutor();
+    private transient boolean gameStartRequested;
 
     public WaitingRoom ( ServerMultiplexer server, Hall hall, String roomName, int maxNumOfPlayers ) {
         super(server, hall, roomName, maxNumOfPlayers);
     }
 
-
-    private void scheduleGameStart() {
-        try {
-            startingGameScheduler.schedule(() -> {
-                try {
-                    startGame();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }, TIME_BEFORE_GAME_START, TimeUnit.SECONDS);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+    public void startGameIfReady() throws Exception {
+        synchronized (this) {
+            if(maxNumOfPlayers != getNumConnectedPlayers() || !allPlayersConnected() || gameStartRequested){
+                return;
+            }
+            gameStartRequested = true;
         }
+        startGame();
     }
+
+    private boolean allPlayersConnected() {
+        for (PhasedProxyPlayer player : players) {
+            if (!player.isConnected()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void startGame() throws Exception {
         if(maxNumOfPlayers == getNumConnectedPlayers()){
             System.out.println("La partita nella stanza " + roomName + " sta iniziando...");
@@ -76,11 +75,6 @@ public class WaitingRoom extends Room implements VirtualRoomServer {
 
                 //broadcasts the new room
                 broadcastMockupRoom();
-
-                //starts the countdown to game start if the number of necessary players was reached
-                if (maxNumOfPlayers == getNumConnectedPlayers()) {
-                    scheduleGameStart();
-                }
             } catch (Exception e) {
                 newPlayer.forceDisconnect();
             }

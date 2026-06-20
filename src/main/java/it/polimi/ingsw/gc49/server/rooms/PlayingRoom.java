@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc49.server.rooms;
 
 import it.polimi.ingsw.gc49.client.view.mockupHall.MockupRoom;
 import it.polimi.ingsw.gc49.server.controller.MassiWuPeppeController;
+import it.polimi.ingsw.gc49.server.controller.PlayerActionEnum;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.CHANGE_PHASE.ChangePhasePacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.ANY_phase.DISCONNECT.DisconnectPacket;
@@ -13,10 +14,16 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGameServer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualGameServerAdapter;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlayingRoom extends Room implements VirtualGameServer {
+    private static final long serialVersionUID = -4833767047061904076L;
+
     private Game game;
+    private transient boolean gameEnded;
+    private transient boolean transitionInProgress;
 
     @SuppressWarnings("unused")
     public PlayingRoom ( ServerMultiplexer server, Hall hall, String roomName, int maxNumOfPlayers ) {
@@ -48,12 +55,41 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     }
 
     public void runGame() {
+        gameEnded = false;
         game.gameLoop();
+        gameEnded = true;
         System.out.println("La partita nella stanza " + roomName + " è conclusa.");
     }
 
     public Game getGame() {
         return game;
+    }
+
+    public synchronized void restoreTransientGameLinks() {
+        if (game == null) {
+            return;
+        }
+
+        clearControllerListeners();
+        int playerIndex = 0;
+        for (PhasedProxyPlayer player : players) {
+            MassiWuPeppeController controller = new MassiWuPeppeController(playerIndex, player);
+            controller.connectModel(game);
+            player.setController(controller);
+            player.setServerSideObject(new VirtualGameServerAdapter(this));
+            playerIndex++;
+        }
+    }
+
+    private void clearControllerListeners() {
+        try {
+            Field field = Game.class.getDeclaredField("controllersListeners");
+            field.setAccessible(true);
+            List<?> listeners = (List<?>) field.get(game);
+            listeners.clear();
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Cannot restore recovered game controllers", e);
+        }
     }
 
     //### Room's methods
@@ -85,7 +121,43 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     //### client's commands
     @Override
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
-        //already directed by controller.
+        PlayerActionEnum action = commandPacket.getAction();
+        if (action == PlayerActionEnum.NEW_GAME) {
+            startNewGame();
+        } else if (action == PlayerActionEnum.RETURN_TO_HALL) {
+            returnPlayersToHall();
+        }
+    }
+
+    private synchronized void startNewGame() throws Exception {
+        if (!gameEnded || transitionInProgress) {
+            return;
+        }
+        transitionInProgress = true;
+        try {
+            createGame();
+            new Thread(this::runGame).start();
+        } finally {
+            transitionInProgress = false;
+        }
+    }
+
+    private synchronized void returnPlayersToHall() throws Exception {
+        if (!gameEnded || transitionInProgress) {
+            return;
+        }
+        transitionInProgress = true;
+        try {
+            List<PhasedProxyPlayer> returningPlayers = new ArrayList<>(players);
+            players.clear();
+            hall.removeRoom(roomName);
+            for (PhasedProxyPlayer player : returningPlayers) {
+                player.setController(null);
+                hall.enterPlayer(player);
+            }
+        } finally {
+            transitionInProgress = false;
+        }
     }
 
     ///----------------------

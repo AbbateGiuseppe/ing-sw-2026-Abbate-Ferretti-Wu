@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.model.CardBoard;
 
 import it.polimi.ingsw.gc49.server.model.Card.Card;
+import it.polimi.ingsw.gc49.server.model.Card.EventCard.HuntingEvent;
 import it.polimi.ingsw.gc49.server.model.CardBoard.Deck;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.Game;
@@ -8,7 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,6 +53,16 @@ class DeckTest {
         // Il building deck potrebbe essere null se createBuildingCardFromJson ritorna null
         // Questo test verifica solo che il metodo non sollevi eccezioni
         assertTrue(card == null || card instanceof Card, "Should return a Card or null");
+    }
+
+    @Test
+    void testDealBuildingCardForEra_skipsPreviousEraBuildings() {
+        deck.dealBuildingCard(Era.FIRST);
+
+        Card card = deck.dealBuildingCard(Era.SECOND);
+
+        assertNotNull(card, "Deck should contain second-era buildings");
+        assertEquals(Era.SECOND, card.getEra(), "Requested second-era buildings must not deal leftover first-era cards");
     }
 
     @Test
@@ -131,6 +144,27 @@ class DeckTest {
         Game game5 = new Game(5, nicknames, "testGame");
         Deck deck5 = new Deck(game5);
         assertNotNull(deck5.dealTribeCard());
+    }
+
+    @Test
+    void testTwoPlayerDeckIncludesHuntingEventsForAllEras() {
+        List<String> nicknames = new ArrayList<>();
+        nicknames.add("Player1");
+        nicknames.add("Player2");
+        Game game2 = new Game(2, nicknames, "testGame");
+        Deck deck2 = new Deck(game2);
+        Set<Era> huntingEventEras = new HashSet<>();
+
+        Card card;
+        while ((card = deck2.dealTribeCard()) != null) {
+            if (card instanceof HuntingEvent) {
+                huntingEventEras.add(card.getEra());
+            }
+        }
+
+        assertTrue(huntingEventEras.contains(Era.FIRST), "Two-player deck should include first-era hunting event");
+        assertTrue(huntingEventEras.contains(Era.SECOND), "Two-player deck should include second-era hunting event");
+        assertTrue(huntingEventEras.contains(Era.THIRD), "Two-player deck should include third-era hunting event");
     }
 
     @Test

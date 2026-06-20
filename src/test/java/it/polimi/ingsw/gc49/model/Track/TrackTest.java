@@ -47,4 +47,18 @@ class TrackTest {
         assertNotNull(track.getNextPlayerOrderSlot());
         assertNull(track.getNextPlayerOrderSlot());
     }
+
+    @Test
+    void deassignCurrentOfferAppliesOrderSlotFoodGain() {
+        Player player = new Player("tizio", 0);
+        Track track = new Track(2);
+
+        track.assignOffer(player, 0);
+        track.getNextPlayerOfferAndActivate();
+        track.deassignCurrentOffer();
+
+        assertEquals(1, player.getFood());
+        assertSame(player, track.getOrderBoard().get(0).getAssignedPlayer());
+        assertSame(track.getOrderBoard().get(0), player.getAssignedOrderSlot());
+    }
 }

@@ -1,11 +1,11 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
@@ -86,24 +86,14 @@ public class BonusPaintingCard extends BuildingCard {
      * Generates a visually formatted ASCII-art representation of the card for the terminal UI.
      * <p>
      * The generated drawing has a fixed height of 2 and a width of 10. It uses green styling
-     * for the borders and includes symbols to represent the endgame points (♦), food cost (♥),
-     * and the specific artist multiplier effect (♥xA).
+     * for the borders and includes symbols to represent the endgame points (鈾?, food cost (鈾?,
+     * and the specific artist multiplier effect (鈾A).
      *
      * @return a {@link RectangleAttributedString} containing the colored terminal UI graphics
      */
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
-        AttributedString attributedString = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
-                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
-                .append("    ").append(String.valueOf(foodPrice)).append("♥")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
-                .style(AttributedStyle.DEFAULT).append("♥xA    ¤")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝")
-                .toAttributedString();
-        int height = 2;
-        int width = 10;
-        return new RectangleAttributedString(height, width, attributedString);
+        return it.polimi.ingsw.gc49.client.view.TextCardRenderer.render(simpleToString(), era);
     }
 }
+

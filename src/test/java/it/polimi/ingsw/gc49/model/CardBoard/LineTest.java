@@ -143,7 +143,7 @@ class LineTest {
                 line.endRound(3);
                 roundCount++;
             }
-        } catch (EraEndedException _) {
+        } catch (EraEndedException ignored) {
         }
 
         if (line.hasEraChanged()) {
@@ -209,7 +209,7 @@ class LineTest {
             while (!line.hasEraChanged()) {
                 line.endRound(3);
             }
-        } catch (EraEndedException _) {
+        } catch (EraEndedException ignored) {
         }
 
         Era newEra = line.getNewEra();
@@ -217,6 +217,31 @@ class LineTest {
 
         // Dopo endEra, l'era corrente dovrebbe essere aggiornata
         assertFalse(line.hasEraChanged(), "Era change flag should be cleared after endEra");
+    }
+
+    @Test
+    void testEndEraDealsBuildingsFromNewEra() throws Exception {
+        int maxRounds = 100;
+
+        while (!line.hasEraChanged() && maxRounds-- > 0) {
+            try {
+                line.endRound(3);
+            } catch (EraEndedException ignored) {
+                break;
+            }
+        }
+
+        assertTrue(line.hasEraChanged(), "Test setup should reach a new era");
+        Era newEra = line.getNewEra();
+
+        line.endEra();
+
+        List<Card> upperBuildings = line.getUpperBuilding();
+        assertFalse(upperBuildings.isEmpty(), "New era should add building cards to the upper row");
+        assertTrue(
+                upperBuildings.stream().allMatch(card -> newEra.equals(card.getEra())),
+                "Buildings added after an era change must belong to the new era"
+        );
     }
 
     @Test

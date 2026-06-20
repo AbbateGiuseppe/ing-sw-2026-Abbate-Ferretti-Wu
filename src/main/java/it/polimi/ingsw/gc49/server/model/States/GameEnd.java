@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Game;
-import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;
 
 import java.util.Comparator;
@@ -14,9 +13,29 @@ public class GameEnd extends State {
     private static final int NUMBER_OF_ARTISTS_FOR_POINTS = 2;
     private static final int POINTS_PER_NUMBER_OF_ARTISTS = 10;
 
-    public GameEnd ( Game game, Locks locks ) { super(game, States.OTHER, locks);}
+    public GameEnd ( Game game ) { super(game, States.OTHER);}
 
     public State executeState () {
+        game.setPhaseStatus("Game End");
+        if (game.hasForcedWinner()) {
+            Player winner = game.getForcedWinner();
+            List<Player> players = game.getPlayers();
+            String standingsMessage = "1." + winner.getNickname() + "(victory by disconnection timeout), ";
+            game.setFinalStandings(standingsMessage);
+            game.queueUpdateModelElement(
+                    new FoodAndPointsAllModelElement(
+                            "Classifica: " + standingsMessage,
+                            FoodAndPointsAllModelElement.getNewFood(players),
+                            FoodAndPointsAllModelElement.getNewPoints(players)
+                    )
+            );
+            game.queueUpdateModelElement(
+                    new TextModelElement("HA VINTO " + winner.getNickname() + "!!!")
+            );
+            game.queueStatusUpdate("");
+            return null;
+        }
+
         //solving the last events
         game.getCardBoard().endGame();
 
@@ -43,6 +62,7 @@ public class GameEnd extends State {
         for(int i=0; i<standings.size(); i++){
             standingsMessage.append(i+1).append(".").append(standings.get(i).getNickname()).append("(").append(standings.get(i).getPoints()).append("), ");
         }
+        game.setFinalStandings(standingsMessage.toString());
         game.queueUpdateModelElement(
                 new FoodAndPointsAllModelElement(
                         "Classifica: " + standingsMessage,
@@ -52,10 +72,11 @@ public class GameEnd extends State {
         );
 
         //send the winner
-        String winner = standings.getFirst().getNickname();
+        String winner = standings.get(0).getNickname();
         game.queueUpdateModelElement(
                 new TextModelElement("HA VINTO " + winner + "!!!")
         );
+        game.queueStatusUpdate("");
 
         return null;
     }

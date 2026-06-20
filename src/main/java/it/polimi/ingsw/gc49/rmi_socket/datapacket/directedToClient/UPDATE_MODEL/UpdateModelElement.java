@@ -11,5 +11,9 @@ public abstract class UpdateModelElement implements Serializable {
         this.actionInfo = actionInfo;
     }
 
+    public String getActionInfo () {
+        return actionInfo;
+    }
+
     public abstract void updateMockupModel ( MockupGame game );
 }

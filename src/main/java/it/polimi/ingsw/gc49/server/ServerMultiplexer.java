@@ -14,6 +14,7 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualServ
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.adapters.VirtualHallServerAdapter;
 import it.polimi.ingsw.gc49.server.rooms.PlayingRoom;
 import it.polimi.ingsw.gc49.server.rooms.Room;
+import it.polimi.ingsw.gc49.server.rooms.WaitingRoom;
 
 import java.io.*;
 import java.net.*;
@@ -21,6 +22,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -116,6 +118,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                         clientStub
                 );
                 System.out.println(proxy.nickname + " is connected");
+                proxy.markConnected();
                 clients.put(nickname, proxy); //store the player in the clients-list.
                 hall.enterPlayer(proxy); //enter the player into the hall
 
@@ -171,6 +174,7 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                             socketInput, socketOutput
                     );
                     System.out.println(proxy.nickname + " is connected");
+                    proxy.markConnected();
 
                     proxy.sendString(new StringPacket("Connected Successfully."));
 
@@ -222,6 +226,9 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
+        synchronized (clients) {
+            clients.remove(disconnectPacket.getSenderNickname());
+        }
     }
 
     //salvataggio stati
@@ -259,15 +266,18 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
 
             // 3. Rianimiamo le Partite usando la Map<String, Room>
             Map<String, Room> roomsMap = hall.getRooms(); // La tua Map<String, Room>
-            for (Room room : roomsMap.values()) {
+            for (Room room : new ArrayList<>(roomsMap.values())) {
                 // Iniettiamo il nuovo server in ogni stanza (era transient)
                 room.setServer(newServer);
 
                 if (room instanceof PlayingRoom) {
                     PlayingRoom pRoom = (PlayingRoom) room;
+                    pRoom.restoreTransientGameLinks();
                     // Facciamo ripartire il gameLoop() in un nuovo thread
                     new Thread(pRoom::runGame).start();
                     System.out.println("[RECOVERY] Match restarted " + pRoom.roomName);
+                } else if (room instanceof WaitingRoom waitingRoom) {
+                    waitingRoom.startGameIfReady();
                 }
             }
         } catch (Exception e) {

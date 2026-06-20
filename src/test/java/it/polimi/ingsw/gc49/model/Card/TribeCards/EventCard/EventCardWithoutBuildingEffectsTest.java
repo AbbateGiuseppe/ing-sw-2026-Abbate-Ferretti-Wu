@@ -53,7 +53,7 @@ public class EventCardWithoutBuildingEffectsTest {
         EventCard card = new PaintingEvent(threshold,plusPoints,minusPoints,eventManager,era,minNumPlayers, null);
         int[] numArtist = {3, 2, 1};
         ls.forEach(p -> p.data.addCharacterCount(CharacterType.Artist,numArtist[p.getPlayerIndex()]));
-        int[] expectedPoints = ls.stream().mapToInt(p -> numArtist[p.getPlayerIndex()] >= threshold ? p.getPoints() + plusPoints * numArtist[p.getPlayerIndex()] : p.getPoints() - minusPoints).toArray();
+        int[] expectedPoints = ls.stream().mapToInt(p -> numArtist[p.getPlayerIndex()] > threshold ? p.getPoints() + plusPoints * numArtist[p.getPlayerIndex()] : p.getPoints() - minusPoints).toArray();
         card.resolveEvent(ls);
         int[] actualPoints = ls.stream().mapToInt(Player::getPoints).toArray();
         assertArrayEquals(expectedPoints,actualPoints);

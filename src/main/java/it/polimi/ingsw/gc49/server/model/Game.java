@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOffer;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupOrder;
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MODEL.InitializeModelPacket;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.GameStatusModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.LowerDrawModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.UpperDrawModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.OfferOrderboardModelElement;
@@ -12,7 +13,6 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.ConnectionModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.CurrentPlayerModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.TotemModelElement;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.BuildingCard;
@@ -31,9 +31,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import static it.polimi.ingsw.gc49.server.model.Locks.broadcastLock;
+
 public class Game implements Serializable, QueueUpdatable {
+    private static final long serialVersionUID = 4639947095444579379L;
+
     private final String roomName;
-    private final Locks locks = new Locks();
     private final List<VirtualGameClient> controllersListeners = new ArrayList<>();
     private List<Player> players;
     private EventManager eventManager;
@@ -44,13 +47,16 @@ public class Game implements Serializable, QueueUpdatable {
     private int currentPlayerIndex;
     private final EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
     private boolean lastRound;
-    private boolean paused = false;
+    private String phaseStatus = "Setup";
+    private String finalStandings = "";
+    private Integer forcedWinnerIndex;
+    private boolean suspensionNoticeSent;
     private UpdateModelPacket updatesQueue = new UpdateModelPacket();
 
     //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
     public Game ( int numOfPlayers, List<String> playersNicknames, String roomName ) {
         this.roomName = roomName;
-        currentState = new InitialSetup(this, locks, numOfPlayers, playersNicknames);
+        currentState = new InitialSetup(this, numOfPlayers, playersNicknames);
         executeCurrentState();
     }
 
@@ -58,7 +64,7 @@ public class Game implements Serializable, QueueUpdatable {
         broadcastMockupGame();
 
         while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
-            synchronized (locks.playerInput) {
+            synchronized (Locks.playerInput) {
                 System.out.println("\"" + roomName + "\": " + "Entrando in un stato [" + currentState.toString() + "]...");
                 executeCurrentState();
                 System.out.println("\"" + roomName + "\": " + "Finito lo stato di gioco precedente.");
@@ -78,9 +84,10 @@ public class Game implements Serializable, QueueUpdatable {
     public Track getTrack () { return track; }
     public CardBoard getCardBoard () { return cardBoard; }
     public EnumSet<Totem> getUsedTotems () { return usedTotems; }
+    public boolean hasForcedWinner() { return forcedWinnerIndex != null; }
+    public Player getForcedWinner() { return hasForcedWinner() ? players.get(forcedWinnerIndex) : null; }
 
     public boolean isLastRound () { return lastRound; }
-    public boolean isPaused () { return paused; }
 
     //### setters
     public void addControllerListener ( VirtualGameClient listener ) { this.controllersListeners.add(listener); }
@@ -93,7 +100,8 @@ public class Game implements Serializable, QueueUpdatable {
     public void setCurrentPlayer ( Player currentPlayer ) { this.currentPlayer = currentPlayer; }
     public void setCurrentPlayerIndex ( int currentPlayerIndex ) { this.currentPlayerIndex = currentPlayerIndex; }
     public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }
-    public void setPaused ( boolean paused ) { this.paused = paused; }
+    public void setPhaseStatus ( String phaseStatus ) { this.phaseStatus = phaseStatus; }
+    public void setFinalStandings ( String finalStandings ) { this.finalStandings = finalStandings; }
 
     //### controller communication
     @Override
@@ -101,7 +109,7 @@ public class Game implements Serializable, QueueUpdatable {
         updatesQueue.addUpdateElement(updateModelElement);
     }
     private void broadcastMockupGame () {
-        synchronized (locks.broadcastLock) {
+        synchronized (broadcastLock) {
             try{
                 InitializeModelPacket initializeModel = new InitializeModelPacket(giveMockupGame());
 
@@ -113,13 +121,13 @@ public class Game implements Serializable, QueueUpdatable {
                     }
                     i++;
                 }
-            } catch (Exception _) {
+            } catch (Exception ignored) {
 
             }
         }
     }
     public void broadcastGameUpdate () {
-        synchronized (locks.broadcastLock) {
+        synchronized (broadcastLock) {
             try {
                 //iterates through all the controllers but only updates the ones connected
                 int i = 0;
@@ -129,7 +137,7 @@ public class Game implements Serializable, QueueUpdatable {
                     }
                     i++;
                 }
-            } catch (Exception _){
+            } catch (Exception ignored){
 
             } finally {
                 updatesQueue = new UpdateModelPacket();
@@ -137,10 +145,13 @@ public class Game implements Serializable, QueueUpdatable {
         }
     }
     public void broadcastCurrentPlayerTurn() {
-        synchronized (locks.broadcastLock) {
+        synchronized (broadcastLock) {
+            queueStatusUpdate("");
             queueUpdateModelElement(new CurrentPlayerModelElement(
                     "...tocca a " + currentPlayer.getNickname() + "...",
-                    currentPlayerIndex
+                    currentPlayerIndex,
+                    currentPlayer.getDrawableUpper(),
+                    currentPlayer.getDrawableLower()
                     )
             );
             broadcastGameUpdate();
@@ -165,7 +176,133 @@ public class Game implements Serializable, QueueUpdatable {
         List<MockupOffer> offerBoard = getTrack().giveOfferBoardMockup();
         List<MockupOrder> orderBoard = getTrack().giveOrderBoardMockup();
 
-        return new MockupGame(players, cardBoard.getLine().getCurrentEra(), upperLine, lowerLine, upperBuilding, lowerBuilding, offerBoard, orderBoard);
+        MockupGame mockupGame = new MockupGame(players, cardBoard.getLine().getCurrentEra(), upperLine, lowerLine,
+                upperBuilding, lowerBuilding, offerBoard, orderBoard);
+        mockupGame.setCurrentPlayerIndex(currentPlayerIndex);
+        mockupGame.setDiscards(cardBoard.getDiscards());
+        mockupGame.setPhaseName(phaseStatus);
+        mockupGame.setFinalStandings(finalStandings);
+        mockupGame.setTribeDeckRemaining(cardBoard.getDeck().getTribeDeckRemaining());
+        mockupGame.setBuildingDeckRemaining(cardBoard.getDeck().getBuildingDeckRemaining());
+        return mockupGame;
+    }
+
+    public void queueStatusUpdate(String actionInfo) {
+        int tribeDeckRemaining = cardBoard == null ? 0 : cardBoard.getDeck().getTribeDeckRemaining();
+        int buildingDeckRemaining = cardBoard == null ? 0 : cardBoard.getDeck().getBuildingDeckRemaining();
+        queueUpdateModelElement(new GameStatusModelElement(
+                actionInfo,
+                phaseStatus,
+                finalStandings,
+                tribeDeckRemaining,
+                buildingDeckRemaining
+        ));
+    }
+
+    public boolean waitIfGameSuspendedByDisconnections() {
+        if (players == null || players.size() < 2 || hasForcedWinner()) {
+            return hasForcedWinner();
+        }
+
+        Long deadline = null;
+        while (getNumOfConnectedPlayers() < 2 && !hasForcedWinner()) {
+            Player onlyConnectedPlayer = getOnlyConnectedPlayer();
+            if (onlyConnectedPlayer != null) {
+                if (deadline == null) {
+                    deadline = System.currentTimeMillis() + disconnectionVictoryTimeoutMillis();
+                    announceSuspension(onlyConnectedPlayer);
+                }
+                long remaining = deadline - System.currentTimeMillis();
+                if (remaining <= 0) {
+                    forceWinnerByDisconnection(onlyConnectedPlayer);
+                    return true;
+                }
+                waitForConnectionChange(remaining);
+            } else {
+                suspensionNoticeSent = false;
+                waitForConnectionChange(1000L);
+            }
+        }
+
+        suspensionNoticeSent = false;
+        return hasForcedWinner();
+    }
+
+    private void announceSuspension(Player onlyConnectedPlayer) {
+        if (suspensionNoticeSent) {
+            return;
+        }
+        suspensionNoticeSent = true;
+        queueStatusUpdate("Game suspended: waiting for another player to reconnect. "
+                + onlyConnectedPlayer.getNickname() + " wins if the timeout expires.");
+        broadcastGameUpdate();
+    }
+
+    private Player getOnlyConnectedPlayer() {
+        Player connectedPlayer = null;
+        for (Player player : players) {
+            if (player.isConnected()) {
+                if (connectedPlayer != null) {
+                    return null;
+                }
+                connectedPlayer = player;
+            }
+        }
+        return connectedPlayer;
+    }
+
+    private long disconnectionVictoryTimeoutMillis() {
+        return Math.max(0L, Long.getLong("gc49.disconnectWinnerTimeoutMillis", 60000L));
+    }
+
+    private void waitForConnectionChange(long timeoutMillis) {
+        try {
+            Locks.playerInput.wait(timeoutMillis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void forceWinnerByDisconnection(Player winner) {
+        forcedWinnerIndex = winner.getPlayerIndex();
+        phaseStatus = "Game End";
+        queueStatusUpdate(winner.getNickname() + " wins because all other players stayed disconnected.");
+        broadcastGameUpdate();
+    }
+
+    public void restoreConnectedRemovedPlayersToTrack() {
+        for (Player player : players) {
+            if (player.isConnected() && player.isRemovedFromTrack()) {
+                track.restoreRemovedPlayerToOrderBoard(player);
+                queueUpdateModelElement(new OrderboardModelElement(
+                        player.getNickname() + " has reconnected and returned to the order board",
+                        track.giveOrderBoardMockup()
+                ));
+            }
+        }
+    }
+
+    public void skipDisconnectedOfferChoice(Player player) {
+        player.setChoseAnOffer(true);
+        player.cleanRemainingActions();
+        player.setRemovedFromTrack(true);
+        player.setAssignedOrderSlot(null);
+        queueUpdateModelElement(new OrderboardModelElement(
+                player.getNickname() + " is disconnected: offer choice skipped",
+                track.giveOrderBoardMockup()
+        ));
+        broadcastGameUpdate();
+    }
+
+    public void skipDisconnectedOfferExecution(Player player) {
+        player.cleanRemainingActions();
+        queueUpdateModelElement(new CurrentPlayerModelElement(
+                player.getNickname() + " is disconnected: remaining actions skipped",
+                player.getPlayerIndex(),
+                0,
+                0
+        ));
+        broadcastGameUpdate();
     }
 
     //### Game's execution
@@ -189,8 +326,7 @@ public class Game implements Serializable, QueueUpdatable {
 
     //### Players' actions
     public void chooseTotem ( int playerIndex, Totem chosenTotem ) throws PlayerException {
-        synchronized (locks.playerInput) {
-            if(isPaused()) return;
+        synchronized (Locks.playerInput) {
             if (players.get(playerIndex).getTotem() == null) {
                 if (!usedTotems.contains(chosenTotem)) {
                     if (currentState.getCurrentStateType().equals(State.States.TOTEM_CHOOSING)) {
@@ -206,7 +342,7 @@ public class Game implements Serializable, QueueUpdatable {
                         );
                         broadcastGameUpdate();
 
-                        locks.playerInput.notify();
+                        Locks.playerInput.notify();
                     }
                 } else {
                     throw new InvalidTotem("Questo totem è già stato preso da un altro giocatore.");
@@ -218,8 +354,7 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void drawUpperCharacter ( int playerIndex, int cardIndex ) throws PlayerException {
-        synchronized (locks.playerInput) {
-            if(isPaused()) return;
+        synchronized (Locks.playerInput) {
             if( playerIndex == currentPlayerIndex ) {
                 if (currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                     Player drawingPlayer = players.get(playerIndex);
@@ -238,12 +373,16 @@ public class Game implements Serializable, QueueUpdatable {
                                             cardBoard.getLine().getUpperBuilding(),
                                             playerIndex,
                                             drawnCard,
-                                            true
+                                            true,
+                                            drawingPlayer.getDrawableUpper(),
+                                            drawingPlayer.getDrawableLower(),
+                                            drawingPlayer.getFood(),
+                                            drawingPlayer.getPoints()
                                     )
                             );
                             broadcastGameUpdate();
 
-                            locks.playerInput.notify();
+                            Locks.playerInput.notify();
                         }
                     }
                 }
@@ -254,8 +393,7 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void drawLowerCharacter ( int playerIndex, int cardIndex ) throws PlayerException {
-        synchronized (locks.playerInput) {
-            if(isPaused()) return;
+        synchronized (Locks.playerInput) {
             if( playerIndex == currentPlayerIndex ) {
                 if (currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                     Player drawingPlayer = players.get(playerIndex);
@@ -274,12 +412,16 @@ public class Game implements Serializable, QueueUpdatable {
                                             cardBoard.getLine().getLowerBuilding(),
                                             playerIndex,
                                             drawnCard,
-                                            true
+                                            true,
+                                            drawingPlayer.getDrawableUpper(),
+                                            drawingPlayer.getDrawableLower(),
+                                            drawingPlayer.getFood(),
+                                            drawingPlayer.getPoints()
                                     )
                             );
                             broadcastGameUpdate();
 
-                            locks.playerInput.notify();
+                            Locks.playerInput.notify();
                         }
                     }
                 }
@@ -290,14 +432,14 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void drawUpperBuilding ( int playerIndex, int cardIndex ) throws PlayerException {
-        synchronized (locks.playerInput) {
-            if(isPaused()) return;
+        synchronized (Locks.playerInput) {
             if( playerIndex == currentPlayerIndex ) {
                 if( currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                     Player drawingPlayer = players.get(playerIndex);
                     if(drawingPlayer.getDrawableUpper() > 0) {
                         BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawUpperBuilding(cardIndex, drawingPlayer);
                         if (drawnBuildingCard != null) {
+                            String buildingCostInfo = buildingCostInfo(drawnBuildingCard, drawingPlayer);
                             drawingPlayer.setDrawableUpper(drawingPlayer.getDrawableUpper() - 1); //decreases by one the player's drawable upper cards.
                             drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager); //adds the building as a listener.
                             drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
@@ -306,17 +448,22 @@ public class Game implements Serializable, QueueUpdatable {
                             queueUpdateModelElement(
                                     new UpperDrawModelElement(
                                             players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila superiore"
+                                                    + buildingCostInfo
                                                     + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf)",
                                             cardBoard.getLine().getUpperLine(),
                                             cardBoard.getLine().getUpperBuilding(),
                                             playerIndex,
                                             drawnBuildingCard,
-                                            false
+                                            false,
+                                            drawingPlayer.getDrawableUpper(),
+                                            drawingPlayer.getDrawableLower(),
+                                            drawingPlayer.getFood(),
+                                            drawingPlayer.getPoints()
                                     )
                             );
                             broadcastGameUpdate();
 
-                            locks.playerInput.notify();
+                            Locks.playerInput.notify();
                         }
                     }
                 }
@@ -327,14 +474,14 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void drawLowerBuilding ( int playerIndex, int cardIndex ) throws PlayerException {
-        synchronized (locks.playerInput) {
-            if(isPaused()) return;
+        synchronized (Locks.playerInput) {
             if( playerIndex == currentPlayerIndex ) {
                 if(currentState.getCurrentStateType().equals(State.States.OFFER_EXECUTION) ) {
                     Player drawingPlayer = players.get(playerIndex);
                     if(drawingPlayer.getDrawableLower() > 0){
                         BuildingCard drawnBuildingCard = (BuildingCard) cardBoard.drawLowerBuilding(cardIndex, drawingPlayer);
                         if (drawnBuildingCard != null) {
+                            String buildingCostInfo = buildingCostInfo(drawnBuildingCard, drawingPlayer);
                             drawingPlayer.setDrawableLower(drawingPlayer.getDrawableLower() - 1); //decreases by one the player's drawable lower cards.
                             drawnBuildingCard.addBuildingToManager(currentPlayer, eventManager);
                             drawingPlayer.addBuildingCard(drawnBuildingCard); //adds the drawn card to the player, if it's drawable by him.
@@ -343,17 +490,22 @@ public class Game implements Serializable, QueueUpdatable {
                             queueUpdateModelElement(
                                     new LowerDrawModelElement(
                                             players.get(playerIndex).getNickname() + " ha pescato " + drawnBuildingCard.simpleToString() + " dalla fila inferiore"
+                                            + buildingCostInfo
                                             + " (azioni rimanenti: " + players.get(playerIndex).getDrawableUpper() +  " sup, " + players.get(playerIndex).getDrawableLower() + " inf)",
                                             cardBoard.getLine().getLowerLine(),
                                             cardBoard.getLine().getLowerBuilding(),
                                             playerIndex,
                                             drawnBuildingCard,
-                                            false
+                                            false,
+                                            drawingPlayer.getDrawableUpper(),
+                                            drawingPlayer.getDrawableLower(),
+                                            drawingPlayer.getFood(),
+                                            drawingPlayer.getPoints()
                                     )
                             );
                             broadcastGameUpdate();
 
-                            locks.playerInput.notify();
+                            Locks.playerInput.notify();
                         }
                     }
                 }
@@ -363,9 +515,18 @@ public class Game implements Serializable, QueueUpdatable {
         }
     }
 
+    private String buildingCostInfo(BuildingCard buildingCard, Player player) {
+        int price = buildingCard.getFoodPrice();
+        int discount = player.data.getNumBuildingDiscount();
+        int paid = Math.max(0, price - discount);
+        if (discount <= 0) {
+            return " (costo: " + paid + ")";
+        }
+        return " (costo: " + paid + ", prezzo: " + price + ", sconto costruttori: " + discount + ")";
+    }
+
     public void chooseOffer ( int playerIndex, int offerIndex ) throws PlayerException {
-        synchronized (locks.playerInput) {
-            if(isPaused()) return;
+        synchronized (Locks.playerInput) {
             if( playerIndex == currentPlayerIndex ) {
                 if (currentState.getCurrentStateType().equals(State.States.OFFER_CHOOSING)) {
                     Player callingPlayer = players.get(playerIndex);
@@ -378,7 +539,7 @@ public class Game implements Serializable, QueueUpdatable {
                     ));
                     broadcastGameUpdate();
                     callingPlayer.setChoseAnOffer(true);
-                    locks.playerInput.notify();
+                    Locks.playerInput.notify();
                 }
             } else {
                 throw new NotYourTurnException("Non è il tuo turno.");
@@ -387,90 +548,79 @@ public class Game implements Serializable, QueueUpdatable {
     }
 
     public void passYourTurn ( int playerIndex ) {
-        synchronized (locks.playerInput) {
-            if(isPaused()) return;
+        synchronized (Locks.playerInput) {
             if( playerIndex == currentPlayerIndex && !currentState.getCurrentStateType().equals(State.States.OTHER) ) {
                 players.get(playerIndex).cleanRemainingActions();
-                locks.playerInput.notify();
+                Locks.playerInput.notify();
             }
         }
     }
 
+    public boolean autoPassCurrentPlayerIfNoAvailableCards() {
+        if (currentPlayer == null || !currentPlayer.hasActionsLeft()) {
+            return false;
+        }
+        if (currentPlayerHasAvailableCard()) {
+            return false;
+        }
+
+        currentPlayer.cleanRemainingActions();
+        queueUpdateModelElement(new CurrentPlayerModelElement(
+                currentPlayer.getNickname() + " non ha carte disponibili: azioni rimanenti saltate",
+                currentPlayerIndex,
+                0,
+                0
+        ));
+        broadcastGameUpdate();
+        return true;
+    }
+
+    private boolean currentPlayerHasAvailableCard() {
+        if (currentPlayer.getDrawableUpper() > 0
+                && (hasAvailableCard(cardBoard.getLine().getUpperLine(), currentPlayer)
+                || hasAvailableCard(cardBoard.getLine().getUpperBuilding(), currentPlayer))) {
+            return true;
+        }
+        return currentPlayer.getDrawableLower() > 0
+                && (hasAvailableCard(cardBoard.getLine().getLowerLine(), currentPlayer)
+                || hasAvailableCard(cardBoard.getLine().getLowerBuilding(), currentPlayer));
+    }
+
+    private boolean hasAvailableCard(List<Card> cards, Player player) {
+        for (Card card : cards) {
+            if (card != null && card.canGet(player)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //### Connection methods
     public void disconnectPlayer( int playerIndex ) {
-        synchronized (locks.playerInput) {
-            queueUpdateModelElement(
-                    new ConnectionModelElement(
-                        players.get(playerIndex).getNickname() + " si è disconnesso",
-                        playerIndex,
-                        false
-                    )
-            );
-            players.get(playerIndex).setConnected(false);
-
-            //remove the player, temporarily
-
-            if( getNumOfConnectedPlayers() == 1 ){
-                //pause the game
-                setPaused(true);
-                queueUpdateModelElement(
-                        new TextModelElement(
-                            "La partita è messa in pausa, il giocatore rimanente vincerà tra un minuto, è iniziato il conto alla rovescia"
-                        )
-                );
-            }else if( getNumOfConnectedPlayers() == 0 ){
-                //TODO: close the game
-            }
-
-            broadcastGameUpdate();
-
-            locks.playerInput.notify();
+        queueUpdateModelElement(new ConnectionModelElement(
+                players.get(playerIndex).getNickname() + " si è disconnesso",
+                playerIndex,
+                false
+        ));
+        players.get(playerIndex).setConnected(false);
+        broadcastGameUpdate();
+        synchronized (Locks.playerInput) {
+            Locks.playerInput.notify();
         }
 
     }
 
     public void connectPlayer( int playerIndex ) {
-        synchronized (locks.playerInput) {
-            queueUpdateModelElement(
-                    new ConnectionModelElement(
-                        players.get(playerIndex).getNickname() + " si è riconnesso",
-                        playerIndex,
-                        true
-                    )
-            );
-            players.get(playerIndex).setConnected(true);
+        queueUpdateModelElement(new ConnectionModelElement(
+                players.get(playerIndex).getNickname() + " si è riconnesso",
+                playerIndex,
+                true
+        ));
+        players.get(playerIndex).setConnected(true);
+        broadcastGameUpdate();
 
-            if( players.get(playerIndex).isRemovedFromTrack() ){
-                //put the player back on the track, last possible position
-
-                //iterates from the last slot until it finds an open one
-                int goBack = 0;
-                while( track.getOrderBoard().get(getNumOfConnectedPlayers() - 1 + goBack).getAssignedPlayer() != null ) goBack--;
-                //put the player back on the slot
-                System.out.println(getNumOfConnectedPlayers() - 1 + goBack);
-                track.getOrderBoard().get(getNumOfConnectedPlayers() - 1 + goBack).assignPlayer(players.get(playerIndex));
-                players.get(playerIndex).setRemovedFromTrack(false);
-                queueUpdateModelElement(
-                        new OrderboardModelElement(
-                            currentPlayer.getNickname() + " è riposto sulla plancia",
-                            track.giveOrderBoardMockup()
-                        )
-                );
-            }
-
-            if( getNumOfConnectedPlayers() == 2 ){
-                //unpause the game
-                setPaused(false);
-                queueUpdateModelElement(
-                        new TextModelElement(
-                                "La partita è tornata in esecuzione"
-                        )
-                );
-            }
-
-            broadcastGameUpdate();
-
-            locks.playerInput.notify();
+        synchronized (Locks.playerInput) {
+            Locks.playerInput.notify();
         }
     }
 }

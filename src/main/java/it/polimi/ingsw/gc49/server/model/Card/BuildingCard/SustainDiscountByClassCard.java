@@ -1,8 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.Card.BuildingCard;
 
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
-import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
@@ -10,6 +8,10 @@ import it.polimi.ingsw.gc49.server.model.QueueUpdatable;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsOneModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
+
+import static java.lang.Math.max;
 
 /**
  * Represents a specific type of {@link BuildingCard} that provides a food discount during Sustenance events.
@@ -47,7 +49,7 @@ public class SustainDiscountByClassCard extends BuildingCard {
      */
     @Override
     public void onEventEffect() {
-        owner.setFoodToPay(owner.getFoodToPay() - owner.data.getCharacterCount(unit));
+        owner.setFoodToPay(max(0,owner.getFoodToPay() - owner.data.getCharacterCount(unit)));
         if(queueUpdater != null) {
             queueUpdater.queueUpdateModelElement(new TextModelElement(
                     "La carta " + simpleToString() + " si è attivata scontando il sostentamento di " + owner.getNickname() +
@@ -88,31 +90,13 @@ public class SustainDiscountByClassCard extends BuildingCard {
      * The generated drawing has a fixed height of 2 and a width of 10. It dynamically
      * appends a specific letter based on the {@link #unit} type (e.g., 'A' for Artist,
      * 'G' for Gatherer) to visually indicate which character class grants the discount,
-     * along with the sustenance symbol (€).
+     * along with the sustenance symbol (鈧?.
      *
      * @return a {@link RectangleAttributedString} containing the colored terminal UI graphics
      */
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
-        AttributedStringBuilder attributedString = new AttributedStringBuilder()
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╔")
-                .style(AttributedStyle.DEFAULT).append(String.valueOf(pointsEndgame)).append("♦")
-                .append("    ").append(String.valueOf(foodPrice)).append("♥")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╗")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╚")
-                .style(AttributedStyle.DEFAULT).append("♥x");
-        switch(unit){
-            case Artist -> attributedString.append("A");
-            case Builder -> attributedString.append("B");
-            case Gatherer -> attributedString.append("G");
-            case Hunter -> attributedString.append("H");
-            case Inventor -> attributedString.append("I");
-            case Shaman -> attributedString.append("S");
-        }
-        attributedString.append("    €")
-                .style(AttributedStyle.DEFAULT.foreground(AttributedStyle.GREEN)).append("╝");
-        int height = 2;
-        int width = 10;
-        return new RectangleAttributedString(height, width, attributedString.toAttributedString());
+        return it.polimi.ingsw.gc49.client.view.TextCardRenderer.render(simpleToString(), era);
     }
 }
+

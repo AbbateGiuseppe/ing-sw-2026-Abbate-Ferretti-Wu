@@ -71,11 +71,16 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
         if(assureRightPhase(commandPacket)){
             addSenderNickname(commandPacket);
-            //executes the command on the controller
-            if(controller != null) {
+            if (isRoomLevelGameCommand(commandPacket.getAction())) {
+                serverSide.sendCommand(commandPacket);
+            } else if(controller != null) {
                 controller.executeCommand(commandPacket);
             }
         }
+    }
+
+    private boolean isRoomLevelGameCommand(PlayerActionEnum action) {
+        return action == PlayerActionEnum.NEW_GAME || action == PlayerActionEnum.RETURN_TO_HALL;
     }
 
     //### VirtualHallClient
@@ -142,7 +147,7 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
     protected void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
         try {
             UnicastRemoteObject.unexportObject(this, true);
-        } catch (NoSuchObjectException _) {
+        } catch (NoSuchObjectException ignored) {
             //no problem, already cleaned!
         }
         super.disconnectProcedure(disconnectPacket);
@@ -164,11 +169,10 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
         clientSide = newClientSide;
         input = newInput;
         output = newOutput;
+        markConnected();
         if (controller != null) {
             controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
         }
-        changeLocalPhase(ApplicationPhase.GAME);
-        this.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
         serverSide.syncPlayer(this);
 
     }
