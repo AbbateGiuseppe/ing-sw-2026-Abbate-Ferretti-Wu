@@ -10,14 +10,59 @@ import org.jline.utils.AttributedStyle;
 
 import java.util.List;
 
+/**
+ * Represents the Sustenance Event card in the game (Sostentamento).
+ * <p>
+ * Pay 1 Food for each Character card in
+ * your tribe (Buildings do not count). If, after
+ * paying all the Food you have, you have not managed
+ * to feed all your Characters, you lose
+ * the Prestige Points indicated on the Event card,
+ * for each Character you have not fed
+ * You cannot choose to lose Prestige Points by not paying
+ * Food.
+ * In any case, keep all your Characters, even if
+ * you do not have enough Food to feed them all.
+ * Remember: Each Collector provides a discount of 3 Food.
+ * If there are multiple Events to resolve, Sustenance
+ * must be resolved last.
+ */
 public class SustenanceEvent extends EventCard {
+    /** The point penalty multiplier applied for each missing unit of food. */
     private final int minusPoints;
 
+    /**
+     * Constructs a new {@code SustenanceEvent} card.
+     *
+     * @param minusPoints  the point penalty inflicted per missing unit of food
+     * @param eventManager the {@link EventManager} used to trigger related building effects
+     * @param era          the {@link Era} this card belongs to
+     * @param minNumPlayers the minimum number of players required to include this card in the deck
+     */
     public SustenanceEvent( int minusPoints, EventManager eventManager, Era era, int minNumPlayers, QueueUpdatable queueUpdater ) {
         super(eventManager, era, minNumPlayers, queueUpdater);
         this.minusPoints = minusPoints;
     }
 
+    /**
+     * Resolves the logic and applies the effects of the Sustenance event to all players.
+     * <p>
+     * This execution follows a strict three-step process:
+     * <ol>
+     * <li><b>Initial Calculation:</b> For each player, the base food cost is calculated as
+     * their total character count minus their sustenance discount (provided by Gatherers).
+     * The cost is bounded to a minimum of 0 via {@code Math.max}.</li>
+     * <li><b>Building Effects:</b> Invokes {@link BuildingEvent#SUSTENANCE_EVENT} via the
+     * {@code eventManager}. This allows defensive buildings (like {@code SustainDiscountByClassCard})
+     * to further reduce the pending {@code foodToPay}.</li>
+     * <li><b>Resolution & Penalties:</b> The game checks if the player has enough food in
+     * their inventory to cover the final cost. If they are short on food, the missing amount
+     * is multiplied by {@link #minusPoints} to create a point penalty, and the food payment
+     * is capped at their current food level. Finally, {@link Player#confirmToPay()} is executed.</li>
+     * </ol>
+     *
+     * @param players the list of {@link Player}s participating in the event
+     */
     @Override
     public void resolveEvent(List<Player> players) {
         for(Player player : players) {
@@ -48,6 +93,11 @@ public class SustenanceEvent extends EventCard {
         }
     }
 
+    /**
+     * Provides a detailed string representation of the event card, including its stats.
+     *
+     * @return a multi-line {@link String} showing the era and the starvation penalty multiplier
+     */
     @Override
     public String toString() {
         return "Sustenance {\n" +
@@ -56,11 +106,26 @@ public class SustenanceEvent extends EventCard {
                 "\n}";
     }
 
+    /**
+     * Provides a localized, concise name for this event card.
+     *
+     * @return a simple one-line {@link String} ("SOSTENTAMENTO")
+     */
     @Override
     public String simpleToString () {
         return "SOSTENTAMENTO";
     }
 
+
+    /**
+     * Generates a visually formatted ASCII-art representation of the card for the terminal UI.
+     * <p>
+     * The generated drawing has a fixed height of 4 and a width of 5. It uses a magenta
+     * border to visually distinguish Event cards, and includes the specific sustenance
+     * symbol (│€│).
+     *
+     * @return a {@link RectangleAttributedString} containing the colored terminal UI graphics
+     */
     @Override
     public RectangleAttributedString getRectangleAttributedString () {
         AttributedString attributedString = new AttributedStringBuilder()

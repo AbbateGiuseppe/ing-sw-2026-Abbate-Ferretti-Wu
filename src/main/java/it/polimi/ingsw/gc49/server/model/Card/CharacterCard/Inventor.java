@@ -7,6 +7,19 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
+
+/**
+ * Represents the Inventor character card in the game.
+ * At the end of the game, this provides a number of
+ * Prestige points equal to the number of inventors in your
+ * tribe multiplied by the number of different invention icons
+ * you have.
+ * There are 10 different Invention icons.
+ * <p>
+ * These inventions are tracked
+ * in the databank and can trigger powerful synergies or bonuses (such as the rewards
+ * provided by the {@code SamePairInventionsCard}).
+ */
 public class Inventor extends CharacterCard {
     private final Invention invention;
 

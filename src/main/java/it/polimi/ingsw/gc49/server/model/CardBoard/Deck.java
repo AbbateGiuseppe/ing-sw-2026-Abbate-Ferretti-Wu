@@ -19,13 +19,37 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Manages the creation, shuffling, and dealing of all cards in the game.
+ * <p>
+ * The {@code Deck} class is responsible for loading card data from JSON files,
+ * instantiating the correct Java objects based on the card types, grouping them by
+ * {@link Era}, shuffling them, and providing them to the game during execution.
+ * It manages two distinct decks: the Tribe deck (characters and events) and the Building deck.
+ */
 public class Deck implements Serializable {
 
+    /** The main deck containing Character and Event cards. */
     private final ArrayList<Card> tribeDeck;
+
+    /** The deck containing Building cards. */
     private final ArrayList<Card> buildingDeck;
+
+
+    /** The central EventManager used to link Event cards to Building effects. */
     private final EventManager gameEventManager;
     private final QueueUpdatable queueUpdater;
 
+
+    /**
+     * Constructs and initializes a fully populated {@code Deck} for a specific game.
+     * <p>
+     * This constructor triggers the JSON parsing and deck building process for both
+     * the Tribe and Building decks, tailoring the available cards to the specific
+     * number of players in the game.
+     *
+     * @param game the {@link Game} instance this deck belongs to
+     */
     public Deck( Game game ) {
         this.tribeDeck = new ArrayList<>();
         this.buildingDeck = new ArrayList<>();
@@ -37,6 +61,13 @@ public class Deck implements Serializable {
         BuildingDeck(game.getNumOfPlayers());
 
     }
+
+
+    /**
+     * Constructs an empty {@code Deck}.
+     * <p>
+     * Useful for testing or scenarios where cards are added manually via {@link #addCard(Card)}.
+     */
     public Deck(){
         this.tribeDeck = new ArrayList<>();
         this.buildingDeck = new ArrayList<>();
@@ -44,19 +75,25 @@ public class Deck implements Serializable {
         this.queueUpdater = null;
     }
 
-    // pesca la prossima carta Tribù (Personaggio/Eventi) dal mazzo
+
+    /**
+     * Draws the top card from the Tribe deck.
+     *
+     * @return the drawn {@link Card} (Character or Event), or {@code null} if the deck is empty
+     */
     public Card dealTribeCard() {
         if (tribeDeck.isEmpty()) {
             return null;
         }
-        // top of deck = last element
         return tribeDeck.removeFirst();
     }
 
-    // pesca la prossima carta Edificio dal mazzo
+    /**
+     * Draws the top card from the Building deck.
+     *
+     * @return the drawn {@link Card} (Building), or {@code null} if the deck is empty
+     */
     public Card dealBuildingCard() {
-
-
         if (buildingDeck.isEmpty()) {
             return null;
         }
@@ -64,114 +101,49 @@ public class Deck implements Serializable {
     }
 
 
-    // --------- metodi di inizializzazione interni ---------
+
     /**
-     * Inizializza il mazzo delle carte Tribù leggendo i dati da un file JSON.
-
-     * Il metodo usa questi passaggi:
-     * - getClass().getResourceAsStream("/cards/tribe_cards.json"):
-     *   cerca il file dentro la cartella resources del progetto e restituisce uno stream
-     *   di lettura; se il file non esiste, il risultato è null.
-
-     * - InputStream:
-     *   rapprsenta il flusso di byte del file letto da resources.
-
-     * - new InputStreamReader(inputStream):
-     *   converte lo stream di byte in stream di caratteri, così il JSON può essere letto
-     *   come testo.
-
-     * - Gson:
-     *   libreria usata per convertire il testo JSON in oggetti Java.
-
-     * - gson.fromJson(..., JsonObject.class):
-     *   legge tutto il file JSON e lo trasforma in un oggetto JsonObject, che rappresenta
-     *   il JSON principale.
-
-     * - root.getAsJsonArray("cards"):
-     *   estrae dall'oggetto principale l'array chiamato "cards", cioè la lista di tutte
-     *   le carte definite nel file.
-
-     * - era1Cards, era2Cards, era3Cards, finalEventCards:
-     *   quattro liste separate in cui le carte vengono divise in base all'Era.
-
-     * - for (JsonElement cardElement : cards):
-     *   scorre tutte le carte presenti nel JSON una per una.
-
-     * - cardElement.getAsJsonObject():
-     *   converte ogni elemento dell'array in un JsonObject singolo, cioè la descrizione
-     *   di una carta.
-
-     * - cardJson.get("minPlayers").getAsInt():
-     *   legge il numero minimo di giocatori richiesto per usare quella carta.
-
-     * - if (numPlayers < minPlayers):
-     *   scarta la carta se non è compatibile con il numero di giocatori della partita.
-
-     * - createTribeCardFromJson(cardJson):
-     *   metodo helper che costruisce la carta Java corretta leggendo il tipo e gli altri
-     *   campi dal JSON.
-
-     * - card.getEra():
-     *   restituisce l'Era della carta appena creata.
-
-     * - switch (era):
-     *   inserisce la carta nella lista corrispondente alla sua Era.
-
-     * In questo modo ogni gruppo di carte viene poi mescolato e usato separatamente
-     * durante la partita.
+     * Initializes the Tribe card deck by reading data from a JSON file.
+     * <p>
+     * This method follows these steps:
+     * <ul>
+     * <li><b>getClass().getResourceAsStream("/cards/tribe_cards.json"):</b> searches for the file inside the project's resources folder and returns an input stream. If the file does not exist, it throws an exception.</li>
+     * <li><b>InputStream / InputStreamReader:</b> converts the byte stream into a character stream so the JSON can be read as text.</li>
+     * <li><b>Gson:</b> a Google library used to convert the JSON text into Java objects ({@code JsonObject}).</li>
+     * <li><b>Era Separation:</b> separates the cards into four lists based on their Era (First, Second, Third, Final).</li>
+     * <li><b>Filtering:</b> filters out cards that require a higher minimum number of players than the current game.</li>
+     * <li><b>Assembly:</b> creates the Java objects using a helper method, shuffles each Era independently, and assembles the final deck.</li>
+     * </ul>
+     * By doing this, each group of cards is shuffled and drawn in the correct chronological order during the game.
      *
-     * @param numPlayers numero di giocatori della partita corrente
+     * @param numPlayers the number of players in the current game
      */
-
     private void TribeDeck(int numPlayers) {
-        // STEP 1: Carica il file JSON delle carte tribù
-        // getClass().getResourceAsStream() cerca il file nella cartella resources del progetto
-        // Il path "/cards/tribe_cards.json" corrisponde a src/main/resources/cards/tribe_cards.json
         InputStream inputStream = getClass().getResourceAsStream("/cards/tribe_cards.json");
-
-        // Se il file non esiste, lancia un'eccezione per segnalare l'errore
         if (inputStream == null) {
             throw new RuntimeException("File tribe_cards.json non trovato");
         }
-
-        // STEP 2: Parsing del JSON
-        // Gson è una libreria di Google per leggere/scrivere JSON in Java
         Gson gson = new Gson();
-        // Converte lo stream in un oggetto JSON. InputStreamReader legge il file come testo
         JsonObject root = gson.fromJson(new InputStreamReader(inputStream), JsonObject.class);
-        // Estrae l'array "cards" dal JSON principale
-        // Il JSON deve avere questa struttura: { "cards": [ {...}, {...}, ... ] }
         JsonArray cards = root.getAsJsonArray("cards");
 
-        // STEP 3: Crea liste separate per ogni era
-        // Questo permette di mescolare ogni era indipendentemente, come richiesto dalle regole
         ArrayList<Card> era1Cards = new ArrayList<>();
         ArrayList<Card> era2Cards = new ArrayList<>();
         ArrayList<Card> era3Cards = new ArrayList<>();
         ArrayList<Card> finalEventCards = new ArrayList<>();
 
-        // STEP 4: Itera su tutte le carte definite nel JSON
         for (JsonElement cardElement : cards) {
-            // Converte ogni elemento dell'array in un JsonObject (una singola carta)
             JsonObject cardJson = cardElement.getAsJsonObject();
-
-            // STEP 5: Verifica compatibilità con il numero di giocatori
-            // Ogni carta nel JSON ha un campo "minPlayers" che indica il numero minimo di giocatori
-            // Esempio: se minPlayers = 3, la carta è usata solo in partite con 3+ giocatori
             int minPlayers = cardJson.get("minNumPlayers").getAsInt();
             if (numPlayers < minPlayers) {
-                continue; // Salta questa carta perché non compatibile con la partita corrente
+                continue;
             }
 
-            // STEP 6: Crea l'oggetto Java della carta dal JSON
-            // Delega a un metodo helper che legge il tipo e i parametri della carta
             Card card = createTribeCardFromJson(cardJson);
             if (card == null) {
-                continue; // Se la creazione fallisce (tipo non riconosciuto), salta
+                continue;
             }
 
-            // STEP 7: Aggiungi la carta alla lista della sua era
-            // Questo separa le carte per era, così possiamo mescolarle separatamente
             Era era = card.getEra();
             switch (era) {
                 case FIRST -> era1Cards.add(card);
@@ -181,108 +153,96 @@ public class Deck implements Serializable {
             }
         }
 
-        // STEP 8: Mescola ogni mazzetto separatamente
-        // Collections.shuffle() mescola casualmente l'ordine delle carte in ogni lista
-        // È importante farlo per ogni era separatamente per mantenere l'ordine delle ere
         Collections.shuffle(era1Cards);
         Collections.shuffle(era2Cards);
         Collections.shuffle(era3Cards);
         Collections.shuffle(finalEventCards);
 
-        // STEP 9: Costruisci il mazzo finale nell'ordine corretto
-        // dealTribeCard() pesca dall'ultima posizione, quindi l'ordine è:
-        // - Era I in fondo (pescate per prime)
-        // - Era II
-        // - Era III
-        // - Eventi Finali in cima (pescate per ultime)
         tribeDeck.addAll(era1Cards);
         tribeDeck.addAll(era2Cards);
         tribeDeck.addAll(era3Cards);
         tribeDeck.addAll(finalEventCards);
     }
 
+
+    /**
+     * Initializes the Building card deck by reading data from a JSON file.
+     * <p>
+     * Follows the same logic as {@link #TribeDeck(int)}, reading the file
+     * {@code /cards/building_cards.json} and assembling the decks by era.
+     *
+     * @param numPlayers the number of players in the current game
+     */
     private void BuildingDeck(int numPlayers) {
-        // STEP 1: Carica il file JSON delle carte edificio
-        // Stesso meccanismo di TribeDeck: cerca il file in src/main/resources/cards/building_cards.json
         InputStream inputStream = getClass().getResourceAsStream("/cards/building_cards.json");
 
-        // Se il file non esiste, lancia un'eccezione
         if (inputStream == null) {
             throw new RuntimeException("File building_cards.json non trovato");
         }
 
-        // STEP 2: Parsing del JSON
-        // Stessi passaggi di TribeDeck: usa Gson per leggere il file JSON
         Gson gson = new Gson();
         JsonObject root = gson.fromJson(new InputStreamReader(inputStream), JsonObject.class);
         JsonArray cards = root.getAsJsonArray("cards");
 
-        // STEP 3: Crea liste separate per ogni era
-        // Come per TribeDeck, serve per mescolare ogni era indipendentemente
         ArrayList<Card> era1Buildings = new ArrayList<>();
         ArrayList<Card> era2Buildings = new ArrayList<>();
         ArrayList<Card> era3Buildings = new ArrayList<>();
 
-        // STEP 4: Itera su tutte le carte edificio nel JSON
         for (JsonElement cardElement : cards) {
             JsonObject cardJson = cardElement.getAsJsonObject();
 
-            // STEP 5: Verifica compatibilità con numero di giocatori
-            // Stesso controllo di TribeDeck: salta le carte che richiedono più giocatori
             int minPlayers = cardJson.get("minNumPlayers").getAsInt();
             if (numPlayers < minPlayers) {
-                continue; // Salta questa carta
+                continue;
             }
 
-            // STEP 6: Crea la carta edificio dal JSON
             BuildingCard card = createBuildingCardFromJson(cardJson);
             if (card == null) {
-                continue; // Errore nella creazione, salta
+                continue;
             }
 
-            // STEP 7: Aggiungi alla lista dell'era corrispondente
             Era era = card.getEra();
             switch (era) {
                 case FIRST -> era1Buildings.add(card);
                 case SECOND -> era2Buildings.add(card);
                 case THIRD -> era3Buildings.add(card);
-                case THIRD_FINAL -> {} // Gli edifici non hanno eventi finali, quindi ignoriamo questo caso
+                case THIRD_FINAL -> {}
             }
         }
 
-        // STEP 8: Mescola ogni mazzetto separatamente
-        // Come per TribeDeck, mescoliamo ogni era indipendentemente
         Collections.shuffle(era1Buildings);
         Collections.shuffle(era2Buildings);
         Collections.shuffle(era3Buildings);
 
-        // STEP 9: Costruisci il mazzo finale nell'ordine corretto
-        // dealBuildingCard() pesca dall'ultima posizione, quindi:
-        // Era I in fondo, Era II al centro, Era III in cima
         buildingDeck.addAll(era1Buildings);
         buildingDeck.addAll(era2Buildings);
         buildingDeck.addAll(era3Buildings);
     }
 
     /**
-     * Crea una carta tribù (personaggio o evento) dal JSON.
-     * Questo metodo è chiamato per ogni carta nel JSON e crea l'oggetto Java corrispondente.
-
-     * @param cardJson oggetto JSON con i dati della carta
-     * @return la carta creata o null se il tipo non è riconosciuto
-
-     * COME USARE QUESTO METODO:
-     * 1. Per ogni tipo di carta che aggiungi al JSON, devi aggiungere un case nello switch
-     * 2. Leggi i parametri specifici della carta dal JSON usando cardJson.get("nomeCampo")
-     * 3. Crea l'oggetto della carta con i parametri letti
-
-     * ESEMPIO JSON per una carta Hunter:
+     * Creates a Tribe card (Character or Event) from its JSON representation.
+     * <p>
+     * This method is called for each card in the JSON and creates the corresponding Java object.
+     *
+     * @param cardJson the JSON object containing the card data
+     * @return the created {@link Card}, or {@code null} if the type is unrecognized
+     *
+     * <p><b>HOW TO USE THIS METHOD:</b>
+     * <ol>
+     * <li>For each new card type you add to the JSON, you must add a case in the switch statement.</li>
+     * <li>Read the specific parameters of the card from the JSON using {@code cardJson.get("fieldName")}.</li>
+     * <li>Instantiate the card object with the read parameters.</li>
+     * </ol>
+     *
+     * <p><b>JSON EXAMPLE for a Hunter card:</b>
+     * <pre>{@code
      * {
-     *   "type": "Hunter",
-     *   "era": "FIRST",
-     *   "minPlayers": 2,
-     *   "drumstick": true
+     * "type": "Hunter",
+     * "era": "FIRST",
+     * "minNumPlayers": 2,
+     * "drumstick": true
      * }
+     * }</pre>
      */
     private Card createTribeCardFromJson(JsonObject cardJson) {
         // Legge il tipo di carta (es: "Hunter", "Gatherer", "HuntingEvent")
@@ -353,32 +313,6 @@ public class Deck implements Serializable {
         return card;
     }
 
-    /**
-     * Crea una carta edificio dal JSON.
-     * Le carte edificio hanno una strategia che definisce il loro effetto.
-     *
-     * @param cardJson oggetto JSON con i dati della carta
-     * @return la carta edificio creata o null in caso di errore
-
-     * COME USARE QUESTO METODO:
-     * 1. Ogni BuildingCard ha parametri base: era, ppReward (punti vittoria), foodPrice (costo in cibo)
-     * 2. Ogni carta ha anche una strategia che definisce il suo effetto speciale
-     * 3. Dovrai leggere dal JSON quale strategia usare e i suoi parametri
-
-     * ESEMPIO JSON per una carta edificio:
-     * {
-     *   "era": "FIRST",
-     *   "minPlayers": 2,
-     *   "ppReward": 5,
-     *   "foodPrice": 3,
-     *   "strategyType": "BonusFoodAndPP",
-     *   "strategyParams": {
-     *     "characterType": "Hunter",
-     *     "foodBonus": 1,
-     *     "ppBonus": 1
-     *   }
-     * }
-     */
     private BuildingCard createBuildingCardFromJson(JsonObject cardJson) {
         // Legge il tipo di carta
         String type = cardJson.get("type").getAsString();
@@ -456,15 +390,6 @@ public class Deck implements Serializable {
         return card;
     }
 
-    /**
-     * Restituisce il numero di edifici da piazzare sulla board per una data era e numero di giocatori.
-     * Questo metodo centralizza la logica di quante building card devono essere distribuite
-     * all'inizio di ogni era secondo le regole del gioco.
-     *
-     * @param numPlayers numero di giocatori (2-5)
-     * @param era l'era corrente
-     * @return numero di carte edificio da piazzare
-     */
     public int getBuildingsToPlace(int numPlayers, Era era) {
         return switch (numPlayers) {
             case 2 -> switch (era) {
