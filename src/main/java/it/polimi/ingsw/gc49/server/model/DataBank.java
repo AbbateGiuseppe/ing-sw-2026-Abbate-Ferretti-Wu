@@ -5,6 +5,13 @@ import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.Invention;
 import java.io.Serializable;
 import java.util.*;
 
+
+/**
+ * The {@code DataBank} class acts as the personal ledger and inventory for a specific player.
+ * It tracks character card counts, scientific inventions, various point accumulators,
+ * and persistent discounts used during the game. It also handles specific event tracking
+ * (like completing character sets or gathering identical pairs of inventions).
+ */
 public class DataBank implements Serializable {
     public final Player assignedPlayer;
     private final Map<CharacterType,Integer> numCharacterMap = new HashMap<>();
@@ -15,7 +22,10 @@ public class DataBank implements Serializable {
     private final EnumSet<Invention> inventions = EnumSet.noneOf(Invention.class);
     private int numBuildingPoints;
 
-    // Event Management
+    // ============================================================
+    // EVENT MANAGEMENT
+    // ============================================================
+
     // the number of complete sets of character cards at the acquisition of the building card with effect 1
     private int currentNumCompleteCharacterSets;
     private int[] numInventions;
@@ -29,7 +39,20 @@ public class DataBank implements Serializable {
     //### update done by considering just the new card being added to the previously saved data
 
 
-    // Returns the number of character cards of the given type
+    // ============================================================
+    // GETTERS
+    // ============================================================
+
+    /**
+     * Retrieves the count of a specific character type, or calculates virtual types like
+     * complete sets and paired inventions.
+     * <p>
+     * <b>WARNING:</b> Querying {@code SamePairInventions} causes a side-effect that consumes
+     * the pair (sets {@code sameInvention} to false).
+     *
+     * @param type the {@link CharacterType} to query.
+     * @return the amount of cards of that type, the number of complete sets, or 1 if a pair is consumed.
+     */
     public int getCharacterCount(CharacterType type) {
         // Returns the number of complete sets of character cards
         if (type == CharacterType.CompleteSet) {
@@ -45,30 +68,58 @@ public class DataBank implements Serializable {
         return numCharacterMap.get(type);
     }
 
-    // Increase the count of the character cards of the given type
+    /**
+     * Calculates the total sum of all character cards currently owned by the player.
+     *
+     * @return the total number of character cards.
+     */
+    public int getNumCharacters() { return numCharacterMap.values().stream().mapToInt(Integer::intValue).sum();}
+    public int getNumBuildingDiscount() { return numBuildingDiscount; }
+    public int getNumBuildingPoints() {return numBuildingPoints;}
+    public int getNumSustenanceDiscount() { return numSustenanceDiscount; }
+    public int getNumStars() {return numStars;}
+    public int getNumBuilderPoints() {return numBuilderPoints;}
+    public EnumSet<Invention> getInventions() {return inventions;}
+    public int getDifferentInventionCount() { return inventions.size(); }
+
+    // ============================================================
+    // SETTERS
+    // ============================================================
+
+    public void setNumBuilderPoints(int numBuilderPoints) {this.numBuilderPoints = numBuilderPoints;}
+
+
+
+
+
+    // ============================================================
+    // ADDERS
+    // ============================================================
+
+    /**
+     * Increases the count of character cards for the given type.
+     *
+     * @param type      the {@link CharacterType} to increment.
+     * @param increment the amount to add to the current count.
+     */
     public void addCharacterCount(CharacterType type,int increment) {
         // if the count already exists in the map,then accumulate the count by increment
         if (numCharacterMap.containsKey(type)) {numCharacterMap.merge(type, increment, Integer::sum);}
         else {numCharacterMap.put(type,increment);}
     }
-
-    // Returns the total number of character cards
-    public int getNumCharacters() { return numCharacterMap.values().stream().mapToInt(Integer::intValue).sum();}
-    public int getNumBuildingDiscount() { return numBuildingDiscount; }
     public void addNumBuildingDiscount(int n) { numBuildingDiscount += n; }
     public void addNumBuilderPoints(int n) { numBuilderPoints += n; }
     public void addNumBuildingPoints(int n) { numBuildingPoints += n; }
-    public int getNumBuildingPoints() {return numBuildingPoints;}
-    public int getNumSustenanceDiscount() { return numSustenanceDiscount; }
     public void addNumSustenanceDiscount(int n) { numSustenanceDiscount += n; }
     public void addNumStar(int n) {numStars += n;}
-    public int getNumStars() {return numStars;}
-    public int getNumBuilderPoints() {return numBuilderPoints;}
-    public EnumSet<Invention> getInventions() {return inventions;}
-    public int getDifferentInventionCount() { return inventions.size(); }
-    public void setNumBuilderPoints(int numBuilderPoints) {this.numBuilderPoints = numBuilderPoints;}
 
-    // Event Management
+    /**
+     * Adds an invention to the player's collection.
+     * If the player already recorded an invention of the same type (and recording is active),
+     * it flags that a pair has been formed ({@code sameInvention = true}).
+     *
+     * @param invention the {@link Invention} to add.
+     */
     public void addInvention(Invention invention) {
         if (numInventions != null) {
             if (numInventions[invention.ordinal()] == 1) {

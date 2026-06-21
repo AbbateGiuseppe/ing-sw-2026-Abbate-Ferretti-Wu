@@ -23,29 +23,47 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
         this.adaptee = adaptee;
     }
 
-    ///------------------------
-    // disconnection
+    // ============================================================
+    // DISCONNECTION
+    // ============================================================
+
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         adaptee.disconnect(disconnectPacket);
         saveStateAsync();
     }
 
-    //### VirtualGameServer
+    // ============================================================
+    // VIRTUAL GAME SERVER
+    // ============================================================
+
     @Override
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
         adaptee.sendCommand(commandPacket);
         saveStateAsync();
     }
 
-    //### VirtualHallServer
+    // ============================================================
+    // VIRTUAL HALL SERVER
+    // ============================================================
+
     @Override
     public void joinRoom ( HallJoinPacket hallJoinPacket ) throws Exception {}
     @Override
     public void createRoom ( HallCreatePacket hallCreatePacket ) throws Exception {}
-    //### VirtualRoomServer
+
+
+    // ============================================================
+    // VIRTUAL ROOM SERVER
+    // ============================================================
+
     @Override
     public void leaveRoom ( RoomLeavePacket roomLeavePacket ) throws Exception {}
+
+
+    // ============================================================
+    // RESILIENCE
+    // ============================================================
 
     @Override
     public void syncPlayer(PhasedProxyPlayer proxy) throws Exception {

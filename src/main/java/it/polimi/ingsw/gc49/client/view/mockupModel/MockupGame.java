@@ -9,6 +9,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The {@code MockupGame} class represents the complete client-side snapshot of an active game.
+ * It serves as a data container for the user interface, holding the current state of all players,
+ * the shared game board (cards, deck, discards), and the track boards (offers and orders).
+ * To ensure data integrity, most getters return unmodifiable lists.
+ */
 public class MockupGame implements Serializable {
     private int currentPlayerIndex;
     private List<MockupPlayer> players;
@@ -29,7 +35,19 @@ public class MockupGame implements Serializable {
     private final List<MockupOffer> offerBoard;
     private final List<MockupOrder> orderBoard;
 
-    /**[constructor] Should be initialized AFTER the real game has been initialized on the server!*/
+    /**
+     * Constructs a new {@code MockupGame}.
+     * This should be initialized strictly AFTER the real game has been initialized on the server.
+     *
+     * @param players       the initial list of players in the game.
+     * @param deckTopEra    the era of the top card on the deck.
+     * @param upperLine     the initial list of cards in the upper line.
+     * @param lowerLine     the initial list of cards in the lower line.
+     * @param upperBuilding the initial list of cards in the upper building.
+     * @param lowerBuilding the initial list of cards in the lower building.
+     * @param offerBoard    the list representing the offer board.
+     * @param orderBoard    the list representing the order board.
+     */
     public MockupGame (List<MockupPlayer> players, Era deckTopEra, List<Card> upperLine, List<Card> lowerLine
     , List<Card> upperBuilding, List<Card> lowerBuilding, List<MockupOffer> offerBoard, List<MockupOrder> orderBoard) {
         this.players = players;
@@ -48,27 +66,72 @@ public class MockupGame implements Serializable {
         }
     }
 
-    //### setters
-    //Players
+    // ============================================================
+    // SETTERS
+    // ============================================================
+
+    /**
+     * Replaces the current list of players.
+     *
+     * @param players the new list of {@link MockupPlayer}s.
+     */
     public void setPlayers (List<MockupPlayer> players) { this.players = players; }
+
+    /**
+     * Updates the current player index.
+     * Automatically removes the turn flag from the previous player and grants it to the new one.
+     *
+     * @param currentPlayerIndex the index of the player whose turn is starting.
+     */
     public void setCurrentPlayerIndex (int currentPlayerIndex) {
         players.get(this.currentPlayerIndex).setOfTurn(false);
         this.currentPlayerIndex = currentPlayerIndex;
         players.get(this.currentPlayerIndex).setOfTurn(true);
     }
+
     //Cardboard
+
+    /**
+     * Updates the era visible on the top of the deck.
+     *
+     * @param deckTopEra the new {@link Era}.
+     */
     public void setDeckTopEra(Era deckTopEra) {
         this.deckTopEra = deckTopEra;
     }
+
+    /**
+     * Updates the upper line of cards on the board.
+     *
+     * @param upperLine the new list of {@link Card}s.
+     */
     public void setUpperLine(List<Card> upperLine) {
         this.upperLine = upperLine;
     }
+
+    /**
+     * Updates the lower line of cards on the board.
+     *
+     * @param lowerLine the new list of {@link Card}s.
+     */
     public void setLowerLine(List<Card> lowerLine) {
         this.lowerLine = lowerLine;
     }
+
+    /**
+     * Updates the upper building area cards.
+     *
+     * @param upperBuilding the new list of {@link Card}s.
+     */
     public void setUpperBuilding(List<Card> upperBuilding) {
         this.upperBuilding = upperBuilding;
     }
+
+    /**
+     * Updates the lower building area cards.
+     *
+     * @param lowerBuilding the new list of {@link Card}s.
+     */
     public void setLowerBuilding(List<Card> lowerBuilding) {
         this.lowerBuilding = lowerBuilding;
     }
@@ -94,47 +157,131 @@ public class MockupGame implements Serializable {
         }
     }
 
-    //### getters
-    //Players
+    // ============================================================
+    // ### GETTERS
+    // ============================================================
+
+    // Players
+
+    /**
+     * Retrieves the index of the player whose turn it is.
+     *
+     * @return the current player's index.
+     */
     public int getCurrentPlayerIndex () {
         return currentPlayerIndex;
     }
+
+    /**
+     * Retrieves the list of all players.
+     *
+     * @return an unmodifiable list of {@link MockupPlayer}s.
+     */
     public List<MockupPlayer> getPlayers () {
         return Collections.unmodifiableList(players);
     }
+
+    /**
+     * Retrieves a specific player by their index.
+     *
+     * @param i the index of the requested player.
+     * @return the {@link MockupPlayer} at the specified index.
+     */
     public MockupPlayer getPlayer(int i) {return players.get(i);}
+
+
     //Cardboard
+    /**
+     * Retrieves the list of discarded cards.
+     *
+     * @return an unmodifiable list of {@link Card}s representing the discard pile.
+     */
     public List<Card> getDiscards() {
         return Collections.unmodifiableList(discards);
     }
+
+    /**
+     * Retrieves the era visible on the top of the deck.
+     *
+     * @return the current {@link Era}.
+     */
     public Era getDeckTopEra() {
         return deckTopEra;
     }
+
+    /**
+     * Retrieves the cards currently in the upper line.
+     *
+     * @return an unmodifiable list of {@link Card}s.
+     */
     public List<Card> getUpperLine() {
         return Collections.unmodifiableList(upperLine);
     }
+
+    /**
+     * Retrieves the cards currently in the lower line.
+     *
+     * @return an unmodifiable list of {@link Card}s.
+     */
     public List<Card> getLowerLine() {
         return Collections.unmodifiableList(lowerLine);
     }
+
+    /**
+     * Retrieves the cards currently in the upper building area.
+     *
+     * @return an unmodifiable list of {@link Card}s.
+     */
     public List<Card> getUpperBuilding() {
         return Collections.unmodifiableList(upperBuilding);
     }
+
+    /**
+     * Retrieves the cards currently in the lower building area.
+     *
+     * @return an unmodifiable list of {@link Card}s.
+     */
     public List<Card> getLowerBuilding() {
         return Collections.unmodifiableList(lowerBuilding);
     }
+
+
     //Track
+    /**
+     * Retrieves the current state of the order board.
+     *
+     * @return an unmodifiable list of {@link MockupOrder}s.
+     */
     public List<MockupOrder> getOrderBoard () {
         return Collections.unmodifiableList(orderBoard);
     }
+
+    /**
+     * Retrieves a visually formatted string representation of the order board.
+     *
+     * @return a list of {@link RectangleAttributedString}s representing each order.
+     */
     public List<RectangleAttributedString> getOrderBoardRectangleStrings() {
         return orderBoard
                 .stream()
                 .map(MockupOrder::getRectangleAttributedString)
                 .toList();
     }
+
+    /**
+     * Retrieves the current state of the offer board.
+     *
+     * @return an unmodifiable list of {@link MockupOffer}s.
+     */
     public List<MockupOffer> getOfferBoard() {
         return Collections.unmodifiableList(offerBoard);
     }
+
+    /**
+     * Retrieves a visually formatted string representation of the offer board.
+     *
+     * @return a list of {@link RectangleAttributedString}s representing each offer.
+     */
     public List<RectangleAttributedString> getOfferBoardRectangleStrings(){
         return offerBoard
                 .stream()
@@ -142,8 +289,17 @@ public class MockupGame implements Serializable {
                 .toList();
     }
 
-    //### adders
-    //Cardboard
+    // ============================================================
+    // ### ADDERS
+    // ============================================================
+
+    // Cardboard
+
+    /**
+     * Adds a batch of cards to the discard pile.
+     *
+     * @param discards the list of {@link Card}s to be added.
+     */
     public void addDiscards(List<Card> discards) {
         this.discards.addAll(discards);
     }

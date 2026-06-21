@@ -31,6 +31,15 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+
+/**
+ * The {@code Game} class is the core model and controller of the application logic.
+ * It encapsulates the entire state of a single match, managing players, the card board,
+ * the track, and the event system.
+ * It utilizes a State Machine pattern to drive the {@code gameLoop}, ensuring that rules
+ * and phases are strictly enforced. All player interactions are securely synchronized
+ * using a shared {@link Locks} object to handle asynchronous network requests safely.
+ */
 public class Game implements Serializable, QueueUpdatable {
     private final String roomName;
     private final Locks locks = new Locks();
@@ -47,13 +56,27 @@ public class Game implements Serializable, QueueUpdatable {
     private boolean paused = false;
     private UpdateModelPacket updatesQueue = new UpdateModelPacket();
 
-    //### Constructors, from 2 to 5 players, handled by the initial stata via the numOfPlayers and playersNicknames
+
+    /**
+     * Constructs a new {@code Game} instance and initializes the first state.
+     * Handled by the Initial Setup phase to accommodate 2 to 5 players.
+     *
+     * @param numOfPlayers     the total number of participants.
+     * @param playersNicknames the list of player nicknames.
+     * @param roomName         the name of the hosting room.
+     */
     public Game ( int numOfPlayers, List<String> playersNicknames, String roomName ) {
         this.roomName = roomName;
         currentState = new InitialSetup(this, locks, numOfPlayers, playersNicknames);
         executeCurrentState();
     }
 
+
+    /**
+     * The main execution thread of the game.
+     * It broadcasts the initial mockup, then continuously executes the current state
+     * until the state machine returns {@code null} (game over).
+     */
     public void gameLoop () {
         broadcastMockupGame();
 
@@ -69,7 +92,10 @@ public class Game implements Serializable, QueueUpdatable {
         broadcastGameUpdate();
     }
 
-    //### getters
+    // ============================================================
+    // GETTERS
+    // ============================================================
+
     public int getNumOfPlayers () { return players.size(); }
     public int getNumOfConnectedPlayers () { return players.stream().filter(Player::isConnected).toList().size(); }
     public List<Player> getPlayers () { return players; }
@@ -82,7 +108,10 @@ public class Game implements Serializable, QueueUpdatable {
     public boolean isLastRound () { return lastRound; }
     public boolean isPaused () { return paused; }
 
-    //### setters
+    // ============================================================
+    // SETTERS E ADDERS
+    // ============================================================
+
     public void addControllerListener ( VirtualGameClient listener ) { this.controllersListeners.add(listener); }
     public void setPlayers ( List<Player> players ) { this.players = players; }
     public void setEventManager ( EventManager eventManager ) { this.eventManager = eventManager; }
@@ -95,11 +124,23 @@ public class Game implements Serializable, QueueUpdatable {
     public void setLastRound ( boolean lastRound ) { this.lastRound = lastRound; }
     public void setPaused ( boolean paused ) { this.paused = paused; }
 
-    //### controller communication
+    // ============================================================
+    // ### CONTROLLER COMMUNICATION
+    // ============================================================
+
+    /**
+     * Queues a localized update to be sent to all clients in the next broadcast cycle.
+     *
+     * @param updateModelElement the specific element to update.
+     */
     @Override
     public void queueUpdateModelElement ( UpdateModelElement updateModelElement ) {
         updatesQueue.addUpdateElement(updateModelElement);
     }
+
+    /**
+     * Broadcasts the initial, complete game mockup to all connected clients.
+     */
     private void broadcastMockupGame () {
         synchronized (locks.broadcastLock) {
             try{
@@ -118,6 +159,10 @@ public class Game implements Serializable, QueueUpdatable {
             }
         }
     }
+
+    /**
+     * Flushes the current update queue, broadcasting only the specific changes to all connected clients.
+     */
     public void broadcastGameUpdate () {
         synchronized (locks.broadcastLock) {
             try {
@@ -136,6 +181,10 @@ public class Game implements Serializable, QueueUpdatable {
             }
         }
     }
+
+    /**
+     * Notifies all clients about whose turn it currently is.
+     */
     public void broadcastCurrentPlayerTurn() {
         synchronized (locks.broadcastLock) {
             queueUpdateModelElement(new CurrentPlayerModelElement(
@@ -168,12 +217,20 @@ public class Game implements Serializable, QueueUpdatable {
         return new MockupGame(players, cardBoard.getLine().getCurrentEra(), upperLine, lowerLine, upperBuilding, lowerBuilding, offerBoard, orderBoard);
     }
 
-    //### Game's execution
+    // ============================================================
+    // ### GAME'S EXECUTION
+    // ============================================================
+
+    /**
+     * Triggers the logic of the current state, advancing the State Machine.
+     */
     public void executeCurrentState () {
         currentState = currentState.executeState();
     }
 
-    //### Event calls
+    // ============================================================
+    // ### EVENT CALLS
+    // ============================================================
     public void callDrawEvent() {
         eventManager.invokeEventByPlayer(currentPlayer, BuildingEvent.DRAW_EVENT);
     }
@@ -187,7 +244,17 @@ public class Game implements Serializable, QueueUpdatable {
         eventManager.invokeEvent(BuildingEvent.GAME_END);
     }
 
-    //### Players' actions
+    // ============================================================
+    // ### PLAYERS ACTION
+    // ============================================================
+
+    /**
+     * Handles a player's request to choose their starting totem.
+     *
+     * @param playerIndex the index of the requesting player.
+     * @param chosenTotem the {@link Totem} they want to select.
+     * @throws PlayerException if the totem is taken, the player already has one, or the phase is wrong.
+     */
     public void chooseTotem ( int playerIndex, Totem chosenTotem ) throws PlayerException {
         synchronized (locks.playerInput) {
             if(isPaused()) return;
@@ -396,7 +463,16 @@ public class Game implements Serializable, QueueUpdatable {
         }
     }
 
-    //### Connection methods
+    // ============================================================
+    // ### CONNECTION METHODS
+    // ============================================================
+
+    /**
+     * Handles the sudden disconnection of a player.
+     * Pauses the game automatically if only one player remains.
+     *
+     * @param playerIndex the index of the disconnected player.
+     */
     public void disconnectPlayer( int playerIndex ) {
         synchronized (locks.playerInput) {
             queueUpdateModelElement(
@@ -429,6 +505,12 @@ public class Game implements Serializable, QueueUpdatable {
 
     }
 
+    /**
+     * Handles the reconnection of a previously dropped player.
+     * Unpauses the game if the required minimum player threshold is met again.
+     *
+     * @param playerIndex the index of the reconnecting player.
+     */
     public void connectPlayer( int playerIndex ) {
         synchronized (locks.playerInput) {
             queueUpdateModelElement(
@@ -463,7 +545,7 @@ public class Game implements Serializable, QueueUpdatable {
                 setPaused(false);
                 queueUpdateModelElement(
                         new TextModelElement(
-                                "La partita è tornata in esecuzione"
+                                "Game back to execution"
                         )
                 );
             }
