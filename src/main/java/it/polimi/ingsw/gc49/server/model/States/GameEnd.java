@@ -25,6 +25,9 @@ public class GameEnd extends State {
 
         //calculating the end game points
         List<Player> players = game.getPlayers();
+
+
+
         for(Player player : players){
             player.addPoints( player.data.getNumBuilderPoints() ); //adds the points of the player's builder cards.
             player.addPoints( player.data.getCharacterCount(CharacterType.Inventor) * player.data.getDifferentInventionCount() ); //adds the result of the multiplication between the number of inventors and the number of different inventions to the player's points.
