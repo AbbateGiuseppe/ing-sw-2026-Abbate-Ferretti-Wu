@@ -11,6 +11,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+/**
+ * Manages the turn order and action selection boards for the game.
+ * <p>
+ * The track consists of two distinct areas:
+ * - The {@code orderBoard}, which determines the turn order for choosing an action.
+ * - The {@code offerBoard}, which holds the chosen actions (offers) and determines
+ * the turn order for executing those actions.
+ * Players move continuously between these two boards during the core gameplay loop.
+ */
 public class Track implements Serializable {
     private final List<Offer> offerBoard = new ArrayList<>();
     private final List<OrderSlot> orderBoard = new ArrayList<>();
@@ -66,7 +76,9 @@ public class Track implements Serializable {
             default: //ERRORE
         }
 
-        //### Creation of orderBoard
+        /**
+         * Populates the offer board based on the number of players.
+         */
         switch (numOfPlayers){
             case 2:
                 orderBoard.add(new OrderSlot(1));

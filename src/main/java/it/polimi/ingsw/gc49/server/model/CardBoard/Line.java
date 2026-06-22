@@ -13,17 +13,21 @@ import java.util.List;
 
 import static java.util.Collections.sort;
 
-
+/**
+ * Represents the central market  of cards in the game.
+ * Manages the available character (tribe) and building cards across different rows (upper and lower),
+ * handles the progression of Eras, and resolves events at the end of rounds or the game.
+ */
 public class Line implements Serializable {
 
-    private Era currentEra = Era.first(); //chiedi
+    private Era currentEra = Era.first();
     private boolean eraChanged = false;
     private Era newEra = currentEra.next();
     private final int numPlayers;
     private final List<Player> playerList;
 
 
-    /// file sopra e sotto
+
     private final List<Card> upperLine;
     private final List<Card> lowerLine;
     private final List<Card> upperBuilding;
@@ -32,8 +36,15 @@ public class Line implements Serializable {
 
 
 
+    /**
+     * Constructs the Line and sets up the initial board state.
+     * Deals the starting tribe cards to the upper and lower lines based on the number of players,
+     * and places the initial building cards for the first Era.
+     *
+     * @param game The main game instance.
+     * @param deck The deck used to draw cards.
+     */
 
-    /// Costruttore
     public Line( Game game, Deck deck) {
         this.numPlayers = game.getNumOfPlayers();
         this.playerList = game.getPlayers();
@@ -75,15 +86,32 @@ public class Line implements Serializable {
         }
     }
 
+    /**
+     * Deals a Tribe card directly from the deck.
+     *
+     * @return The drawn Tribe card, or null if the deck is empty.
+     */
+    public Card dealTribeCard() {
+            return deck.dealTribeCard();
+    }
 
-        public Card dealTribeCard() {
-            return deck.dealTribeCard();      // implementalo in Deck
-        }
+    /**
+     * Deals a Building card directly from the deck.
+     *
+     * @return The drawn Tribe card, or null if the deck is empty.
+     */
+    public Card dealBuildingCard() {
+            return deck.dealBuildingCard();
+    }
 
-        public Card dealBuildingCard() {
-            return deck.dealBuildingCard();   // implementalo in Deck
-        }
 
+    /**
+     * Attempts to draw a Character card from the upper line.
+     *
+     * @param cardIndex     The index of the card in the upper line.
+     * @param drawingPlayer The player attempting to draw the card.
+     * @return The drawn Card if successful, or null if the index is invalid or the player cannot get it.
+     */
 
     public Card drawUpperCharacter(int cardIndex, Player drawingPlayer) {
         if (cardIndex < 0 || cardIndex >= upperLine.size()) {
@@ -98,6 +126,15 @@ public class Line implements Serializable {
             return picked;
         }
     }
+
+
+    /**
+     * Attempts to draw a Character card from the lower line.
+     *
+     * @param cardIndex     The index of the card in the upper line.
+     * @param drawingPlayer The player attempting to draw the card.
+     * @return The drawn Card if successful, or null if the index is invalid or the player cannot get it.
+     */
     public Card drawLowerCharacter(int cardIndex, Player drawingPlayer) {
         if (cardIndex < 0 || cardIndex >= lowerLine.size()) {
             return null;
@@ -112,6 +149,14 @@ public class Line implements Serializable {
         }
     }
 
+
+    /**
+     * Attempts to draw a Building  card from the upper line.
+     *
+     * @param cardIndex     The index of the card in the upper line.
+     * @param drawingPlayer The player attempting to draw the card.
+     * @return The drawn Card if successful, or null if the index is invalid or the player cannot get it.
+     */
     public Card drawUpperBuilding(int cardIndex, Player drawingPlayer) {
         if (cardIndex < 0 || cardIndex>= upperBuilding.size()) {
             return null;
@@ -125,6 +170,15 @@ public class Line implements Serializable {
             return pickedBuilding;
         }
     }
+
+
+    /**
+     * Attempts to draw a Building card from the lower line.
+     *
+     * @param cardIndex     The index of the card in the upper line.
+     * @param drawingPlayer The player attempting to draw the card.
+     * @return The drawn Card if successful, or null if the index is invalid or the player cannot get it.
+     */
     public Card drawLowerBuilding(int cardIndex, Player drawingPlayer) {
         if (cardIndex < 0 || cardIndex >= lowerBuilding.size()) {
             return null;
@@ -140,7 +194,10 @@ public class Line implements Serializable {
     }
 
 
-/// metodi per gli stati finiti
+    // ============================================================
+    // FINITE STATE
+    // ============================================================
+
     public boolean hasEraChanged() {
         return eraChanged;
     }
@@ -155,8 +212,13 @@ public class Line implements Serializable {
         return currentEra;
     }
 
-/// tutti gli end
-
+    /**
+     * Concludes the current round. Resolves events in the lower line, shifts the upper line
+     * down, and draws new cards. Detects if an Era transition is triggered.
+     *
+     * @param numPlayers The number of players in the game (used to determine card draw limits).
+     * @throws EraEndedException If drawing new cards reveals a card from the next Era.
+     */
     public void endRound(int numPlayers) throws EraEndedException {
         resolveEvent(lowerLine, playerList);
         lowerLine.clear();
@@ -182,20 +244,24 @@ public class Line implements Serializable {
         }
     }
 
+    /**
+     * Processes the transition into a new Era.
+     * Handles the shifting and discarding of Building cards based on the new Era's rules,
+     * and populates the upper building line with new cards.
+     */
+
     public void endEra() {
-        // 1) Se si passa all'Era III: scarta eventuali edifici nella fila inferiore
+        // 1) If transitioning to Era III: discard any buildings in the lower row
         if (newEra == Era.THIRD) {
             lowerBuilding.clear();
         }
 
-        // 2) Sposta gli edifici dalla fila superiore alla fila inferiore
-        //    (succede quando inizi Era II o III)
+        // 2) Move buildings from the upper row to the lower row (happens when Era II or III starts)
         lowerBuilding.addAll(upperBuilding);
         upperBuilding.clear();
 
-        // 3) Aggiungi nella fila superiore gli edifici dell'Era appena iniziata,
-        //    in numero dipendente da numPlayers (tabella del regolamento) [file:3]
-
+        // 3) Add buildings of the newly started Era to the upper row,
+        //    quantity depends on numPlayers (per rulebook table)
         int buildingsToPlace = deck.getBuildingsToPlace(numPlayers, newEra);
         for (int i = 0; i < buildingsToPlace; i++) {
             Card building = deck.dealBuildingCard();
@@ -203,23 +269,34 @@ public class Line implements Serializable {
             upperBuilding.add(building);
         }
 
-        // aggiorna stato interno e resetta il flag di cambio era
         currentEra = newEra;
         eraChanged = false;
     }
 
+
+    /**
+     * Concludes the game by resolving all remaining events on the board.
+     * Optionally clears the board entirely.
+     */
     public void endGame() {
-        // 1) Risolvi prima gli eventi nella fila inferiore
+
         resolveEvent(lowerLine, playerList);
-        // 2) Poi risolvi quelli eventualmente nella fila superiore
+
         resolveEvent(upperLine, playerList);
 
-        // 3) Se vuoi, svuoti tutto il board (opzionale)
         lowerLine.clear();
         upperLine.clear();
         lowerBuilding.clear();
         upperBuilding.clear();
     }
+
+    /**
+     * Filters a given line for Event cards, sorts them according to game rules,
+     * and resolves their effects for all players.
+     *
+     * @param line       The line of cards to check for events.
+     * @param playerList The list of players affected by the events.
+     */
 
     private void resolveEvent(List<Card> line, List<Player> playerList) {
         List<EventCard> events = new ArrayList<>();
@@ -229,7 +306,6 @@ public class Line implements Serializable {
                 events.add((EventCard) c);
             }
         }
-        // ordina: stesso tipo per Era crescente, Sostentamento per ultimo [file:3]
         sort(events);
 
         for (EventCard e : events) {
@@ -237,7 +313,10 @@ public class Line implements Serializable {
         }
     }
 
-    //### getters
+    // ============================================================
+    // GETTERS
+    // ============================================================
+
     public List<Card> getUpperLine() { return upperLine; }
     public List<Card> getLowerLine() { return lowerLine; }
     public List<Card> getUpperBuilding() { return upperBuilding; }

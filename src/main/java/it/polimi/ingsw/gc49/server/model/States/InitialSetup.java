@@ -10,16 +10,42 @@ import it.polimi.ingsw.gc49.server.model.Track.Track;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * Represents the initial setup state of the game.
+ * <p>
+ * This state is responsible for initializing the core components of the game,
+ * including creating the players, setting up the track, the event manager, and the card board.
+ * Once setup is complete, it transitions the game to the {@link TotemChoosing} state.
+ */
 public class InitialSetup extends State {
     private final int numOfPlayers;
     private final List<String> playersNicknames;
 
+
+    /**
+     * Constructs the InitialSetup state.
+     *
+     * @param game             The main game instance.
+     * @param locks            The synchronization locks for thread-safe state execution.
+     * @param numOfPlayers     The total number of players in the game.
+     * @param playersNicknames A list containing the nicknames of all participating players.
+     */
     public InitialSetup ( Game game, Locks locks, int numOfPlayers, List<String> playersNicknames ) {
         super(game, States.OTHER, locks);
         this.numOfPlayers = numOfPlayers;
         this.playersNicknames = playersNicknames;
     }
 
+
+    /**
+     * Executes the initial setup logic for the game.
+     * <p>
+     * Instantiates the required number of {@link Player} objects and assigns their nicknames.
+     * It also initializes the event manager, the track, and the main card board.
+     *
+     * @return The next state in the machine: {@link TotemChoosing}.
+     */
     public State executeState () {
         List<Player> players = new ArrayList<>(numOfPlayers);
         game.setPlayers(players);
@@ -57,6 +83,11 @@ public class InitialSetup extends State {
         return new TotemChoosing(game, locks); //goes to the totem choosing state as the next state.
     }
 
+    /**
+     * Returns the human-readable name of this state.
+     *
+     * @return A string representing the state name ("Preparazione").
+     */
     @Override
     public String toString () {
         return "Preparazione";

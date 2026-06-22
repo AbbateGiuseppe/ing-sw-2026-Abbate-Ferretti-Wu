@@ -11,9 +11,34 @@ import it.polimi.ingsw.gc49.server.model.Track.OrderSlot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the state where players choose their starting totems.
+ * <p>
+ * This state pauses the game progression until all players have successfully
+ * selected a totem. Once complete, it randomizes the initial turn order,
+ * distributes the starting resources (like food), broadcasts the updated
+ * board state to all clients, and transitions to the {@link OfferChoosing} state.
+ */
 public class TotemChoosing extends State {
+
+    /**
+     * Constructs the TotemChoosing state.
+     *
+     * @param game  The main game instance.
+     * @param locks The synchronization locks for thread-safe state execution.
+     */
     public TotemChoosing ( Game game, Locks locks ) { super(game, States.TOTEM_CHOOSING, locks); }
 
+
+    /**
+     * Executes the totem selection phase.
+     * <p>
+     * Suspends the thread until the number of used totems matches the number of players.
+     * Then, it assigns the randomized turn order, prepares the UI update models,
+     * and advances the game state.
+     *
+     * @return The next state in the machine: {@link OfferChoosing}.
+     */
     public State executeState () {
         int numOfPlayers = game.getNumOfPlayers();
         while (game.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
@@ -51,6 +76,12 @@ public class TotemChoosing extends State {
         return new OfferChoosing(game, locks);
     }
 
+
+    /**
+     * Returns the human-readable name of this state.
+     *
+     * @return A string representing the state name ("Scelta del totem").
+     */
     @Override
     public String toString () {
         return "Scelta del totem";
