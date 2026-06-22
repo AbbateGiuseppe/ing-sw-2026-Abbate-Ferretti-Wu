@@ -56,7 +56,7 @@ public class Manual {
                 .append(manualSeparator()).append("\n")
                 .append(String.format("%70s\n", "comandi in PARTITA:"))
                 .append(manualFormat("legenda", "Mostra una legenda che spiega i simboli della plancia"))
-                .append(manualFormat("totemo [orange/white/blue/black/yellow]", "Scegli il totemo specificato"))
+                .append(manualFormat("totemo [arancione/bianco/blu/nero/giallo]", "Scegli il totemo specificato"))
                 .append(manualFormat("offerta [indice dell'offerta]", "Scegli l'offerta specificata"))
                 .append(manualFormat("pesca [i/s] [p/e] [indice della carta]", "Pesca dai righi inferiori o superiori,"))
                 .append(manualFormatSecondLine("la carta indicizzata nel rigo dei personaggi o edifici."))

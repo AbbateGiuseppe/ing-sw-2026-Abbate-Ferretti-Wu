@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model;
 
+import it.polimi.ingsw.gc49.ItaEngString;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
@@ -39,6 +40,43 @@ public enum Totem {
         }
 
         return attributedString.toAttributedString();
+    }
+
+    public String itaEngCommand ( ItaEngString.Language language ){
+        switch (this){
+            case ORANGE:
+                if(language == ItaEngString.Language.ITA){
+                    return "arancione";
+                } else {
+                    return "orange";
+                }
+            case WHITE:
+                if(language == ItaEngString.Language.ITA){
+                    return "bianco";
+                } else {
+                    return "white";
+                }
+            case BLUE:
+                if(language == ItaEngString.Language.ITA){
+                    return "blu";
+                } else {
+                    return "blue";
+                }
+            case BLACK:
+                if(language == ItaEngString.Language.ITA){
+                    return "nero";
+                } else {
+                    return "black";
+                }
+            case YELLOW:
+                if(language == ItaEngString.Language.ITA){
+                    return "giallo";
+                } else {
+                    return "yellow";
+                }
+            default:
+                throw new AssertionError();
+        }
     }
 
 }

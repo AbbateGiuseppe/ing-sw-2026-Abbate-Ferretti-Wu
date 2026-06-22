@@ -78,7 +78,7 @@ public class TextTerminal extends UserInputInterface {
     private static final Map<String,Totem> totems = new HashMap<>();
     static {
         for (Totem totem : Totem.values()) {
-            totems.put(totem.name().toLowerCase(), totem); //for example, totems.put("orange", Totem.ORANGE);
+            totems.put(totem.itaEngCommand(localLanguage).toLowerCase(), totem); //for example, totems.put("orange", Totem.ORANGE);
         }
     }
     static {
@@ -372,7 +372,7 @@ public class TextTerminal extends UserInputInterface {
                     String[] parts = splitInput(inputLine);
                     // The first word is the key
                     assert parts != null;
-                    String action = parts[0];
+                    String action = parts[0].toLowerCase();
                     // The remaining words are parameters
                     String[] params = Arrays.copyOfRange(parts, 1, parts.length);
 
@@ -406,7 +406,7 @@ public class TextTerminal extends UserInputInterface {
             terminal.writer().print("> ");
             terminal.flush();
         }
-        String input = lineReader.readLine("").toLowerCase();
+        String input = lineReader.readLine("");
         synchronized (cursorLock) {
             // Clear the prompt line
             rows = terminal.getHeight();
