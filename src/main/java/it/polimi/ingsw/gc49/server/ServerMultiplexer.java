@@ -99,8 +99,8 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
         }
 
         try {
-            InetAddress localHost = InetAddress.getLocalHost();
-            System.out.println("Local IP Address: " + localHost.getHostAddress());
+            String localIP = InetAddress.getLocalHost().getHostAddress();
+            System.out.println("Local IP Address: " + localIP);
         } catch (UnknownHostException e) {
             System.out.println("Could not get local hostname: " + e.getMessage());
         }

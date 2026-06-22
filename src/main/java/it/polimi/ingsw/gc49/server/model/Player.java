@@ -172,9 +172,14 @@ public class Player implements Serializable {
         return new MockupPlayer(
                     nickname,
                     playerIndex,
+                    connected,
+                    totem,
                     food,
                     points,
-                    totem
+                    characterCards,
+                    buildingCards,
+                    drawableUpper,
+                    drawableLower
         );
     }
 

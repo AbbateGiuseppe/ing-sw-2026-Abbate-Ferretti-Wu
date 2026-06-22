@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.GameStatusModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.OrderboardModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.PlayersModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
@@ -40,6 +41,9 @@ public class TotemChoosing extends State {
      * @return The next state in the machine: {@link OfferChoosing}.
      */
     public State executeState () {
+        game.queueUpdateModelElement(new GameStatusModelElement("Siamo passati alla scelta dei totem", currentStateType));
+        game.broadcastGameUpdate();
+
         int numOfPlayers = game.getNumOfPlayers();
         while (game.getUsedTotems().size() < numOfPlayers) { //waits until every player has chosen a totem.
             try {

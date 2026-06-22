@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.GameStatusModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsAllModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
 import it.polimi.ingsw.gc49.server.model.CharacterType;
@@ -38,6 +39,8 @@ public class GameEnd extends State {
      * @return {@code null}, as this is the final state and halts the Finite State Machine.
      */
     public State executeState () {
+        game.queueUpdateModelElement(new GameStatusModelElement("Siamo passati alla fine partita", currentStateType));
+        game.broadcastGameUpdate();
         //solving the last events
         game.getCardBoard().endGame();
 

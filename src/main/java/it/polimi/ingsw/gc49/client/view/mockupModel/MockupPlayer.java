@@ -7,7 +7,6 @@ import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -45,20 +44,22 @@ public class MockupPlayer implements Serializable {
      * @param points      the starting amount of victory points.
      * @param totem       the {@link Totem} assigned to this player.
      */
-    public MockupPlayer ( String nickname, int playerIndex, int food, int points, Totem totem ) {
+    public MockupPlayer ( String nickname, int playerIndex, boolean connected, Totem totem, int food, int points,
+                          List<Card> characterCards, List<Card> buildingCards, int drawableUpper, int drawableLower ) {
         this.nickname = nickname;
         this.playerIndex = playerIndex;
+        this.connected = connected;
+
+        this.totem = totem;
 
         this.food = food;
         this.points = points;
-        this.totem = totem;
-        characterCards = new ArrayList<>();
-        buildingCards = new ArrayList<>();
 
-        connected = true;
+        this.characterCards = characterCards;
+        this.buildingCards = buildingCards;
 
-        drawableUpper = 0;
-        drawableLower = 0;
+        this.drawableUpper = drawableUpper;
+        this.drawableLower = drawableLower;
     }
 
     // ============================================================

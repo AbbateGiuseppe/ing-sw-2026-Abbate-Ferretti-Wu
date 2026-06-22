@@ -2,27 +2,18 @@ package it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL
 
 import it.polimi.ingsw.gc49.client.view.mockupModel.MockupGame;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelElement;
+import it.polimi.ingsw.gc49.server.model.States.State;
 
 public class GameStatusModelElement extends UpdateModelElement {
-    private final String phaseName;
-    private final String finalStandings;
-    private final int tribeDeckRemaining;
-    private final int buildingDeckRemaining;
+    private final State.States gameState;
 
-    public GameStatusModelElement(String actionInfo, String phaseName, String finalStandings,
-                                  int tribeDeckRemaining, int buildingDeckRemaining) {
+    public GameStatusModelElement(String actionInfo, State.States gameState) {
         super(actionInfo);
-        this.phaseName = phaseName;
-        this.finalStandings = finalStandings;
-        this.tribeDeckRemaining = tribeDeckRemaining;
-        this.buildingDeckRemaining = buildingDeckRemaining;
+        this.gameState = gameState;
     }
 
     @Override
     public void updateMockupModel(MockupGame game) {
-        /*game.setPhaseName(phaseName);
-        game.setFinalStandings(finalStandings);
-        game.setTribeDeckRemaining(tribeDeckRemaining);
-        game.setBuildingDeckRemaining(buildingDeckRemaining);*/
+        game.setGameState(gameState);
     }
 }

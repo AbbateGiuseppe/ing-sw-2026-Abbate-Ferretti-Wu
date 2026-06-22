@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.GameStatusModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.OrderboardModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Locks;
@@ -34,6 +35,8 @@ public class OfferChoosing extends State {
      * @return The next state in the machine: {@link OfferExecution}.
      */
     public State executeState () {
+        game.queueUpdateModelElement(new GameStatusModelElement("Siamo passati alla scelta delle offerte", currentStateType));
+        game.broadcastGameUpdate();
         Player currentPlayer = game.getTrack().getNextPlayerOrderSlot();
         while ( currentPlayer != null ) { //loops until there's no player remaining to choose an offer.
             currentPlayer.setChoseAnOffer(false);
