@@ -1,9 +1,11 @@
 package it.polimi.ingsw.gc49.model.CardBoard;
 
+import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.BonusPointsByClassEndGameCard;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.Artist;
 import it.polimi.ingsw.gc49.server.model.CardBoard.Deck;
 import it.polimi.ingsw.gc49.server.model.CardBoard.Line;
+import it.polimi.ingsw.gc49.server.model.CharacterType;
 import it.polimi.ingsw.gc49.server.model.Era;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Player;
@@ -220,7 +222,7 @@ class LineTest {
     }
 
     //TODO: LA TUA IMPLEMENTAZIONE DELLA PESCA DEGLI EDIFICI è SBAGLIATA E DA RIFARE!
-    /*@Test
+    @Test
     void testEndEraDealsBuildingsFromNewEra() throws Exception {
         int maxRounds = 100;
 
@@ -243,7 +245,7 @@ class LineTest {
                 upperBuildings.stream().allMatch(card -> newEra.equals(card.getEra())),
                 "Buildings added after an era change must belong to the new era"
         );
-    }*/
+    }
 
     @Test
     void testEraChangeException_setsEraChangedFlag() {

@@ -67,49 +67,6 @@ class DeckTest {
     }
 
     @Test
-    void testGetBuildingsToPlace_twoPlayers() {
-        assertEquals(1, deck.getBuildingsToPlace(2, Era.FIRST));
-        assertEquals(2, deck.getBuildingsToPlace(2, Era.SECOND));
-        assertEquals(3, deck.getBuildingsToPlace(2, Era.THIRD));
-        assertEquals(0, deck.getBuildingsToPlace(2, Era.THIRD_FINAL));
-    }
-
-    @Test
-    void testGetBuildingsToPlace_threePlayers() {
-        assertEquals(2, deck.getBuildingsToPlace(3, Era.FIRST));
-        assertEquals(2, deck.getBuildingsToPlace(3, Era.SECOND));
-        assertEquals(4, deck.getBuildingsToPlace(3, Era.THIRD));
-        assertEquals(0, deck.getBuildingsToPlace(3, Era.THIRD_FINAL));
-    }
-
-    @Test
-    void testGetBuildingsToPlace_fourPlayers() {
-        assertEquals(2, deck.getBuildingsToPlace(4, Era.FIRST));
-        assertEquals(3, deck.getBuildingsToPlace(4, Era.SECOND));
-        assertEquals(4, deck.getBuildingsToPlace(4, Era.THIRD));
-        assertEquals(0, deck.getBuildingsToPlace(4, Era.THIRD_FINAL));
-    }
-
-    @Test
-    void testGetBuildingsToPlace_fivePlayers() {
-        assertEquals(2, deck.getBuildingsToPlace(5, Era.FIRST));
-        assertEquals(3, deck.getBuildingsToPlace(5, Era.SECOND));
-        assertEquals(5, deck.getBuildingsToPlace(5, Era.THIRD));
-        assertEquals(0, deck.getBuildingsToPlace(5, Era.THIRD_FINAL));
-    }
-
-    @Test
-    void testGetBuildingsToPlace_invalidNumberOfPlayers() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            deck.getBuildingsToPlace(1, Era.FIRST);
-        }, "Should throw exception for invalid number of players");
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            deck.getBuildingsToPlace(6, Era.FIRST);
-        }, "Should throw exception for invalid number of players");
-    }
-
-    @Test
     void testTribeDeckOrder_firstEraComesFirst() {
         Card firstCard = deck.dealTribeCard();
         assertNotNull(firstCard);

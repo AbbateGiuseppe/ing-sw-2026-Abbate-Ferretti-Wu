@@ -214,6 +214,54 @@ public class Deck implements Serializable {
         Collections.shuffle(era2Buildings);
         Collections.shuffle(era3Buildings);
 
+        //empty random not going to be used cards
+        switch (numPlayers) {
+            case 2:
+                while (era1Buildings.size() > 1) {
+                    era1Buildings.removeFirst();
+                }
+                while (era2Buildings.size() > 2) {
+                    era2Buildings.removeFirst();
+                }
+                while (era3Buildings.size() > 3) {
+                    era3Buildings.removeFirst();
+                }
+                break;
+            case 3:
+                while (era1Buildings.size() > 2) {
+                    era1Buildings.removeFirst();
+                }
+                while (era2Buildings.size() > 2) {
+                    era2Buildings.removeFirst();
+                }
+                while (era3Buildings.size() > 4) {
+                    era3Buildings.removeFirst();
+                }
+                break;
+            case 4:
+                while (era1Buildings.size() > 2) {
+                    era1Buildings.removeFirst();
+                }
+                while (era2Buildings.size() > 3) {
+                    era2Buildings.removeFirst();
+                }
+                while (era3Buildings.size() > 4) {
+                    era3Buildings.removeFirst();
+                }
+                break;
+            case 5:
+                while (era1Buildings.size() > 2) {
+                    era1Buildings.removeFirst();
+                }
+                while (era2Buildings.size() > 3) {
+                    era2Buildings.removeFirst();
+                }
+                while (era3Buildings.size() > 5) {
+                    era3Buildings.removeFirst();
+                }
+                break;
+        }
+
         buildingDeck.addAll(era1Buildings);
         buildingDeck.addAll(era2Buildings);
         buildingDeck.addAll(era3Buildings);
@@ -390,37 +438,20 @@ public class Deck implements Serializable {
         return card;
     }
 
-    public int getBuildingsToPlace(int numPlayers, Era era) {
-        return switch (numPlayers) {
-            case 2 -> switch (era) {
-                case FIRST -> 1;
-                case SECOND -> 2;
-                case THIRD -> 3;
-                case THIRD_FINAL -> 0;
-            };
-            case 3 -> switch (era) {
-                case FIRST -> 2;
-                case SECOND -> 2;
-                case THIRD -> 4;
-                case THIRD_FINAL -> 0;
-            };
-            case 4 -> switch (era) {
-                case FIRST -> 2;
-                case SECOND -> 3;
-                case THIRD -> 4;
-                case THIRD_FINAL -> 0;
-            };
-            case 5 -> switch (era) {
-                case FIRST -> 2;
-                case SECOND -> 3;
-                case THIRD -> 5;
-                case THIRD_FINAL -> 0;
-            };
-            default -> throw new IllegalArgumentException("Numero giocatori non valido: " + numPlayers);
-        };
+    public Card getBuildingsToPlace(Era era) {
+        try {
+            Card newCard = buildingDeck.getFirst();
+            if (newCard.getEra().equals(era)) {
+                buildingDeck.removeFirst();
+                return newCard;
+            } else {
+                return null;
+            }
+        } catch (RuntimeException e) {
+            return null;
+        }
     }
     public void addCard(Card card){
         tribeDeck.add(card);
     }
-
 }

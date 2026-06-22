@@ -67,10 +67,7 @@ public class Line implements Serializable {
             upperPlaced++;
         }
 
-        int buildingsToPlace = deck.getBuildingsToPlace(numPlayers, currentEra);
-        for (int i = 0; i < buildingsToPlace; i++) {
-            Card building = deck.dealBuildingCard();
-            if (building == null) break;
+        for(Card building = deck.getBuildingsToPlace(currentEra); building != null; building = deck.getBuildingsToPlace(currentEra)) {
             upperBuilding.add(building);
         }
     }
@@ -193,10 +190,7 @@ public class Line implements Serializable {
         // 3) Aggiungi nella fila superiore gli edifici dell'Era appena iniziata,
         //    in numero dipendente da numPlayers (tabella del regolamento) [file:3]
 
-        int buildingsToPlace = deck.getBuildingsToPlace(numPlayers, newEra);
-        for (int i = 0; i < buildingsToPlace; i++) {
-            Card building = deck.dealBuildingCard();
-            if (building == null) break;       // nessuna carta edificio rimasta
+        for(Card building = deck.getBuildingsToPlace(newEra); building != null; building = deck.getBuildingsToPlace(currentEra)) {
             upperBuilding.add(building);
         }
 
