@@ -15,7 +15,7 @@ import static java.util.Collections.sort;
 
 
 public class Line implements Serializable {
-    /// Per la macchina a stati finiti
+
     private Era currentEra = Era.first(); //chiedi
     private boolean eraChanged = false;
     private Era newEra = currentEra.next();

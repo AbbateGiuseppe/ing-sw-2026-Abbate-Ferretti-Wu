@@ -8,30 +8,72 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * The {@code Player} class represents the server-side model of a game participant.
+ * It holds the definitive state of a player's resources (food, points), their inventory
+ * (character and building cards), and their current status within a turn (actions left to do,
+ * connection status, and track position).
+ * It also encapsulates a {@link DataBank} to keep track of complex statistics and effects.
+ */
 public class Player implements Serializable {
+    /** The unique identifier chosen by the player. */
     private final String nickname;
+
+    /** The index representing the player's position in the game's internal arrays. */
     private final int playerIndex;
+
+    /** Indicates whether the player is currently connected to the server. */
     private boolean connected;
-    /** status for a disconnection event where the player has been indefinitely removed from the board and won't be given the chance to be chosen for the following turns, until he comes back*/
+
+    /** * Status flag for a disconnection event.
+     * If true, the player has been indefinitely removed from the board and won't be
+     * given the chance to be chosen for the following turns, until they reconnect.
+     */
     private boolean removedFromTrack;
+
+    /** The specific slot on the order track currently occupied by this player. */
     private OrderSlot assignedOrderSlot;
+
+    /** The totem assigned to the player. */
     private Totem totem;
+
+    /** The current amount of food the player has. */
     private int food;
+
+    /** The current amount of victory points the player has. */
     private int points;
+
+    /** The list of character cards the player currently holds/has played. */
     private final List<Card> characterCards;
+
+    /** The list of building cards the player currently holds/has played. */
     private final List<Card> buildingCards;
 
+    /** The personal ledger managing statistics, discounts, and scientific inventions. */
     public final DataBank data;
 
     // Event Management
+
+    /** Temporary accumulator for food that the player is required to pay. */
     private int foodToPay;
+
+    /** Temporary accumulator for points that the player will lose (e.g., due to starvation). */
     private int pointsToPay;
+
+    /** Flag indicating if this player triggered a unique win condition. */
     private boolean uniqueWinner;
 
-    private int drawableUpper;
-    private int drawableLower;
-    private boolean choseAnOffer;
+    // Action Management
 
+    /** The number of upper line cards this player is currently allowed to draw. */
+    private int drawableUpper;
+
+    /** The number of lower line cards this player is currently allowed to draw. */
+    private int drawableLower;
+
+    /** Flag indicating if the player has already chosen an offer during the current phase. */
+    private boolean choseAnOffer;
     /**
      *
      * @param nickname the player's nickname;
@@ -56,7 +98,10 @@ public class Player implements Serializable {
         data = new DataBank(this);
     }
 
-    //### adders
+    // ============================================================
+    // ### ADDERS
+    // ============================================================
+
     public void addFood (int addedFood) {
         food = food + addedFood;
     }
@@ -74,7 +119,10 @@ public class Player implements Serializable {
         card.onDraw(this);
     }
 
-    //### setters
+    // ============================================================
+    // ### SETTERS
+    // ============================================================
+
     public void setFood (int food) {
         this.food = food;
     }
@@ -94,7 +142,10 @@ public class Player implements Serializable {
     public void setRemovedFromTrack (boolean removedFromTrack) {this.removedFromTrack = removedFromTrack;}
     public void setChoseAnOffer(boolean choseAnOffer) {this.choseAnOffer = choseAnOffer;}
 
-    //### getters
+    // ============================================================
+    // ### GETTERS
+    // ============================================================
+
     public String getNickname () {
         return nickname;
     }
@@ -127,7 +178,10 @@ public class Player implements Serializable {
         );
     }
 
-    // Event Management
+    // ============================================================
+    // ### EVENT MANAGEMENT
+    // ============================================================
+
     public int getFoodToPay() {
         return foodToPay;
     }

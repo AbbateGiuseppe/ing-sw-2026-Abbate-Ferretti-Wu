@@ -11,6 +11,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
+/**
+ * The {@code MockupPlayer} class represents the client-side snapshot of a specific player.
+ * It stores all the publicly or locally known information about the player, including
+ * their resources (food, points), their assigned totem, their connection status, and
+ * the cards they have played (characters and buildings).
+ * It also provides utility methods to render this information gracefully on a CLI using JLine.
+ */
 public class MockupPlayer implements Serializable {
     private final String nickname;
     private final int playerIndex;
@@ -23,13 +31,19 @@ public class MockupPlayer implements Serializable {
     private int drawableUpper;
     private int drawableLower;
 
-    /** set by the mockupGame at every change, it's used to highlight to the user this player if it's of turn*/
+    /** * Flag set by the {@link MockupGame} at every turn change.
+     * It's used by the UI to highlight this player when it is their turn to play.
+     */
     private boolean ofTurn = false;
 
     /**
+     * Constructs a new {@code MockupPlayer} with initial stats.
      *
-     * @param nickname the player's nickname;
-     * @param playerIndex this player index in the model's array of players;
+     * @param nickname    the player's chosen nickname.
+     * @param playerIndex the player's index in the model's array of players.
+     * @param food        the starting amount of food.
+     * @param points      the starting amount of victory points.
+     * @param totem       the {@link Totem} assigned to this player.
      */
     public MockupPlayer ( String nickname, int playerIndex, int food, int points, Totem totem ) {
         this.nickname = nickname;
@@ -47,7 +61,10 @@ public class MockupPlayer implements Serializable {
         drawableLower = 0;
     }
 
-    //### setters
+    // ============================================================
+    // ### SETTERS
+    // ============================================================
+
     public void setFood (int food) {
         this.food = food;
     }
@@ -67,7 +84,19 @@ public class MockupPlayer implements Serializable {
         this.connected = connected;
     }
 
-    //### getters
+    /**
+     * Sets the turn flag for this player.
+     * This is typically managed automatically by {@link MockupGame#setCurrentPlayerIndex(int)}.
+     *
+     * @param ofTurn {@code true} if it is this player's turn, {@code false} otherwise.
+     */
+    public void setOfTurn ( boolean ofTurn ) {
+        this.ofTurn = ofTurn;
+    }
+
+    // ============================================================
+    // ### GETTERS
+    // ============================================================
     public String getNickname () {
         return nickname;
     }
@@ -103,13 +132,37 @@ public class MockupPlayer implements Serializable {
         return ofTurn;
     }
 
-    //### adders
+    // ============================================================
+    // ### ADDERS
+    // ============================================================
+
+    /**
+     * Adds a newly acquired character card to the player's personal board.
+     *
+     * @param card the character {@link Card} to add.
+     */
     public void addCharacterCard ( Card card ) {
         characterCards.add(card);
     }
+
+    /**
+     * Adds a newly acquired building card to the player's personal board.
+     *
+     * @param card the building {@link Card} to add.
+     */
     public void addBuildingCard ( Card card ) {
         buildingCards.add(card);
     }
+
+    // ============================================================
+    // ### RENDERING METHODS
+    // ============================================================
+
+    /**
+     * Generates a stylized string listing the player's nickname and all their cards.
+     *
+     * @return an {@link AttributedString} containing the full inventory of the player.
+     */
 
     public AttributedString AllToAttributedString () {
         AttributedStringBuilder stringBuilder = new AttributedStringBuilder();
@@ -129,6 +182,18 @@ public class MockupPlayer implements Serializable {
         }
         return stringBuilder.toAttributedString();
     }
+
+    /**
+     * Generates a stylized string for the player's name, color-coded based on their status:
+     * <ul>
+     * <li><b>Red:</b> It is currently this player's turn.</li>
+     * <li><b>Yellow:</b> The player is connected and waiting.</li>
+     * <li><b>Black (Bold):</b> The player is disconnected.</li>
+     * </ul>
+     * It also prepends the player's colored totem symbol (or a placeholder if null).
+     *
+     * @return the formatted {@link AttributedString} for the player's display name.
+     */
     public AttributedString displayAttributedStringName() {
         if(totem != null) {
             if(ofTurn){
@@ -173,12 +238,24 @@ public class MockupPlayer implements Serializable {
 
         }
     }
+
+    /**
+     * Generates a stylized string displaying the player's current resources (Food and Points).
+     * Format example: {@code 3♥/5♦}
+     *
+     * @return the formatted {@link AttributedString} of the player's stats.
+     */
     public AttributedString displayAttributedStringStats() {
         return new AttributedStringBuilder()
                 .append(String.valueOf(food)).append("♥/").append(String.valueOf(points)).append("♦")
                 .toAttributedString();
     }
 
+    /**
+     * Returns a standard plain-text representation of the player's basic stats.
+     *
+     * @return a string formatted as "Index: Nickname (food=X, points=Y)".
+     */
     @Override
     public String toString() {
         return playerIndex + ": " + nickname +
@@ -186,7 +263,6 @@ public class MockupPlayer implements Serializable {
                 ", points=" + points + ")";
     }
 
-    public void setOfTurn ( boolean ofTurn ) {
-        this.ofTurn = ofTurn;
-    }
+
+
 }
