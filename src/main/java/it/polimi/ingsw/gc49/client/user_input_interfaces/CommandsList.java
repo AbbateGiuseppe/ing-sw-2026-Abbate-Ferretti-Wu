@@ -51,4 +51,8 @@ public class CommandsList {
     public final static ItaEngString OFFER_em_01 = PLAYER_em;
 
     public final static ItaEngString TOTEM = new ItaEngString("totemo", "totem");
+
+    public final static ItaEngString IDIOT = new ItaEngString("idiota", "idiot");
+    public final static ItaEngString IDIOT_et_01 = new ItaEngString("ATTENZIONE: idiota", "ALERT: idiot");
+    public final static ItaEngString IDIOT_em_01 = new ItaEngString("tu SEI un IDIOTA :) ", "you ARE an IDIOT :) ");
 }
