@@ -480,4 +480,21 @@ public class Deck implements Serializable {
     public void addCard(Card card){
         tribeDeck.add(card);
     }
+
+    public ArrayList<Card> getTribeDeck(){
+        return tribeDeck;
+    };
+
+    public ArrayList<Card> getBuildingDeck(){
+        return buildingDeck;
+    };
+
+    public EventManager getGameEventManager(){
+        return gameEventManager;
+    };
+
+    public QueueUpdatable getQueueUpdater(){
+        return queueUpdater;
+    }
+
 }

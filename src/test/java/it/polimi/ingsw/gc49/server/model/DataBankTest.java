@@ -5,66 +5,46 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unified test class for {@link DataBank}. Targets ≥90% line and branch coverage by
+ * exercising every public method and every conditional branch (CompleteSet on empty vs.
+ * populated map, SamePairInventions with the flag on/off, addInvention with and without
+ * the same-pair tracker active, and so on).
+ */
 class DataBankTest {
 
-    private Player player;
     private DataBank dataBank;
+    private Player peppe;
 
     @BeforeEach
     void setUp() {
-        player = new Player("Peppe", 0);
-        dataBank = new DataBank(player);
+        peppe = new Player("Peppe", 0);
+        dataBank = peppe.data; // DataBank is created inside Player
     }
 
-    @Test
-    @DisplayName("Constructor stores the assigned player")
-    void constructorStoresPlayer() {
-        assertSame(player, dataBank.assignedPlayer);
-    }
+    // --- assignedPlayer ---
 
     @Test
-    @DisplayName("Fresh databank has empty/zero state")
-    void freshStateIsEmpty() {
-        assertEquals(0, dataBank.getNumCharacters());
-        assertEquals(0, dataBank.getNumBuildingDiscount());
-        assertEquals(0, dataBank.getNumBuildingPoints());
-        assertEquals(0, dataBank.getNumSustenanceDiscount());
-        assertEquals(0, dataBank.getNumStars());
-        assertEquals(0, dataBank.getNumBuilderPoints());
-        assertEquals(0, dataBank.getDifferentInventionCount());
-        assertTrue(dataBank.getInventions().isEmpty());
+    @DisplayName("assignedPlayer is the player passed to the constructor")
+    void assignedPlayerIsStored() {
+        DataBank fresh = new DataBank(peppe);
+        assertSame(peppe, fresh.assignedPlayer);
+    }
+
+    // --- getCharacterCount: every branch ---
+
+    @Test
+    @DisplayName("getCharacterCount(CompleteSet) returns 0 when the map is empty")
+    void completeSetEmptyMapIsZero() {
         assertEquals(0, dataBank.getCharacterCount(CharacterType.CompleteSet));
     }
 
     @Test
-    @DisplayName("addCharacterCount creates and accumulates counts per type")
-    void addCharacterCountAccumulates() {
-        dataBank.addCharacterCount(CharacterType.Hunter, 1);
-        assertEquals(1, dataBank.getCharacterCount(CharacterType.Hunter));
-
-        dataBank.addCharacterCount(CharacterType.Hunter, 2);
-        assertEquals(3, dataBank.getCharacterCount(CharacterType.Hunter));
-    }
-
-    @Test
-    @DisplayName("getCharacterCount returns 0 for a type never added")
-    void unknownTypeReturnsZero() {
-        dataBank.addCharacterCount(CharacterType.Hunter, 1);
-        assertEquals(0, dataBank.getCharacterCount(CharacterType.Builder));
-    }
-
-    @Test
-    @DisplayName("getNumCharacters sums across all stored types")
-    void numCharactersSumsAllTypes() {
-        dataBank.addCharacterCount(CharacterType.Hunter, 2);
-        dataBank.addCharacterCount(CharacterType.Builder, 3);
-        assertEquals(5, dataBank.getNumCharacters());
-    }
-
-    @Test
-    @DisplayName("CompleteSet returns the minimum count across stored types")
+    @DisplayName("getCharacterCount(CompleteSet) returns the minimum of the counts when populated")
     void completeSetReturnsMinimum() {
         dataBank.addCharacterCount(CharacterType.Hunter, 3);
         dataBank.addCharacterCount(CharacterType.Builder, 1);
@@ -73,87 +53,224 @@ class DataBankTest {
     }
 
     @Test
-    @DisplayName("Building discount accumulates")
-    void buildingDiscountAccumulates() {
+    @DisplayName("getCharacterCount(SamePairInventions) returns 0 when the flag is off")
+    void samePairFlagOff() {
+        assertEquals(0, dataBank.getCharacterCount(CharacterType.SamePairInventions));
+    }
+
+    @Test
+    @DisplayName("getCharacterCount(SamePairInventions) returns 1 when the flag is on, and consumes it")
+    void samePairFlagOnConsumed() {
+        // arm the flag by recording inventions and adding a duplicate
+        dataBank.recordInventions();
+        Invention inv = Invention.CANOE;
+        dataBank.addInvention(inv);
+        dataBank.addInvention(inv);
+
+        assertEquals(1, dataBank.getCharacterCount(CharacterType.SamePairInventions));
+        // flag consumed on read
+        assertEquals(0, dataBank.getCharacterCount(CharacterType.SamePairInventions));
+    }
+
+    @Test
+    @DisplayName("getCharacterCount(other) returns 0 when the type was never added")
+    void getCharacterCountUnknownType() {
+        assertEquals(0, dataBank.getCharacterCount(CharacterType.Hunter));
+    }
+
+    @Test
+    @DisplayName("getCharacterCount(other) returns the stored count when present")
+    void getCharacterCountKnownType() {
+        dataBank.addCharacterCount(CharacterType.Hunter, 5);
+        assertEquals(5, dataBank.getCharacterCount(CharacterType.Hunter));
+    }
+
+    // --- addCharacterCount: both branches ---
+
+    @Test
+    @DisplayName("addCharacterCount inserts a new entry when the type is unknown")
+    void addCharacterCountFirstTime() {
+        dataBank.addCharacterCount(CharacterType.Artist, 2);
+        assertEquals(2, dataBank.getCharacterCount(CharacterType.Artist));
+    }
+
+    @Test
+    @DisplayName("addCharacterCount accumulates when the type is already present")
+    void addCharacterCountAccumulates() {
+        dataBank.addCharacterCount(CharacterType.Hunter, 2);
+        dataBank.addCharacterCount(CharacterType.Hunter, 3);
+        assertEquals(5, dataBank.getCharacterCount(CharacterType.Hunter));
+    }
+
+    @Test
+    @DisplayName("addCharacterCount accepts negative increments")
+    void addCharacterCountNegative() {
+        dataBank.addCharacterCount(CharacterType.Hunter, 5);
+        dataBank.addCharacterCount(CharacterType.Hunter, -2);
+        assertEquals(3, dataBank.getCharacterCount(CharacterType.Hunter));
+    }
+
+    // --- getNumCharacters ---
+
+    @Test
+    @DisplayName("getNumCharacters is zero on a fresh DataBank")
+    void numCharactersInitiallyZero() {
+        assertEquals(0, dataBank.getNumCharacters());
+    }
+
+    @Test
+    @DisplayName("getNumCharacters sums every type's count")
+    void numCharactersSums() {
+        dataBank.addCharacterCount(CharacterType.Hunter, 2);
+        dataBank.addCharacterCount(CharacterType.Builder, 1);
+        dataBank.addCharacterCount(CharacterType.Shaman, 3);
+        dataBank.addCharacterCount(CharacterType.Artist, 1);
+        assertEquals(7, dataBank.getNumCharacters());
+    }
+
+    // --- numeric accumulators ---
+
+    @Test
+    @DisplayName("addNumBuildingDiscount accumulates and returns the running total")
+    void buildingDiscountAccumulator() {
+        assertEquals(0, dataBank.getNumBuildingDiscount());
         dataBank.addNumBuildingDiscount(2);
         dataBank.addNumBuildingDiscount(3);
         assertEquals(5, dataBank.getNumBuildingDiscount());
     }
 
     @Test
-    @DisplayName("Sustenance discount accumulates")
-    void sustenanceDiscountAccumulates() {
-        dataBank.addNumSustenanceDiscount(4);
-        assertEquals(4, dataBank.getNumSustenanceDiscount());
-    }
-
-    @Test
-    @DisplayName("Building points accumulate")
-    void buildingPointsAccumulate() {
-        dataBank.addNumBuildingPoints(7);
-        dataBank.addNumBuildingPoints(1);
-        assertEquals(8, dataBank.getNumBuildingPoints());
-    }
-
-    @Test
-    @DisplayName("Stars accumulate")
-    void starsAccumulate() {
-        dataBank.addNumStar(2);
-        dataBank.addNumStar(5);
-        assertEquals(7, dataBank.getNumStars());
-    }
-
-    @Test
-    @DisplayName("Builder points accumulate and can be overwritten with setter")
-    void builderPointsAddAndSet() {
-        dataBank.addNumBuilderPoints(3);
-        dataBank.addNumBuilderPoints(2);
+    @DisplayName("addNumBuilderPoints accumulates and is exposed by getNumBuilderPoints")
+    void builderPointsAccumulator() {
+        assertEquals(0, dataBank.getNumBuilderPoints());
+        dataBank.addNumBuilderPoints(4);
+        dataBank.addNumBuilderPoints(1);
         assertEquals(5, dataBank.getNumBuilderPoints());
-
-        dataBank.setNumBuilderPoints(10);
-        assertEquals(10, dataBank.getNumBuilderPoints());
     }
 
     @Test
-    @DisplayName("addInvention records distinct inventions and counts uniqueness")
-    void addInventionTracksDistinct() {
-        Invention first = Invention.values()[0];
-        Invention second = Invention.values()[1];
-
-        dataBank.addInvention(first);
-        assertEquals(1, dataBank.getDifferentInventionCount());
-        assertTrue(dataBank.getInventions().contains(first));
-
-        // adding the same invention again does not increase the distinct count
-        dataBank.addInvention(first);
-        assertEquals(1, dataBank.getDifferentInventionCount());
-
-        dataBank.addInvention(second);
-        assertEquals(2, dataBank.getDifferentInventionCount());
+    @DisplayName("setNumBuilderPoints replaces the value")
+    void setBuilderPoints() {
+        dataBank.addNumBuilderPoints(10);
+        dataBank.setNumBuilderPoints(3);
+        assertEquals(3, dataBank.getNumBuilderPoints());
     }
 
     @Test
-    @DisplayName("SamePairInventions flag is set only when recording is active and a duplicate is added")
-    void samePairInventionsFlag() {
-        Invention inv = Invention.values()[0];
+    @DisplayName("addNumBuildingPoints accumulates and is exposed by getNumBuildingPoints")
+    void buildingPointsAccumulator() {
+        assertEquals(0, dataBank.getNumBuildingPoints());
+        dataBank.addNumBuildingPoints(7);
+        dataBank.addNumBuildingPoints(2);
+        assertEquals(9, dataBank.getNumBuildingPoints());
+    }
 
-        // without recordInventions() the same-pair tracking is inactive
+    @Test
+    @DisplayName("addNumSustenanceDiscount accumulates")
+    void sustenanceDiscountAccumulator() {
+        assertEquals(0, dataBank.getNumSustenanceDiscount());
+        dataBank.addNumSustenanceDiscount(2);
+        assertEquals(2, dataBank.getNumSustenanceDiscount());
+    }
+
+    @Test
+    @DisplayName("addNumStar accumulates")
+    void starsAccumulator() {
+        assertEquals(0, dataBank.getNumStars());
+        dataBank.addNumStar(3);
+        dataBank.addNumStar(1);
+        assertEquals(4, dataBank.getNumStars());
+    }
+
+    // --- inventions ---
+
+    @Test
+    @DisplayName("getInventions on a fresh DataBank is an empty EnumSet")
+    void inventionsInitiallyEmpty() {
+        EnumSet<Invention> inv = dataBank.getInventions();
+        assertNotNull(inv);
+        assertTrue(inv.isEmpty());
+        assertEquals(0, dataBank.getDifferentInventionCount());
+    }
+
+    @Test
+    @DisplayName("addInvention without recording adds to the set without setting the flag")
+    void addInventionWithoutRecording() {
+        Invention inv = Invention.CANOE;
         dataBank.addInvention(inv);
-        dataBank.addInvention(inv);
+        dataBank.addInvention(inv); // duplicate before recordInventions: must not set the flag
+
+        assertEquals(1, dataBank.getDifferentInventionCount());
         assertEquals(0, dataBank.getCharacterCount(CharacterType.SamePairInventions));
+    }
 
-        // activate recording, then add a duplicate to trigger the flag
+    @Test
+    @DisplayName("recordInventions activates the same-pair tracker")
+    void recordInventionsActivatesTracker() {
         dataBank.recordInventions();
-        dataBank.addInvention(inv); // count -> 1
-        dataBank.addInvention(inv); // duplicate -> sameInvention = true
-        assertEquals(1, dataBank.getCharacterCount(CharacterType.SamePairInventions));
-        // the flag is consumed on read
+        // first copy: counter -> 1, flag stays off
+        dataBank.addInvention(Invention.CANOE);
         assertEquals(0, dataBank.getCharacterCount(CharacterType.SamePairInventions));
+
+        // second copy: pair formed, flag on
+        dataBank.addInvention(Invention.CANOE);
+        assertEquals(1, dataBank.getCharacterCount(CharacterType.SamePairInventions));
     }
 
     @Test
-    @DisplayName("recordCharaSet snapshots the current complete-set count")
-    void recordCharaSetSnapshot() {
+    @DisplayName("after a pair triggers the flag, the counter resets so the third copy does not retrigger")
+    void samePairResetsAfterTrigger() {
+        dataBank.recordInventions();
+        dataBank.addInvention(Invention.CANOE);
+        dataBank.addInvention(Invention.CANOE);
+        assertEquals(1, dataBank.getCharacterCount(CharacterType.SamePairInventions)); // consumes
+
+        // third copy: counter went back to 1, no pair yet
+        dataBank.addInvention(Invention.CANOE);
+        assertEquals(0, dataBank.getCharacterCount(CharacterType.SamePairInventions));
+
+        // fourth copy: second pair formed
+        dataBank.addInvention(Invention.CANOE);
+        assertEquals(1, dataBank.getCharacterCount(CharacterType.SamePairInventions));
+    }
+
+    @Test
+    @DisplayName("getInventions enforces set semantics: duplicates are not stored")
+    void inventionsAreASet() {
+        dataBank.addInvention(Invention.CANOE);
+        dataBank.addInvention(Invention.CANOE);
+        dataBank.addInvention(Invention.CANOE);
+        assertEquals(1, dataBank.getInventions().size());
+        assertEquals(1, dataBank.getDifferentInventionCount());
+    }
+
+    @Test
+    @DisplayName("addInvention covers every invention in the rulebook")
+    void allInventionsCounted() {
+        for (Invention inv : Invention.values()) {
+            dataBank.addInvention(inv);
+        }
+        assertEquals(Invention.values().length, dataBank.getDifferentInventionCount());
+    }
+
+    // --- complete character sets snapshot ---
+
+    @Test
+    @DisplayName("getCurrentNumCompleteCharacterSets starts at zero")
+    void completeCharacterSetsInitiallyZero() {
+        assertEquals(0, dataBank.getCurrentNumCompleteCharacterSets());
+    }
+
+    @Test
+    @DisplayName("recordCharaSet snapshots zero when no characters are present")
+    void recordCharaSetOnEmpty() {
+        dataBank.recordCharaSet();
+        assertEquals(0, dataBank.getCurrentNumCompleteCharacterSets());
+    }
+
+    @Test
+    @DisplayName("recordCharaSet snapshots the current CompleteSet count")
+    void recordCharaSetCapturesCurrent() {
         dataBank.addCharacterCount(CharacterType.Hunter, 2);
         dataBank.addCharacterCount(CharacterType.Builder, 2);
         dataBank.recordCharaSet();
@@ -161,11 +278,17 @@ class DataBankTest {
     }
 
     @Test
-    @DisplayName("incrementCurrentNumCompleteCharacterSets increases the recorded snapshot")
+    @DisplayName("incrementCurrentNumCompleteCharacterSets increases the snapshot")
     void incrementCompleteSets() {
-        dataBank.recordCharaSet(); // starts at 0 (no characters)
+        dataBank.recordCharaSet(); // 0
         dataBank.incrementCurrentNumCompleteCharacterSets();
         dataBank.incrementCurrentNumCompleteCharacterSets();
         assertEquals(2, dataBank.getCurrentNumCompleteCharacterSets());
+    }
+
+    @Test
+    @DisplayName("DataBank is Serializable")
+    void isSerializable() {
+        assertInstanceOf(java.io.Serializable.class, dataBank);
     }
 }
