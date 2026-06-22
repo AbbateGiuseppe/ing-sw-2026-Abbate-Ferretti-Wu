@@ -24,7 +24,9 @@ import org.jline.utils.*;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TextTerminal extends UserInputInterface {
     /**The key of the commands is the string representing the command type, such as "help" or "draw",
@@ -56,6 +58,9 @@ public class TextTerminal extends UserInputInterface {
             rows = terminal.getHeight();
         });
     }
+    private static final ScheduledExecutorService ahahScheduler = Executors.newScheduledThreadPool(1);
+    private static ScheduledFuture<?> laugh;
+    private static final AtomicInteger ahahCount = new AtomicInteger(0);
 
     private String lastCommand = "";
     private static final ItaEngString UNKOWN_COMMAND = new ItaEngString(" [Comando ignoto]", " [Unknown command]");
@@ -250,6 +255,49 @@ public class TextTerminal extends UserInputInterface {
                 }
             }
         });
+
+        //???
+        commands.put(CommandsList.IDIOT.print(localLanguage), ( terminalMethods, _, _, _, _ ) -> {
+            Random rand = new Random();
+
+            if (laugh != null) {
+                laugh.cancel(true);
+            }
+            ahahCount.set(0);
+            laugh = ahahScheduler.scheduleAtFixedRate(() -> {
+                int currentRun = ahahCount.incrementAndGet();
+                if (currentRun >= 20) {
+                    if (laugh != null) {
+                        laugh.cancel(true);
+                    }
+                } else {
+                    boolean ah = true;
+                    StringBuilder ahahString = new StringBuilder();
+                    for(int ahahLenght = rand.nextInt(45) + 15; ahahLenght > 0; ahahLenght--) {
+                        boolean caps = rand.nextBoolean();
+                        if(ah){
+                            if(caps) {
+                                ahahString.append("a".toUpperCase());
+                            }else{
+                                ahahString.append("a".toLowerCase());
+                            }
+                        }else{
+                            if(caps) {
+                                ahahString.append("h".toUpperCase());
+                            }else{
+                                ahahString.append("h".toLowerCase());
+                            }
+                        }
+                        ah = !ah;
+                    }
+                    ahahString.append("!");
+                    terminalMethods.printError( new ErrorPacket(
+                            CommandsList.IDIOT_et_01.print(localLanguage),
+                            CommandsList.IDIOT_em_01.print(localLanguage) + ahahString,
+                            false)
+                    );
+                }}, 0, 1, TimeUnit.SECONDS);
+        });
     }
 
 
@@ -398,12 +446,20 @@ public class TextTerminal extends UserInputInterface {
 
         return parts.toArray(new String[0]);
     }
+    private int saveCursorY() {
+        return terminal.getCursorPosition(_ -> {}).getY();
+    }
+    private int saveCursorX() {
+        return terminal.getCursorPosition(_ -> {}).getX();
+    }
+    private void restoreCursorPosition(int cursorX, int cursorY){
+        terminal.puts(InfoCmp.Capability.cursor_address, cursorY, cursorX);
+    }
     private void printRectangleString( RectangleAttributedString rectangleAttributedString ){
         synchronized (cursorLock) {
 
-            Cursor cursor = terminal.getCursorPosition(_ -> {});
-            int initialY = cursor.getY();
-            int initialX = cursor.getX();
+            int initialY = saveCursorY();
+            int initialX = saveCursorX();
             int height = rectangleAttributedString.height;
             int width = rectangleAttributedString.width;
             for (int currentLine = 0; currentLine < height; currentLine++) {
@@ -411,12 +467,13 @@ public class TextTerminal extends UserInputInterface {
                 rectangleAttributedString.attributedString.subSequence(currentLine * width, (currentLine * width) + width).print(terminal);
             }
 
-            terminal.puts(InfoCmp.Capability.cursor_address, initialY, initialX);
+            restoreCursorPosition(initialX, initialY);
         }
     }
     private void printScroll(String toPrint){
         synchronized (cursorLock) {
-            terminal.puts(InfoCmp.Capability.save_cursor);
+            int initialY = saveCursorY();
+            int initialX = saveCursorX();
             // Go down
             terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT - 1, 1);
             terminal.writer().println();
@@ -424,7 +481,7 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.cursor_address, SCROLL_REGION_HEIGHT - 1, 1);
             terminal.writer().print(toPrint);
             // Restores cursor position
-            terminal.puts(InfoCmp.Capability.restore_cursor);
+            restoreCursorPosition(initialX, initialY);
         }
     }
     private void printManual () {
@@ -457,7 +514,8 @@ public class TextTerminal extends UserInputInterface {
     }
     private void printCommand ( String newCommand ){
         synchronized (cursorLock) {
-            terminal.puts(InfoCmp.Capability.save_cursor);
+            int initialY = saveCursorY();
+            int initialX = saveCursorX();
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 0);
             terminal.puts(InfoCmp.Capability.clr_eol);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_PREVIOUS_MESSAGE, 1);
@@ -474,13 +532,14 @@ public class TextTerminal extends UserInputInterface {
                     .style(AttributedStyle.DEFAULT.underline()).append(LAST_COMMAND.print(localLanguage))
                     .style(AttributedStyle.DEFAULT).append(": ").append(lastCommand)
                     .toAttributedString().print(terminal);
-            terminal.puts(InfoCmp.Capability.restore_cursor);
+            restoreCursorPosition(initialX, initialY);
         }
     }
     private void printError(ErrorPacket errorPacket) {
         synchronized (cursorLock) {
-            String errorString = new StringBuilder().append(new ItaEngString("Errore ", "Error ")).append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
-            terminal.puts(InfoCmp.Capability.save_cursor);
+            String errorString = new StringBuilder().append(new ItaEngString("Errore ", "Error ").print(localLanguage)).append("[").append(errorPacket.errorTitle).append("]: ").append(errorPacket.errorContent).toString();
+            int initialY = saveCursorY();
+            int initialX = saveCursorX();
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 0);
             terminal.puts(InfoCmp.Capability.clr_eol);
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 1);
@@ -488,15 +547,17 @@ public class TextTerminal extends UserInputInterface {
             terminal.puts(InfoCmp.Capability.restore_cursor);
             errorScheduler.schedule(() -> {
                 synchronized (cursorLock) {
-                    terminal.puts(InfoCmp.Capability.save_cursor);
+                    int initialY2 = saveCursorY();
+                    int initialX2 = saveCursorX();
                     terminal.puts(InfoCmp.Capability.cursor_address, LINE_ERROR, 0);
                     terminal.puts(InfoCmp.Capability.clr_eol);
-                    terminal.puts(InfoCmp.Capability.restore_cursor);
+                    restoreCursorPosition(initialX2, initialY2);
                 }
             }, ERROR_TIMEOUT, TimeUnit.SECONDS);
             if (errorPacket.forceDisconnection) {
                 System.exit(-1);
             }
+            restoreCursorPosition(initialX, initialY);
         }
     }
     private void displayStatus () {
@@ -517,23 +578,21 @@ public class TextTerminal extends UserInputInterface {
                     .append(currentPhase.print(localLanguage));
 
             //Save cursor
-            Cursor cursor = terminal.getCursorPosition(_ -> {});
-            int initialY = cursor.getY();
-            int initialX = cursor.getX();
+            int initialY = saveCursorY();
+            int initialX = saveCursorX();
             //Print
             terminal.puts(InfoCmp.Capability.cursor_address, rows-1, 1);
             terminal.puts(InfoCmp.Capability.clr_eol);
             status.print(terminal);
             //Restore cursor
-            terminal.puts(InfoCmp.Capability.cursor_address, initialY, initialX);
+            restoreCursorPosition(initialX, initialY);
         }
     }
 
     private void cleanShowbox() {
         //Save cursor
-        Cursor cursor = terminal.getCursorPosition(_ -> {});
-        int initialY = cursor.getY();
-        int initialX = cursor.getX();
+        int initialY = saveCursorY();
+        int initialX = saveCursorX();
 
         //Clean showbox
         for( int i = LINE_SHOW; i < LINE_PREVIOUS_MESSAGE; i++ ) {
@@ -542,7 +601,7 @@ public class TextTerminal extends UserInputInterface {
         }
 
         //Restore cursor
-        terminal.puts(InfoCmp.Capability.cursor_address, initialY, initialX);
+        restoreCursorPosition(initialX, initialY);
     }
     private void showSomething(AttributedString shownString) {
         synchronized (cursorLock) {
@@ -556,7 +615,9 @@ public class TextTerminal extends UserInputInterface {
     @Override
     public void show(){
         synchronized (cursorLock) {
-            terminal.puts(InfoCmp.Capability.save_cursor);
+            //Save cursor
+            int initialY = saveCursorY();
+            int initialX = saveCursorX();
             cleanShowbox();
             terminal.puts(InfoCmp.Capability.cursor_address, LINE_SHOW, 1);
             switch (currentPhase) {
@@ -584,7 +645,8 @@ public class TextTerminal extends UserInputInterface {
                     }
                     break;
             }
-            terminal.puts(InfoCmp.Capability.restore_cursor);
+            //Restore cursor
+            restoreCursorPosition(initialX, initialY);
         }
     }
 

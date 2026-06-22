@@ -60,6 +60,10 @@ public class Builder extends CharacterCard {
         dataBank.addNumBuilderPoints(numPoints);
     }
 
+    public int getBuildingDiscount() {
+        return buildingDiscount;
+    }
+
     /**
      * Provides a detailed string representation of the card, including its stats.
      *

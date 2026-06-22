@@ -8,6 +8,7 @@ import org.jline.utils.AttributedStyle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -116,6 +117,13 @@ public class MockupPlayer implements Serializable {
     }
     public int getDrawableLower () {
         return drawableLower;
+    }
+    public List<Card> getCharacterCards() {
+        return Collections.unmodifiableList(characterCards);
+    }
+
+    public List<Card> getBuildingCards() {
+        return Collections.unmodifiableList(buildingCards);
     }
     public boolean isConnected () {
         return connected;

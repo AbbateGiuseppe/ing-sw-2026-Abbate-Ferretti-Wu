@@ -251,10 +251,7 @@ public class Line implements Serializable {
      */
 
     public void endEra() {
-        // 1) If transitioning to Era III: discard any buildings in the lower row
-        if (newEra == Era.THIRD) {
-            lowerBuilding.clear();
-        }
+        lowerBuilding.clear();
 
         // 2) Move buildings from the upper row to the lower row (happens when Era II or III starts)
         lowerBuilding.addAll(upperBuilding);

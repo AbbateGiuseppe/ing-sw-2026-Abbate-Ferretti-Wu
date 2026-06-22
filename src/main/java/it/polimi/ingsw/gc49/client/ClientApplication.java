@@ -14,8 +14,12 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_ROOM.U
 import it.polimi.ingsw.gc49.client.proxies.PhasedProxyServer;
 import it.polimi.ingsw.gc49.client.proxies.RmiProxyServer;
 import it.polimi.ingsw.gc49.client.proxies.SocketProxyServer;
+import it.polimi.ingsw.gc49.client.gui.GuiInputInterface;
+import it.polimi.ingsw.gc49.client.gui.ImageAssetManager;
+import it.polimi.ingsw.gc49.client.gui.MainFrame;
 import it.polimi.ingsw.gc49.client.user_input_interfaces.TextTerminal;
 import it.polimi.ingsw.gc49.client.user_input_interfaces.UserInputInterface;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.ANY_phase.DISCONNECT.DisconnectPacket;
 import it.polimi.ingsw.gc49.server.FactoryServiceRmi;
 import it.polimi.ingsw.gc49.server.ServerMultiplexer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.ApplicationPhase;
@@ -26,6 +30,9 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
+import javax.swing.SwingUtilities;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -46,10 +53,12 @@ public class ClientApplication implements VirtualClient {
 
     /** The proxy used to communicate with the server. */
     private static PhasedProxyServer server;
-
+    public enum ConnectionType {
+        RMI,
+        SOCKET
+    }
     /** The player's chosen nickname. */
-    public final String nickname;
-
+    public String nickname;
     /** The local repository holding the current state of the game, hall, or room views. */
     public static final Mockup mockups = new Mockup();
 
@@ -60,6 +69,7 @@ public class ClientApplication implements VirtualClient {
     private static UserInputInterface inputInterface;
 
     /** The language currently selected by the user. */
+    private MainFrame mainFrame;
     public static ItaEngString.Language localLanguage;
 
     /** The JLine terminal instance used for rich console I/O. */
@@ -71,8 +81,6 @@ public class ClientApplication implements VirtualClient {
     private final static ItaEngString CONNECTION_02, CONNECTION_02_e_01, CONNECTION_02_e_02;
     private final static ItaEngString CONNECTION_03, CONNECTION_03_e_01, CONNECTION_03_e_02;
     private final static ItaEngString CONNECTION_04_e;
-
-
     static {
         try {
             terminal = TerminalBuilder.builder().system(true).provider("ffm").build();
@@ -103,6 +111,10 @@ public class ClientApplication implements VirtualClient {
      */
     public ClientApplication ( String nickname ) {
         this.nickname = nickname;
+    }
+
+    private ClientApplication () {
+        this.nickname = null;
     }
 
 
@@ -263,7 +275,6 @@ public class ClientApplication implements VirtualClient {
             }
         }).start();
 
-        //TODO: add input listening methods on clientside.
         if(inputInterface != null) {
             inputInterface.runInput(); //run interface
         }
@@ -288,7 +299,7 @@ public class ClientApplication implements VirtualClient {
     private static UserInputInterface chooseInputInterface( ItaEngString.Language localLanguage ) {
         ItaEngString CHOOSE_INTERFACE_01 = new ItaEngString("Premere 1 per l'interfaccia testuale, Premere 2 per l'interfaccia grafica", "Press 1 for the textual interface, Press 2 for the graphical interface");
         ItaEngString CHOOSE_INTERFACE_02 = new ItaEngString("Avvio dell'interfaccia testuale...", "Launching the textual interface...");
-        ItaEngString CHOOSE_INTERFACE_03 = new ItaEngString("ERRORE: INTERFACCIA NON ANCORA REALIZZATA! Chiusura imminente...", "ERROR: INTERFACE NOT YET IMPLEMENTED! Closure imminent...");
+        ItaEngString CHOOSE_INTERFACE_03 = new ItaEngString("Avvio dell'interfaccia grafica...", "Launching the graphical interface...");
         ItaEngString CHOOSE_INTERFCAE_04 = new ItaEngString("SCEGLI UN NUMERO TRA 1 e 2! Riprova", "CHOOSE A NUMBER BETWEEN 1 and 2! Try again");
         ItaEngString CHOOSE_INTERFACE_05 = new ItaEngString("NUMERO NON VALIDO! Riprova", "INVALID NUMBER! Try again");
 
@@ -299,13 +310,12 @@ public class ClientApplication implements VirtualClient {
                 int interfaceChoice = Integer.parseInt(lineReader.readLine("> "));
 
                 if (interfaceChoice == 1) {
-                    terminal.writer().println("");
+                    terminal.writer().println(CHOOSE_INTERFACE_02.print(localLanguage));
                     inputInterface = new TextTerminal(server, ApplicationPhase.ANY); //connect interface to server proxy
                     return inputInterface;
                 } else if (interfaceChoice == 2) {
-                    terminal.writer().println(CHOOSE_INTERFACE_02.print(localLanguage));
                     terminal.writer().println(CHOOSE_INTERFACE_03.print(localLanguage));
-                    System.exit(0);
+                    launchGui();
                     return null;
                 } else {
                     terminal.writer().println(CHOOSE_INTERFCAE_04.print(localLanguage));
@@ -313,6 +323,153 @@ public class ClientApplication implements VirtualClient {
             } catch (NumberFormatException e) {
                 terminal.writer().println(CHOOSE_INTERFACE_05.print(localLanguage));
             }
+        }
+    }
+    public static void launchGui() {
+        SwingUtilities.invokeLater(() -> {
+            ClientApplication application = new ClientApplication();
+            application.initializeGui();
+            application.showGui();
+        });
+    }
+    private void initializeGui() {
+        ImageAssetManager imageAssetManager = new ImageAssetManager();
+        this.mainFrame = new MainFrame(this, mockups, imageAssetManager);
+        inputInterface = new GuiInputInterface(null, ApplicationPhase.ANY, mainFrame);
+        this.mainFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                disconnectBeforeExit();
+            }
+        });
+        mainFrame.appendLog("Loaded " + imageAssetManager.getCardImageCount()
+                + " card images from the customer graphics folder.");
+        mainFrame.appendLog("First card asset: " + imageAssetManager.getFirstCardImagePath());
+    }
+    private void showGui() {
+        mainFrame.setVisible(true);
+    }
+
+
+
+    private boolean isGuiMode() {
+        return mainFrame != null;
+    }
+
+
+    public void guiConnect ( String host, String nickname, ConnectionType connectionType) {
+        String normalizedHost = host == null || host.trim().isEmpty() ? "localhost" : host.trim();
+        String normalizedNickname = nickname == null ? "" : nickname.trim();
+        if (normalizedNickname.isEmpty()) {
+            mainFrame.showError("Connection error", "Choose a nickname before connecting.");
+            return;
+        }
+
+        mainFrame.setConnectionInProgress(true);
+        mainFrame.appendLog("Connecting to " + normalizedHost + " as " + normalizedNickname + " with " + connectionType + "...");
+
+        Thread connector = new Thread(() -> {
+            try {
+                if (connectionType == ConnectionType.RMI) {
+                    connectRmi(normalizedHost, normalizedNickname);
+                } else {
+                    connectSocket(normalizedHost, normalizedNickname);
+                }
+            } catch (Exception e) {
+                SwingUtilities.invokeLater(() -> {
+                    mainFrame.setConnectionInProgress(false);
+                    mainFrame.showError("Connection failed", e.getMessage() == null ? e.toString() : e.getMessage());
+                });
+            }
+        }, "gui-connector");
+        connector.setDaemon(true);
+        connector.start();
+    }
+
+    private void connectRmi(String host, String nickname) throws Exception {
+        Registry registry = LocateRegistry.getRegistry(host, ServerMultiplexer.portRmi);
+        FactoryServiceRmi factory = (FactoryServiceRmi) registry.lookup(ServerMultiplexer.mainServer);
+        if (!factory.ping()) {
+            throw new IllegalStateException("Server did not answer ping.");
+        }
+
+        this.nickname = nickname;
+        PhasedProxyServer phasedProxyServer = new RmiProxyServer(this) {
+            @Override
+            public void handleServerOffline() {
+                running = false;
+                scheduler.shutdownNow();
+                ClientApplication.this.handleServerOffline();
+            }
+        };
+        VirtualClient clientStub = (VirtualClient) UnicastRemoteObject.exportObject(phasedProxyServer, 0);
+        VirtualServer serverStub = factory.connectPlayerRmi(nickname, clientStub);
+        phasedProxyServer.finishInitialization(serverStub, null, null);
+        finishGuiConnection(phasedProxyServer);
+    }
+
+    private void connectSocket(String host, String nickname) throws Exception {
+        Socket socket = new Socket(host, ServerMultiplexer.portSocket);
+        ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+        ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+        output.writeObject(nickname);
+        output.flush();
+
+        this.nickname = nickname;
+        PhasedProxyServer phasedProxyServer = new SocketProxyServer(this) {
+            @Override
+            public void handleServerOffline() {
+                running = false;
+                scheduler.shutdownNow();
+                ClientApplication.this.handleServerOffline();
+            }
+        };
+        phasedProxyServer.finishInitialization(null, input, output);
+        finishGuiConnection(phasedProxyServer);
+    }
+
+    private void finishGuiConnection(PhasedProxyServer phasedProxyServer) {
+        server = phasedProxyServer;
+        inputInterface.setVirtualServer(phasedProxyServer);
+        mainFrame.setVirtualServer(phasedProxyServer);
+        mainFrame.setNickname(nickname);
+
+        Thread serverReader = new Thread(() -> {
+            try {
+                phasedProxyServer.runVirtualServer();
+            } catch (SocketException e) {
+                handleServerOffline();
+            } catch (Exception e) {
+                SwingUtilities.invokeLater(() -> mainFrame.showError("Connection error", e.getMessage() == null ? e.toString() : e.getMessage()));
+            }
+        }, "gui-server-reader");
+        serverReader.setDaemon(true);
+        serverReader.start();
+
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.setConnectionInProgress(false);
+            mainFrame.appendLog("Connected.");
+        });
+    }
+
+    private void handleServerOffline() {
+        if (!isGuiMode()) {
+            return;
+        }
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.showError("Server offline", "The server stopped responding.");
+            mainFrame.showConnect();
+        });
+    }
+
+    private void disconnectBeforeExit() {
+        if (server == null) {
+            return;
+        }
+        try {
+            server.disconnect(new DisconnectPacket());
+        } catch (Exception ignored) {
+            // Closing the window must not hang if the server is already gone.
         }
     }
 
@@ -355,7 +512,11 @@ public class ClientApplication implements VirtualClient {
     @Override
     public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) throws RemoteException {
         mockups.setGame(initializeModelPacket.mockupModel);
-        inputInterface.show();
+        if (isGuiMode()) {
+            SwingUtilities.invokeLater(() -> mainFrame.refreshGame(mockups.getGame()));
+        } else {
+            inputInterface.show();
+        }
     }
 
     /**
@@ -366,10 +527,17 @@ public class ClientApplication implements VirtualClient {
      */
     @Override
     public void updateClientModel ( UpdateModelPacket updateModelPacket ) throws RemoteException {
-        if(mockups.getGame() != null) {
-            updateModelPacket.updateTheMockupModel(mockups.getGame(), inputInterface);
+        if (isGuiMode()) {
+            if (mockups.getGame() != null) {
+                UpdateModelPacket.UpdateResult result = updateModelPacket.updateTheMockupModelAndGetResult(mockups.getGame(), inputInterface);
+                SwingUtilities.invokeLater(() -> mainFrame.refreshChangedGame(mockups.getGame(), result.changedElements()));
+            }
+        } else {
+            if(mockups.getGame() != null) {
+                updateModelPacket.updateTheMockupModel(mockups.getGame(), inputInterface);
+            }
+            inputInterface.show();
         }
-        inputInterface.show();
     }
 
     /**
@@ -395,7 +563,11 @@ public class ClientApplication implements VirtualClient {
     @Override
     public void initializeClientHall ( InitializeHallPacket initializeHallPacket ) {
         mockups.setHall(initializeHallPacket.mockupHall);
-        inputInterface.show();
+        if (isGuiMode()) {
+            SwingUtilities.invokeLater(() -> mainFrame.refreshHall(mockups.getHall()));
+        } else {
+            inputInterface.show();
+        }
     }
 
     /**
@@ -406,7 +578,11 @@ public class ClientApplication implements VirtualClient {
     @Override
     public void updateClientHall ( UpdateHallPacket updateHallPacket ) {
         mockups.setHall(updateHallPacket.newMockupHall);
-        inputInterface.show();
+        if (isGuiMode()) {
+            SwingUtilities.invokeLater(() -> mainFrame.refreshHall(mockups.getHall()));
+        } else {
+            inputInterface.show();
+        }
     }
 
     // ============================================================
@@ -421,7 +597,11 @@ public class ClientApplication implements VirtualClient {
     @Override
     public void initializeClientRoom ( InitializeRoomPacket initializeRoomPacket ) {
         mockups.setRoom(initializeRoomPacket.mockupRoom);
-        inputInterface.show();
+        if (isGuiMode()) {
+            SwingUtilities.invokeLater(() -> mainFrame.refreshRoom(mockups.getRoom()));
+        } else {
+            inputInterface.show();
+        }
     }
 
     /**
@@ -432,6 +612,10 @@ public class ClientApplication implements VirtualClient {
     @Override
     public void updateClientRoom ( UpdateRoomPacket updateRoomPacket ) {
         mockups.setRoom(updateRoomPacket.newMockupRoom);
-        inputInterface.show();
+        if (isGuiMode()) {
+            SwingUtilities.invokeLater(() -> mainFrame.refreshRoom(mockups.getRoom()));
+        } else {
+            inputInterface.show();
+        }
     }
 }
