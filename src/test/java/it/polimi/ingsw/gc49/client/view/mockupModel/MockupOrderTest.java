@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class MockupOrderTest {
 
     private static MockupGame gameWithSinglePlayer() {
-        MockupPlayer peppe = new MockupPlayer("Peppe", 0, 0, 0, Totem.BLUE);
+        MockupPlayer peppe = new MockupPlayer("Peppe", 0, true, Totem.BLUE, 0, 0, new ArrayList<>(), new ArrayList<>(), 0, 0);
         List<MockupPlayer> players = new ArrayList<>();
         players.add(peppe);
         return new MockupGame(players, null, List.of(), List.of(), List.of(), List.of(), List.of(), List.of());

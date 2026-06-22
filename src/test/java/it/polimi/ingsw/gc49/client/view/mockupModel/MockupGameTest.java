@@ -26,8 +26,8 @@ class MockupGameTest {
 
     @BeforeEach
     void setUp() {
-        peppe = new MockupPlayer("Peppe", 0, 2, 0, Totem.BLUE);
-        wu = new MockupPlayer("Wu", 1, 3, 0, Totem.YELLOW);
+        peppe = new MockupPlayer("Peppe", 0, true, Totem.BLUE, 2, 0, new ArrayList<>(), new ArrayList<>(), 0, 0);
+        wu = new MockupPlayer("Wu", 1, true, Totem.YELLOW, 3, 0, new ArrayList<>(), new ArrayList<>(), 0, 0);
 
         offerA = new MockupOffer(0, 1, 0, null);
         offerB = new MockupOffer(2, 0, 0, null);
@@ -97,7 +97,7 @@ class MockupGameTest {
     @Test
     @DisplayName("setPlayers replaces the player list")
     void setPlayersReplacesList() {
-        MockupPlayer massi = new MockupPlayer("Massi", 0, 0, 0, null);
+        MockupPlayer massi = new MockupPlayer("Massi", 0, true, null, 0, 0, new ArrayList<>(), new ArrayList<>(), 0, 0);
         game.setPlayers(List.of(massi));
         assertSame(massi, game.getPlayer(0));
         assertEquals(1, game.getPlayers().size());
