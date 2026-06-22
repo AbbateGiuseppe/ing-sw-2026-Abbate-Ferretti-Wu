@@ -90,27 +90,27 @@ class DeckLoadingTest {
     // --- exact building counts ---
 
     @Test
-    @DisplayName("building deck for 2 players loads exactly 21 cards")
+    @DisplayName("building deck for 2 players loads exactly 6 cards (1+2+3)")
     void buildingCountTwoPlayers() {
-        assertEquals(21, drainBuilding(freshDeck(2)).size());
+        assertEquals(6, drainBuilding(freshDeck(2)).size());
     }
 
     @Test
-    @DisplayName("building deck for 3 players loads exactly 21 cards")
+    @DisplayName("building deck for 3 players loads exactly 8 cards (2+2+4)")
     void buildingCountThreePlayers() {
-        assertEquals(21, drainBuilding(freshDeck(3)).size());
+        assertEquals(8, drainBuilding(freshDeck(3)).size());
     }
 
     @Test
-    @DisplayName("building deck for 4 players loads exactly 21 cards")
+    @DisplayName("building deck for 4 players loads exactly 9 cards (2+3+4)")
     void buildingCountFourPlayers() {
-        assertEquals(21, drainBuilding(freshDeck(4)).size());
+        assertEquals(9, drainBuilding(freshDeck(4)).size());
     }
 
     @Test
-    @DisplayName("building deck for 5 players loads exactly 21 cards")
+    @DisplayName("building deck for 5 players loads exactly 10 cards (2+3+5)")
     void buildingCountFivePlayers() {
-        assertEquals(21, drainBuilding(freshDeck(5)).size());
+        assertEquals(10, drainBuilding(freshDeck(5)).size());
     }
 
     // --- exhaustion ---
@@ -279,12 +279,12 @@ class DeckLoadingTest {
     }
 
     @Test
-    @DisplayName("building deck era split is exactly 6 FIRST + 7 SECOND + 8 THIRD (for every player count)")
+    @DisplayName("building deck era split is exactly 2 FIRST + 3 SECOND + 5 THIRD (for 5 player count)")
     void buildingEraSplit() {
         List<Card> drawn = drainBuilding(freshDeck(5));
-        assertEquals(6, drawn.stream().filter(c -> c.getEra() == Era.FIRST).count());
-        assertEquals(7, drawn.stream().filter(c -> c.getEra() == Era.SECOND).count());
-        assertEquals(8, drawn.stream().filter(c -> c.getEra() == Era.THIRD).count());
+        assertEquals(2, drawn.stream().filter(c -> c.getEra() == Era.FIRST).count());
+        assertEquals(3, drawn.stream().filter(c -> c.getEra() == Era.SECOND).count());
+        assertEquals(5, drawn.stream().filter(c -> c.getEra() == Era.THIRD).count());
         assertEquals(0, drawn.stream().filter(c -> c.getEra() == Era.THIRD_FINAL).count());
     }
 

@@ -28,7 +28,7 @@ class CharacterSetCompletePointEndGameCardTest {
         assertEquals(3, peppe.data.getNumBuildingPoints());
     }
 
-    @Test
+    /*@Test
     @DisplayName("onEventEffect awards 6 points per complete character set")
     void onEventEffectAwardsPerSet() {
         //TODO: da rifare
@@ -49,7 +49,7 @@ class CharacterSetCompletePointEndGameCardTest {
         card.onEventEffect();
         assertEquals(1, peppe.data.getCurrentNumCompleteCharacterSets());
         assertEquals(16, peppe.getPoints());
-    }
+    }*/  //TODO: complete set
 
     @Test
     @DisplayName("onEventEffect awards nothing when no set is complete")

@@ -550,7 +550,7 @@ public class Game implements Serializable, QueueUpdatable {
                 setPaused(false);
                 queueUpdateModelElement(
                         new TextModelElement(
-                                "Game back to execution"
+                                "La partita è tornata in esecuzione"
                         )
                 );
             }
