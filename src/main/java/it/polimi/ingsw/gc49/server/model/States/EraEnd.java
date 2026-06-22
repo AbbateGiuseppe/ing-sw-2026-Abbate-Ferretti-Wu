@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.FullCardboardModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.GameStatusModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Locks;
 
@@ -44,6 +45,8 @@ public class EraEnd extends State {
                             game.getCardBoard().getLine().getLowerBuilding()
                     )
             );
+            game.queueUpdateModelElement(new GameStatusModelElement("Siamo passati alla fine dell'era", currentStateType));
+            game.broadcastGameUpdate();
         } catch (DeckEmptiedException e) {
             game.setLastRound(true); //sets the cycle as last round.
             game.queueUpdateModelElement(

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.GameStatusModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.ReturnModelElement;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Locks;
@@ -36,6 +37,8 @@ public class OfferExecution extends State{
      * @return The next state: {@link GameEnd} if this is the last round, otherwise {@link RoundEnd}.
      */
     public State executeState () {
+        game.queueUpdateModelElement(new GameStatusModelElement("Siamo passati all'eseguimento delle offerte", currentStateType));
+        game.broadcastGameUpdate();
         Player currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
         while (currentPlayer != null) { //loops until there's no player remaining to choose his actions.
             game.setCurrentPlayer(currentPlayer);

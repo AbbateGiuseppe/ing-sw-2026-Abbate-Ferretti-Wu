@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc49.client.view.mockupModel;
 import it.polimi.ingsw.gc49.client.view.RectangleAttributedString;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
 import it.polimi.ingsw.gc49.server.model.Era;
+import it.polimi.ingsw.gc49.server.model.States.State;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
  * To ensure data integrity, most getters return unmodifiable lists.
  */
 public class MockupGame implements Serializable {
+    private State.States gameState = State.States.OTHER;
     private int currentPlayerIndex;
     private List<MockupPlayer> players;
 
@@ -69,6 +71,11 @@ public class MockupGame implements Serializable {
     // ============================================================
     // SETTERS
     // ============================================================
+
+
+    public void setGameState ( State.States gameState ) {
+        this.gameState = gameState;
+    }
 
     /**
      * Replaces the current list of players.
@@ -160,6 +167,11 @@ public class MockupGame implements Serializable {
     // ============================================================
     // ### GETTERS
     // ============================================================
+
+    // States
+    public State.States getGameState() {
+        return gameState;
+    }
 
     // Players
 

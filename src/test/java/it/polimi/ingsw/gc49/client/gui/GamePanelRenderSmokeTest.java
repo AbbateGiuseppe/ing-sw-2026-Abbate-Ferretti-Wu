@@ -26,6 +26,7 @@ import java.awt.image.BufferedImage;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -122,10 +123,10 @@ class GamePanelRenderSmokeTest {
     }
 
     private MockupGame mockGame() {
-        MockupPlayer ada = new MockupPlayer("Ada", 0, 5, 2, Totem.ORANGE);
+        MockupPlayer ada = new MockupPlayer("Ada", 0, true, Totem.ORANGE, 5, 2, new ArrayList<>(), new ArrayList<>(), 0, 0);
         ada.addCharacterCard(new Hunter(true, Era.FIRST, 2, null));
         ada.addCharacterCard(new Artist(Era.FIRST, 2, null));
-        MockupPlayer ben = new MockupPlayer("Ben", 1, 3, 0, Totem.BLUE);
+        MockupPlayer ben = new MockupPlayer("Ben", 1, true, Totem.BLUE, 3, 0, new ArrayList<>(), new ArrayList<>(), 0 ,0);
         ben.addBuildingCard(new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 5, 3, Era.FIRST, 2, null));
 
         return new MockupGame(
