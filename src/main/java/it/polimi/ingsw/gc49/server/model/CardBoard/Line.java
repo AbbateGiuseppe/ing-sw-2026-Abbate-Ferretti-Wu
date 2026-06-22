@@ -183,10 +183,7 @@ public class Line implements Serializable {
     }
 
     public void endEra() {
-        // 1) Se si passa all'Era III: scarta eventuali edifici nella fila inferiore
-        if (newEra == Era.THIRD) {
-            lowerBuilding.clear();
-        }
+        lowerBuilding.clear();
 
         // 2) Sposta gli edifici dalla fila superiore alla fila inferiore
         //    (succede quando inizi Era II o III)

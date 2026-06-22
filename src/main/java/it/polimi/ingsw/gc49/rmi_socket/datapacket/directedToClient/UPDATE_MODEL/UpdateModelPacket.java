@@ -26,4 +26,23 @@ public class UpdateModelPacket extends Datapacket {
             updatesHeap.pop();
         }
     }
+
+    public UpdateResult updateTheMockupModelAndGetResult(MockupGame mockupGame, UserInputInterface inputInterface) {
+        List<Class<? extends UpdateModelElement>> changedElements = new ArrayList<>();
+
+        while (!updatesHeap.isEmpty()) {
+            UpdateModelElement element = updatesHeap.peek();
+
+            inputInterface.printString(element.actionInfo);
+            changedElements.add(element.getClass());
+            element.updateMockupModel(mockupGame);
+            updatesHeap.pop();
+        }
+
+        return new UpdateResult(changedElements);
+    }
+
+    public record UpdateResult(
+            List<Class<? extends UpdateModelElement>> changedElements
+    ) { }
 }

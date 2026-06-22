@@ -51,6 +51,7 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
     public void syncPlayer(PhasedProxyPlayer proxy) throws Exception {
 
         PlayingRoom playingRoom = (PlayingRoom) adaptee;
+        proxy.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
         proxy.initializeClientRoom( new InitializeRoomPacket(playingRoom.giveMockupRoom()) );
         MockupGame gameSnapshot = playingRoom.getGame().giveMockupGame();
         proxy.initializeClientModel( new InitializeModelPacket(gameSnapshot) );

@@ -535,19 +535,19 @@
     {
     "type": "HuntingEvent",
     "era": "FIRST",
-    "minNumPlayers": 3,
+    "minNumPlayers": 2,
     "pointsPerHunter": 1
     },
     {
     "type": "HuntingEvent",
     "era": "SECOND",
-    "minNumPlayers": 3,
+    "minNumPlayers": 2,
     "pointsPerHunter": 2
     },
     {
     "type": "HuntingEvent",
     "era": "THIRD",
-    "minNumPlayers": 3,
+    "minNumPlayers": 2,
     "pointsPerHunter": 3
     },
     {
