@@ -313,4 +313,5 @@ public class Line implements Serializable {
     public List<Card> getLowerLine() { return lowerLine; }
     public List<Card> getUpperBuilding() { return upperBuilding; }
     public List<Card> getLowerBuilding() { return lowerBuilding; }
+
 }

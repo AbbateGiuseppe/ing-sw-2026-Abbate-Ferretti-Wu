@@ -115,4 +115,5 @@ public abstract class Card implements Rectangable, Serializable, ItaEngRectangab
      * @return {@code true} if this card can be placed on the lower line on setup, {@code false} otherwise
      */
     public abstract boolean isLowerLineOnSetup();
+
 }

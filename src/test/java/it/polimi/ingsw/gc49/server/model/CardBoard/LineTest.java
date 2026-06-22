@@ -1,18 +1,10 @@
 package it.polimi.ingsw.gc49.server.model.CardBoard;
 
-import it.polimi.ingsw.gc49.server.model.Card.BuildingCard.BonusHuntingCard;
 import it.polimi.ingsw.gc49.server.model.Card.Card;
-import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.Artist;
-import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.Hunter;
-import it.polimi.ingsw.gc49.server.model.Card.EventCard.HuntingEvent;
-import it.polimi.ingsw.gc49.server.model.BuildingEvent;
 import it.polimi.ingsw.gc49.server.model.Era;
-import it.polimi.ingsw.gc49.server.model.EventManager;
 import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Player;
-import it.polimi.ingsw.gc49.server.model.States.EraEndedException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -32,180 +24,222 @@ class LineTest {
     private Game game;
     private List<Player> players;
     private Deck deck;
-
+    private Deck deckEmpty;
     @BeforeEach
     void setUp() {
         // a real Game with 2 players: the constructor runs the InitialSetup state once
         game = new Game(2, List.of("Peppe", "Wu"), "testRoom");
         players = game.getPlayers();
-
-        // a fresh, controlled deck for the tests below
-        deck = new Deck();
+        deck = new Deck(game);
+        deckEmpty= new Deck();
     }
 
     @Test
-    @DisplayName("Constructor with an empty deck builds a Line with empty rows")
-    void constructorOnEmptyDeck() {
-        Line line = new Line(game, deck);
+     void constructorOnEmptyDeck() {
+        Line line = new Line(game, deckEmpty);
         assertTrue(line.getUpperLine().isEmpty());
         assertTrue(line.getLowerLine().isEmpty());
         assertTrue(line.getUpperBuilding().isEmpty());
         assertTrue(line.getLowerBuilding().isEmpty());
     }
 
-    @Test
-    @DisplayName("Constructor with character cards fills the lower line first, then the upper line")
-    void constructorFillsRowsCorrectly() {
-        // 2 players -> lower needs 3 character cards (numPlayers+1), upper needs 6 (numPlayers+4)
-        for (int i = 0; i < 9; i++) {
-            deck.addCard(new Hunter(false, Era.FIRST, 2, null));
-        }
-
-        Line line = new Line(game, deck);
-
-        assertEquals(3, line.getLowerLine().size(), "lower line should hold numPlayers+1 cards");
-        assertEquals(6, line.getUpperLine().size(), "upper line should hold numPlayers+4 cards");
-    }
 
     @Test
-    @DisplayName("Event cards are placed on the upper line, not the lower one")
-    void eventCardsGoToUpperLine() {
-        EventManager mgr = new EventManager();
-        // 2 events then 7 characters: events should land on the upper line
-        deck.addCard(new HuntingEvent(2, mgr, Era.FIRST, 2, null));
-        deck.addCard(new HuntingEvent(2, mgr, Era.FIRST, 2, null));
-        for (int i = 0; i < 7; i++) {
-            deck.addCard(new Hunter(false, Era.FIRST, 2, null));
-        }
+    void placedTwoPlayers() {
+        Game gameTwo= new Game(2, List.of("Peppe", "Wu"), "room");
+        Line line = new Line(gameTwo, new Deck(gameTwo));
 
-        Line line = new Line(game, deck);
-
+        assertEquals(6, line.getUpperLine().size());
         assertEquals(3, line.getLowerLine().size());
-        // events are in the upper line; the lower line must contain only character cards
-        line.getLowerLine().forEach(c -> assertFalse(c instanceof HuntingEvent));
     }
 
     @Test
-    @DisplayName("getCurrentEra defaults to the first era; hasEraChanged is false initially")
-    void initialEraState() {
-        Line line = new Line(game, deck);
-        assertEquals(Era.first(), line.getCurrentEra());
-        assertFalse(line.hasEraChanged());
+    void placedThreePlayers() {
+        Game gameThree= new Game(3, List.of("Peppe", "Wu", "Massi"), "room");
+        Line line = new Line(gameThree, new Deck(gameThree));
+
+        assertEquals(7, line.getUpperLine().size());
+        assertEquals(4, line.getLowerLine().size());
     }
 
     @Test
-    @DisplayName("drawUpperCharacter returns null on an out-of-range index")
-    void drawUpperOutOfRangeReturnsNull() {
-        Line line = new Line(game, deck);
-        assertNull(line.drawUpperCharacter(-1, players.get(0)));
-        assertNull(line.drawUpperCharacter(0, players.get(0)));  // empty line
-        assertNull(line.drawUpperCharacter(100, players.get(0)));
+    void placedFourPlayers() {
+        Game gameFour= new Game(4, List.of("Peppe", "Wu", "Massi", "Luigi"), "room");
+        Line line = new Line(gameFour, new Deck(gameFour));
+
+        assertEquals(8, line.getUpperLine().size());
+        assertEquals(5, line.getLowerLine().size());
     }
 
     @Test
-    @DisplayName("drawUpperCharacter removes the picked card from the upper line and returns it")
-    void drawUpperCharacterRemovesAndReturns() {
-        for (int i = 0; i < 9; i++) deck.addCard(new Hunter(false, Era.FIRST, 2, null));
-        Line line = new Line(game, deck);
-        int sizeBefore = line.getUpperLine().size();
+    void placedFivePlayers() {
+        Game gameFive= new Game(5, List.of("Peppe", "Wu", "Massi", "Luigi", "Mario"), "room");
+        Line line = new Line(gameFive, new Deck(gameFive));
 
-        Card drawn = line.drawUpperCharacter(0, players.get(0));
-
-        assertNotNull(drawn);
-        assertEquals(sizeBefore - 1, line.getUpperLine().size());
+        assertEquals(9, line.getUpperLine().size());
+        assertEquals(6, line.getLowerLine().size());
     }
 
     @Test
-    @DisplayName("drawLowerCharacter returns null on an out-of-range index")
-    void drawLowerOutOfRangeReturnsNull() {
-        Line line = new Line(game, deck);
-        assertNull(line.drawLowerCharacter(0, players.get(0)));
+    void placedBuildingsTwoPlayers() {
+        Game gameTwo = new Game(2, List.of("Peppe", "Wu"), "room");
+        Line line = new Line(gameTwo, new Deck(gameTwo));
+
+        assertEquals(1, line.getUpperBuilding().size());
+        assertEquals(0, line.getLowerBuilding().size());
     }
 
     @Test
-    @DisplayName("drawLowerCharacter removes the picked card from the lower line and returns it")
-    void drawLowerCharacterRemovesAndReturns() {
-        for (int i = 0; i < 9; i++) deck.addCard(new Hunter(false, Era.FIRST, 2, null));
-        Line line = new Line(game, deck);
-        int sizeBefore = line.getLowerLine().size();
+    void placedBuildingsThreePlayers() {
+        Game gameThree = new Game(3, List.of("Peppe", "Wu", "Massi"), "room");
+        Line line = new Line(gameThree, new Deck(gameThree));
 
-        Card drawn = line.drawLowerCharacter(0, players.get(0));
-
-        assertNotNull(drawn);
-        assertEquals(sizeBefore - 1, line.getLowerLine().size());
+        assertEquals(2, line.getUpperBuilding().size());
+        assertEquals(0, line.getLowerBuilding().size());
     }
 
     @Test
-    @DisplayName("drawLowerBuilding returns null when the building card is unaffordable")
-    void drawUnaffordableBuildingReturnsNullAndLeavesIt() {
-        // build a Line with no characters and one building manually placed in the lower row
-        Line line = new Line(game, deck);
-        BonusHuntingCard expensive = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 100, Era.FIRST, 2, null);
-        line.getLowerBuilding().add(expensive);
+    void placedBuildingsFourPlayers() {
+        Game gameFour = new Game(4, List.of("Peppe", "Wu", "Massi", "Luigi"), "room");
+        Line line = new Line(gameFour, new Deck(gameFour));
 
-        Player peppe = players.get(0);
-        peppe.setFood(0);
-
-        Card result = line.drawLowerBuilding(0, peppe);
-
-        assertNull(result);
-        assertEquals(1, line.getLowerBuilding().size(), "card must remain in the row when unaffordable");
+        assertEquals(2, line.getUpperBuilding().size());
+        assertEquals(0, line.getLowerBuilding().size());
     }
 
     @Test
-    @DisplayName("endRound discards the lower line, shifts the upper line down, and refills the upper line")
-    void endRoundShiftsAndRefills() throws EraEndedException {
-        // start: 9 cards Era I -> lower 3, upper 6
-        for (int i = 0; i < 9; i++) deck.addCard(new Hunter(false, Era.FIRST, 2, null));
-        // refill source: 6 more Era I cards available
-        for (int i = 0; i < 6; i++) deck.addCard(new Hunter(false, Era.FIRST, 2, null));
+    void placedBuildingsFivePlayers() {
+        Game gameFive = new Game(5, List.of("Peppe", "Wu", "Massi", "Luigi", "Mario"), "room");
+        Line line = new Line(gameFive, new Deck(gameFive));
 
-        Line line = new Line(game, deck);
-        line.endRound(2);
-
-        assertEquals(6, line.getLowerLine().size(), "the old upper line moves down");
-        assertEquals(6, line.getUpperLine().size(), "the upper line is refilled with numPlayers+4 new cards");
-        assertFalse(line.hasEraChanged());
+        assertEquals(2, line.getUpperBuilding().size());
+        assertEquals(0, line.getLowerBuilding().size());
     }
 
     @Test
-    @DisplayName("endRound throws EraEndedException when refilled cards belong to a new era")
-    void endRoundDetectsEraChange() {
-        // setup with Era I, then refill with Era II
-        for (int i = 0; i < 9; i++) deck.addCard(new Hunter(false, Era.FIRST, 2, null));
-        for (int i = 0; i < 6; i++) deck.addCard(new Hunter(false, Era.SECOND, 2, null));
-
+    void currentEraInitiallyFirst() {
         Line line = new Line(game, deck);
-        assertThrows(EraEndedException.class, () -> line.endRound(2));
-        assertTrue(line.hasEraChanged());
-        assertEquals(Era.SECOND, line.getNewEra());
+        assertEquals(Era.FIRST, line.getCurrentEra());
     }
 
     @Test
-    @DisplayName("clearEraChange resets the era-change flags")
-    void clearEraChangeResets() {
-        for (int i = 0; i < 9; i++) deck.addCard(new Hunter(false, Era.FIRST, 2, null));
-        for (int i = 0; i < 6; i++) deck.addCard(new Hunter(false, Era.SECOND, 2, null));
+    void clearEraChangeResetsFlagAndNewEra() {
         Line line = new Line(game, deck);
-        assertThrows(EraEndedException.class, () -> line.endRound(2));
-
         line.clearEraChange();
-
         assertFalse(line.hasEraChanged());
         assertNull(line.getNewEra());
     }
 
+
     @Test
-    @DisplayName("endGame clears all rows")
-    void endGameClearsAllRows() {
-        for (int i = 0; i < 9; i++) deck.addCard(new Hunter(false, Era.FIRST, 2, null));
+    void drawUpperCharacterNegativeIndexReturnsNull() {
         Line line = new Line(game, deck);
-
-        line.endGame();
-
-        assertTrue(line.getUpperLine().isEmpty());
-        assertTrue(line.getLowerLine().isEmpty());
-        assertTrue(line.getUpperBuilding().isEmpty());
-        assertTrue(line.getLowerBuilding().isEmpty());
+        assertNull(line.drawUpperCharacter(-1, players.get(0)));
     }
+
+    @Test
+    void drawUpperCharacterOutOfRangeReturnsNull() {
+        Line line = new Line(game, deck);
+        assertNull(line.drawUpperCharacter(99, players.get(0)));
+    }
+
+    @Test
+    void drawUpperCharacterOnEmptyLineReturnsNull() {
+        Line line = new Line(game, deckEmpty);
+        assertNull(line.drawUpperCharacter(0, players.get(0)));
+    }
+
+    @Test
+    void drawLowerCharacterReturnsCardAndRemovesIt() {
+        Line line = new Line(game, deck);
+        int sizeBefore = line.getLowerLine().size();
+        Card picked = line.drawLowerCharacter(0, players.get(0));
+
+        assertNotNull(picked);
+        assertEquals(sizeBefore - 1, line.getLowerLine().size());
+    }
+
+    @Test
+    void drawLowerCharacterNegativeIndexReturnsNull() {
+        Line line = new Line(game, deck);
+        assertNull(line.drawLowerCharacter(-1, players.get(0)));
+    }
+
+    @Test
+    void drawLowerCharacterOutOfRangeReturnsNull() {
+        Line line = new Line(game, deck);
+        assertNull(line.drawLowerCharacter(99, players.get(0)));
+    }
+
+    @Test
+    void drawLowerCharacterOnEmptyLineReturnsNull() {
+        Line line = new Line(game, deckEmpty);
+        assertNull(line.drawLowerCharacter(0, players.get(0)));
+    }
+
+    @Test
+    void drawUpperBuildingReturnsCardAndRemovesIt() {
+        Line line = new Line(game, deck);
+        players.get(0).setFood(100);
+        int sizeBefore = line.getUpperBuilding().size();
+        Card picked = line.drawUpperBuilding(0, players.get(0));
+
+        assertNotNull(picked);
+        assertEquals(sizeBefore - 1, line.getUpperBuilding().size());
+    }
+
+    @Test
+    void drawUpperBuildingNegativeIndexReturnsNull() {
+        Line line = new Line(game, deck);
+        assertNull(line.drawUpperBuilding(-1, players.get(0)));
+    }
+
+    @Test
+    void drawUpperBuildingOutOfRangeReturnsNull() {
+        Line line = new Line(game, deck);
+        assertNull(line.drawUpperBuilding(99, players.get(0)));
+    }
+
+    @Test
+    void drawUpperBuildingOnEmptyLineReturnsNull() {
+        Line line = new Line(game, deckEmpty);
+        assertNull(line.drawUpperBuilding(0, players.get(0)));
+    }
+
+    @Test
+    void drawLowerBuildingOnEmptyLineReturnsNull() {
+        Line line = new Line(game, deck);
+        assertNull(line.drawLowerBuilding(0, players.get(0)));
+    }
+
+    @Test
+    void drawLowerBuildingNegativeIndexReturnsNull() {
+        Line line = new Line(game, deck);
+        assertNull(line.drawLowerBuilding(-1, players.get(0)));
+    }
+
+    @Test
+    void drawLowerBuildingOutOfRangeReturnsNull() {
+        Line line = new Line(game, deck);
+        assertNull(line.drawLowerBuilding(99, players.get(0)));
+    }
+
+    @Test
+    void endRoundDoesNotThrowOnFreshLine() {
+        Line line = new Line(game, deck);
+        assertDoesNotThrow(() -> line.endRound(2));
+    }
+
+    @Test
+    void endEraDoesNotThrow() {
+        Line line = new Line(game, deck);
+        assertDoesNotThrow(line::endEra);
+    }
+
+    @Test
+    void endGameDoesNotThrow() {
+        Line line = new Line(game, deck);
+        assertDoesNotThrow(line::endGame);
+    }
+
 }

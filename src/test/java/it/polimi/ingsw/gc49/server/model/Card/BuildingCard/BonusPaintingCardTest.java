@@ -20,7 +20,6 @@ class BonusPaintingCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         BonusPaintingCard card = new BonusPaintingCard(BuildingEvent.PAINTING_EVENT, 2, 5, Era.FIRST, 2, null);
         card.updateDataBank(peppe.data);
@@ -28,7 +27,6 @@ class BonusPaintingCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect reduces food-to-pay by the number of artists")
     void onEventEffectReducesFoodToPay() {
         BonusPaintingCard card = new BonusPaintingCard(BuildingEvent.PAINTING_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);

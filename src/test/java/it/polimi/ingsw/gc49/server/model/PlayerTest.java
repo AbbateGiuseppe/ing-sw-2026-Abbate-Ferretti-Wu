@@ -16,84 +16,10 @@ class PlayerTest {
         player = new Player("Massi", 2);
     }
 
-    // verifico le condizioni iniziali
-    @Test
-    @DisplayName("Constructor initializes fields with expected defaults")
-    void constructorInitializesDefaults() {
-        assertEquals("Massi", player.getNickname());
-        assertEquals(2, player.getPlayerIndex());
-        assertEquals(0, player.getFood());
-        assertEquals(0, player.getPoints());
-        assertEquals(0, player.getDrawableUpper());
-        assertEquals(0, player.getDrawableLower());
-        assertNull(player.getTotem());
-        assertNull(player.getAssignedOrderSlot());
-        assertTrue(player.isConnected());
-        assertFalse(player.isRemovedFromTrack());
-        assertFalse(player.hasChosenAnOffer());
-        assertNotNull(player.data);
-        assertSame(player, player.data.assignedPlayer);
-    }
 
-
-/// Verifico che il cibo che aggiungo sia salvato correttamente
-    @Test
-    @DisplayName("addFood accumulates food, including negative amounts")
-    void addFoodAccumulates() {
-        player.addFood(5);
-        assertEquals(5, player.getFood());
-        player.addFood(-2);
-        assertEquals(3, player.getFood());
-    }
-
-
-    /// Verifico che i points siano aggiunti correttamente
-
-    @Test
-    @DisplayName("addPoints accumulates points, including negative amounts")
-    void addPointsAccumulates() {
-        player.addPoints(10);
-        assertEquals(10, player.getPoints());
-        player.addPoints(-4);
-        assertEquals(6, player.getPoints());
-    }
-
-
-    /// Vedo se i setter sovrascrivono
-    @Test
-    @DisplayName("setFood and setPoints overwrite the current values")
-    void settersOverwrite() {
-        player.addFood(5);
-        player.setFood(20);
-        assertEquals(20, player.getFood());
-
-        player.addPoints(5);
-        player.setPoints(7);
-        assertEquals(7, player.getPoints());
-    }
-
-
-/// Drawable upper e lower dipendono dall'offerta scelta
-    @Test
-    @DisplayName("setDrawableUpper and setDrawableLower set the drawable counters")
-    void setDrawables() {
-        player.setDrawableUpper(3);
-        player.setDrawableLower(2);
-        assertEquals(3, player.getDrawableUpper());
-        assertEquals(2, player.getDrawableLower());
-    }
-
-
-    /// Funzionamento scelta totem
-    @Test
-    @DisplayName("setTotem and getTotem round-trip")
-    void totemRoundTrip() {
-        player.setTotem(Totem.BLUE);
-        assertEquals(Totem.BLUE, player.getTotem());
-    }
-
-
-    /// Attributo utile per RESILIENCE
+    // ============================================================
+    // IN-GAME FEATURES
+    // ============================================================
     @Test
     @DisplayName("connection flag can be toggled")
     void connectionToggle() {
@@ -104,8 +30,6 @@ class PlayerTest {
         assertTrue(player.isConnected());
     }
 
-
-    /// utilizzato in connectPlayer della classe game
     @Test
     @DisplayName("removedFromTrack flag can be toggled")
     void removedFromTrackToggle() {
@@ -113,8 +37,6 @@ class PlayerTest {
         player.setRemovedFromTrack(true);
         assertTrue(player.isRemovedFromTrack());
     }
-
-
 
     @Test
     @DisplayName("choseAnOffer flag can be toggled")
@@ -182,8 +104,6 @@ class PlayerTest {
         assertFalse(player.isUniqueWinner());
     }
 
-
-    /// Controllo del mockup
     @Test
     @DisplayName("getNumOfConnectedPlayers-like state: giveMockupPlayer reflects current state")
     void giveMockupPlayerReflectsState() {
@@ -199,5 +119,80 @@ class PlayerTest {
         assertEquals(8, mockup.getFood());
         assertEquals(3, mockup.getPoints());
         assertEquals(Totem.YELLOW, mockup.getTotem());
+    }
+
+    // ============================================================
+    // ### GETTERS VERIFICATION
+    // ============================================================
+    @Test
+    @DisplayName("Constructor initializes fields with expected defaults")
+    void constructorInitializesDefaults() {
+        assertEquals("Massi", player.getNickname());
+        assertEquals(2, player.getPlayerIndex());
+        assertEquals(0, player.getFood());
+        assertEquals(0, player.getPoints());
+        assertEquals(0, player.getDrawableUpper());
+        assertEquals(0, player.getDrawableLower());
+        assertNull(player.getTotem());
+        assertNull(player.getAssignedOrderSlot());
+        assertTrue(player.isConnected());
+        assertFalse(player.isRemovedFromTrack());
+        assertFalse(player.hasChosenAnOffer());
+        assertNotNull(player.data);
+        assertSame(player, player.data.assignedPlayer);
+    }
+
+
+    // ============================================================
+    // ### ADDERS VERIFICATION (POINTS AND FOOD)
+    // ============================================================
+    @Test
+    @DisplayName("addFood accumulates food, including negative amounts")
+    void addFoodAccumulates() {
+        player.addFood(5);
+        assertEquals(5, player.getFood());
+        player.addFood(-2);
+        assertEquals(3, player.getFood());
+    }
+
+    @Test
+    @DisplayName("addPoints accumulates points, including negative amounts")
+    void addPointsAccumulates() {
+        player.addPoints(10);
+        assertEquals(10, player.getPoints());
+        player.addPoints(-4);
+        assertEquals(6, player.getPoints());
+    }
+
+    @Test
+    @DisplayName("setFood and setPoints overwrite the current values")
+    void settersOverwrite() {
+        player.addFood(5);
+        player.setFood(20);
+        assertEquals(20, player.getFood());
+
+        player.addPoints(5);
+        player.setPoints(7);
+        assertEquals(7, player.getPoints());
+    }
+
+
+    // ============================================================
+    // ### SETTERS VERIFICATION
+    // ============================================================
+    @Test
+    @DisplayName("setDrawableUpper and setDrawableLower set the drawable counters")
+    void setDrawables() {
+        player.setDrawableUpper(3);
+        player.setDrawableLower(2);
+        assertEquals(3, player.getDrawableUpper());
+        assertEquals(2, player.getDrawableLower());
+    }
+
+    @Test
+    @DisplayName("setTotem and getTotem round-trip")
+    void totemRoundTrip() {
+        player.setTotem(Totem.BLUE);
+        assertEquals(Totem.BLUE, player.getTotem());
     }
 }

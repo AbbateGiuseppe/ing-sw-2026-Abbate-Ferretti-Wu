@@ -22,7 +22,6 @@ class BonusHuntingCardTest {
     // --- behaviour inherited from the abstract BuildingCard ---
 
     @Test
-    @DisplayName("canGet is true when food covers the price")
     void canGetWhenEnoughFood() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 5, Era.FIRST, 2, null);
         peppe.setFood(5);
@@ -30,7 +29,6 @@ class BonusHuntingCardTest {
     }
 
     @Test
-    @DisplayName("canGet is false when food is below the price")
     void cannotGetWhenNotEnoughFood() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 5, Era.FIRST, 2, null);
         peppe.setFood(4);
@@ -38,7 +36,6 @@ class BonusHuntingCardTest {
     }
 
     @Test
-    @DisplayName("canGet takes the building discount into account")
     void canGetWithDiscount() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 5, Era.FIRST, 2, null);
         peppe.setFood(3);
@@ -47,7 +44,6 @@ class BonusHuntingCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 7, 5, Era.FIRST, 2, null);
         card.updateDataBank(peppe.data);
@@ -55,7 +51,6 @@ class BonusHuntingCardTest {
     }
 
     @Test
-    @DisplayName("onDraw charges the discounted price and sets the owner")
     void onDrawChargesAndSetsOwner() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -65,7 +60,6 @@ class BonusHuntingCardTest {
     }
 
     @Test
-    @DisplayName("onDraw never rewards food when discount exceeds the price")
     void onDrawDiscountCappedAtZero() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 2, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -75,7 +69,6 @@ class BonusHuntingCardTest {
     }
 
     @Test
-    @DisplayName("getFoodPrice and isLowerLineOnSetup")
     void simpleGetters() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 6, Era.SECOND, 3, null);
         assertEquals(6, card.getFoodPrice());
@@ -87,7 +80,6 @@ class BonusHuntingCardTest {
     // --- the card's own effect ---
 
     @Test
-    @DisplayName("onEventEffect reduces food-to-pay and points-to-pay by the number of hunters")
     void onEventEffectReducesPayments() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -103,7 +95,6 @@ class BonusHuntingCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 5, Era.FIRST, 2, null);
         assertEquals("EDIFICIO (stracaccia)", card.simpleToString());
