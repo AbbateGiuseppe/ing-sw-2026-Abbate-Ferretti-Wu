@@ -70,9 +70,7 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
 
         PlayingRoom playingRoom = (PlayingRoom) adaptee;
         proxy.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
-        proxy.initializeClientRoom( new InitializeRoomPacket(playingRoom.giveMockupRoom()) );
-        MockupGame gameSnapshot = playingRoom.getGame().giveMockupGame();
-        proxy.initializeClientModel( new InitializeModelPacket(gameSnapshot) );
+        proxy.initializeClientModel( new InitializeModelPacket(playingRoom.getGame().giveMockupGame()) );
 
         System.out.println("[GAME-SYNC] Synchronizing Completed " + proxy.nickname);
     }

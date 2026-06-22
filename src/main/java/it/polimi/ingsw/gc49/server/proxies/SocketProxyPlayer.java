@@ -157,6 +157,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         synchronized (writeLock) {
             output.writeObject(stringPacket);
             output.flush();
+            output.reset();
         }
     }
 
@@ -206,6 +207,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         synchronized (writeLock) {
             output.writeObject(errorPacket);
             output.flush();
+            output.reset();
         }
     }
 
@@ -240,6 +242,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         synchronized (writeLock) {
             output.writeObject(initializeHallPacket);
             output.flush();
+            output.reset();
         }
     }
 
@@ -254,6 +257,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         synchronized (writeLock) {
             output.writeObject(updateHallPacket);
             output.flush();
+            output.reset();
         }
     }
 
@@ -298,6 +302,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         synchronized (writeLock) {
             output.writeObject(initializeRoomPacket);
             output.flush();
+            output.reset();
         }
     }
 
@@ -312,6 +317,7 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
         synchronized (writeLock) {
             output.writeObject(updateRoomPacket);
             output.flush();
+            output.reset();
         }
     }
 
@@ -363,28 +369,6 @@ public class SocketProxyPlayer extends PhasedProxyPlayer {
     protected void disconnectProcedure ( DisconnectPacket disconnectPacket ) throws Exception {
         input.close();
         super.disconnectProcedure(disconnectPacket);
-    }
-
-    /**
-     * Restores the player's socket connection using new input and output streams.
-     * Forces the client into the GAME phase and synchronizes the server state.
-     *
-     * @param newClientSide always {@code null} for Sockets.
-     * @param newInput      the new input stream.
-     * @param newOutput     the new output stream.
-     * @throws Exception if an error occurs during synchronization.
-     */
-    @Override
-    public void reconnect (VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput) throws Exception {
-        clientSide = newClientSide;
-        input = newInput;
-        output = newOutput;
-        if (controller != null) {
-            controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
-        }
-        changeLocalPhase(ApplicationPhase.GAME);
-        changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
-        serverSide.syncPlayer(this);
     }
 
 

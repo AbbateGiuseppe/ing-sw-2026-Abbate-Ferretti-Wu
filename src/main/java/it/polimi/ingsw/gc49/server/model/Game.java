@@ -522,10 +522,6 @@ public class Game implements Serializable, QueueUpdatable {
                     )
             );
             players.get(playerIndex).setConnected(true);
-            try {
-                controllersListeners.get(playerIndex).initializeClientModel(new InitializeModelPacket(giveMockupGame()));
-            } catch (Exception _) {
-            }
 
             if( players.get(playerIndex).isRemovedFromTrack() ){
                 //put the player back on the track, last possible position

@@ -319,28 +319,4 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
         return new SocketProxyPlayer(server, nickname, currentPhase, serverSide, input, output);
     }
 
-    /**
-     * Restores the player's connection using a new RMI client stub.
-     * It forces the client into the GAME phase and synchronizes the server state.
-     *
-     * @param newClientSide the new remote RMI stub for the reconnected client.
-     * @param newInput      always {@code null} for RMI.
-     * @param newOutput     always {@code null} for RMI.
-     * @throws Exception if an error occurs during state synchronization.
-     */
-
-    @Override
-    public void reconnect (VirtualClient newClientSide, ObjectInputStream newInput, ObjectOutputStream newOutput) throws Exception {
-        clientSide = newClientSide;
-        input = newInput;
-        output = newOutput;
-        if (controller != null) {
-            controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
-        }
-        changeLocalPhase(ApplicationPhase.GAME);
-        this.changePhaseClient(new ChangePhasePacket(ApplicationPhase.GAME));
-        serverSide.syncPlayer(this);
-
-    }
-
 }

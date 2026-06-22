@@ -301,11 +301,11 @@ public abstract class PhasedProxyPlayer implements VirtualClient, VirtualServer,
         clientSide = newClientSide;
         input = newInput;
         output = newOutput;
+        serverSide.syncPlayer(this);
+
         if (controller != null) {
             controller.executeCommand(new CommandPacket(PlayerActionEnum.CONNECT));
         }
-        changeLocalPhase(ApplicationPhase.GAME);
-        serverSide.syncPlayer(this);
     }
 
     // ============================================================
