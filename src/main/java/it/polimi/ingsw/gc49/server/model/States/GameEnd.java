@@ -10,12 +10,33 @@ import it.polimi.ingsw.gc49.server.model.Player;
 import java.util.Comparator;
 import java.util.List;
 
+
+/**
+ * Represents the final state of the game in the Finite State Machine.
+ * <p>
+ * This state handles the resolution of final events, calculates the end-game scoring
+ * for all players, determines the final standings (breaking ties with food),
+ * and broadcasts the winner and results to all clients.
+ */
 public class GameEnd extends State {
     private static final int NUMBER_OF_ARTISTS_FOR_POINTS = 2;
     private static final int POINTS_PER_NUMBER_OF_ARTISTS = 10;
 
+
+    /**
+     * Constructs the GameEnd state.
+     *
+     * @param game  The main game instance.
+     * @param locks The synchronization locks for thread-safe state execution.
+     */
     public GameEnd ( Game game, Locks locks ) { super(game, States.OTHER, locks);}
 
+
+    /**
+     * Executes the end-of-game logic, calculates final scores, and determines the winner.
+     *
+     * @return {@code null}, as this is the final state and halts the Finite State Machine.
+     */
     public State executeState () {
         //solving the last events
         game.getCardBoard().endGame();
@@ -63,8 +84,13 @@ public class GameEnd extends State {
         return null;
     }
 
+    /**
+     * Returns the human-readable name of this state.
+     *
+     * @return A string representing the state name ("Fine della partita").
+     */
     @Override
     public String toString () {
-        return "Fine della partita";
+        return "End of the match";
     }
 }

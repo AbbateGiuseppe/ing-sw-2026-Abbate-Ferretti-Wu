@@ -5,9 +5,36 @@ import it.polimi.ingsw.gc49.server.model.Game;
 import it.polimi.ingsw.gc49.server.model.Locks;
 import it.polimi.ingsw.gc49.server.model.Player;
 
+
+/**
+ * Represents the state where players execute the actions associated with their chosen offers.
+ * <p>
+ * The state iterates through all players who have chosen an offer. For each player,
+ * it waits until they have exhausted their actions (or disconnected). After a player's
+ * turn, it triggers end-of-turn events and updates the board. Once all players have
+ * finished, it triggers end-of-round events and transitions to either the next round
+ * or the end of the game.
+ */
 public class OfferExecution extends State{
+
+    /**
+     * Constructs the OfferExecution state.
+     *
+     * @param game  The main game instance.
+     * @param locks The synchronization locks for thread-safe state execution.
+     */
     public OfferExecution ( Game game, Locks locks ) { super(game, States.OFFER_EXECUTION, locks);}
 
+
+    /**
+     * Executes the action phase of the round.
+     * <p>
+     * Cycles through the turn order, allowing each player to perform their actions.
+     * Suspends the thread while waiting for player input. Handles end-of-turn
+     * building activations and determines the next phase of the game.
+     *
+     * @return The next state: {@link GameEnd} if this is the last round, otherwise {@link RoundEnd}.
+     */
     public State executeState () {
         Player currentPlayer = game.getTrack().getNextPlayerOfferAndActivate();
         while (currentPlayer != null) { //loops until there's no player remaining to choose his actions.

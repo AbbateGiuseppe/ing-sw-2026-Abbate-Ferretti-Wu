@@ -361,6 +361,33 @@ public class Deck implements Serializable {
         return card;
     }
 
+    /**
+     * Creates a Building card from its JSON representation.
+     * <p>
+     * This method is called for each building card in the JSON and creates the corresponding Java object.
+     *
+     * @param cardJson the JSON object containing the building card data
+     * @return the created {@link BuildingCard}, or {@code null} if the type is unrecognized
+     *
+     * <p><b>HOW TO USE THIS METHOD:</b>
+     * <ol>
+     * <li>For each new building card type you add to the JSON, you must add a case in the switch statement.</li>
+     * <li>Read any specific parameters of the card from the JSON using {@code cardJson.get("fieldName")}.</li>
+     * <li>Instantiate the card object with the read parameters alongside the common ones (like era, food price, etc.).</li>
+     * </ol>
+     *
+     * <p><b>JSON EXAMPLE for a BonusFoodEndTurnCard:</b>
+     * <pre>{@code
+     * {
+     * "type": "BonusFoodEndTurnCard",
+     * "era": "SECOND",
+     * "pointsEndgame": 5,
+     * "foodPrice": 2,
+     * "minNumPlayers": 3,
+     * "buildingEvent": "HUNTING"
+     * }
+     * }</pre>
+     */
     private BuildingCard createBuildingCardFromJson(JsonObject cardJson) {
         // Legge il tipo di carta
         String type = cardJson.get("type").getAsString();
@@ -380,7 +407,6 @@ public class Deck implements Serializable {
 
         BuildingCard card = null;
 
-        // Switch sul tipo per creare la carta appropriata
         switch (type) {
             case "BonusFoodEndTurnCard" -> {
                 card = new BonusFoodEndTurnCard(buildingEvent, pointsEndgame, foodPrice, era, minNumPlayers, queueUpdater);
