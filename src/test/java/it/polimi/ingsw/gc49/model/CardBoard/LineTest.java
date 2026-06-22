@@ -221,7 +221,6 @@ class LineTest {
         assertFalse(line.hasEraChanged(), "Era change flag should be cleared after endEra");
     }
 
-    //TODO: LA TUA IMPLEMENTAZIONE DELLA PESCA DEGLI EDIFICI è SBAGLIATA E DA RIFARE!
     @Test
     void testEndEraDealsBuildingsFromNewEra() throws Exception {
         int maxRounds = 100;

@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * Represents an abstract base class for all cards in the game.
  * <p>
- * This class implements {@link Rectangable} //TODO spiega utilizzo rectangable
+ * This class implements {@link Rectangable}
  * and {@link Serializable}. It holds common
  * properties such as the {@link Era} it belongs to and the minimum number of players
  * required to use it. Subclasses must define specific acquisition rules and behaviors.

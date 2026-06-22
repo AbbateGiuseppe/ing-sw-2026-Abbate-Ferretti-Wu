@@ -496,6 +496,7 @@ public class Game implements Serializable, QueueUpdatable {
                 );
             }else if( getNumOfConnectedPlayers() == 0 ){
                 //TODO: close the game
+                currentState = null;
             }
 
             broadcastGameUpdate();
