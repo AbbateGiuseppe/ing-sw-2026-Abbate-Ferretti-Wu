@@ -38,6 +38,7 @@ C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\rmi_socket\da
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\Cardboard\FullCardboardModelElement.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\Cardboard\LowerDrawModelElement.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\Cardboard\UpperDrawModelElement.java
+C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\EndGameModelElement.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\GameStatusModelElement.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\OfferOrderboard\OfferOrderboardModelElement.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\OfferOrderboard\OrderboardModelElement.java
@@ -94,6 +95,7 @@ C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\server\model\
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\server\model\Card\BuildingCard\CharacterSetCompletePointEndGameCard.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\server\model\Card\BuildingCard\DoubleBuilderPointsCard.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\server\model\Card\BuildingCard\DoubleShamanPointsCard.java
+C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\server\model\Card\BuildingCard\FakeQueueUpdatable.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\server\model\Card\BuildingCard\OneMoreCardCard.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\server\model\Card\BuildingCard\SamePairInventionsCard.java
 C:\Users\Max\progetti\IS26-GC49\src\main\java\it\polimi\ingsw\gc49\server\model\Card\BuildingCard\ShamanicImmunityCard.java

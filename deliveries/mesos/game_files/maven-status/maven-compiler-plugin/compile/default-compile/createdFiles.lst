@@ -18,6 +18,7 @@ it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToServer\ROOM_phase\ROOM_COMM
 it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\Players\ConnectionModelElement.class
 it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\TextModelElement.class
 it\polimi\ingsw\gc49\server\model\Card\Card.class
+it\polimi\ingsw\gc49\client\gui\GamePanel$2.class
 it\polimi\ingsw\gc49\server\model\BuildingEvent.class
 it\polimi\ingsw\gc49\server\model\playerExceptions\PlayerException.class
 it\polimi\ingsw\gc49\server\model\Card\CharacterCard\Builder.class
@@ -78,6 +79,7 @@ it\polimi\ingsw\gc49\client\proxies\RmiProxyServer.class
 it\polimi\ingsw\gc49\client\user_input_interfaces\TextTerminal$1.class
 it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\INITIALIZE_HALL\InitializeHallPacket.class
 it\polimi\ingsw\gc49\server\model\Track\Track.class
+it\polimi\ingsw\gc49\server\model\Card\BuildingCard\FakeQueueUpdatable.class
 it\polimi\ingsw\gc49\server\model\States\InitialSetup.class
 it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\Players\PlayersModelElement.class
 it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\UpdateModelPacket.class
@@ -140,6 +142,7 @@ it\polimi\ingsw\gc49\server\FactoryServiceRmi.class
 it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\UpdateModelElement.class
 it\polimi\ingsw\gc49\rmi_socket\virtualMethods\ApplicationPhase.class
 it\polimi\ingsw\gc49\client\proxies\PhasedProxyServer.class
+it\polimi\ingsw\gc49\rmi_socket\datapacket\directedToClient\UPDATE_MODEL\ModelElement\EndGameModelElement.class
 it\polimi\ingsw\gc49\server\model\Card\BuildingCard\OneMoreCardCard.class
 it\polimi\ingsw\gc49\server\model\EventManager.class
 it\polimi\ingsw\gc49\client\ClientApplication$ConnectionType.class
