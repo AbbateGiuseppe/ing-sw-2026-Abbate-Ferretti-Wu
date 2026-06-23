@@ -26,7 +26,6 @@ class HuntingEventTest {
     }
 
     @Test
-    @DisplayName("resolveEvent awards 1 food and pointsPerHunter points per hunter")
     void resolveAwardsFoodAndPoints() {
         peppe.data.addCharacterCount(CharacterType.Hunter, 3);
         HuntingEvent event = new HuntingEvent(2, manager, Era.FIRST, 2, null);
@@ -38,7 +37,6 @@ class HuntingEventTest {
     }
 
     @Test
-    @DisplayName("resolveEvent leaves a player without hunters untouched")
     void noHuntersNoReward() {
         HuntingEvent event = new HuntingEvent(2, manager, Era.FIRST, 2, null);
 
@@ -49,7 +47,6 @@ class HuntingEventTest {
     }
 
     @Test
-    @DisplayName("resolveEvent rewards each player independently")
     void independentRewards() {
         peppe.data.addCharacterCount(CharacterType.Hunter, 2);
         peppeTwo.data.addCharacterCount(CharacterType.Hunter, 1);
@@ -64,7 +61,6 @@ class HuntingEventTest {
     }
 
     @Test
-    @DisplayName("resolveEvent resets food-to-pay and points-to-pay after confirmation")
     void resetsPendingState() {
         peppe.data.addCharacterCount(CharacterType.Hunter, 1);
         HuntingEvent event = new HuntingEvent(2, manager, Era.FIRST, 2, null);
@@ -76,7 +72,6 @@ class HuntingEventTest {
     }
 
     @Test
-    @DisplayName("canGet is false and isLowerLineOnSetup is false")
     void eventCardFlags() {
         HuntingEvent event = new HuntingEvent(2, manager, Era.FIRST, 2, null);
         assertFalse(event.canGet(peppe));
@@ -84,7 +79,6 @@ class HuntingEventTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         HuntingEvent event = new HuntingEvent(2, manager, Era.FIRST, 2, null);
         assertEquals("CACCIA", event.simpleToString());

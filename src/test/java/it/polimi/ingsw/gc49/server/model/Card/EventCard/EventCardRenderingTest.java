@@ -39,7 +39,7 @@ class EventCardRenderingTest {
     }
 
     @Test
-    @DisplayName("getRectangleAttributedString returns a 4x5 drawing for every event")
+
     void rectangleForEveryEvent() {
         for (Supplier<EventCard> supplier : allCards()) {
             EventCard card = supplier.get();
@@ -51,7 +51,6 @@ class EventCardRenderingTest {
     }
 
     @Test
-    @DisplayName("getItaEngRectangleAttributedString returns ITA and ENG drawings for every event")
     void itaEngForEveryEvent() {
         for (Supplier<EventCard> supplier : allCards()) {
             EventCard card = supplier.get();
@@ -67,7 +66,6 @@ class EventCardRenderingTest {
     }
 
     @Test
-    @DisplayName("toString is non-blank for every event")
     void toStringForEveryEvent() {
         for (Supplier<EventCard> supplier : allCards()) {
             EventCard card = supplier.get();
@@ -78,7 +76,6 @@ class EventCardRenderingTest {
     }
 
     @Test
-    @DisplayName("simpleToString is non-blank for every event")
     void simpleToStringForEveryEvent() {
         for (Supplier<EventCard> supplier : allCards()) {
             EventCard card = supplier.get();

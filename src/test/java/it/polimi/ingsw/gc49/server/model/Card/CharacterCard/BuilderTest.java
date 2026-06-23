@@ -19,7 +19,6 @@ class BuilderTest {
     }
 
     @Test
-    @DisplayName("getEra and getMinNumPlayers return the constructor values")
     void constructorValues() {
         Builder builder = new Builder(2, 5, Era.THIRD, 4, null);
         assertEquals(Era.THIRD, builder.getEra());
@@ -27,7 +26,6 @@ class BuilderTest {
     }
 
     @Test
-    @DisplayName("canGet is always true and isLowerLineOnSetup is always true")
     void commonFlags() {
         Builder builder = new Builder(1, 1, Era.FIRST, 2, null);
         assertTrue(builder.canGet(player));
@@ -35,7 +33,6 @@ class BuilderTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds counter, building discount and builder points")
     void updateDataBank() {
         new Builder(2, 5, Era.FIRST, 2, null).updateDataBank(player.data);
         assertEquals(1, player.data.getCharacterCount(CharacterType.Builder));
@@ -44,7 +41,6 @@ class BuilderTest {
     }
 
     @Test
-    @DisplayName("two Builders stack discount and builder points")
     void valuesStack() {
         new Builder(2, 3, Era.FIRST, 2, null).updateDataBank(player.data);
         new Builder(1, 4, Era.FIRST, 2, null).updateDataBank(player.data);
@@ -54,7 +50,6 @@ class BuilderTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         assertEquals("COSTRUTTORE", new Builder(0, 0, Era.FIRST, 2, null).simpleToString());
     }

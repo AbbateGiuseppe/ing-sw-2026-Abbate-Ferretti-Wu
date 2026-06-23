@@ -14,6 +14,12 @@ import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualServers.VirtualGame
 
 import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveStateAsync;
 
+
+/**
+ * Adapter used when the player is in the GAME phase. Forwards in-game commands and
+ * disconnects to the underlying {@link VirtualGameServer} (usually a {@link PlayingRoom});
+ * hall and room commands are ignored because they don't apply in this phase.
+ */
 public class VirtualGameServerAdapter extends VirtualServerAdapter {
     private final VirtualGameServer adaptee;
 
@@ -25,6 +31,7 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
     // DISCONNECTION
     // ============================================================
 
+    /** Forwards the disconnection and persists the server state. */
     @Override
     public void disconnect ( DisconnectPacket disconnectPacket ) throws Exception {
         adaptee.disconnect(disconnectPacket);
@@ -35,6 +42,8 @@ public class VirtualGameServerAdapter extends VirtualServerAdapter {
     // VIRTUAL GAME SERVER
     // ============================================================
 
+
+    /** Forwards an in-game command and persists the server state. */
     @Override
     public void sendCommand ( CommandPacket commandPacket ) throws Exception {
         adaptee.sendCommand(commandPacket);

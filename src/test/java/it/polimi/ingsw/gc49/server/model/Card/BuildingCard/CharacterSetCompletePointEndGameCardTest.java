@@ -20,7 +20,6 @@ class CharacterSetCompletePointEndGameCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         CharacterSetCompletePointEndGameCard card =
                 new CharacterSetCompletePointEndGameCard(BuildingEvent.GAME_END, 3, 5, Era.FIRST, 2, null);
@@ -28,31 +27,8 @@ class CharacterSetCompletePointEndGameCardTest {
         assertEquals(3, peppe.data.getNumBuildingPoints());
     }
 
-    /*@Test
-    @DisplayName("onEventEffect awards 6 points per complete character set")
-    void onEventEffectAwardsPerSet() {
-        //TODO: da rifare
-        CharacterSetCompletePointEndGameCard card =
-                new CharacterSetCompletePointEndGameCard(BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);
-        peppe.setFood(10);
-        card.onDraw(peppe);
-
-        peppe.data.addCharacterCount(CharacterType.Hunter, 1);
-        peppe.data.addCharacterCount(CharacterType.Builder, 1);
-        peppe.data.addCharacterCount(CharacterType.Gatherer, 1);
-        peppe.data.addCharacterCount(CharacterType.Inventor, 1);
-        peppe.data.addCharacterCount(CharacterType.Shaman, 1);
-        peppe.data.addCharacterCount(CharacterType.Artist, 1);
-
-
-
-        card.onEventEffect();
-        assertEquals(1, peppe.data.getCurrentNumCompleteCharacterSets());
-        assertEquals(16, peppe.getPoints());
-    }*/  //TODO: complete set
 
     @Test
-    @DisplayName("onEventEffect awards nothing when no set is complete")
     void onEventEffectNoSet() {
         CharacterSetCompletePointEndGameCard card =
                 new CharacterSetCompletePointEndGameCard(BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);
@@ -65,7 +41,6 @@ class CharacterSetCompletePointEndGameCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         CharacterSetCompletePointEndGameCard card =
                 new CharacterSetCompletePointEndGameCard(BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);

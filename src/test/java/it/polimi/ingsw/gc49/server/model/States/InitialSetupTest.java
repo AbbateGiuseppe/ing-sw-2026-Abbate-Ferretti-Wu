@@ -31,7 +31,6 @@ class InitialSetupTest {
     }
 
     @Test
-    @DisplayName("executeState builds a Track sized for the player count")
     void buildsTrack() {
         Game game = new Game(4, List.of("Peppe", "Wu", "Massi", "Peppe"), "room");
         assertNotNull(game.getTrack());
@@ -40,7 +39,6 @@ class InitialSetupTest {
     }
 
     @Test
-    @DisplayName("executeState builds an EventManager and a CardBoard")
     void buildsManagerAndBoard() {
         Game game = new Game(2, List.of("Peppe", "Wu"), "room");
         assertNotNull(game.getEventManager());
@@ -48,14 +46,12 @@ class InitialSetupTest {
     }
 
     @Test
-    @DisplayName("executeState sets lastRound to false")
     void lastRoundInitiallyFalse() {
         Game game = new Game(2, List.of("Peppe", "Wu"), "room");
         assertFalse(game.isLastRound());
     }
 
     @Test
-    @DisplayName("executeState returns a non-null next state (TotemChoosing)")
     void returnsNextState() {
         Game game = new Game(2, List.of("Peppe", "Wu"), "room");
         Locks locks = new Locks();
@@ -67,7 +63,6 @@ class InitialSetupTest {
     }
 
     @Test
-    @DisplayName("setup works for the 5-player case too")
     void fivePlayerSetup() {
         Game game = new Game(5, List.of("Peppe", "Wu", "Massi", "Peppe", "Wu"), "room");
         assertEquals(5, game.getPlayers().size());
@@ -76,7 +71,6 @@ class InitialSetupTest {
     }
 
     @Test
-    @DisplayName("toString returns the localized state name")
     void toStringValue() {
         InitialSetup setup = new InitialSetup(
                 new Game(2, List.of("Peppe", "Wu"), "room"),
@@ -87,7 +81,6 @@ class InitialSetupTest {
     }
 
     @Test
-    @DisplayName("currentStateType is OTHER for InitialSetup")
     void stateTypeIsOther() {
         InitialSetup setup = new InitialSetup(
                 new Game(2, List.of("Peppe", "Wu"), "room"),

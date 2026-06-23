@@ -21,7 +21,6 @@ class SamePairInventionsCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         SamePairInventionsCard card = new SamePairInventionsCard(BuildingEvent.DRAW_EVENT, 2, 5, Era.FIRST, 2, null);
         card.updateDataBank(peppe.data);
@@ -29,7 +28,6 @@ class SamePairInventionsCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect grants 3 food when a same-pair invention is formed after acquisition")
     void onEventEffectGrantsFoodOnSamePair() {
         SamePairInventionsCard card = new SamePairInventionsCard(BuildingEvent.DRAW_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -45,7 +43,6 @@ class SamePairInventionsCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect grants nothing without a same-pair invention")
     void onEventEffectNoSamePair() {
         SamePairInventionsCard card = new SamePairInventionsCard(BuildingEvent.DRAW_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -60,7 +57,6 @@ class SamePairInventionsCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         SamePairInventionsCard card = new SamePairInventionsCard(BuildingEvent.DRAW_EVENT, 0, 5, Era.FIRST, 2, null);
         assertEquals("EDIFICIO (stracibo da inventori)", card.simpleToString());

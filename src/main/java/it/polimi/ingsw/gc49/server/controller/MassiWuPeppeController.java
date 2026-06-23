@@ -13,17 +13,32 @@ import java.io.Serializable;
 
 import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveStateAsync;
 
+
+/**
+ * One controller per player. Bridges the player's network proxy and the shared {@link Game}:
+ * incoming commands from the client are dispatched to the model via
+ * {@link #executeCommand(CommandPacket)}, and model updates flow back through the
+ * {@link VirtualGameClient} callbacks.
+ * <p>
+ * If sending a packet to the client fails, the player is marked as disconnected.
+ */
 public class MassiWuPeppeController implements VirtualGameClient, Serializable{
     private Game game;
     private final int controllingPlayerIndex;
     private PhasedProxyPlayer controllingPlayer;
 
+
+    /**
+     * Builds a controller bound to {@code controllingPlayerIndex} and to the proxy that
+     * talks to its client. Not usable until {@link #connectModel(Game)} is called.
+     */
     public MassiWuPeppeController ( int controllingPlayerIndex, PhasedProxyPlayer controllingPlayer ) {
         game = null;
         this.controllingPlayerIndex = controllingPlayerIndex;
         this.controllingPlayer = controllingPlayer;
     }
 
+    /** Wires the controller to a game and registers it as a listener for broadcasts. */
     public void connectModel ( Game game ) {
         this.game = game;
         game.addControllerListener(this);
@@ -38,6 +53,12 @@ public class MassiWuPeppeController implements VirtualGameClient, Serializable{
         this.controllingPlayer = controllingPlayer;
     }
 
+
+    /**
+     * Dispatches a client command to the matching {@link Game} action for this player.
+     * A {@link PlayerException} thrown by the model is sent back as an {@link ErrorPacket}
+     * only to the player who issued the command.
+     */
     public void executeCommand ( CommandPacket command ) {
         PlayerActionEnum action = command.getAction();
         saveStateAsync();
@@ -79,6 +100,7 @@ public class MassiWuPeppeController implements VirtualGameClient, Serializable{
         }
     }
 
+    /** Sends a full game snapshot to the client; disconnects the player on delivery failure. */
     @Override
     public void initializeClientModel ( InitializeModelPacket initializeModelPacket ) {
         try {
@@ -88,6 +110,7 @@ public class MassiWuPeppeController implements VirtualGameClient, Serializable{
         }
     }
 
+    /** Sends an incremental update to the client; disconnects the player on delivery failure. */
     @Override
     public void updateClientModel ( UpdateModelPacket updateModelPacket ) {
         try {
@@ -97,6 +120,7 @@ public class MassiWuPeppeController implements VirtualGameClient, Serializable{
         }
     }
 
+    /** Sends an error to the player; disconnects on delivery failure. */
     @Override
     public void reportError ( ErrorPacket errorPacket ) {
         try {

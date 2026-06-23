@@ -19,7 +19,6 @@ class DoubleBuilderPointsCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 4, 5, Era.FIRST, 2, null);
         card.updateDataBank(peppe.data);
@@ -27,7 +26,6 @@ class DoubleBuilderPointsCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect doubles the owner's builder points")
     void onEventEffectDoublesBuilderPoints() {
         DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -40,7 +38,6 @@ class DoubleBuilderPointsCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect with zero builder points leaves them at zero")
     void onEventEffectZeroStaysZero() {
         DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -52,14 +49,12 @@ class DoubleBuilderPointsCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);
         assertEquals("EDIFICIO (doppipunti da costruttori)", card.simpleToString());
     }
 
     @Test
-    @DisplayName("onEventEffect notifies the queue updater when one is provided")
     void onEventEffectNotifiesQueue() {
         FakeQueueUpdatable queue = new FakeQueueUpdatable();
         DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, queue);
@@ -74,7 +69,6 @@ class DoubleBuilderPointsCardTest {
     }
 
     @Test
-    @DisplayName("getRectangleAttributedString returns a 2x10 terminal drawing")
     void rectangleAttributedString() {
         DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 4, 6, Era.FIRST, 2, null);
         var rect = card.getRectangleAttributedString();
@@ -84,7 +78,6 @@ class DoubleBuilderPointsCardTest {
     }
 
     @Test
-    @DisplayName("getItaEngRectangleAttributedString returns ITA and ENG drawings")
     void itaEngRectangleAttributedString() {
         DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 4, 6, Era.FIRST, 2, null);
         var itaEng = card.getItaEngRectangleAttributedString();
@@ -96,7 +89,6 @@ class DoubleBuilderPointsCardTest {
     }
 
     @Test
-    @DisplayName("toString contains the card's stats")
     void toStringNotEmpty() {
         DoubleBuilderPointsCard card = new DoubleBuilderPointsCard(BuildingEvent.GAME_END, 4, 6, Era.FIRST, 2, null);
         String s = card.toString();

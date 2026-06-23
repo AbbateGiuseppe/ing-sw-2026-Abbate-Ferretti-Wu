@@ -19,7 +19,6 @@ class ShamanTest {
     }
 
     @Test
-    @DisplayName("getEra and getMinNumPlayers return the constructor values")
     void constructorValues() {
         Shaman shaman = new Shaman(2, Era.SECOND, 3, null);
         assertEquals(Era.SECOND, shaman.getEra());
@@ -27,7 +26,6 @@ class ShamanTest {
     }
 
     @Test
-    @DisplayName("canGet is always true and isLowerLineOnSetup is always true")
     void commonFlags() {
         Shaman shaman = new Shaman(1, Era.FIRST, 2, null);
         assertTrue(shaman.canGet(player));
@@ -35,7 +33,6 @@ class ShamanTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds stars and increments the Shaman counter")
     void updateDataBank() {
         new Shaman(3, Era.FIRST, 2, null).updateDataBank(player.data);
         assertEquals(3, player.data.getNumStars());
@@ -43,7 +40,6 @@ class ShamanTest {
     }
 
     @Test
-    @DisplayName("two Shamans stack their stars")
     void starsStack() {
         new Shaman(2, Era.FIRST, 2, null).updateDataBank(player.data);
         new Shaman(3, Era.FIRST, 2, null).updateDataBank(player.data);
@@ -52,7 +48,6 @@ class ShamanTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         assertEquals("SCIAMANO", new Shaman(1, Era.FIRST, 2, null).simpleToString());
     }

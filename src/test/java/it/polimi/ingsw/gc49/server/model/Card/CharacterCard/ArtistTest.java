@@ -19,7 +19,6 @@ class ArtistTest {
     }
 
     @Test
-    @DisplayName("getEra and getMinNumPlayers return the constructor values")
     void constructorValues() {
         Artist artist = new Artist(Era.THIRD, 4, null);
         assertEquals(Era.THIRD, artist.getEra());
@@ -27,7 +26,6 @@ class ArtistTest {
     }
 
     @Test
-    @DisplayName("canGet is always true and isLowerLineOnSetup is always true")
     void commonFlags() {
         Artist artist = new Artist(Era.FIRST, 2, null);
         assertTrue(artist.canGet(player));
@@ -35,7 +33,6 @@ class ArtistTest {
     }
 
     @Test
-    @DisplayName("updateDataBank increments the Artist counter only")
     void updateDataBank() {
         new Artist(Era.FIRST, 2, null).updateDataBank(player.data);
         assertEquals(1, player.data.getCharacterCount(CharacterType.Artist));
@@ -44,7 +41,6 @@ class ArtistTest {
     }
 
     @Test
-    @DisplayName("two Artists accumulate the counter")
     void counterStacks() {
         new Artist(Era.FIRST, 2, null).updateDataBank(player.data);
         new Artist(Era.FIRST, 2, null).updateDataBank(player.data);
@@ -52,7 +48,6 @@ class ArtistTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         assertEquals("ARTISTA", new Artist(Era.FIRST, 2, null).simpleToString());
     }

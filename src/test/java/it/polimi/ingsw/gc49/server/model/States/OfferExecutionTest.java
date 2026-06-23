@@ -29,21 +29,18 @@ class OfferExecutionTest {
     }
 
     @Test
-    @DisplayName("currentStateType is OFFER_EXECUTION")
     void stateType() {
         OfferExecution state = new OfferExecution(game, locks);
         assertEquals(State.States.OFFER_EXECUTION, state.getCurrentStateType());
     }
 
     @Test
-    @DisplayName("toString returns the localized state name")
     void toStringValue() {
         OfferExecution state = new OfferExecution(game, locks);
         assertEquals("Eseguimento delle offerte", state.toString());
     }
 
     @Test
-    @DisplayName("executeState with no assigned offers transitions to RoundEnd when not last round")
     void executeNoOffersTransitionsToRoundEnd() {
         game.setLastRound(false);
         OfferExecution state = new OfferExecution(game, locks);
@@ -56,7 +53,6 @@ class OfferExecutionTest {
     }
 
     @Test
-    @DisplayName("executeState with no assigned offers transitions to GameEnd when last round")
     void executeNoOffersTransitionsToGameEndOnLastRound() {
         game.setLastRound(true);
         OfferExecution state = new OfferExecution(game, locks);

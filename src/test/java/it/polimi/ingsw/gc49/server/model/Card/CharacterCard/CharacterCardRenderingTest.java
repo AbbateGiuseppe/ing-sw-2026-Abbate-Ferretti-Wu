@@ -48,7 +48,6 @@ class CharacterCardRenderingTest {
     }
 
     @Test
-    @DisplayName("getRectangleAttributedString returns a 4x5 drawing for every card variant")
     void rectangleForEveryCard() {
         for (Supplier<CharacterCard> supplier : allCards()) {
             CharacterCard card = supplier.get();
@@ -60,7 +59,6 @@ class CharacterCardRenderingTest {
     }
 
     @Test
-    @DisplayName("getItaEngRectangleAttributedString returns ITA and ENG drawings for every card variant")
     void itaEngForEveryCard() {
         for (Supplier<CharacterCard> supplier : allCards()) {
             CharacterCard card = supplier.get();
@@ -76,7 +74,6 @@ class CharacterCardRenderingTest {
     }
 
     @Test
-    @DisplayName("toString is non-blank for every card variant")
     void toStringForEveryCard() {
         for (Supplier<CharacterCard> supplier : allCards()) {
             CharacterCard card = supplier.get();
@@ -87,7 +84,6 @@ class CharacterCardRenderingTest {
     }
 
     @Test
-    @DisplayName("simpleToString returns the localized name for every card variant")
     void simpleToStringForEveryCard() {
         for (Supplier<CharacterCard> supplier : allCards()) {
             CharacterCard card = supplier.get();

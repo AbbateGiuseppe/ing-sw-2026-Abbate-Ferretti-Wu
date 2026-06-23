@@ -42,21 +42,18 @@ class EventCardTest {
     }
 
     @Test
-    @DisplayName("canGet is always false for an event card")
     void canGetIsAlwaysFalse() {
         TestEventCard card = new TestEventCard(new EventManager(), Era.FIRST, 2, null);
         assertFalse(card.canGet(peppe));
     }
 
     @Test
-    @DisplayName("isLowerLineOnSetup is always false for an event card")
     void lowerLineOnSetupIsAlwaysFalse() {
         TestEventCard card = new TestEventCard(new EventManager(), Era.FIRST, 2, null);
         assertFalse(card.isLowerLineOnSetup());
     }
 
     @Test
-    @DisplayName("inherited getters from Card return the constructor values")
     void inheritedGetters() {
         TestEventCard card = new TestEventCard(new EventManager(), Era.SECOND, 3, null);
         assertEquals(Era.SECOND, card.getEra());
@@ -64,7 +61,6 @@ class EventCardTest {
     }
 
     @Test
-    @DisplayName("compareTo orders by era when eras differ")
     void compareToByEra() {
         EventManager mgr = new EventManager();
         TestEventCard first = new TestEventCard(mgr, Era.FIRST, 2, null);

@@ -20,7 +20,6 @@ class SustainDiscountByClassCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         SustainDiscountByClassCard card = new SustainDiscountByClassCard(
                 CharacterType.Gatherer, BuildingEvent.SUSTENANCE_EVENT, 2, 5, Era.FIRST, 2, null);
@@ -29,7 +28,6 @@ class SustainDiscountByClassCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect reduces food-to-pay by the number of characters of the given class")
     void onEventEffectReducesFoodToPay() {
         SustainDiscountByClassCard card = new SustainDiscountByClassCard(
                 CharacterType.Gatherer, BuildingEvent.SUSTENANCE_EVENT, 0, 5, Era.FIRST, 2, null);
@@ -44,7 +42,6 @@ class SustainDiscountByClassCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect leaves food-to-pay unchanged with none of that class")
     void onEventEffectNoneOfClass() {
         SustainDiscountByClassCard card = new SustainDiscountByClassCard(
                 CharacterType.Gatherer, BuildingEvent.SUSTENANCE_EVENT, 0, 5, Era.FIRST, 2, null);
@@ -58,7 +55,6 @@ class SustainDiscountByClassCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         SustainDiscountByClassCard card = new SustainDiscountByClassCard(
                 CharacterType.Gatherer, BuildingEvent.SUSTENANCE_EVENT, 0, 5, Era.FIRST, 2, null);

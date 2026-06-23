@@ -62,28 +62,24 @@ class GameEndTest {
     }
 
     @Test
-    @DisplayName("currentStateType is OTHER")
     void stateType() {
         GameEnd state = new GameEnd(game, locks);
         assertEquals(State.States.GAME_END, state.getCurrentStateType());
     }
 
     @Test
-    @DisplayName("toString returns the localized state name")
     void toStringValue() {
         GameEnd state = new GameEnd(game, locks);
         assertEquals("End of the match", state.toString());
     }
 
     @Test
-    @DisplayName("executeState returns null to signal the end of the state machine")
     void executeReturnsNull() {
         GameEnd state = new GameEnd(game, locks);
         assertNull(state.executeState());
     }
 
     @Test
-    @DisplayName("executeState adds the builder points to every player")
     void addsBuilderPoints() {
         // peppe gains 5 from a single builder
         peppe.addCharacterCard(new Builder(0, 5, Era.FIRST, 2, null));
@@ -98,7 +94,6 @@ class GameEndTest {
     }
 
     @Test
-    @DisplayName("executeState adds inventors * distinct inventions to every player")
     void addsInventorPoints() {
         // peppe: 3 inventors with 2 distinct inventions -> 6 points
         peppe.addCharacterCard(new Inventor(Invention.CANOE, Era.FIRST, 2, null));
@@ -111,7 +106,6 @@ class GameEndTest {
     }
 
     @Test
-    @DisplayName("executeState adds 10 points per pair of artists")
     void addsArtistPoints() {
         // peppe: 5 artists -> 2 pairs -> 20 points
         for (int i = 0; i < 5; i++) {
@@ -127,7 +121,6 @@ class GameEndTest {
     }
 
     @Test
-    @DisplayName("executeState adds the building points to every player")
     void addsBuildingPoints() {
         peppe.data.addNumBuildingPoints(7);
         wu.data.addNumBuildingPoints(3);
@@ -139,7 +132,6 @@ class GameEndTest {
     }
 
     @Test
-    @DisplayName("executeState sums all endgame bonuses on top of the points already accumulated")
     void sumsAllBonusesOnTopOfExistingPoints() {
         // pre-existing points
         peppe.setPoints(10);
@@ -156,7 +148,6 @@ class GameEndTest {
     }
 
     @Test
-    @DisplayName("with an empty tribe and cleared board, no bonus is awarded")
     void noBonusForEmptyTribe() {
         new GameEnd(game, locks).executeState();
         assertEquals(0, peppe.getPoints());

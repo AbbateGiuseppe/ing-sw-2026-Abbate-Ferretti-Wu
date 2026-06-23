@@ -19,7 +19,6 @@ class ShamanicThreeStarCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points and three permanent stars")
     void updateDataBankAddsPointsAndStars() {
         ShamanicThreeStarCard card = new ShamanicThreeStarCard(BuildingEvent.RITUAL_EVENT, 2, 5, Era.FIRST, 2, null);
         card.updateDataBank(peppe.data);
@@ -28,7 +27,6 @@ class ShamanicThreeStarCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect is a no-op (the bonus is passive via stars)")
     void onEventEffectIsNoOp() {
         ShamanicThreeStarCard card = new ShamanicThreeStarCard(BuildingEvent.RITUAL_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -43,7 +41,6 @@ class ShamanicThreeStarCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         ShamanicThreeStarCard card = new ShamanicThreeStarCard(BuildingEvent.RITUAL_EVENT, 0, 5, Era.FIRST, 2, null);
         assertEquals("EDIFICIO (tre stelle)", card.simpleToString());

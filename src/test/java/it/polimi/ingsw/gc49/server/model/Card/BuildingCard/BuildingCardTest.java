@@ -68,7 +68,6 @@ class BuildingCardTest {
     // --- constructor & simple getters ---
 
     @Test
-    @DisplayName("getters return the constructor values; owner is null before draw")
     void gettersAndInitialState() {
         TestBuildingCard card = new TestBuildingCard(
                 BuildingEvent.GAME_END, 4, 7, Era.SECOND, 3, null);
@@ -79,7 +78,6 @@ class BuildingCardTest {
     }
 
     @Test
-    @DisplayName("isLowerLineOnSetup is always true for building cards")
     void isLowerLineOnSetup() {
         assertTrue(newCard(2, 5).isLowerLineOnSetup());
     }
@@ -87,7 +85,6 @@ class BuildingCardTest {
     // --- canGet ---
 
     @Test
-    @DisplayName("canGet is true when food is exactly the price")
     void canGetAtExactPrice() {
         TestBuildingCard card = newCard(2, 5);
         peppe.setFood(5);
@@ -95,7 +92,6 @@ class BuildingCardTest {
     }
 
     @Test
-    @DisplayName("canGet is true when food exceeds the price")
     void canGetOverPrice() {
         TestBuildingCard card = newCard(2, 5);
         peppe.setFood(10);
@@ -103,7 +99,6 @@ class BuildingCardTest {
     }
 
     @Test
-    @DisplayName("canGet is false when food is below the price")
     void cannotGetUnderPrice() {
         TestBuildingCard card = newCard(2, 5);
         peppe.setFood(4);
@@ -111,7 +106,6 @@ class BuildingCardTest {
     }
 
     @Test
-    @DisplayName("canGet takes the building discount into account")
     void canGetWithDiscount() {
         TestBuildingCard card = newCard(2, 5);
         peppe.setFood(3);
@@ -120,7 +114,6 @@ class BuildingCardTest {
     }
 
     @Test
-    @DisplayName("canGet is true with zero food when discount covers the full price")
     void canGetDiscountCoversPrice() {
         TestBuildingCard card = newCard(2, 5);
         peppe.data.addNumBuildingDiscount(5);
@@ -130,7 +123,6 @@ class BuildingCardTest {
     // --- updateDataBank ---
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points to the player's building points")
     void updateDataBankAddsEndgamePoints() {
         TestBuildingCard card = newCard(6, 5);
         card.updateDataBank(peppe.data);
@@ -138,7 +130,6 @@ class BuildingCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank accumulates endgame points across multiple cards")
     void updateDataBankAccumulates() {
         newCard(3, 5).updateDataBank(peppe.data);
         newCard(4, 5).updateDataBank(peppe.data);
@@ -148,7 +139,6 @@ class BuildingCardTest {
     // --- onDraw ---
 
     @Test
-    @DisplayName("onDraw subtracts the full price from the player's food and sets the owner")
     void onDrawChargesFullPrice() {
         TestBuildingCard card = newCard(2, 5);
         peppe.setFood(10);
@@ -158,7 +148,6 @@ class BuildingCardTest {
     }
 
     @Test
-    @DisplayName("onDraw subtracts the discounted price")
     void onDrawChargesDiscountedPrice() {
         TestBuildingCard card = newCard(2, 5);
         peppe.setFood(10);
@@ -168,7 +157,6 @@ class BuildingCardTest {
     }
 
     @Test
-    @DisplayName("onDraw never grants extra food when discount exceeds the price")
     void onDrawDiscountCappedAtZero() {
         TestBuildingCard card = newCard(2, 4);
         peppe.setFood(10);
@@ -181,7 +169,6 @@ class BuildingCardTest {
     // --- addBuildingToManager + listener wiring ---
 
     @Test
-    @DisplayName("addBuildingToManager subscribes the card so its event triggers onEventEffect")
     void addBuildingToManagerWiresListener() {
         TestBuildingCard card = newCard(0, 5);
         peppe.setFood(10);
@@ -195,7 +182,6 @@ class BuildingCardTest {
     }
 
     @Test
-    @DisplayName("a card is not invoked by an unrelated event")
     void unrelatedEventDoesNotTrigger() {
         TestBuildingCard card = newCard(0, 5); // listens to HUNTING_EVENT
         peppe.setFood(10);

@@ -20,7 +20,6 @@ class BonusPointsByClassEndGameCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         BonusPointsByClassEndGameCard card = new BonusPointsByClassEndGameCard(
                 CharacterType.Hunter, 2, BuildingEvent.GAME_END, 4, 5, Era.FIRST, 2, null);
@@ -29,7 +28,6 @@ class BonusPointsByClassEndGameCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect awards pointsPerUnit for each character of the given class")
     void onEventEffectAwardsPerClass() {
         BonusPointsByClassEndGameCard card = new BonusPointsByClassEndGameCard(
                 CharacterType.Hunter, 2, BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);
@@ -43,7 +41,6 @@ class BonusPointsByClassEndGameCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect awards nothing when the owner has none of that class")
     void onEventEffectNoneOfClass() {
         BonusPointsByClassEndGameCard card = new BonusPointsByClassEndGameCard(
                 CharacterType.Shaman, 5, BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);
@@ -56,7 +53,6 @@ class BonusPointsByClassEndGameCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         BonusPointsByClassEndGameCard card = new BonusPointsByClassEndGameCard(
                 CharacterType.Hunter, 1, BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);

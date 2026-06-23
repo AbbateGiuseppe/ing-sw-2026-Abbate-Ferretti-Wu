@@ -19,7 +19,6 @@ class TwentyFiveBonusPointsEndGameTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         TwentyFiveBonusPointsEndGame card = new TwentyFiveBonusPointsEndGame(BuildingEvent.GAME_END, 3, 5, Era.FIRST, 2, null);
         card.updateDataBank(peppe.data);
@@ -27,7 +26,6 @@ class TwentyFiveBonusPointsEndGameTest {
     }
 
     @Test
-    @DisplayName("onEventEffect grants a flat 25 points")
     void onEventEffectGrants25() {
         TwentyFiveBonusPointsEndGame card = new TwentyFiveBonusPointsEndGame(BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -40,7 +38,6 @@ class TwentyFiveBonusPointsEndGameTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         TwentyFiveBonusPointsEndGame card = new TwentyFiveBonusPointsEndGame(BuildingEvent.GAME_END, 0, 5, Era.FIRST, 2, null);
         assertEquals("EDIFICIO (25 punti finali)", card.simpleToString());

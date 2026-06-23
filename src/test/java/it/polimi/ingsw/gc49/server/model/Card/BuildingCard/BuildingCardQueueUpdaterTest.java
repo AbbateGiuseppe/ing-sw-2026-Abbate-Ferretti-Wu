@@ -36,7 +36,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("BonusFoodEndTurnCard queues an update when on a food-gaining order slot")
     void bonusFoodEndTurn() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         BonusFoodEndTurnCard card = new BonusFoodEndTurnCard(BuildingEvent.TURN_END, 1, 5, Era.FIRST, 2, q);
@@ -48,7 +47,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("BonusHuntingCard queues an update")
     void bonusHunting() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         BonusHuntingCard card = new BonusHuntingCard(BuildingEvent.HUNTING_EVENT, 3, 5, Era.SECOND, 2, q);
@@ -60,7 +58,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("BonusPaintingCard queues an update")
     void bonusPainting() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         BonusPaintingCard card = new BonusPaintingCard(BuildingEvent.PAINTING_EVENT, 6, 5, Era.SECOND, 2, q);
@@ -71,7 +68,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("BonusPointsByClassEndGameCard queues an update")
     void bonusPointsByClass() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         BonusPointsByClassEndGameCard card =
@@ -82,7 +78,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("CharacterSetCompleteFoodCard queues an update")
     void characterSetCompleteFood() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         CharacterSetCompleteFoodCard card =
@@ -95,7 +90,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("CharacterSetCompletePointEndGameCard queues an update")
     void characterSetCompletePoint() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         CharacterSetCompletePointEndGameCard card =
@@ -107,7 +101,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("DoubleShamanPointsCard queues an update")
     void doubleShamanPoints() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         DoubleShamanPointsCard card = new DoubleShamanPointsCard(BuildingEvent.RITUAL_EVENT, 0, 7, Era.SECOND, 2, q);
@@ -119,7 +112,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("OneMoreCardCard queues an update")
     void oneMoreCard() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         OneMoreCardCard card = new OneMoreCardCard(BuildingEvent.DRAW_EVENT, 3, 9, Era.THIRD, 2, q);
@@ -128,7 +120,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("SamePairInventionsCard queues an update")
     void samePairInventions() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         SamePairInventionsCard card = new SamePairInventionsCard(BuildingEvent.DRAW_EVENT, 4, 3, Era.FIRST, 2, q);
@@ -141,7 +132,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("ShamanicImmunityCard queues an update")
     void shamanicImmunity() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         ShamanicImmunityCard card = new ShamanicImmunityCard(BuildingEvent.RITUAL_EVENT, 2, 5, Era.FIRST, 2, q);
@@ -152,7 +142,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("SustainDiscountByClassCard queues an update")
     void sustainDiscount() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         SustainDiscountByClassCard card =
@@ -164,7 +153,6 @@ class BuildingCardQueueUpdaterTest {
     }
 
     @Test
-    @DisplayName("TwentyFiveBonusPointsEndGame queues an update")
     void twentyFive() {
         FakeQueueUpdatable q = new FakeQueueUpdatable();
         TwentyFiveBonusPointsEndGame card = new TwentyFiveBonusPointsEndGame(BuildingEvent.GAME_END, 25, 10, Era.THIRD, 2, q);

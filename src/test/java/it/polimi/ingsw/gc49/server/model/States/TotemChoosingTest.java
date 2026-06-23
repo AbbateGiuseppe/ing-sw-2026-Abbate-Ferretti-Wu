@@ -42,14 +42,12 @@ class TotemChoosingTest {
     // --- construction-time contract ---
 
     @Test
-    @DisplayName("currentStateType is TOTEM_CHOOSING")
     void stateType() {
         TotemChoosing state = new TotemChoosing(game, locks);
         assertEquals(State.States.TOTEM_CHOOSING, state.getCurrentStateType());
     }
 
     @Test
-    @DisplayName("toString returns the localized state name")
     void toStringValue() {
         TotemChoosing state = new TotemChoosing(game, locks);
         assertEquals("Scelta del totem", state.toString());
@@ -59,7 +57,6 @@ class TotemChoosingTest {
 
     @Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
-    @DisplayName("once every player picks a totem, the starting food is dealt to the players")
     void totemChoiceUnblocksAndDealsFood() throws InterruptedException {
         Thread loop = new Thread(game::gameLoop, "game-loop");
         loop.setDaemon(true);
@@ -94,7 +91,6 @@ class TotemChoosingTest {
 
     @Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
-    @DisplayName("the state stays blocked (no food dealt) until BOTH players have chosen")
     void staysBlockedUntilAllChoose() throws InterruptedException {
         Thread loop = new Thread(game::gameLoop, "game-loop");
         loop.setDaemon(true);

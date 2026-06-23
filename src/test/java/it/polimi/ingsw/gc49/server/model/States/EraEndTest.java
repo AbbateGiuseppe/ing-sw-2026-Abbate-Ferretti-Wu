@@ -25,21 +25,18 @@ class EraEndTest {
     }
 
     @Test
-    @DisplayName("currentStateType is OTHER")
     void stateType() {
         EraEnd state = new EraEnd(game, locks);
         assertEquals(State.States.OTHER, state.getCurrentStateType());
     }
 
     @Test
-    @DisplayName("toString returns the localized state name")
     void toStringValue() {
         EraEnd state = new EraEnd(game, locks);
         assertEquals("Fine d'era", state.toString());
     }
 
     @Test
-    @DisplayName("executeState transitions to OfferChoosing")
     void executeStateTransitionsToOfferChoosing() {
         EraEnd state = new EraEnd(game, locks);
         State next = state.executeState();

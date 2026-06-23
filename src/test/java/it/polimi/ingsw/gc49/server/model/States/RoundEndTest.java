@@ -25,21 +25,18 @@ class RoundEndTest {
     }
 
     @Test
-    @DisplayName("currentStateType is OTHER")
     void stateType() {
         RoundEnd state = new RoundEnd(game, locks);
         assertEquals(State.States.OTHER, state.getCurrentStateType());
     }
 
     @Test
-    @DisplayName("toString returns the localized state name")
     void toStringValue() {
         RoundEnd state = new RoundEnd(game, locks);
         assertEquals("Fine del round", state.toString());
     }
 
     @Test
-    @DisplayName("executeState transitions back to OfferChoosing or forward to EraEnd depending on the deck")
     void executeStateTransitions() {
         RoundEnd state = new RoundEnd(game, locks);
         State next = state.executeState();

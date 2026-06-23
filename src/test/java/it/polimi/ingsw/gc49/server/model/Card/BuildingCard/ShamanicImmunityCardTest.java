@@ -19,7 +19,6 @@ class ShamanicImmunityCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         ShamanicImmunityCard card = new ShamanicImmunityCard(BuildingEvent.RITUAL_EVENT, 2, 5, Era.FIRST, 2, null);
         card.updateDataBank(peppe.data);
@@ -27,7 +26,6 @@ class ShamanicImmunityCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect cancels a positive points penalty")
     void onEventEffectCancelsPenalty() {
         ShamanicImmunityCard card = new ShamanicImmunityCard(BuildingEvent.RITUAL_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -40,7 +38,6 @@ class ShamanicImmunityCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect leaves a non-positive points-to-pay unchanged")
     void onEventEffectNonPositiveUnchanged() {
         ShamanicImmunityCard card = new ShamanicImmunityCard(BuildingEvent.RITUAL_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -53,7 +50,6 @@ class ShamanicImmunityCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         ShamanicImmunityCard card = new ShamanicImmunityCard(BuildingEvent.RITUAL_EVENT, 0, 5, Era.FIRST, 2, null);
         assertEquals("EDIFICIO (immunità sciamanica)", card.simpleToString());

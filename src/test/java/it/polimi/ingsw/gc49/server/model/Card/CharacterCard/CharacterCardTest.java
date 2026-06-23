@@ -26,11 +26,9 @@ class CharacterCardTest {
     }
 
     @Nested
-    @DisplayName("Behaviour shared by every CharacterCard")
     class SharedBehaviour {
 
         @Test
-        @DisplayName("canGet is always true and isLowerLineOnSetup is always true")
         void commonFlags() {
             Artist artist = new Artist(Era.FIRST, 2, null);
             assertTrue(artist.canGet(player));
@@ -42,7 +40,6 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("getEra and getMinNumPlayers return the constructor values")
         void eraAndMinPlayers() {
             Builder builder = new Builder(2, 5, Era.THIRD, 4, null);
             assertEquals(Era.THIRD, builder.getEra());
@@ -51,11 +48,9 @@ class CharacterCardTest {
     }
 
     @Nested
-    @DisplayName("Hunter")
     class HunterTest {
 
         @Test
-        @DisplayName("updateDataBank increments the Hunter counter")
         void updateDataBank() {
             Hunter hunter = new Hunter(false, Era.FIRST, 2, null);
             hunter.updateDataBank(player.data);
@@ -63,7 +58,6 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("non-drumstick Hunter grants no food on draw")
         void noFoodWithoutDrumstick() {
             // simulate the player already owning a Hunter
             player.data.addCharacterCount(CharacterType.Hunter, 1);
@@ -73,7 +67,6 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("drumstick Hunter grants food equal to the owned Hunters on draw")
         void foodWithDrumstick() {
             player.data.addCharacterCount(CharacterType.Hunter, 3);
             Hunter hunter = new Hunter(true, Era.FIRST, 2, null);
@@ -82,7 +75,6 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("addCharacterCard wires updateDataBank then onDraw for a drumstick Hunter")
         void integrationThroughPlayer() {
             // first add a plain Hunter: count -> 1, no food
             player.addCharacterCard(new Hunter(false, Era.FIRST, 2, null));
@@ -96,18 +88,15 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("simpleToString is the localized name")
         void simpleString() {
             assertEquals("CACCIATORE", new Hunter(false, Era.FIRST, 2, null).simpleToString());
         }
     }
 
     @Nested
-    @DisplayName("Builder")
     class BuilderTest {
 
         @Test
-        @DisplayName("updateDataBank adds counter, building discount and builder points")
         void updateDataBank() {
             Builder builder = new Builder(2, 5, Era.FIRST, 2, null);
             builder.updateDataBank(player.data);
@@ -117,18 +106,15 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("simpleToString is the localized name")
         void simpleString() {
             assertEquals("COSTRUTTORE", new Builder(0, 0, Era.FIRST, 2, null).simpleToString());
         }
     }
 
     @Nested
-    @DisplayName("Shaman")
     class ShamanTest {
 
         @Test
-        @DisplayName("updateDataBank adds stars and increments the Shaman counter")
         void updateDataBank() {
             Shaman shaman = new Shaman(3, Era.FIRST, 2, null);
             shaman.updateDataBank(player.data);
@@ -137,18 +123,15 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("simpleToString is the localized name")
         void simpleString() {
             assertEquals("SCIAMANO", new Shaman(1, Era.FIRST, 2, null).simpleToString());
         }
     }
 
     @Nested
-    @DisplayName("Artist")
     class ArtistTest {
 
         @Test
-        @DisplayName("updateDataBank increments the Artist counter only")
         void updateDataBank() {
             Artist artist = new Artist(Era.FIRST, 2, null);
             artist.updateDataBank(player.data);
@@ -157,18 +140,15 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("simpleToString is the localized name")
         void simpleString() {
             assertEquals("ARTISTA", new Artist(Era.FIRST, 2, null).simpleToString());
         }
     }
 
     @Nested
-    @DisplayName("Gatherer")
     class GathererTest {
 
         @Test
-        @DisplayName("updateDataBank increments the counter and adds a fixed sustenance discount of 3")
         void updateDataBank() {
             Gatherer gatherer = new Gatherer(Era.FIRST, 2, null);
             gatherer.updateDataBank(player.data);
@@ -177,7 +157,6 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("two Gatherers stack their discount")
         void discountStacks() {
             new Gatherer(Era.FIRST, 2, null).updateDataBank(player.data);
             new Gatherer(Era.FIRST, 2, null).updateDataBank(player.data);
@@ -185,18 +164,15 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("simpleToString is the localized name")
         void simpleString() {
             assertEquals("RACCOGLITORE", new Gatherer(Era.FIRST, 2, null).simpleToString());
         }
     }
 
     @Nested
-    @DisplayName("Inventor")
     class InventorTest {
 
         @Test
-        @DisplayName("updateDataBank increments the counter and records the invention")
         void updateDataBank() {
             Inventor inventor = new Inventor(Invention.CANOE, Era.FIRST, 2, null);
             inventor.updateDataBank(player.data);
@@ -206,7 +182,6 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("two Inventors with different inventions yield two distinct inventions")
         void distinctInventions() {
             new Inventor(Invention.CANOE, Era.FIRST, 2, null).updateDataBank(player.data);
             new Inventor(Invention.BREAD, Era.FIRST, 2, null).updateDataBank(player.data);
@@ -215,7 +190,6 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("two Inventors with the same invention count once as distinct")
         void duplicateInvention() {
             new Inventor(Invention.CANOE, Era.FIRST, 2, null).updateDataBank(player.data);
             new Inventor(Invention.CANOE, Era.FIRST, 2, null).updateDataBank(player.data);
@@ -224,7 +198,6 @@ class CharacterCardTest {
         }
 
         @Test
-        @DisplayName("simpleToString is the localized name")
         void simpleString() {
             assertEquals("INVENTORE", new Inventor(Invention.CANOE, Era.FIRST, 2, null).simpleToString());
         }

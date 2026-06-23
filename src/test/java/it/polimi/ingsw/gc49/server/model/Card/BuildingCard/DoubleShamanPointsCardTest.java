@@ -19,7 +19,6 @@ class DoubleShamanPointsCardTest {
     }
 
     @Test
-    @DisplayName("updateDataBank adds the endgame points")
     void updateDataBankAddsPoints() {
         DoubleShamanPointsCard card = new DoubleShamanPointsCard(BuildingEvent.RITUAL_EVENT, 2, 5, Era.FIRST, 2, null);
         card.updateDataBank(peppe.data);
@@ -27,7 +26,6 @@ class DoubleShamanPointsCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect doubles negative points-to-pay only for the unique winner")
     void onEventEffectDoublesForUniqueWinner() {
         DoubleShamanPointsCard card = new DoubleShamanPointsCard(BuildingEvent.RITUAL_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -41,7 +39,6 @@ class DoubleShamanPointsCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect does nothing when the owner is not the unique winner")
     void onEventEffectNotUniqueWinner() {
         DoubleShamanPointsCard card = new DoubleShamanPointsCard(BuildingEvent.RITUAL_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -55,7 +52,6 @@ class DoubleShamanPointsCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect does nothing when points-to-pay is not negative")
     void onEventEffectNonNegative() {
         DoubleShamanPointsCard card = new DoubleShamanPointsCard(BuildingEvent.RITUAL_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -69,7 +65,6 @@ class DoubleShamanPointsCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         DoubleShamanPointsCard card = new DoubleShamanPointsCard(BuildingEvent.RITUAL_EVENT, 0, 5, Era.FIRST, 2, null);
         assertEquals("EDIFICIO (doppie stelle)", card.simpleToString());

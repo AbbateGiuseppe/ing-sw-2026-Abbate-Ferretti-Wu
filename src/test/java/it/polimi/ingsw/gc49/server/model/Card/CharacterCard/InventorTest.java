@@ -19,7 +19,6 @@ class InventorTest {
     }
 
     @Test
-    @DisplayName("getEra and getMinNumPlayers return the constructor values")
     void constructorValues() {
         Inventor inventor = new Inventor(Invention.CANOE, Era.SECOND, 3, null);
         assertEquals(Era.SECOND, inventor.getEra());
@@ -27,7 +26,6 @@ class InventorTest {
     }
 
     @Test
-    @DisplayName("canGet is always true and isLowerLineOnSetup is always true")
     void commonFlags() {
         Inventor inventor = new Inventor(Invention.CANOE, Era.FIRST, 2, null);
         assertTrue(inventor.canGet(player));
@@ -35,7 +33,6 @@ class InventorTest {
     }
 
     @Test
-    @DisplayName("updateDataBank increments the counter and records the invention")
     void updateDataBank() {
         new Inventor(Invention.CANOE, Era.FIRST, 2, null).updateDataBank(player.data);
         assertEquals(1, player.data.getCharacterCount(CharacterType.Inventor));
@@ -44,7 +41,6 @@ class InventorTest {
     }
 
     @Test
-    @DisplayName("two Inventors with different inventions yield two distinct inventions")
     void distinctInventions() {
         new Inventor(Invention.CANOE, Era.FIRST, 2, null).updateDataBank(player.data);
         new Inventor(Invention.BREAD, Era.FIRST, 2, null).updateDataBank(player.data);
@@ -53,7 +49,6 @@ class InventorTest {
     }
 
     @Test
-    @DisplayName("two Inventors with the same invention count once as distinct")
     void duplicateInvention() {
         new Inventor(Invention.CANOE, Era.FIRST, 2, null).updateDataBank(player.data);
         new Inventor(Invention.CANOE, Era.FIRST, 2, null).updateDataBank(player.data);
@@ -62,7 +57,6 @@ class InventorTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         assertEquals("INVENTORE", new Inventor(Invention.CANOE, Era.FIRST, 2, null).simpleToString());
     }

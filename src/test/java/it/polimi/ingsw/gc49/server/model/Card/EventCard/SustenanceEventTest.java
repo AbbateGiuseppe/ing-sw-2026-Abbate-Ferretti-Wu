@@ -24,7 +24,6 @@ class SustenanceEventTest {
     }
 
     @Test
-    @DisplayName("player with enough food pays exactly one per character")
     void enoughFoodPaysOnePerCharacter() {
         peppe.data.addCharacterCount(CharacterType.Hunter, 3); // 3 characters
         peppe.setFood(10);
@@ -37,7 +36,6 @@ class SustenanceEventTest {
     }
 
     @Test
-    @DisplayName("Gatherer sustenance discount reduces the food cost")
     void gathererDiscountReducesCost() {
         peppe.data.addCharacterCount(CharacterType.Gatherer, 1);
         peppe.data.addCharacterCount(CharacterType.Hunter, 4); // 5 characters
@@ -52,7 +50,6 @@ class SustenanceEventTest {
     }
 
     @Test
-    @DisplayName("discount greater than character count never charges food")
     void discountClampedAtZero() {
         peppe.data.addCharacterCount(CharacterType.Gatherer, 1);
         peppe.data.addNumSustenanceDiscount(10); // big discount, only one character
@@ -66,7 +63,6 @@ class SustenanceEventTest {
     }
 
     @Test
-    @DisplayName("not enough food: all food is paid and missing characters cause point penalties")
     void starvationPenalty() {
         peppe.data.addCharacterCount(CharacterType.Hunter, 5); // owes 5 food
         peppe.setFood(2);
@@ -81,7 +77,6 @@ class SustenanceEventTest {
     }
 
     @Test
-    @DisplayName("no characters: no food paid and no penalty")
     void noCharactersNoEffect() {
         peppe.setFood(5);
         peppe.setPoints(5);
@@ -94,7 +89,6 @@ class SustenanceEventTest {
     }
 
     @Test
-    @DisplayName("canGet is false and isLowerLineOnSetup is false")
     void eventCardFlags() {
         SustenanceEvent event = new SustenanceEvent(2, manager, Era.FIRST, 2, null);
         assertFalse(event.canGet(peppe));
@@ -102,7 +96,6 @@ class SustenanceEventTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         SustenanceEvent event = new SustenanceEvent(2, manager, Era.FIRST, 2, null);
         assertEquals("SOSTENTAMENTO", event.simpleToString());

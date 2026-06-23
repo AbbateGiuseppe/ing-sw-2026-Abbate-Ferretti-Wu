@@ -40,7 +40,6 @@ class BonusPaintingCardTest {
     }
 
     @Test
-    @DisplayName("onEventEffect leaves food-to-pay unchanged with no artists")
     void onEventEffectNoArtists() {
         BonusPaintingCard card = new BonusPaintingCard(BuildingEvent.PAINTING_EVENT, 0, 5, Era.FIRST, 2, null);
         peppe.setFood(10);
@@ -53,7 +52,6 @@ class BonusPaintingCardTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         BonusPaintingCard card = new BonusPaintingCard(BuildingEvent.PAINTING_EVENT, 0, 5, Era.FIRST, 2, null);
         assertEquals("EDIFICIO (strapitture)", card.simpleToString());

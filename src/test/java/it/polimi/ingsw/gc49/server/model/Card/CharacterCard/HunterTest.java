@@ -19,7 +19,6 @@ class HunterTest {
     }
 
     @Test
-    @DisplayName("getEra and getMinNumPlayers return the constructor values")
     void constructorValues() {
         Hunter hunter = new Hunter(false, Era.SECOND, 3, null);
         assertEquals(Era.SECOND, hunter.getEra());
@@ -27,7 +26,6 @@ class HunterTest {
     }
 
     @Test
-    @DisplayName("canGet is always true and isLowerLineOnSetup is always true")
     void commonFlags() {
         Hunter hunter = new Hunter(false, Era.FIRST, 2, null);
         assertTrue(hunter.canGet(player));
@@ -35,14 +33,12 @@ class HunterTest {
     }
 
     @Test
-    @DisplayName("updateDataBank increments the Hunter counter")
     void updateDataBank() {
         new Hunter(false, Era.FIRST, 2, null).updateDataBank(player.data);
         assertEquals(1, player.data.getCharacterCount(CharacterType.Hunter));
     }
 
     @Test
-    @DisplayName("non-drumstick Hunter grants no food on draw")
     void noFoodWithoutDrumstick() {
         player.data.addCharacterCount(CharacterType.Hunter, 1);
         new Hunter(false, Era.FIRST, 2, null).onDraw(player);
@@ -50,7 +46,6 @@ class HunterTest {
     }
 
     @Test
-    @DisplayName("drumstick Hunter grants food equal to the owned Hunters on draw")
     void foodWithDrumstick() {
         player.data.addCharacterCount(CharacterType.Hunter, 3);
         new Hunter(true, Era.FIRST, 2, null).onDraw(player);
@@ -58,7 +53,6 @@ class HunterTest {
     }
 
     @Test
-    @DisplayName("addCharacterCard wires updateDataBank then onDraw")
     void integrationThroughPlayer() {
         player.addCharacterCard(new Hunter(false, Era.FIRST, 2, null));
         assertEquals(1, player.data.getCharacterCount(CharacterType.Hunter));
@@ -70,7 +64,6 @@ class HunterTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         assertEquals("CACCIATORE", new Hunter(false, Era.FIRST, 2, null).simpleToString());
     }

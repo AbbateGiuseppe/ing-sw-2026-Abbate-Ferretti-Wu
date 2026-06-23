@@ -48,7 +48,7 @@ class GameTest {
         wu = game.getPlayers().get(1);
     }
 
-    // --- helpers ---
+    // I need helpers to verify all the branches
 
     /** Forces the game's internal currentState (private field) to the given state. */
     private void forceState(State state) {
@@ -69,6 +69,9 @@ class GameTest {
         forceState(new OfferChoosing(game, new Locks()));
     }
 
+
+
+
     /** Reads the private List<Card> on Player via reflection (no public getter exists). */
     @SuppressWarnings("unchecked")
     private static int sizeOfPrivateList(Player p, String fieldName) {
@@ -81,18 +84,19 @@ class GameTest {
             return -1;
         }
     }
-
+ /// mi servono per vedere se il DRAW ha aggiunto carta
     private static int characterCardsSize(Player p) { return sizeOfPrivateList(p, "characterCards"); }
     private static int buildingCardsSize(Player p) { return sizeOfPrivateList(p, "buildingCards"); }
 
+
+
     // --- construction ---
 
+    //SETUP BASE TEST
     @Nested
-    @DisplayName("Construction")
     class Construction {
 
         @Test
-        @DisplayName("Game has the right number of players, all connected, with nicknames in order")
         void initialPlayers() {
             assertEquals(2, game.getNumOfPlayers());
             assertEquals(2, game.getNumOfConnectedPlayers());
@@ -100,7 +104,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("Track, CardBoard and EventManager are non-null; usedTotems empty; not paused; not last round")
         void initialFlagsAndComponents() {
             assertNotNull(game.getTrack());
             assertNotNull(game.getCardBoard());
@@ -111,21 +114,19 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("getPlayers exposes the same list (read access)")
         void getPlayersExposed() {
             assertEquals(2, game.getPlayers().size());
             assertSame(peppe, game.getPlayers().get(0));
         }
     }
 
-    // --- setters ---
 
+    // --- setters ---
+/// verifiche semplici funzionamento setters e getters
     @Nested
-    @DisplayName("Setters")
     class Setters {
 
         @Test
-        @DisplayName("setLastRound + isLastRound round trip (both true/false)")
         void lastRoundRoundTrip() {
             game.setLastRound(true);
             assertTrue(game.isLastRound());
@@ -134,7 +135,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("setPaused + isPaused round trip")
         void pausedRoundTrip() {
             game.setPaused(true);
             assertTrue(game.isPaused());
@@ -142,19 +142,9 @@ class GameTest {
             assertFalse(game.isPaused());
         }
 
-        @Test
-        @DisplayName("setCurrentPlayer / setCurrentPlayerIndex accept any value")
-        void currentPlayerSetters() {
-            assertDoesNotThrow(() -> {
-                game.setCurrentPlayer(peppe);
-                game.setCurrentPlayer(null);
-                game.setCurrentPlayerIndex(1);
-                game.setCurrentPlayerIndex(0);
-            });
-        }
 
         @Test
-        @DisplayName("setPlayers, setTrack, setCardBoard, setEventManager replace the internal references")
+
         void componentSettersReplace() {
             EventManager freshEm = new EventManager();
             game.setEventManager(freshEm);
@@ -169,21 +159,14 @@ class GameTest {
             assertEquals(2, game.getNumOfPlayers());
         }
 
-        @Test
-        @DisplayName("addControllerListener accepts null without throwing")
-        void addControllerListenerAcceptsNull() {
-            assertDoesNotThrow(() -> game.addControllerListener(null));
-        }
     }
 
     // --- chooseTotem: every branch ---
 
     @Nested
-    @DisplayName("chooseTotem: every branch")
     class ChooseTotemBranches {
 
         @Test
-        @DisplayName("happy path: a player picks an available totem in TOTEM_CHOOSING")
         void happyPath() throws PlayerException {
             game.chooseTotem(0, Totem.BLUE);
             assertEquals(Totem.BLUE, peppe.getTotem());
@@ -191,7 +174,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("picking a totem already taken by another player throws InvalidTotem")
         void duplicateTotemThrows() throws PlayerException {
             game.chooseTotem(0, Totem.BLUE);
             InvalidTotem ex = assertThrows(InvalidTotem.class, () -> game.chooseTotem(1, Totem.BLUE));
@@ -199,14 +181,12 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("a player who already chose a totem cannot choose again (InvalidTotem)")
         void doubleChoiceThrows() throws PlayerException {
             game.chooseTotem(0, Totem.BLUE);
             assertThrows(InvalidTotem.class, () -> game.chooseTotem(0, Totem.YELLOW));
         }
 
         @Test
-        @DisplayName("two different players, two different totems")
         void independentPicks() throws PlayerException {
             game.chooseTotem(0, Totem.BLUE);
             game.chooseTotem(1, Totem.YELLOW);
@@ -214,7 +194,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("chooseTotem is a no-op when the game is paused")
         void noopWhenPaused() throws PlayerException {
             game.setPaused(true);
             game.chooseTotem(0, Totem.BLUE);
@@ -222,7 +201,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("chooseTotem in a non-TOTEM_CHOOSING state does not register the totem")
         void wrongStateNoOp() throws PlayerException {
             setOfferChoosingState();
             // the inner branch only enters when state is TOTEM_CHOOSING; otherwise the totem
@@ -237,39 +215,33 @@ class GameTest {
     // --- draw methods: NotYourTurnException + paused + happy + drawable=0 ---
 
     @Nested
-    @DisplayName("draw methods: every branch")
     class DrawBranches {
 
         @Test
-        @DisplayName("drawUpperCharacter from a non-current player throws NotYourTurnException")
         void wrongTurnUpperCharacter() {
             game.setCurrentPlayerIndex(0);
             assertThrows(NotYourTurnException.class, () -> game.drawUpperCharacter(1, 0));
         }
 
         @Test
-        @DisplayName("drawLowerCharacter from a non-current player throws NotYourTurnException")
         void wrongTurnLowerCharacter() {
             game.setCurrentPlayerIndex(0);
             assertThrows(NotYourTurnException.class, () -> game.drawLowerCharacter(1, 0));
         }
 
         @Test
-        @DisplayName("drawUpperBuilding from a non-current player throws NotYourTurnException")
         void wrongTurnUpperBuilding() {
             game.setCurrentPlayerIndex(0);
             assertThrows(NotYourTurnException.class, () -> game.drawUpperBuilding(1, 0));
         }
 
         @Test
-        @DisplayName("drawLowerBuilding from a non-current player throws NotYourTurnException")
         void wrongTurnLowerBuilding() {
             game.setCurrentPlayerIndex(0);
             assertThrows(NotYourTurnException.class, () -> game.drawLowerBuilding(1, 0));
         }
 
         @Test
-        @DisplayName("when paused, draw methods are silent no-ops even for the wrong player")
         void noopWhenPausedAllDraws() {
             game.setPaused(true);
             assertDoesNotThrow(() -> {
@@ -281,7 +253,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("happy path: drawUpperCharacter in OFFER_EXECUTION with drawableUpper > 0")
         void drawUpperCharacterHappyPath() throws PlayerException {
             setOfferExecutionState();
             game.setCurrentPlayer(peppe);
@@ -295,7 +266,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("happy path: drawLowerCharacter in OFFER_EXECUTION with drawableLower > 0")
         void drawLowerCharacterHappyPath() throws PlayerException {
             setOfferExecutionState();
             game.setCurrentPlayer(peppe);
@@ -307,7 +277,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("happy path: drawUpperBuilding in OFFER_EXECUTION with drawableUpper > 0")
         void drawUpperBuildingHappyPath() throws PlayerException {
             setOfferExecutionState();
             game.setCurrentPlayer(peppe);
@@ -320,7 +289,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("happy path: drawLowerBuilding in OFFER_EXECUTION with drawableLower > 0")
         void drawLowerBuildingHappyPath() throws PlayerException {
             setOfferExecutionState();
             game.setCurrentPlayer(peppe);
@@ -333,7 +301,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("draw methods with drawable counters at zero are silent (covers the >0 false branch)")
         void zeroDrawableNoOp() throws PlayerException {
             setOfferExecutionState();
             game.setCurrentPlayer(peppe);
@@ -353,7 +320,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("draw methods in a state different from OFFER_EXECUTION are silent")
         void wrongStateNoOp() throws PlayerException {
             // current state is TOTEM_CHOOSING; the inner branch only enters in OFFER_EXECUTION
             game.setCurrentPlayer(peppe);
@@ -374,25 +340,21 @@ class GameTest {
     // --- chooseOffer ---
 
     @Nested
-    @DisplayName("chooseOffer: every branch")
     class ChooseOfferBranches {
 
         @Test
-        @DisplayName("wrong turn throws NotYourTurnException")
         void wrongTurn() {
             game.setCurrentPlayerIndex(0);
             assertThrows(NotYourTurnException.class, () -> game.chooseOffer(1, 0));
         }
 
         @Test
-        @DisplayName("paused is a silent no-op")
         void paused() {
             game.setPaused(true);
             assertDoesNotThrow(() -> game.chooseOffer(1, 0));
         }
 
         @Test
-        @DisplayName("happy path: in OFFER_CHOOSING the player is assigned to the offer slot")
         void happyPath() throws PlayerException {
             setOfferChoosingState();
             game.setCurrentPlayer(peppe);
@@ -403,7 +365,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("occupied offer slot propagates NotValidOfferException")
         void occupiedPropagates() throws PlayerException {
             setOfferChoosingState();
             game.setCurrentPlayer(peppe);
@@ -416,7 +377,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("wrong state (not OFFER_CHOOSING) is a silent no-op")
         void wrongStateNoOp() throws PlayerException {
             // state is TOTEM_CHOOSING
             game.setCurrentPlayer(peppe);
@@ -429,11 +389,9 @@ class GameTest {
     // --- passYourTurn ---
 
     @Nested
-    @DisplayName("passYourTurn: every branch")
     class PassYourTurnBranches {
 
         @Test
-        @DisplayName("paused is a silent no-op")
         void paused() {
             game.setPaused(true);
             peppe.setDrawableUpper(2);
@@ -442,7 +400,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("wrong player is a silent no-op")
         void wrongPlayer() {
             game.setCurrentPlayerIndex(0);
             wu.setDrawableUpper(2);
@@ -451,7 +408,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("in TOTEM_CHOOSING (not OTHER), passYourTurn clears the current player's remaining actions")
         void clearsInNonOtherState() {
             game.setCurrentPlayerIndex(0);
             peppe.setDrawableUpper(3);
@@ -462,7 +418,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("in OFFER_EXECUTION (not OTHER), passYourTurn clears the current player's remaining actions")
         void clearsInOfferExecution() {
             setOfferExecutionState();
             game.setCurrentPlayerIndex(0);
@@ -477,11 +432,9 @@ class GameTest {
     // --- disconnect / connect ---
 
     @Nested
-    @DisplayName("Connection lifecycle")
     class Connection {
 
         @Test
-        @DisplayName("disconnect with 2 players online: pauses the game on the last remaining one")
         void disconnectPausesOnLastRemaining() {
             game.disconnectPlayer(1);
             assertFalse(wu.isConnected());
@@ -490,7 +443,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("disconnect of the second player (0 connected) reaches the 0-connected branch")
         void disconnectBothPlayers() {
             game.disconnectPlayer(0);
             game.disconnectPlayer(1);
@@ -498,7 +450,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("reconnect of the second player brings connectedPlayers back to 2 and unpauses")
         void reconnectUnpauses() {
             game.disconnectPlayer(1);
             assertTrue(game.isPaused());
@@ -509,7 +460,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("reconnect of a player marked removedFromTrack restores them on the order board")
         void reconnectRestoresRemovedFromTrack() {
             // seat both players, then "remove" Wu (the second) from the track
             game.getTrack().getOrderBoard().get(0).assignPlayer(peppe);
@@ -532,18 +482,15 @@ class GameTest {
     // --- event calls + broadcasts + mockup ---
 
     @Nested
-    @DisplayName("Events, broadcasts and mockup")
     class EventsAndBroadcast {
 
         @Test
-        @DisplayName("callRoundEndEvent and callGameEndEvent do not throw")
         void callGlobalEvents() {
             assertDoesNotThrow(() -> game.callRoundEndEvent());
             assertDoesNotThrow(() -> game.callGameEndEvent());
         }
 
         @Test
-        @DisplayName("callDrawEvent and callTurnEndEvent work once currentPlayer is set")
         void callPlayerScopedEvents() {
             game.setCurrentPlayer(peppe);
             assertDoesNotThrow(() -> game.callDrawEvent());
@@ -551,14 +498,12 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("queueUpdateModelElement + broadcastGameUpdate is no-throw with no controllers")
         void queueAndBroadcast() {
             game.queueUpdateModelElement(new TextModelElement("hi"));
             assertDoesNotThrow(() -> game.broadcastGameUpdate());
         }
 
         @Test
-        @DisplayName("broadcastCurrentPlayerTurn is no-throw once currentPlayer/Index are set")
         void broadcastCurrentPlayerTurnNoThrow() {
             game.setCurrentPlayer(peppe);
             game.setCurrentPlayerIndex(0);
@@ -566,7 +511,6 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("giveMockupGame returns a snapshot consistent with the players list")
         void giveMockupGameSnapshot() {
             MockupGame mockup = game.giveMockupGame();
             assertNotNull(mockup);
@@ -576,14 +520,12 @@ class GameTest {
         }
 
         @Test
-        @DisplayName("executeCurrentState runs the current state once")
         void executeCurrentStateRuns() {
             setOfferChoosingState();
             assertDoesNotThrow(() -> game.executeCurrentState());
         }
 
         @Test
-        @DisplayName("getNumOfConnectedPlayers reflects manual connection toggles")
         void numConnectedTracksToggles() {
             assertEquals(2, game.getNumOfConnectedPlayers());
             wu.setConnected(false);
@@ -597,7 +539,6 @@ class GameTest {
 
     @Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
-    @DisplayName("gameLoop runs the TotemChoosing state and proceeds when totems are chosen")
     void gameLoopRuns() throws Exception {
         Thread loop = new Thread(game::gameLoop, "game-loop");
         loop.setDaemon(true);

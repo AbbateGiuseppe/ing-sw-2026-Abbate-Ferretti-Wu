@@ -26,7 +26,6 @@ class PaintingEventTest {
     }
 
     @Test
-    @DisplayName("below threshold: player loses a flat minusPoints penalty")
     void belowThresholdLosesFlatPenalty() {
         peppe.data.addCharacterCount(CharacterType.Artist, 1); // threshold = 2
         PaintingEvent event = new PaintingEvent(2, 3, 4, manager, Era.FIRST, 2, null);
@@ -37,7 +36,6 @@ class PaintingEventTest {
     }
 
     @Test
-    @DisplayName("at threshold: player gains plusPoints per artist")
     void atThresholdGainsPerArtist() {
         peppe.data.addCharacterCount(CharacterType.Artist, 2); // exactly the threshold
         PaintingEvent event = new PaintingEvent(2, 3, 4, manager, Era.FIRST, 2, null);
@@ -48,7 +46,6 @@ class PaintingEventTest {
     }
 
     @Test
-    @DisplayName("above threshold: gain scales linearly with the artist count")
     void aboveThresholdScales() {
         peppe.data.addCharacterCount(CharacterType.Artist, 4);
         PaintingEvent event = new PaintingEvent(2, 3, 4, manager, Era.FIRST, 2, null);
@@ -59,7 +56,6 @@ class PaintingEventTest {
     }
 
     @Test
-    @DisplayName("zero artists below threshold means the flat penalty applies")
     void zeroArtistsLosesPenalty() {
         PaintingEvent event = new PaintingEvent(1, 3, 4, manager, Era.FIRST, 2, null);
 
@@ -69,7 +65,6 @@ class PaintingEventTest {
     }
 
     @Test
-    @DisplayName("the event handles winners and losers independently in one call")
     void mixedOutcomesInOneCall() {
         peppe.data.addCharacterCount(CharacterType.Artist, 3);    // success
         peppeTwo.data.addCharacterCount(CharacterType.Artist, 0); // failure
@@ -82,7 +77,6 @@ class PaintingEventTest {
     }
 
     @Test
-    @DisplayName("canGet is false and isLowerLineOnSetup is false")
     void eventCardFlags() {
         PaintingEvent event = new PaintingEvent(2, 3, 4, manager, Era.FIRST, 2, null);
         assertFalse(event.canGet(peppe));
@@ -90,7 +84,6 @@ class PaintingEventTest {
     }
 
     @Test
-    @DisplayName("simpleToString is the localized name")
     void simpleString() {
         PaintingEvent event = new PaintingEvent(2, 3, 4, manager, Era.FIRST, 2, null);
         assertEquals("PITTURE RUPESTRI", event.simpleToString());
