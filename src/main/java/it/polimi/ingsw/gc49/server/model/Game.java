@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * The {@code Game} class is the core model and controller of the application logic.
- * It encapsulates the entire state of a single match, managing players, the card board,
+ * It encapsulates the entire state of a single match, managing players, the cardboard,
  * the track, and the event system.
  * It utilizes a State Machine pattern to drive the {@code gameLoop}, ensuring that rules
  * and phases are strictly enforced. All player interactions are securely synchronized

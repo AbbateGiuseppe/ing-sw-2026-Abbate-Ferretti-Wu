@@ -5,7 +5,6 @@ import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.INITIALIZE_MO
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.UpdateModelPacket;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToServer.GAME_phase.COMMAND.CommandPacket;
 import it.polimi.ingsw.gc49.server.model.Game;
-import it.polimi.ingsw.gc49.server.model.playerExceptions.NotValidOfferException;
 import it.polimi.ingsw.gc49.server.model.playerExceptions.PlayerException;
 import it.polimi.ingsw.gc49.server.proxies.PhasedProxyPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.virtualMethods.virtualClients.VirtualGameClient;
@@ -17,7 +16,7 @@ import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveStateAsync;
 public class MassiWuPeppeController implements VirtualGameClient, Serializable{
     private Game game;
     private final int controllingPlayerIndex;
-    private final PhasedProxyPlayer controllingPlayer;
+    private PhasedProxyPlayer controllingPlayer;
 
     public MassiWuPeppeController ( int controllingPlayerIndex, PhasedProxyPlayer controllingPlayer ) {
         game = null;
@@ -28,6 +27,15 @@ public class MassiWuPeppeController implements VirtualGameClient, Serializable{
     public void connectModel ( Game game ) {
         this.game = game;
         game.addControllerListener(this);
+    }
+
+    /**
+     * Changes the player the controller is connected to, is used in reconnection to change between connection types,
+     * and might be useful to change replace a player with another player.
+     * @param controllingPlayer, the new proxy to which the controller sends updates.
+     */
+    public void setNewControllingPlayer (PhasedProxyPlayer controllingPlayer) {
+        this.controllingPlayer = controllingPlayer;
     }
 
     public void executeCommand ( CommandPacket command ) {

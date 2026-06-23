@@ -316,7 +316,12 @@ public class RmiProxyPlayer extends PhasedProxyPlayer {
      */
     @Override
     public SocketProxyPlayer convertToSocket(){
-        return new SocketProxyPlayer(server, nickname, currentPhase, serverSide, input, output);
+        SocketProxyPlayer converted = new SocketProxyPlayer(server, nickname, currentPhase, serverSide, input, output);
+        if(controller != null) {
+            converted.setController(controller);
+            controller.setNewControllingPlayer(converted);
+        }
+        return converted;
     }
 
 }
