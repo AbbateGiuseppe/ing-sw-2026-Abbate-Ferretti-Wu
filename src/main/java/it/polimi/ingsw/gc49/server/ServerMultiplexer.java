@@ -178,29 +178,30 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                 return (VirtualServer) UnicastRemoteObject.exportObject(proxy, port);
 
             } else {
-                //finds the existing proxy and converts it to the newly chosen connection technology
-                PhasedProxyPlayer existingProxy = clients.get(nickname).convertToRmi();
-                clients.remove(nickname);
-                clients.put(nickname, existingProxy);
-
+                PhasedProxyPlayer existingProxy = clients.get(nickname);
                 if (existingProxy.isConnected()) {
                     throw new RemoteException("A player with such a nickname is already connected. Please, change it.");
                 } else {
+
+                    //finds the existing proxy and converts it to the newly chosen connection technology
+                    PhasedProxyPlayer convertedProxy = existingProxy.convertToRmi();
+                    clients.remove(nickname);
+                    clients.put(nickname, convertedProxy);
 
                     new Thread(() -> {
                         try {
                             Thread.sleep(200);
 
-                            existingProxy.reconnect(clientStub, null, null);
-                            runVirtualClient(existingProxy);
+                            convertedProxy.reconnect(clientStub, null, null);
+                            runVirtualClient(convertedProxy);
 
-                            existingProxy.sendString(new StringPacket("Riconnessione riuscita."));
+                            convertedProxy.sendString(new StringPacket("Riconnessione riuscita."));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }).start();
 
-                    return (VirtualServer) UnicastRemoteObject.exportObject(existingProxy, port);
+                    return (VirtualServer) UnicastRemoteObject.exportObject(convertedProxy, port);
                 }
             }
         }
@@ -245,23 +246,26 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
                     // ============================================================
 
                     //finds the existing proxy and converts it to the newly chosen connection technology
-                    PhasedProxyPlayer existingProxy = clients.get(nickname).convertToSocket();
-                    clients.remove(nickname);
-                    clients.put(nickname, existingProxy);
+                    PhasedProxyPlayer existingProxy = clients.get(nickname);
 
                     if (existingProxy.isConnected()) {
                         socketOutput.writeObject(new StringPacket("A player with such a nickname is already connected. Please, change it."));
                         socketOutput.flush();
                         return;
                     } else {
-                        existingProxy.reconnect(null, socketInput, socketOutput);
+                        //finds the existing proxy and converts it to the newly chosen connection technology
+                        PhasedProxyPlayer convertedProxy = existingProxy.convertToSocket();
+                        clients.remove(nickname);
+                        clients.put(nickname, convertedProxy);
 
-                        System.out.println(existingProxy.nickname + " is reconnected");
+                        convertedProxy.reconnect(null, socketInput, socketOutput);
 
-                        existingProxy.sendString(new StringPacket("Riconnessione riuscita."));
+                        System.out.println(convertedProxy.nickname + " is reconnected");
+
+                        convertedProxy.sendString(new StringPacket("Riconnessione riuscita."));
 
                         new Thread(() -> {
-                            runVirtualClient(existingProxy);
+                            runVirtualClient(convertedProxy);
                         }).start();
                     }
                 }
