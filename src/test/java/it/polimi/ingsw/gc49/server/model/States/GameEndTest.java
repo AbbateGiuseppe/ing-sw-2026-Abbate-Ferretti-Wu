@@ -65,7 +65,7 @@ class GameEndTest {
     @DisplayName("currentStateType is OTHER")
     void stateType() {
         GameEnd state = new GameEnd(game, locks);
-        assertEquals(State.States.OTHER, state.getCurrentStateType());
+        assertEquals(State.States.GAME_END, state.getCurrentStateType());
     }
 
     @Test

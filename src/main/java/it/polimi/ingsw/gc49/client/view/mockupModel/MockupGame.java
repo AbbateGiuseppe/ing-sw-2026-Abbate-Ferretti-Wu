@@ -37,6 +37,8 @@ public class MockupGame implements Serializable {
     private final List<MockupOffer> offerBoard;
     private final List<MockupOrder> orderBoard;
 
+    private String finalStandings = "";
+
     /**
      * Constructs a new {@code MockupGame}.
      * This should be initialized strictly AFTER the real game has been initialized on the server.
@@ -72,6 +74,10 @@ public class MockupGame implements Serializable {
     // SETTERS
     // ============================================================
 
+
+    public void setFinalStandings ( String finalStandings ) {
+        this.finalStandings = finalStandings;
+    }
 
     public void setGameState ( State.States gameState ) {
         this.gameState = gameState;
@@ -167,6 +173,11 @@ public class MockupGame implements Serializable {
     // ============================================================
     // ### GETTERS
     // ============================================================
+
+
+    public String getFinalStandings () {
+        return finalStandings;
+    }
 
     // States
     public State.States getGameState() {

@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc49.client.view.mockupModel.MockupPlayer;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.FullCardboardModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.LowerDrawModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Cardboard.UpperDrawModelElement;
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.EndGameModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.GameStatusModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.OfferOrderboardModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.OfferOrderboard.OrderboardModelElement;
@@ -26,6 +27,7 @@ import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.Builder;
 import it.polimi.ingsw.gc49.server.model.Card.CharacterCard.CharacterCard;
 import it.polimi.ingsw.gc49.server.model.Card.EventCard.EventCard;
 import it.polimi.ingsw.gc49.server.model.Era;
+import it.polimi.ingsw.gc49.server.model.States.State;
 import it.polimi.ingsw.gc49.server.model.Totem;
 
 import javax.swing.BorderFactory;
@@ -158,7 +160,7 @@ public class GamePanel extends JPanel {
         }
 
         contentLayout.show(contentPanel, BOARD_VIEW);
-        //renderHeaderAndStatus(game);
+        renderHeaderAndStatus(game);
 
         renderPlayers(game.getPlayers());
         renderOrderBoard(game.getOrderBoard());
@@ -192,9 +194,11 @@ public class GamePanel extends JPanel {
                 || changedElements.contains(FoodAndPointsOneModelElement.class)
                 || changedElements.contains(ReturnModelElement.class)
                 || changedElements.contains(UpperDrawModelElement.class)
-                || changedElements.contains(LowerDrawModelElement.class);
+                || changedElements.contains(LowerDrawModelElement.class)
+                || changedElements.contains(EndGameModelElement.class);
         boolean currentChanged = changedElements.contains(CurrentPlayerModelElement.class);
-        boolean statusChanged = changedElements.contains(GameStatusModelElement.class);
+        boolean statusChanged = changedElements.contains(GameStatusModelElement.class)
+                || changedElements.contains(EndGameModelElement.class);
         boolean offerChanged = changedElements.contains(OfferOrderboardModelElement.class)
                 || changedElements.contains(ReturnModelElement.class);
         boolean orderChanged = changedElements.contains(OrderboardModelElement.class)
@@ -204,9 +208,9 @@ public class GamePanel extends JPanel {
                 || changedElements.contains(ReturnModelElement.class);
         boolean headerChanged = cardsChanged || playersChanged || currentChanged || statusChanged;
 
-        //if (headerChanged) {
-        //    renderHeaderAndStatus(game);
-        //}
+        if (headerChanged) {
+            renderHeaderAndStatus(game);
+        }
 
         if (playersChanged || currentChanged) {
             clear(playersPanel);
@@ -238,16 +242,16 @@ public class GamePanel extends JPanel {
         }
     }
 
-    /*private void renderHeaderAndStatus(MockupGame game) {
+    private void renderHeaderAndStatus(MockupGame game) {
         currentPlayerIndex = game.getCurrentPlayerIndex();
-        currentPhaseName = game.getPhaseName() == null ? "" : game.getPhaseName();
+        currentPhaseName = game.getGameState() == null ? "" : game.getGameState().toString();
         currentPlayerView = findPlayer(game.getPlayers(), currentPlayerIndex);
         currentPlayerLabel.setText("Current player: " + currentPlayerName() + "  Era: " + eraText(game.getDeckTopEra()));
         phaseLabel.setText(currentPhaseName);
         finalStandingsLabel.setText(toHtmlBlock(game.getFinalStandings()));
         finalStandingsLabel.setVisible(game.getFinalStandings() != null && !game.getFinalStandings().isBlank());
         updateActionButtonStates();
-    }*/
+    }
 
     public void showWaitingForGameState() {
         currentPlayerIndex = -1;
@@ -334,8 +338,8 @@ public class GamePanel extends JPanel {
     }
 
     private void updateActionButtonStates() {
-        boolean executeOffers = "Execute Offers".equals(currentPhaseName);
-        boolean gameEnd = "Game End".equals(currentPhaseName);
+        boolean executeOffers = currentPhaseName.equals(State.States.OFFER_EXECUTION.toString());
+        boolean gameEnd = currentPhaseName.equals(State.States.GAME_END.toString());
         boolean hasRemainingOfferActions = currentPlayerView != null
                 && (currentPlayerView.getDrawableUpper() > 0 || currentPlayerView.getDrawableLower() > 0);
         boolean isLocalPlayerTurn = localNickname == null
@@ -727,7 +731,7 @@ public class GamePanel extends JPanel {
     }
 
     private boolean isLegalCardAction(Card card, PlayerActionEnum action, boolean tribeLine) {
-        if (!"Execute Offers".equals(currentPhaseName) || currentPlayerView == null) {
+        if (!currentPhaseName.equals(State.States.OFFER_EXECUTION.toString()) || currentPlayerView == null) {
             return false;
         }
         if (card instanceof EventCard) {
@@ -1076,22 +1080,26 @@ public class GamePanel extends JPanel {
     }
 
     private Color totemColor(Totem totem) {
-        if (totem == Totem.ORANGE) {
-            return new Color(229, 128, 48);
+        switch (totem) {
+            case ORANGE -> {
+                return new Color(229, 128, 48);
+            }
+            case WHITE -> {
+                return new Color(244, 240, 223);
+            }
+            case BLUE -> {
+                return new Color(64, 137, 210);
+            }
+            case BLACK -> {
+                return new Color(38, 38, 42);
+            }
+            case YELLOW -> {
+                return new Color(231, 196, 66);
+            }
+            default -> {
+                return new Color(132, 121, 103);
+            }
         }
-        if (totem == Totem.WHITE) {
-            return new Color(244, 240, 223);
-        }
-        if (totem == Totem.BLUE) {
-            return new Color(64, 137, 210);
-        }
-        if (totem == Totem.BLACK) {
-            return new Color(38, 38, 42);
-        }
-        if (totem == Totem.YELLOW) {
-            return new Color(231, 196, 66);
-        }
-        return new Color(132, 121, 103);
     }
 
     private Color textFor(Color color) {
@@ -1535,7 +1543,7 @@ public class GamePanel extends JPanel {
             }
             MockupPlayer assignedPlayer = playerFor(offerBoard.get(offerSlot).getAssignedPlayerIndex());
             if (assignedPlayer == null) {
-                return "Choose Offer".equals(currentPhaseName)
+                return currentPhaseName.equals(State.States.OFFER_CHOOSING.toString())
                         ? "Choose offer " + offerLetter(offerSlot, offerBoard.size())
                         : "Offer " + offerLetter(offerSlot, offerBoard.size());
             }
@@ -1543,7 +1551,7 @@ public class GamePanel extends JPanel {
         }
 
         private boolean canChooseOfferSlot(int offerSlot) {
-            return "Choose Offer".equals(currentPhaseName) && isEmptyOfferSlot(offerSlot);
+            return currentPhaseName.equals(State.States.OFFER_CHOOSING.toString()) && isEmptyOfferSlot(offerSlot);
         }
 
         private MockupPlayer playerFor(Integer playerIndex) {

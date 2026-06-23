@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc49.server.model.States;
 
+import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.EndGameModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.GameStatusModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.Players.FoodAndPointsAllModelElement;
 import it.polimi.ingsw.gc49.rmi_socket.datapacket.directedToClient.UPDATE_MODEL.ModelElement.TextModelElement;
@@ -30,7 +31,7 @@ public class GameEnd extends State {
      * @param game  The main game instance.
      * @param locks The synchronization locks for thread-safe state execution.
      */
-    public GameEnd ( Game game, Locks locks ) { super(game, States.OTHER, locks);}
+    public GameEnd ( Game game, Locks locks ) { super(game, States.GAME_END, locks);}
 
 
     /**
@@ -61,7 +62,7 @@ public class GameEnd extends State {
 
         //forming the standings based on each of the players' points
         List<Player> standings = players.stream()
-                .sorted(Comparator.comparingInt(Player::getPoints).reversed().thenComparingInt(Player::getFood).reversed()) //sorts the standings based on the descending order of points. breaks the ties with a descending order of food.
+                .sorted(Comparator.comparingInt(Player::getPoints).reversed().thenComparingInt(Player::getFood)) //sorts the standings based on the descending order of points. breaks the ties with a descending order of food.
                 .toList(); //puts the results to list.
         // !!! THERE STILL MIGHT BE SOME TIED PLAYERS, THEY SHOULD BE CONSIDERED AT THE SAME STANDING !!!
 
@@ -71,10 +72,11 @@ public class GameEnd extends State {
             standingsMessage.append(i+1).append(".").append(standings.get(i).getNickname()).append("(").append(standings.get(i).getPoints()).append("), ");
         }
         game.queueUpdateModelElement(
-                new FoodAndPointsAllModelElement(
+                new EndGameModelElement(
                         "Classifica: " + standingsMessage,
                         FoodAndPointsAllModelElement.getNewFood(players),
-                        FoodAndPointsAllModelElement.getNewPoints(players)
+                        FoodAndPointsAllModelElement.getNewPoints(players),
+                        currentStateType
                 )
         );
 

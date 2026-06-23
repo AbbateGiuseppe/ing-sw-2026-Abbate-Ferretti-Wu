@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc49.server.model.Locks;
 import java.io.Serializable;
 
 public abstract class State implements Serializable {
-    public enum States { OTHER, TOTEM_CHOOSING, OFFER_CHOOSING, OFFER_EXECUTION }
+    public enum States { OTHER, TOTEM_CHOOSING, OFFER_CHOOSING, OFFER_EXECUTION, GAME_END }
     protected final Game game;
     protected final States currentStateType ;
     protected final Locks locks ;
