@@ -481,7 +481,8 @@ public class Game implements Serializable, QueueUpdatable {
                     new ConnectionModelElement(
                         players.get(playerIndex).getNickname() + " si è disconnesso",
                         playerIndex,
-                        false
+                        false,
+                        currentState.getCurrentStateType()
                     )
             );
             players.get(playerIndex).setConnected(false);
@@ -520,7 +521,8 @@ public class Game implements Serializable, QueueUpdatable {
                     new ConnectionModelElement(
                         players.get(playerIndex).getNickname() + " si è riconnesso",
                         playerIndex,
-                        true
+                        true,
+                        currentState.getCurrentStateType()
                     )
             );
             players.get(playerIndex).setConnected(true);
