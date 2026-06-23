@@ -189,7 +189,9 @@ public class Game implements Serializable, QueueUpdatable {
         synchronized (locks.broadcastLock) {
             queueUpdateModelElement(new CurrentPlayerModelElement(
                     "...tocca a " + currentPlayer.getNickname() + "...",
-                    currentPlayerIndex
+                    currentPlayerIndex,
+                    currentPlayer.getDrawableUpper(),
+                    currentPlayer.getDrawableLower()
                     )
             );
             broadcastGameUpdate();
