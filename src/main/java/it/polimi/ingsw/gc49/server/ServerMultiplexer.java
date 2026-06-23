@@ -388,4 +388,10 @@ public class ServerMultiplexer extends UnicastRemoteObject implements FactorySer
             e.printStackTrace();
         }
     }
+
+    public void removeClient (PhasedProxyPlayer removedClient) {
+        synchronized (clients) {
+            clients.remove(removedClient.nickname);
+        }
+    }
 }

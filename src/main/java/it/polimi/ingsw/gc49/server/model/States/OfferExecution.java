@@ -50,6 +50,9 @@ public class OfferExecution extends State{
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+                if(game.getGameEndedPreemptively().get()){
+                    return null;
+                }
             }
             game.getTrack().deassignCurrentOffer(); //deassigning the player from the offer and placing him in the order slots.
             game.callTurnEndEvent(); //calls all the buildings that activate at a turn's end.

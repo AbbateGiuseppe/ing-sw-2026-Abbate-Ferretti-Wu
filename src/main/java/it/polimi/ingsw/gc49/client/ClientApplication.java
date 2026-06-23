@@ -68,9 +68,14 @@ public class ClientApplication implements VirtualClient {
     /** The active user interface (CLI or GUI). */
     private static UserInputInterface inputInterface;
 
-    /** The language currently selected by the user. */
     private MainFrame mainFrame;
+    /** The language currently selected by the user. */
     public static ItaEngString.Language localLanguage;
+
+    /** Columns of the terminal windows. */
+    static int columns = 0;
+    /** Rows of the terminal windows. */
+    static int rows = 0;
 
     /** The JLine terminal instance used for rich console I/O. */
     public static final Terminal terminal;
@@ -135,11 +140,24 @@ public class ClientApplication implements VirtualClient {
                     localLanguage = ItaEngString.Language.valueOf(localLanguageChoice);
                     break;
                 } else {
-                   throw new RuntimeException("Lingua inesistente");
+                    throw new RuntimeException("Lingua inesistente");
                 }
             } catch (Exception e) {
                 terminal.writer().println("Scelta non valida/Invalid choice");
             }
+        }
+
+        // 1+. Window resizing (optional)
+        columns = terminal.getWidth();
+        rows = terminal.getHeight();
+        if (columns != 130 && rows != 35){
+            terminal.writer().println(new ItaEngString("Ridimensiona il terminale a 130(colonne)x35(righe), altrimenti la gui non funzionerà!", "Resize the terminal at 130(columns)x35(rows), otherwise the gui won't work!").print(localLanguage));
+        }
+        while(columns != 130 && rows != 35){
+            terminal.handle(Terminal.Signal.WINCH, _ -> {
+                columns = terminal.getWidth();
+                rows = terminal.getHeight();
+            });
         }
 
         // 2. Interface Selection

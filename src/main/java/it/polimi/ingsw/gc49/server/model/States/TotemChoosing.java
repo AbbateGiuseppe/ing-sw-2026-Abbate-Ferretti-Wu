@@ -51,6 +51,9 @@ public class TotemChoosing extends State {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+            if(game.getGameEndedPreemptively().get()){
+                return null;
+            }
         }
 
         game.getTrack().randomizeStartingOrder(game.getPlayers()); //randomizes the starting order.

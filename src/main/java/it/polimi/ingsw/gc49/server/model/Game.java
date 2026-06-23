@@ -30,6 +30,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -54,7 +58,16 @@ public class Game implements Serializable, QueueUpdatable {
     private final EnumSet<Totem> usedTotems = EnumSet.noneOf(Totem.class);
     private boolean lastRound;
     private boolean paused = false;
+    private final AtomicBoolean gameEndedPreemptively = new AtomicBoolean(false);
     private UpdateModelPacket updatesQueue = new UpdateModelPacket();
+    /** The countdown time (in seconds) to wait before the game ends once there is only one player in it. */
+    private static final int TIME_BEFORE_GAME_END = 60;
+    /** * Scheduler used to handle the countdown timer for the game end.
+     * Marked as transient so it is ignored during server state serialization.
+     * Note: Because it is final, it cannot be easily re-instantiated upon deserialization.
+     */
+    private transient final ScheduledExecutorService endingGameScheduler = Executors.newSingleThreadScheduledExecutor();
+
 
 
     /**
@@ -80,7 +93,7 @@ public class Game implements Serializable, QueueUpdatable {
     public void gameLoop () {
         broadcastMockupGame();
 
-        while(currentState != null) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL
+        while(currentState != null && !gameEndedPreemptively.get()) { //GAME'S LOOP, UNTIL THE NEXT STATE IS NULL OR GAME IS ENDED PREEMPTIVELY
             synchronized (locks.playerInput) {
                 System.out.println("\"" + roomName + "\": " + "Entrando in un stato [" + currentState.toString() + "]...");
                 executeCurrentState();
@@ -89,7 +102,9 @@ public class Game implements Serializable, QueueUpdatable {
         }
 
         //send standings (last updates)
-        broadcastGameUpdate();
+        if(gameEndedPreemptively.get()) {
+            broadcastGameUpdate();
+        }
     }
 
     // ============================================================
@@ -104,6 +119,7 @@ public class Game implements Serializable, QueueUpdatable {
     public Track getTrack () { return track; }
     public CardBoard getCardBoard () { return cardBoard; }
     public EnumSet<Totem> getUsedTotems () { return usedTotems; }
+    public AtomicBoolean getGameEndedPreemptively () { return gameEndedPreemptively; }
 
     public boolean isLastRound () { return lastRound; }
     public boolean isPaused () { return paused; }
@@ -497,9 +513,9 @@ public class Game implements Serializable, QueueUpdatable {
                             "La partita è messa in pausa, il giocatore rimanente vincerà tra un minuto, è iniziato il conto alla rovescia"
                         )
                 );
+                scheduleGameEnd();
             }else if( getNumOfConnectedPlayers() == 0 ){
-                //TODO: close the game
-                currentState = null;
+                endgame();
             }
 
             broadcastGameUpdate();
@@ -558,6 +574,40 @@ public class Game implements Serializable, QueueUpdatable {
             broadcastGameUpdate();
 
             locks.playerInput.notify();
+        }
+    }
+
+    /**
+     * Schedules the end of the game after a predefined delay ({@value #TIME_BEFORE_GAME_END} seconds).
+     * This method is triggered as soon as the game reaches one player connected.
+     * * @throws RuntimeException if the scheduling fails or is interrupted.
+     */
+    private void scheduleGameEnd () {
+        try {
+            endingGameScheduler.schedule(() -> {
+                try {
+                    endgame();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }, TIME_BEFORE_GAME_END, TimeUnit.SECONDS);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void endgame() {
+        synchronized (locks.playerInput) {
+            if (getNumOfConnectedPlayers() == 1) {
+                Player lastStandingPlayer = players.stream().filter(Player::isConnected).findFirst().get();
+                queueUpdateModelElement(new TextModelElement("HA VINTO " + lastStandingPlayer.getNickname() + "!!!"));
+                broadcastGameUpdate();
+                gameEndedPreemptively.set(true);
+                locks.playerInput.notify();
+            } else if (getNumOfConnectedPlayers() == 0){
+                gameEndedPreemptively.set(true);
+                locks.playerInput.notify();
+            }
         }
     }
 }

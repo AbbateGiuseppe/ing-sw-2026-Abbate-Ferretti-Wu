@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static it.polimi.ingsw.gc49.server.ServerMultiplexer.saveState;
-
 /**
  * The {@code Hall} class acts as the main lobby of the game application.
  * It manages players who are currently not in any game, handles the creation
@@ -169,6 +167,14 @@ public class Hall implements VirtualHallServer, Serializable {
             } else {
                 throw new RuntimeException("Giocatore non presente nell'atrio");
             }
+        }
+    }
+
+    public void closeRoom ( String roomName ) {
+        rooms.remove(roomName);
+        try {
+            broadcastMockupHall();
+        } catch (Exception _) {
         }
     }
 

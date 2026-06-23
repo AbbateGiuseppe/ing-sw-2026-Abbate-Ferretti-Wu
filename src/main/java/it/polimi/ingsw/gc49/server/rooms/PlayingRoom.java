@@ -91,6 +91,12 @@ public class PlayingRoom extends Room implements VirtualGameServer {
     public void runGame() {
         game.gameLoop();
         System.out.println("La partita nella stanza " + roomName + " è conclusa.");
+        //Disconnects all proxies from the server
+        for(PhasedProxyPlayer exitingPlayer : players){
+            server.removeClient(exitingPlayer);
+        }
+        //Destroys the room reference in the hall
+        hall.closeRoom(roomName);
     }
 
     /**

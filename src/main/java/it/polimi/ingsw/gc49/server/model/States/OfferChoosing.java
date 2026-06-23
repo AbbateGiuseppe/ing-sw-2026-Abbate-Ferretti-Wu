@@ -49,6 +49,9 @@ public class OfferChoosing extends State {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+                if(game.getGameEndedPreemptively().get()){
+                    return null;
+                }
             }
             //disconnection clause
             if(!currentPlayer.isConnected()){
